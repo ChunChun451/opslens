@@ -59,6 +59,16 @@ class Agent:
     shift_minutes: int
     days_off: frozenset[int]  # 0 = Monday
     max_concurrent: int = 1
+    # Week-specific schedule changes from a staffing plan (budget-neutral):
+    # ((first_day, last_day, shift_start_min, days_off), ...) with days counted from 1.
+    overrides: tuple = ()
+
+    def schedule_on(self, day_index: int) -> tuple[int, frozenset[int]]:
+        """(shift start minute, days off) for calendar day `day_index` (0 = day 1)."""
+        for first, last, start_min, off in self.overrides:
+            if first - 1 <= day_index <= last - 1:
+                return start_min, off
+        return self.shift_start_min, self.days_off
 
 
 @dataclass
@@ -183,6 +193,7 @@ class SimState:
     # Per agent: (valid_until, shift_end or None). Shift status only changes at shift
     # boundaries, so we remember it until the next boundary. (Simulation time never goes back.)
     _shift_cache: dict[int, tuple[float, float | None]] = field(default_factory=dict)
+    in_work: set[int] = field(default_factory=set)  # tickets an agent is working on right now
 
     def add_waiting(self, i: int) -> None:
         self.waiting[i] = self._view(i)
@@ -222,7 +233,8 @@ class SimState:
             # Off now: nothing can change before the next possible shift start.
             agent = self.world.agents[agent_idx]
             today = int(now // MINUTES_PER_DAY)
-            starts = [d * MINUTES_PER_DAY + agent.shift_start_min for d in (today, today + 1)]
+            starts = [d * MINUTES_PER_DAY + agent.schedule_on(d)[0] for d in (today, today + 1)]
+            starts += [d * MINUTES_PER_DAY for d in (today + 1, today + 2)]  # midnight: a weekly override may begin
             valid_until = min(s for s in starts if s > now)
         self._shift_cache[agent_idx] = (float(valid_until), end)
         return end
@@ -264,12 +276,13 @@ def shift_end_if_on(world: World, agent_idx: int, now: float) -> float | None:
     for day in (today, today - 1):
         if day < 0:
             continue
+        start_min, days_off = agent.schedule_on(day)
         weekday = (world.first_weekday + day) % 7
-        if weekday in agent.days_off:
+        if weekday in days_off:
             continue
         if day < world.absent.shape[1] and world.absent[agent_idx, day]:
             continue
-        start = day * MINUTES_PER_DAY + agent.shift_start_min
+        start = day * MINUTES_PER_DAY + start_min
         end = start + agent.shift_minutes
         if start <= now < end:
             return float(end)
@@ -387,6 +400,7 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
         raise ValueError(f"agent {a.agent_id} cannot serve language {world.language[i]}")
 
     state.waiting.pop(i, None)
+    state.in_work.add(i)
     t.status = "in_work"
     if math.isnan(t.first_pickup_min):
         t.first_pickup_min = now
@@ -416,6 +430,7 @@ def _finish(world, tickets, state, agent_by_id, heap, seq, now, payload) -> int:
     i, agent_id, outcome, mismatch, duration = payload
     t, ast = tickets[i], state.agent_states[agent_id]
     ast.busy -= 1
+    state.in_work.discard(i)
     if ast.busy == 0:
         ast.idle_since_min = now
     t.known_category = world.true_category[i]  # whoever opened it now knows what it is
@@ -486,12 +501,13 @@ def available_minutes(world: World, agent_idx: int, start: float, end: float) ->
     first_day = int(start // MINUTES_PER_DAY) - 1
     last_day = int(end // MINUTES_PER_DAY) + 1
     for day in range(max(first_day, 0), last_day + 1):
+        start_min, days_off = agent.schedule_on(day)
         weekday = (world.first_weekday + day) % 7
-        if weekday in agent.days_off:
+        if weekday in days_off:
             continue
         if day < world.absent.shape[1] and world.absent[agent_idx, day]:
             continue
-        s = day * MINUTES_PER_DAY + agent.shift_start_min
+        s = day * MINUTES_PER_DAY + start_min
         e = s + agent.shift_minutes
         total += max(0.0, min(e, end) - max(s, start))
     return total

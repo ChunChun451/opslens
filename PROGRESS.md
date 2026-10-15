@@ -103,3 +103,84 @@ Newest entry at the bottom. One entry per milestone (see `CLAUDE.md` section 1.2
 - U1 dashboard shell is being built in a parallel session on branch `u1-dashboard-shell`.
 
 **Next step:** M3 — ingest (+ UCI adapter), KPIs, classification cascade, LLM-named clusters.
+
+---
+
+## M3 — 15 Oct 2026 — Ingest, UCI adapter, KPIs, classification cascade, clusters
+
+**Built**
+- `opslens/ingest.py` (pydantic row check, timing recomputed from timestamps, splits),
+  `opslens/adapters/uci_incidents.py` (events → incidents; as-of-time risk features),
+  `opslens/kpis.py`, `opslens/classify.py` (local TF-IDF + LR, isotonic, LLM cascade),
+  `opslens/clusters.py` (TF-IDF + KMeans per category, LLM names), `eval/run_classification.py`.
+- Text realism: 12% vague first messages, 15% multi-issue (30% with the main issue second),
+  and ~600 LLM-written message patterns (`data/llm_templates.json`, Groq Qwen — a different
+  model from the classifier's Gemini). With hand templates only, accuracy was 99.9% (memorised).
+- `config/calendar.yaml`: calendar facts split from `generator.yaml`, so the engine never reads
+  the file that describes the planted problems (guard test added).
+- LLM client: waits and retries once on "try again in Ns" (≤ 90 s); Groq paced to 1 request/min
+  (its free tier allows 1,000 output tokens per minute) and capped at 900 output tokens; batches
+  of 25.
+
+**Numbers printed (test days 43-56, 18,032 tickets)**
+- Menu choice 90.9% (calls 75.8%) → local 97.97% → cascade 98.08% (calls 95.7%, Hinglish 97.3%).
+- Threshold 0.6 (chosen on validation); 1.54% sent to LLM (≈ 617 requests per 1M tickets);
+  LLM fixed 57, broke 37. LLM alone on 400 random tickets: 90.0%.
+- Wrong-team routing per 100: 5.71 → 1.20 (calls 14.83 → 2.54).
+- UCI: 24,918 incidents; breach 36.6%; breach by reassignments 0/1/2/4+: 21.6/42.9/60.1/81.0%.
+
+**Open issues**: cluster names sometimes repeat; synthetic text is cleaner than real tickets.
+
+---
+
+## M4 — 15 Oct 2026 — Patterns, live alerts, blind recall
+
+**Built**: `opslens/patterns.py` (capacity, interaction, transfer, partner, spike scans; cause
+rules; evidence cards; live alerts), `eval/recall.py`, `eval/run_patterns.py`, `data/plant.py`,
+`eval/run_blind.py`; generator accepts generic plants (`extra_lifts`, `extra_partners`,
+`extra_misrouting`) — main data verified identical.
+
+**Numbers printed**
+- Main data: 5/5 planted problems found and diagnosed (cause type correct). 2 unplanted findings:
+  regional-language × weekday morning replicates on test days (2.0×); Team B × weekday night
+  does not (1.2×) → 1 false alarm.
+- Live alerts (rule z ≥ 4.5 twice in a row, chosen on days 15-42): day-47 surge flagged after
+  45 min; 1 false alert in 2 weeks; sale-day alerts explained.
+- **Blind test: 57/60 random plants found and diagnosed (95%)** over 20 datasets
+  (capacity 10/10, partner 14/14, process 10/10, spike 11/12, skill gap 12/14); clean dataset 3 cards;
+  2.35 unplanted cards per set.
+
+**Open issues**: small groups with modest effects can be missed (regional-language × Team C).
+
+---
+
+## M5 — 15 Oct 2026 — Leak-proof features, risk model, reasons, UCI check
+
+**Built**: `opslens/features.py` (QueueSnapshot → features; the same code will run inside the
+simulator), `opslens/risk.py` (LightGBM + isotonic, TreeSHAP shares, counterfactual, save/load),
+`eval/run_risk.py`, `tests/test_risk.py` (leakage test: change the future, features unchanged).
+
+**Numbers printed (test days, still-savable waiting tickets, 26,811 snapshot rows)**
+- AUC 0.976 (time-left rule 0.884, priority rule 0.790), PR-AUC 0.955, top-10% precision 0.996,
+  Brier 0.055; at arrival AUC 0.966. Calibration 0.29 → 0.32, 0.74 → 0.78.
+- UCI real data (7,476 test incidents): AUC 0.857 vs priority rule 0.552.
+
+**Decision**: tickets already past SLA are excluded (with them the AUC was a misleading 0.992).
+
+---
+
+## M6 — 15 Oct 2026 — Forecast, conformal ranges, bottlenecks, staffing
+
+**Built**: `opslens/forecast.py`, `opslens/staffing.py` (Erlang C, numpy coverage, greedy
+budget-neutral moves, overload hours 3×, day hours only), `eval/run_forecast.py`, weekly plans
+saved to `data/generated/staffing_plan.json`; simulator agents accept week-specific shift
+overrides (`world.apply_staffing_plan`).
+
+**Numbers printed (test days)**
+- WAPE 0.305 vs naive 0.415 (Poisson floor 0.280); team-hour workload 0.235 vs 0.321.
+- Conformal coverage 79.2% (80% range), 90.0% (90% range); sale day −16.6%.
+- Plan days 43-49: C05 Monday off instead of Saturday, B02 Monday instead of Friday, C06 Friday
+  instead of Tuesday, 3 starts 08:00 → 07:00; shortage 654 → 636 agent-hours.
+
+**Next step:** M7 — OpsLens policy (rescue value, scarcity, starvation guard, min-cost flow),
+weights chosen on validation days, OpsLens vs A/B on test days with paired CIs.

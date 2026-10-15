@@ -66,3 +66,95 @@ customers wait 1,007 minutes instead of 816. OpsLens has to beat B on breaches w
 Our first version decided every 2 minutes. The Erlang-C test showed agents then sat idle about a
 minute between tickets, which slows every policy and is not how a real floor works. Now every
 policy decides the moment a ticket arrives or an agent finishes — the same moments for all.
+
+---
+
+## M3 — Ingest and classification
+
+**Q11. Why not send every ticket to the LLM? It's 2026.**
+We measured it. On 400 random test tickets Gemini alone was 90.0% right; our local model, which
+learns how reliable the customer's menu choice is per channel, was 98.0%. So the LLM only sees
+the 1.54% of tickets the local model is unsure about (about 617 requests per million tickets).
+There it fixed 57 answers and broke 37.
+
+**Q12. (Attack) 98% accuracy on synthetic text proves nothing.**
+Agreed, the text is partly synthetic and real accuracy will be lower. The number that matters
+operationally is routing: tickets sent to the wrong team fall from 5.71 to 1.20 per 100, and
+on phone tickets from 14.83 to 2.54, because the IVR menu choice is wrong a quarter of the time.
+
+**Q13. How do you choose when to call the LLM?**
+On validation days only. We tried confidence thresholds 0.5 to 0.95 with calibrated
+(isotonic) probabilities and kept the most accurate one within a 15% LLM budget: 0.6, which
+sends 1.6% of validation tickets to the LLM. Test days were never used to choose it.
+
+**Q14. Is the LLM given customer data?**
+Only masked text, in batches of 25, cached by a hash of the masked prompt. Answers are
+validated (known category, every id present); missing ones are asked once more, then the local
+answer stays. Cluster names containing digits are rejected.
+
+---
+
+## M4 — Patterns
+
+**Q15. (Attack) You found 5 of 5 problems you planted yourself. Of course you did.**
+That is why we ran a blind test: 20 new datasets, each with 3 problems of random type, place and
+size drawn by code after the finder was frozen. It found and correctly diagnosed 57 of 60 (95%).
+The misses: two small regional-language gaps and one spike on the very last day.
+
+**Q16. How do you avoid "everything looks like a problem"?**
+A pair of labels (e.g. Hindi × Team B) is reported only if it is at least 2× worse than BOTH
+parents, with z ≥ 6. Spikes compare a day with days of the same type, and known sale days are
+explained, not flagged. Unplanted findings must replicate on held-out days: one of two did.
+
+**Q17. How fast would OpsLens notice a bad app release?**
+The unseen day-47 app-bug surge was flagged 45 minutes after it began, with one false alert in
+two weeks. The alert rule (z ≥ 4.5 on two checks in a row) was chosen on history days 15–42,
+where it caught the day-18 payment spike, never on the test days.
+
+**Q18. Can it find problems you did not plant?**
+Yes: "regional-language tickets on weekday mornings wait 2.3× longer". We checked the roster: few
+regional-language speakers start before 08:00. It replicated on the held-out days (2.0×).
+A second unplanted finding did not replicate (1.2×), and we count it as a false alarm.
+
+---
+
+## M5 — Risk model
+
+**Q19. (Attack) An AUC of 0.976 is too good to be true. Leakage?**
+Three checks. Features come only from a snapshot of what was known at time t, and a test changes
+the future and asserts the features do not move. Tickets already past their SLA are excluded.
+And on real ServiceNow data the same method gets 0.857, against 0.552 for the priority rule.
+
+**Q20. Why should a manager trust the probabilities?**
+They are calibrated on validation days with isotonic regression. On test days, tickets scored
+about 0.29 breached 32% of the time, and those scored about 0.74 breached 78%. The optimiser
+multiplies these probabilities, so honesty matters more than a high AUC.
+
+**Q21. The model learned under FIFO. Isn't that biased for your policy?**
+It predicts the risk "if nothing changes", which is exactly the risk we act to prevent. The
+optimiser uses the difference between waiting and being served now. Whether that helps is
+measured in the simulator against both baselines, not assumed.
+
+**Q22. Why LightGBM and not TabPFN or a neural network?**
+Milliseconds per score, exact SHAP reasons, free licence, and no GPU. TabPFN-3 (2026) is
+stronger on small tables in benchmarks, but its weights are for research use; our optional
+challenger arena compares it on the same split before anyone argues from benchmarks.
+
+---
+
+## M6 — Forecast and staffing
+
+**Q23. Your hourly WAPE is 0.305. That sounds bad.**
+Hourly counts per category are small, so even a perfect forecast would be off by chance: the
+Poisson floor is 0.280. "Same hour last week" scores 0.415. Per team-hour workload, our error is
+0.235 vs 0.321. And the ranges are honest: the 80% range covered 79.2% of test hours.
+
+**Q24. (Attack) "Hire more agents" is not a recommendation.**
+We never add people. Every move keeps the same people and the same hours per week: shift starts
+move 1–2 hours or a day off moves to a quieter day. Example: C05 takes Monday off instead of
+Saturday, because Team C is short by up to 5 agents on Saturday nights.
+
+**Q25. Why Erlang C?**
+It is the call-centre standard, judges from operations know it, and our simulator reproduces it
+(10.97 vs 10.79 minutes average wait). We use it with the upper 80% forecast so plans hold on
+busier-than-expected days, and we weight hours with real overload 3×.
