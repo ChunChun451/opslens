@@ -18,7 +18,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -89,6 +89,31 @@ def whatif(request: dict) -> JSONResponse:
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
     return JSONResponse(answer)
+
+
+@app.post("/api/upload")
+async def upload(mapping: str = Form("{}"), file: UploadFile | None = File(None),
+                 example: str | None = Form(None)) -> JSONResponse:
+    """Run the analysis on an uploaded export, or on the UCI example (server/upload.py)."""
+    from server.upload import analyse_csv, analyse_uci
+
+    try:
+        if file is None or example == "uci_incidents":
+            return JSONResponse(analyse_uci())
+        return JSONResponse(analyse_csv(await file.read(), json.loads(mapping)))
+    except (ValueError, KeyError) as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
+@app.post("/api/plant")
+def plant(request: dict) -> JSONResponse:
+    """Hide the judge's problem in fresh data and see whether OpsLens finds it (server/plant_demo.py)."""
+    from server.plant_demo import run_plant
+
+    try:
+        return JSONResponse(run_plant(request))
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
 
 
 app.mount("/web", StaticFiles(directory=ROOT / "web", html=True), name="web")

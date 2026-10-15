@@ -229,6 +229,28 @@ function plantDialog() {
     </dialog>`;
 }
 
+// The live answer is computed by the server for this request only, so its numbers are shown
+// as the server sent them (they are not part of results.json).
+function plantAnswerHtml(answer) {
+  if (!answer || answer.error) {
+    return `<div class="notice warn">${escapeHtml((answer && answer.error) || "No answer")}</div>`;
+  }
+  const verdict = answer.found
+    ? (answer.diagnosed ? "Found it, and named the right cause." : "Found it, but named a different cause.")
+    : "Missed it.";
+  const card = answer.card
+    ? `<div class="card"><strong>${escapeHtml(answer.card.title)}</strong>
+         <p>${escapeHtml(answer.card.comparison_text)}</p>
+         <p class="muted">Cause: ${escapeHtml(answer.card.cause_type)}${answer.card.not_explained_by ? " · " + escapeHtml(answer.card.not_explained_by) : ""}</p></div>`
+    : "";
+  const others = (answer.other_cards || []).length
+    ? `<p class="muted">Other findings in the fresh data: ${answer.other_cards.map(escapeHtml).join("; ")}</p>` : "";
+  return `<div class="notice ${answer.found ? "ok" : "warn"}"><strong>${verdict}</strong>
+      Planted: ${escapeHtml(answer.planted.description)} (${escapeHtml(answer.planted.cause_type)}),
+      in ${escapeHtml(String(answer.planted.fresh_days))} fresh days. Took ${escapeHtml(String(answer.seconds))} s.</div>
+    ${card}${others}`;
+}
+
 function wirePlantDialog(section) {
   const dialog = section.querySelector("#plant-dialog");
   section.querySelector("#plant-open").addEventListener("click", () => {
@@ -244,10 +266,10 @@ function wirePlantDialog(section) {
       day: Number(form.day.value),
     };
     const result = section.querySelector("#plant-result");
-    result.innerHTML = `<p class="muted">Planting and detecting…</p>`;
+    result.innerHTML = `<p class="muted">Generating 21 fresh days with your problem hidden in them, then detecting… (about 20–40 seconds)</p>`;
     try {
       const answer = await postJson("/api/plant", request);
-      result.innerHTML = `<div class="notice ok">Server answered:</div><pre>${escapeHtml(JSON.stringify(answer, null, 2))}</pre>`;
+      result.innerHTML = plantAnswerHtml(answer);
     } catch (error) {
       result.innerHTML = backendMissing("POST /api/plant", "M11",
         "The blind recall test on random plant sets is already in How we tested.");

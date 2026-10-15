@@ -332,155 +332,155 @@
    "label": "OpsLens",
    "kpis": {
     "turnaround.breach_pct": {
-     "mean": 2.3791038154392194,
-     "std": 0.5364296965922581
+     "mean": 2.2005323868677906,
+     "std": 0.32177945426767895
     },
     "turnaround.mean_resolution_min": {
-     "mean": 60.703028555484494,
-     "std": 13.84920750769637
+     "mean": 61.25084554739128,
+     "std": 13.985341091931568
     },
     "turnaround.p90_resolution_min": {
-     "mean": 140.785121634073,
-     "std": 31.153764751488712
+     "mean": 140.50762711516273,
+     "std": 30.64544248103611
     },
     "turnaround.mean_wait_min": {
-     "mean": 45.54655963064266,
-     "std": 13.474046556616862
+     "mean": 44.763262213804595,
+     "std": 12.774485545101074
     },
     "turnaround.max_backlog": {
-     "mean": 197.0,
-     "std": 69.46941773183363
+     "mean": 200.6,
+     "std": 74.04255533137683
     },
     "productivity.tickets_per_agent_hour": {
      "mean": 5.296232606469611,
      "std": 0.09731145946177727
     },
     "productivity.transfers_per_100": {
-     "mean": 0.9693877551020409,
-     "std": 0.015388683369023468
+     "mean": 0.9693877551020407,
+     "std": 0.016357454751278436
     },
     "productivity.busy_agent_hours": {
-     "mean": 2992.766138223972,
-     "std": 17.382907113667958
+     "mean": 2993.5183854328825,
+     "std": 15.931688630895504
     },
     "quality.reopen_rate_pct": {
-     "mean": 4.392191659272404,
-     "std": 0.19162769014164802
+     "mean": 4.404392191659272,
+     "std": 0.18357009476873185
     },
     "quality.p99_wait_min": {
-     "mean": 732.0931050774561,
-     "std": 192.4757463241331
+     "mean": 727.8063915516635,
+     "std": 188.95221675008156
     },
     "quality.mean_utilisation": {
-     "mean": 0.8791746420237463,
-     "std": 0.02016349537324377
+     "mean": 0.8794316873311215,
+     "std": 0.01971915286361248
     },
     "quality.load_fairness_std": {
-     "mean": 0.13160276313469782,
-     "std": 0.007946709248433655
+     "mean": 0.1321925531669499,
+     "std": 0.008256852921276824
     },
     "segment.p1_breach_pct": {
-     "mean": 4.860506369940333,
-     "std": 0.38443869706462064
+     "mean": 4.886308659893566,
+     "std": 0.3241372559626153
     },
     "segment.gold_breach_pct": {
-     "mean": 1.8075375045737285,
-     "std": 0.2793795707108829
+     "mean": 1.8294914013904133,
+     "std": 0.24545202826561902
     },
     "segment.hindi_breach_pct": {
-     "mean": 3.8350619782443713,
-     "std": 1.1767433261036915
+     "mean": 3.4606627877561342,
+     "std": 0.6393249358615345
     }
    },
    "per_seed": [
     {
-     "turnaround.breach_pct": 2.1850044365572314,
-     "turnaround.mean_resolution_min": 64.68747125407975,
-     "turnaround.p90_resolution_min": 153.5229943277161,
-     "turnaround.mean_wait_min": 49.56449781153659,
-     "turnaround.max_backlog": 200.0,
+     "turnaround.breach_pct": 2.001996450754215,
+     "turnaround.mean_resolution_min": 65.41983298936546,
+     "turnaround.p90_resolution_min": 156.5007083979799,
+     "turnaround.mean_wait_min": 49.01932532670299,
+     "turnaround.max_backlog": 201.0,
      "productivity.tickets_per_agent_hour": 5.371462615430444,
-     "productivity.transfers_per_100": 0.9815882874889086,
-     "productivity.busy_agent_hours": 3003.943763970945,
-     "quality.reopen_rate_pct": 4.270186335403727,
-     "quality.p99_wait_min": 776.9207053868421,
-     "quality.mean_utilisation": 0.8934735441567788,
-     "quality.load_fairness_std": 0.12143650013276946,
+     "productivity.transfers_per_100": 0.9704968944099378,
+     "productivity.busy_agent_hours": 3005.333218478923,
+     "quality.reopen_rate_pct": 4.259094942324756,
+     "quality.p99_wait_min": 748.0732924972846,
+     "quality.mean_utilisation": 0.8939141516601318,
+     "quality.load_fairness_std": 0.12228015341019965,
      "segment.p1_breach_pct": 4.612159329140461,
-     "segment.gold_breach_pct": 1.9026710574460302,
-     "segment.hindi_breach_pct": 3.6681001770806985,
+     "segment.gold_breach_pct": 1.8660812294182216,
+     "segment.hindi_breach_pct": 3.2127498102706804,
      "tickets": 18032.0
     },
     {
-     "turnaround.breach_pct": 2.5066548358473826,
-     "turnaround.mean_resolution_min": 56.127529715561735,
-     "turnaround.p90_resolution_min": 132.76866703262348,
-     "turnaround.mean_wait_min": 40.84187547810251,
-     "turnaround.max_backlog": 215.0,
+     "turnaround.breach_pct": 2.362466725820763,
+     "turnaround.mean_resolution_min": 55.97559850826715,
+     "turnaround.p90_resolution_min": 130.5694625389056,
+     "turnaround.mean_wait_min": 39.267770634534436,
+     "turnaround.max_backlog": 221.0,
      "productivity.tickets_per_agent_hour": 5.272514619883041,
-     "productivity.transfers_per_100": 0.9483141082519966,
-     "productivity.busy_agent_hours": 2989.783403913335,
-     "quality.reopen_rate_pct": 4.558562555456965,
-     "quality.p99_wait_min": 626.3363797277821,
-     "quality.mean_utilisation": 0.8739336563075021,
-     "quality.load_fairness_std": 0.1330200361373682,
-     "segment.p1_breach_pct": 4.934687953555878,
-     "segment.gold_breach_pct": 1.7929015733626052,
-     "segment.hindi_breach_pct": 3.971667088287377,
+     "productivity.transfers_per_100": 0.942768411712511,
+     "productivity.busy_agent_hours": 2990.000361491405,
+     "quality.reopen_rate_pct": 4.619565217391304,
+     "quality.p99_wait_min": 627.1117516369784,
+     "quality.mean_utilisation": 0.8740007147092627,
+     "quality.load_fairness_std": 0.13172201890155116,
+     "segment.p1_breach_pct": 5.128205128205128,
+     "segment.gold_breach_pct": 1.9392608854738382,
+     "segment.hindi_breach_pct": 3.895775360485707,
      "tickets": 18032.0
     },
     {
-     "turnaround.breach_pct": 2.1018189884649514,
-     "turnaround.mean_resolution_min": 51.87625534072366,
-     "turnaround.p90_resolution_min": 119.59533307791716,
-     "turnaround.mean_wait_min": 36.80701699244201,
+     "turnaround.breach_pct": 2.0629991126885536,
+     "turnaround.mean_resolution_min": 52.671756596630416,
+     "turnaround.p90_resolution_min": 119.80021393004715,
+     "turnaround.mean_wait_min": 36.877205133749314,
      "turnaround.max_backlog": 132.0,
      "productivity.tickets_per_agent_hour": 5.195044655718813,
-     "productivity.transfers_per_100": 0.9649511978704525,
-     "productivity.busy_agent_hours": 2996.704026072525,
-     "quality.reopen_rate_pct": 4.436557231588288,
-     "quality.p99_wait_min": 622.5644561330976,
-     "quality.mean_utilisation": 0.8638544785477695,
-     "quality.load_fairness_std": 0.1376418565902958,
-     "segment.p1_breach_pct": 4.821802935010482,
+     "productivity.transfers_per_100": 0.9704968944099378,
+     "productivity.busy_agent_hours": 2998.17053467704,
+     "quality.reopen_rate_pct": 4.447648624667258,
+     "quality.p99_wait_min": 626.7367423368073,
+     "quality.mean_utilisation": 0.8642910307037267,
+     "quality.load_fairness_std": 0.13975875363296225,
+     "segment.p1_breach_pct": 4.77342364134817,
      "segment.gold_breach_pct": 1.4270032930845227,
-     "segment.hindi_breach_pct": 3.111560839868454,
+     "segment.hindi_breach_pct": 3.136858082469011,
      "tickets": 18032.0
     },
     {
-     "turnaround.breach_pct": 3.2442324755989347,
-     "turnaround.mean_resolution_min": 82.84942500179714,
-     "turnaround.p90_resolution_min": 188.20540475614834,
-     "turnaround.mean_wait_min": 67.0988662994706,
-     "turnaround.max_backlog": 302.0,
+     "turnaround.breach_pct": 2.684117125110914,
+     "turnaround.mean_resolution_min": 83.65265731074557,
+     "turnaround.p90_resolution_min": 185.6880827033222,
+     "turnaround.mean_wait_min": 65.14700816871091,
+     "turnaround.max_backlog": 313.0,
      "productivity.tickets_per_agent_hour": 5.421527360192424,
-     "productivity.transfers_per_100": 0.9649511978704525,
-     "productivity.busy_agent_hours": 3008.900161756586,
-     "quality.reopen_rate_pct": 4.569653948535936,
-     "quality.p99_wait_min": 1050.2052264281879,
-     "quality.mean_utilisation": 0.9061806935232166,
-     "quality.load_fairness_std": 0.12564003534359736,
-     "segment.p1_breach_pct": 5.466860183841316,
-     "segment.gold_breach_pct": 2.1953896816684964,
-     "segment.hindi_breach_pct": 5.742474070326335,
+     "productivity.transfers_per_100": 0.9871339840283939,
+     "productivity.busy_agent_hours": 3006.5096169367926,
+     "quality.reopen_rate_pct": 4.519742679680568,
+     "quality.p99_wait_min": 1048.3113457611503,
+     "quality.mean_utilisation": 0.9055886503929035,
+     "quality.load_fairness_std": 0.1260839050532265,
+     "segment.p1_breach_pct": 5.321722302854378,
+     "segment.gold_breach_pct": 2.0856201975850714,
+     "segment.hindi_breach_pct": 4.325828484695168,
      "tickets": 18032.0
     },
     {
-     "turnaround.breach_pct": 1.8578083407275954,
-     "turnaround.mean_resolution_min": 47.97446146526018,
-     "turnaround.p90_resolution_min": 109.83320897595983,
-     "turnaround.mean_wait_min": 33.4205415716616,
+     "turnaround.breach_pct": 1.8910825199645074,
+     "turnaround.mean_resolution_min": 48.534382331947825,
+     "turnaround.p90_resolution_min": 109.97966800555876,
+     "turnaround.mean_wait_min": 33.50500180532532,
      "turnaround.max_backlog": 136.0,
      "productivity.tickets_per_agent_hour": 5.220613781123335,
-     "productivity.transfers_per_100": 0.9871339840283939,
-     "productivity.busy_agent_hours": 2964.4993354064677,
-     "quality.reopen_rate_pct": 4.125998225377107,
-     "quality.p99_wait_min": 584.4387577113713,
-     "quality.mean_utilisation": 0.858430837583464,
-     "quality.load_fairness_std": 0.14027538746945833,
-     "segment.p1_breach_pct": 4.467021448153523,
-     "segment.gold_breach_pct": 1.7197219173069889,
-     "segment.hindi_breach_pct": 2.6815077156589933,
+     "productivity.transfers_per_100": 0.9760425909494232,
+     "productivity.busy_agent_hours": 2967.578195580252,
+     "quality.reopen_rate_pct": 4.175909494232475,
+     "quality.p99_wait_min": 588.7988255260972,
+     "quality.mean_utilisation": 0.8593638891895832,
+     "quality.load_fairness_std": 0.14111793483680984,
+     "segment.p1_breach_pct": 4.596032897919691,
+     "segment.gold_breach_pct": 1.8294914013904133,
+     "segment.hindi_breach_pct": 2.732102200860106,
      "tickets": 18032.0
     }
    ]
@@ -491,45 +491,45 @@
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.breach_pct",
-   "mean_diff": -10.726486246672582,
-   "ci_low": -12.937068220295718,
-   "ci_high": -8.515904273049447,
+   "mean_diff": -10.905057675244013,
+   "ci_low": -13.382627757958344,
+   "ci_high": -8.427487592529681,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.mean_resolution_min",
-   "mean_diff": -19.96092532850374,
-   "ci_low": -26.26427998678068,
-   "ci_high": -13.657570670226804,
+   "mean_diff": -19.413108336596952,
+   "ci_low": -25.716971135846446,
+   "ci_high": -13.109245537347459,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.p90_resolution_min",
-   "mean_diff": -43.99721795877671,
-   "ci_low": -56.6552288043764,
-   "ci_high": -31.339207113177018,
+   "mean_diff": -44.27471247768697,
+   "ci_low": -55.21066172122659,
+   "ci_high": -33.33876323414734,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.mean_wait_min",
-   "mean_diff": -18.972051960405437,
-   "ci_low": -24.75093970009802,
-   "ci_high": -13.193164220712855,
+   "mean_diff": -19.755349377243505,
+   "ci_low": -25.383343714794638,
+   "ci_high": -14.127355039692372,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.max_backlog",
-   "mean_diff": -30.4,
-   "ci_low": -87.03720351288541,
-   "ci_high": 26.237203512885408,
+   "mean_diff": -26.8,
+   "ci_low": -88.13264018970648,
+   "ci_high": 34.532640189706484,
    "n": 5
   },
   {
@@ -546,125 +546,125 @@
    "baseline": "baseline_a",
    "kpi": "productivity.transfers_per_100",
    "mean_diff": -3.68566992014197,
-   "ci_low": -3.708813459819412,
-   "ci_high": -3.662526380464528,
+   "ci_low": -3.719955887025768,
+   "ci_high": -3.651383953258172,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "productivity.busy_agent_hours",
-   "mean_diff": 31.06020974836747,
-   "ci_low": 18.12464547872397,
-   "ci_high": 43.99577401801097,
+   "mean_diff": 31.8124569572783,
+   "ci_low": 20.969234655048897,
+   "ci_high": 42.65567925950771,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.reopen_rate_pct",
-   "mean_diff": 0.45807453416149063,
-   "ci_low": 0.3415811572120633,
-   "ci_high": 0.574567911110918,
+   "mean_diff": 0.4702750665483584,
+   "ci_low": 0.3884647808573471,
+   "ci_high": 0.5520853522393696,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.p99_wait_min",
-   "mean_diff": -84.17570849559118,
-   "ci_low": -275.50269785882995,
-   "ci_high": 107.15128086764761,
+   "mean_diff": -88.4624220213838,
+   "ci_low": -284.3524287868996,
+   "ci_high": 107.427584744132,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.mean_utilisation",
-   "mean_diff": 0.009858661099302623,
-   "ci_low": 0.00616642057971845,
-   "ci_high": 0.013550901618886797,
+   "mean_diff": 0.010115706406677982,
+   "ci_low": 0.007068971792762411,
+   "ci_high": 0.013162441020593552,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.load_fairness_std",
-   "mean_diff": 0.012724980595854491,
-   "ci_low": 0.0068342775323373545,
-   "ci_high": 0.018615683659371628,
+   "mean_diff": 0.013314770628106543,
+   "ci_low": 0.00797289454417794,
+   "ci_high": 0.018656646712035145,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "segment.p1_breach_pct",
-   "mean_diff": -22.480245121754557,
-   "ci_low": -27.62235121463557,
-   "ci_high": -17.33813902887354,
+   "mean_diff": -22.454442831801323,
+   "ci_low": -27.715211724640252,
+   "ci_high": -17.193673938962394,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "segment.gold_breach_pct",
-   "mean_diff": -10.596414196853274,
-   "ci_low": -13.231181017119322,
-   "ci_high": -7.961647376587226,
+   "mean_diff": -10.57446030003659,
+   "ci_low": -13.30997258072901,
+   "ci_high": -7.838948019344169,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "segment.hindi_breach_pct",
-   "mean_diff": -18.279787503162154,
-   "ci_low": -21.03513800281875,
-   "ci_high": -15.52443700350556,
+   "mean_diff": -18.654186693650395,
+   "ci_low": -22.1492971921753,
+   "ci_high": -15.15907619512549,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.breach_pct",
-   "mean_diff": -4.4398846495119795,
-   "ci_low": -5.584143842916022,
-   "ci_high": -3.2956254561079366,
+   "mean_diff": -4.618456078083407,
+   "ci_low": -6.007413179585875,
+   "ci_high": -3.22949897658094,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.mean_resolution_min",
-   "mean_diff": -23.928259499770487,
-   "ci_low": -30.28587023080872,
-   "ci_high": -17.570648768732255,
+   "mean_diff": -23.380442507863698,
+   "ci_low": -29.60465873246942,
+   "ci_high": -17.156226283257975,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.p90_resolution_min",
-   "mean_diff": -57.661842035333905,
-   "ci_low": -75.08317035483668,
-   "ci_high": -40.240513715831135,
+   "mean_diff": -57.939336554244164,
+   "ci_low": -75.50541540735132,
+   "ci_high": -40.37325770113701,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.mean_wait_min",
-   "mean_diff": -22.606282811893163,
-   "ci_low": -28.566820237861094,
-   "ci_high": -16.64574538592523,
+   "mean_diff": -23.38958022873123,
+   "ci_low": -29.631859707477215,
+   "ci_high": -17.147300749985245,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.max_backlog",
-   "mean_diff": -36.8,
-   "ci_low": -91.6665708117429,
-   "ci_high": 18.066570811742906,
+   "mean_diff": -33.2,
+   "ci_low": -92.43622354471964,
+   "ci_high": 26.03622354471964,
    "n": 5
   },
   {
@@ -681,80 +681,80 @@
    "baseline": "baseline_b",
    "kpi": "productivity.transfers_per_100",
    "mean_diff": -3.624667258207631,
-   "ci_low": -3.6631851695928064,
-   "ci_high": -3.5861493468224555,
+   "ci_low": -3.664097322278424,
+   "ci_high": -3.585237194136838,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "productivity.busy_agent_hours",
-   "mean_diff": 32.0414772725404,
-   "ci_low": 19.66724797347031,
-   "ci_high": 44.415706571610485,
+   "mean_diff": 32.79372448145123,
+   "ci_low": 22.504122524883915,
+   "ci_high": 43.083326438018545,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.reopen_rate_pct",
-   "mean_diff": 0.45807453416149063,
-   "ci_low": 0.3415811572120633,
-   "ci_high": 0.574567911110918,
+   "mean_diff": 0.4702750665483584,
+   "ci_low": 0.3884647808573471,
+   "ci_high": 0.5520853522393696,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.p99_wait_min",
-   "mean_diff": -275.2788220473156,
-   "ci_low": -394.29388219071484,
-   "ci_high": -156.26376190391633,
+   "mean_diff": -279.56553557310815,
+   "ci_low": -407.3272921663341,
+   "ci_high": -151.80377897988222,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.mean_utilisation",
-   "mean_diff": 0.010129247184185442,
-   "ci_low": 0.006590491943225599,
-   "ci_high": 0.013668002425145286,
+   "mean_diff": 0.0103862924915608,
+   "ci_low": 0.007486927577797487,
+   "ci_high": 0.013285657405324114,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.load_fairness_std",
-   "mean_diff": 0.007843924188453286,
-   "ci_low": 0.0015744505536415534,
-   "ci_high": 0.014113397823265018,
+   "mean_diff": 0.008433714220705338,
+   "ci_low": 0.0023446757842115733,
+   "ci_high": 0.014522752657199102,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "segment.p1_breach_pct",
-   "mean_diff": -4.27027898726012,
-   "ci_low": -5.765348444351489,
-   "ci_high": -2.775209530168751,
+   "mean_diff": -4.244476697306887,
+   "ci_low": -5.813008200464724,
+   "ci_high": -2.675945194149049,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "segment.gold_breach_pct",
-   "mean_diff": -4.903036955726308,
-   "ci_low": -6.68361539477687,
-   "ci_high": -3.122458516675746,
+   "mean_diff": -4.881083058909622,
+   "ci_low": -6.751136663222737,
+   "ci_high": -3.0110294545965077,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "segment.hindi_breach_pct",
-   "mean_diff": -12.345054389071588,
-   "ci_low": -14.817338589010411,
-   "ci_high": -9.872770189132765,
+   "mean_diff": -12.719453579559827,
+   "ci_low": -15.907350336887788,
+   "ci_high": -9.531556822231867,
    "n": 5
   }
  ],
@@ -904,31 +904,31 @@
    },
    "opslens": {
     "waiting": [
-     21,
-     17,
-     17,
-     21,
-     21,
+     27,
+     22,
+     20,
+     23,
      21,
      23,
-     28,
      23,
-     29,
-     37,
-     42,
-     57,
-     71,
-     76,
-     77,
-     81,
+     31,
+     25,
+     31,
+     38,
+     47,
+     62,
+     75,
      82,
-     74,
+     84,
+     87,
+     84,
      78,
      82,
-     81,
-     75,
-     71,
-     66
+     89,
+     86,
+     83,
+     79,
+     73
     ],
     "breached_cum": [
      0,
@@ -962,268 +962,236 @@
  },
  "decisions": [
   {
-   "minute": 68910.6529506057,
-   "ticket_idx": 60573,
-   "agent_id": "A04",
-   "value": 0.579,
-   "reason": "P2 late delivery, English, waiting 12 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060574"
-  },
-  {
-   "minute": 68911.49277865024,
-   "ticket_idx": 60541,
-   "agent_id": "A05",
-   "value": 0.858,
-   "reason": "P2 late delivery, Hindi, waiting 27 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060542"
-  },
-  {
-   "minute": 68912.32090813566,
-   "ticket_idx": 60588,
-   "agent_id": "D06",
-   "value": 0.504,
-   "reason": "P2 wrong item, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060589"
-  },
-  {
-   "minute": 68912.49241965955,
+   "minute": 68910.12475644522,
    "ticket_idx": 60585,
-   "agent_id": "C09",
-   "value": 0.479,
-   "reason": "P2 missing item, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
+   "agent_id": "D09",
+   "value": 0.433,
+   "reason": "P2 missing item, English, waiting 6 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060586"
   },
   {
-   "minute": 68913.17216445116,
-   "ticket_idx": 60592,
-   "agent_id": "B10",
-   "value": 1.808,
-   "reason": "P1 payment failure, English, waiting 8 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
-   "ticket_id": "T060593"
+   "minute": 68910.99513014352,
+   "ticket_idx": 60602,
+   "agent_id": "C09",
+   "value": 0.476,
+   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060603"
   },
   {
-   "minute": 68913.19973395573,
-   "ticket_idx": 60593,
-   "agent_id": "B09",
-   "value": 1.69,
-   "reason": "P1 payment failure, English, waiting 7 min; breach risk 0.11 -> 0.05 if served now; rare-skill agent, no rare work is more urgent",
-   "ticket_id": "T060594"
-  },
-  {
-   "minute": 68914.06436423372,
-   "ticket_idx": 60590,
-   "agent_id": "D07",
-   "value": 0.499,
-   "reason": "P2 missing item, English, waiting 9 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060591"
-  },
-  {
-   "minute": 68914.14679014673,
-   "ticket_idx": 60603,
+   "minute": 68912.85454548214,
+   "ticket_idx": 60541,
    "agent_id": "A07",
-   "value": 1.701,
-   "reason": "P1 late delivery, Hindi, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060604"
+   "value": 0.885,
+   "reason": "P2 late delivery, Hindi, waiting 29 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060542"
   },
   {
-   "minute": 68914.79577210124,
+   "minute": 68913.70768018044,
    "ticket_idx": 60605,
-   "agent_id": "A05",
-   "value": 1.777,
-   "reason": "P1 late delivery, English, waiting 2 min; low risk - served in turn (fairness by waiting time)",
+   "agent_id": "A08",
+   "value": 1.522,
+   "reason": "P1 late delivery, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060606"
   },
   {
-   "minute": 68915.58687162133,
+   "minute": 68914.29243874861,
+   "ticket_idx": 60593,
+   "agent_id": "B09",
+   "value": 1.861,
+   "reason": "P1 payment failure, English, waiting 9 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060594"
+  },
+  {
+   "minute": 68915.05847729252,
    "ticket_idx": 60609,
-   "agent_id": "C08",
-   "value": 1.168,
-   "reason": "P1 missing item, Hindi, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "agent_id": "D06",
+   "value": 1.525,
+   "reason": "P1 missing item, Hindi, waiting 0 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060610"
   },
   {
    "minute": 68915.86571231253,
-   "ticket_idx": 60586,
+   "ticket_idx": 60590,
    "agent_id": "C04",
-   "value": 0.527,
+   "value": 0.535,
+   "reason": "P2 missing item, English, waiting 11 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060591"
+  },
+  {
+   "minute": 68915.91975184785,
+   "ticket_idx": 60586,
+   "agent_id": "C08",
+   "value": 0.528,
    "reason": "P2 wrong item, Hindi, waiting 12 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060587"
   },
   {
-   "minute": 68916.41857316959,
-   "ticket_idx": 60607,
-   "agent_id": "A04",
-   "value": 1.059,
-   "reason": "P1 late delivery, English, waiting 3 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060608"
-  },
-  {
-   "minute": 68918.02904975563,
+   "minute": 68915.99659497985,
    "ticket_idx": 60608,
    "agent_id": "B10",
-   "value": 1.078,
-   "reason": "P1 payment failure, English, waiting 3 min; breach risk 0.20 -> 0.03 if served now; rare-skill agent, no rare work is more urgent",
+   "value": 0.754,
+   "reason": "P1 payment failure, English, waiting 1 min; breach risk 0.20 -> 0.03 if served now; rare-skill agent, no rare work is more urgent",
    "ticket_id": "T060609"
   },
   {
-   "minute": 68918.10562647202,
-   "ticket_idx": 60602,
-   "agent_id": "C05",
-   "value": 0.459,
-   "reason": "P2 missing item, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060603"
+   "minute": 68916.15753893314,
+   "ticket_idx": 60603,
+   "agent_id": "A07",
+   "value": 1.704,
+   "reason": "P1 late delivery, Hindi, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060604"
   },
   {
-   "minute": 68918.28280984882,
-   "ticket_idx": 60615,
-   "agent_id": "A08",
-   "value": 1.238,
-   "reason": "P1 late delivery, English, waiting 2 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060616"
-  },
-  {
-   "minute": 68918.54103683712,
-   "ticket_idx": 60617,
-   "agent_id": "D06",
-   "value": 0.489,
-   "reason": "P2 wrong item, Hindi, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060618"
-  },
-  {
-   "minute": 68918.88459581601,
+   "minute": 68916.43049949786,
    "ticket_idx": 60534,
-   "agent_id": "D09",
-   "value": 0.455,
-   "reason": "P3 app bug, English, waiting 41 min; low risk - served in turn (fairness by waiting time)",
+   "agent_id": "D07",
+   "value": 0.447,
+   "reason": "P3 app bug, English, waiting 38 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060535"
   },
   {
-   "minute": 68919.18144173567,
-   "ticket_idx": 60622,
-   "agent_id": "A05",
-   "value": 1.007,
-   "reason": "P1 late delivery, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060623"
-  },
-  {
-   "minute": 68919.590134274,
-   "ticket_idx": 60595,
-   "agent_id": "A04",
-   "value": 0.58,
-   "reason": "P2 late delivery, English, waiting 14 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060596"
-  },
-  {
-   "minute": 68920.29699030923,
+   "minute": 68917.42830364441,
    "ticket_idx": 60610,
-   "agent_id": "C06",
-   "value": 0.451,
-   "reason": "P2 missing item, English, waiting 5 min; low risk - served in turn (fairness by waiting time)",
+   "agent_id": "C05",
+   "value": 0.391,
+   "reason": "P2 missing item, English, waiting 3 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060611"
   },
   {
-   "minute": 68921.49585971986,
-   "ticket_idx": 60599,
-   "agent_id": "A05",
-   "value": 0.613,
-   "reason": "P2 late delivery, English, waiting 15 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060600"
-  },
-  {
-   "minute": 68921.61907425334,
-   "ticket_idx": 60628,
+   "minute": 68917.42941633445,
+   "ticket_idx": 60424,
    "agent_id": "D05",
-   "value": 0.485,
-   "reason": "P2 app bug, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060629"
+   "value": 0.444,
+   "reason": "P3 restaurant partner, English, waiting 110 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060425"
   },
   {
-   "minute": 68923.14461976588,
-   "ticket_idx": 60623,
-   "agent_id": "B07",
-   "value": 2.215,
-   "reason": "P1 payment failure, English, waiting 3 min; breach risk 0.55 -> 0.05 if served now; rare-skill agent, no rare work is more urgent",
-   "ticket_id": "T060624"
+   "minute": 68918.09334981487,
+   "ticket_idx": 60607,
+   "agent_id": "A08",
+   "value": 1.326,
+   "reason": "P1 late delivery, English, waiting 4 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060608"
   },
   {
-   "minute": 68923.27091203476,
-   "ticket_idx": 60598,
-   "agent_id": "A07",
-   "value": 0.633,
-   "reason": "P2 late delivery, English, waiting 17 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060599"
-  },
-  {
-   "minute": 68923.69799368922,
-   "ticket_idx": 60630,
-   "agent_id": "D07",
-   "value": 0.506,
-   "reason": "P2 wrong item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060631"
-  },
-  {
-   "minute": 68924.14717167533,
-   "ticket_idx": 60618,
-   "agent_id": "A04",
-   "value": 0.453,
-   "reason": "P2 late delivery, English, waiting 6 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060619"
-  },
-  {
-   "minute": 68924.44554125045,
-   "ticket_idx": 60632,
-   "agent_id": "C06",
-   "value": 0.502,
-   "reason": "P2 wrong item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060633"
-  },
-  {
-   "minute": 68924.50620803742,
+   "minute": 68918.31869274769,
    "ticket_idx": 60619,
    "agent_id": "C09",
-   "value": 0.445,
-   "reason": "P2 missing item, English, waiting 6 min; low risk - served in turn (fairness by waiting time)",
+   "value": 0.482,
+   "reason": "P2 missing item, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060620"
   },
   {
-   "minute": 68924.78703226973,
-   "ticket_idx": 60621,
+   "minute": 68919.38952618095,
+   "ticket_idx": 60615,
+   "agent_id": "A05",
+   "value": 1.091,
+   "reason": "P1 late delivery, English, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060616"
+  },
+  {
+   "minute": 68920.29699030923,
+   "ticket_idx": 60617,
+   "agent_id": "C06",
+   "value": 0.367,
+   "reason": "P2 wrong item, Hindi, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060618"
+  },
+  {
+   "minute": 68920.36207238639,
+   "ticket_idx": 60622,
+   "agent_id": "A04",
+   "value": 0.874,
+   "reason": "P1 late delivery, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060623"
+  },
+  {
+   "minute": 68921.26491091927,
+   "ticket_idx": 60573,
+   "agent_id": "A08",
+   "value": 0.802,
+   "reason": "P2 late delivery, English, waiting 22 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060574"
+  },
+  {
+   "minute": 68921.57685458563,
+   "ticket_idx": 60627,
    "agent_id": "C05",
-   "value": 0.447,
-   "reason": "P2 missing item, English, waiting 6 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060622"
+   "value": 0.517,
+   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060628"
+  },
+  {
+   "minute": 68921.90061670034,
+   "ticket_idx": 60623,
+   "agent_id": "B07",
+   "value": 1.311,
+   "reason": "P1 payment failure, English, waiting 2 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060624"
+  },
+  {
+   "minute": 68922.13854482309,
+   "ticket_idx": 60628,
+   "agent_id": "D09",
+   "value": 0.495,
+   "reason": "P2 app bug, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060629"
+  },
+  {
+   "minute": 68922.67649037058,
+   "ticket_idx": 60595,
+   "agent_id": "A04",
+   "value": 0.641,
+   "reason": "P2 late delivery, English, waiting 17 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060596"
+  },
+  {
+   "minute": 68924.515703904,
+   "ticket_idx": 60594,
+   "agent_id": "B10",
+   "value": 0.921,
+   "reason": "P2 refund, English, waiting 19 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060595"
+  },
+  {
+   "minute": 68924.60195375669,
+   "ticket_idx": 60630,
+   "agent_id": "D06",
+   "value": 0.533,
+   "reason": "P2 wrong item, English, waiting 2 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060631"
   }
  ],
  "solver": [
   {
-   "solves": 20175,
+   "solves": 20173,
    "fallbacks": 0,
-   "median_ms": 0.07059995550662279,
-   "max_ms": 2.2997999330982566
+   "median_ms": 0.08420005906373262,
+   "max_ms": 2.5143000530079007
   },
   {
-   "solves": 20217,
+   "solves": 20234,
    "fallbacks": 0,
-   "median_ms": 0.06610003765672445,
-   "max_ms": 1.892999978736043
+   "median_ms": 0.07789989467710257,
+   "max_ms": 1.4857000205665827
   },
   {
-   "solves": 20207,
+   "solves": 20194,
    "fallbacks": 0,
-   "median_ms": 0.06480002775788307,
-   "max_ms": 1.1111999629065394
+   "median_ms": 0.07750000804662704,
+   "max_ms": 5.858499906025827
   },
   {
-   "solves": 20205,
+   "solves": 20201,
    "fallbacks": 0,
-   "median_ms": 0.07179996464401484,
-   "max_ms": 1.5227000694721937
+   "median_ms": 0.08509994950145483,
+   "max_ms": 4.179999930784106
   },
   {
-   "solves": 20177,
+   "solves": 20180,
    "fallbacks": 0,
-   "median_ms": 0.06220000796020031,
-   "max_ms": 1.338499947451055
+   "median_ms": 0.07419998291879892,
+   "max_ms": 1.2126000365242362
   }
  ],
  "weights": {
@@ -1248,6 +1216,8 @@
   "aging_in_sla_units": true,
   "aging_per_sla": 3.0,
   "aging_cap": 1.0,
-  "max_late_min": 240
+  "max_late_min": 480,
+  "aging_lost": 0.2,
+  "guard_queue_limit": 150
  }
 }

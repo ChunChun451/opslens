@@ -23,10 +23,16 @@ from opslens.llm.base import LLMUnavailable
 from opslens.llm.client import LLMClient
 
 KEY = re.compile(r"\{\{\s*([a-z0-9_]+)\s*\}\}")
+# Numbers written as words would slip past a digit check ("ninety percent"), so they are refused too.
+NUMBER_WORDS = re.compile(
+    r"\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|"
+    r"sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|"
+    r"thousand|million|half|double|twice|triple|percent)\b", re.IGNORECASE)
 SYSTEM = (
     "You write a short daily brief for the head of a food-delivery support floor. "
-    "Use ONLY the facts given. Never write a digit: refer to every number as {{key}} exactly as "
-    "listed. 3 to 4 sentences, plain words, no bullet points. "
+    "Use ONLY the facts given. Never write a number yourself, in digits or in words: refer to every "
+    "number as {{key}} exactly as listed, and use each key only with the meaning described next to it. "
+    "3 to 4 sentences, plain words, no bullet points. "
     'Reply with JSON only: {"brief": "..."}'
 )
 
@@ -54,8 +60,13 @@ def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
                          p.format("baseline_b", "turnaround.p90_resolution_min")),
     }
     if top:
-        facts["top_issue_affected"] = (f"{top['affected_tickets']:,}", f"tickets affected by the top issue: {top['title']}",
-                                       "patterns.cards[0].affected_tickets")
+        issue = re.sub(r"\s+", " ", re.sub(r"[\d.]+\s*×?", "", top["title"])).strip()  # the title without its numbers
+        facts["top_issue_tickets"] = (f"{top['affected_tickets']:,}",
+                                      f"how many tickets belong to the top issue group ({issue})",
+                                      "patterns.cards[0].affected_tickets")
+        facts["top_issue_value"] = (f"{top['value']:g}", f"the top issue's {top['metric']}", "patterns.cards[0].value")
+        facts["top_issue_normal"] = (f"{top['comparison_value']:g}", f"the same measure for comparable tickets",
+                                     "patterns.cards[0].comparison_value")
     return facts
 
 
@@ -69,8 +80,9 @@ def check_and_fill(text: str, facts: dict[str, tuple[str, str, str]]) -> str | N
     keys = KEY.findall(text)
     if any(k not in facts for k in keys):
         return None
-    if re.search(r"\d", KEY.sub("", text)):
-        return None  # a digit outside {{...}}: the LLM wrote a number itself
+    rest = KEY.sub("", text)
+    if re.search(r"\d", rest) or NUMBER_WORDS.search(rest):
+        return None  # a number outside {{...}}: the LLM wrote a number itself
     return KEY.sub(lambda m: facts[m.group(1)][0], text)
 
 
@@ -79,8 +91,9 @@ def template_brief(facts: dict[str, tuple[str, str, str]]) -> str:
     text = (f"On the held-out test days OpsLens kept SLA breaches to {v['opslens_breach']}, against "
             f"{v['priority_breach']} for priority-first and {v['fifo_breach']} for first-in-first-out routing. "
             f"90% of tickets were resolved within {v['opslens_p90']} (priority-first: {v['priority_p90']}).")
-    if "top_issue_affected" in facts:
-        text += f" The top issue to fix affects {v['top_issue_affected']} tickets."
+    if "top_issue_tickets" in facts:
+        text += (f" The top issue to fix covers {v['top_issue_tickets']} tickets: its {facts['top_issue_value'][1].split(chr(39) + 's ', 1)[-1]} "
+                 f"is {v['top_issue_value']} against {v['top_issue_normal']} for comparable tickets.")
     return text
 
 

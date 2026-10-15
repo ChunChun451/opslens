@@ -210,3 +210,60 @@ only for rescue ≥ 0.5 with penalty 2.0; scarcity floored so no agent idles; st
 - Solver: median 0.08 ms, max 8.8 ms, 0 fallbacks; 5,000 × 500 scale test 0.115 s.
 
 **Next step:** M8 — ablations, sensitivity, stress, `make eval` → results.json + NUMBERS.md.
+
+---
+
+## M8 — 16 Oct 2026 — make eval, ablations, sensitivity, stress; policy v2 → v3
+
+**Built**: `eval/run_eval.py` (all steps, schema validation, NUMBERS.md), `eval/run_ablations.py`,
+`eval/run_design_v2.py`, `eval/run_design_v3.py`, stress inputs (+25% volume by copying tickets,
+10% absenteeism), segment KPIs (P1, gold, Hindi), single-thread LightGBM scoring for parallel runs,
+`docs/explain/evaluation.md`, `docs/PRODUCTION.md`.
+
+**The three policy versions (all test results kept in results.json → details)**
+- v1 (aging per hour): test 5.08%; **failed** +25% volume: 51.7% vs B 29.1%.
+- v2 (aging in SLA units; chosen on validation 36-42 at normal and +25%): test 2.38%; still lost
+  +25% on test days: 40.5% vs 29.1% (there +25% lands on a sale day and an unseen surge).
+- v3 (lost ticket → small fixed value; guard after 480 min late; guard pauses while > 150 wait;
+  chosen on validation at normal, +25%, +40%: 2.13% / 6.17% / 15.07% vs B 5.94% / 16.55% / 32.23%).
+
+**Final numbers (v3, test days 43-56, 5 seeds)**
+- Breach: A 13.11%, B 6.82%, **OpsLens 2.20%**; OpsLens − B −4.62 [−6.01, −3.23]; − A −10.91.
+- P90 141 vs 185/198 min; P99 wait 728 vs 816/1,007; P1 breach 4.89% vs 27.34/9.13;
+  Hindi customers 3.46% vs 22.11/16.18; gold 1.83% vs 12.40/6.71; transfers 0.97 vs 4.66/4.59;
+  reopens 4.40% vs 3.93% (cost of cross-skill rescues).
+- Ablations: risk +2.01 [+1.55, +2.47]; classifier +0.14 [+0.01, +0.27]; staffing +0.05,
+  scarcity +0.03, optimiser −0.02 (all within noise).
+- Gold weight ×1 / ×1.5 / ×2: gold breach 2.08% / 1.83% / 1.85%, overall 2.20 / 2.20 / 2.25%.
+- Stress: +25% volume A 53.55%, B 29.06%, OpsLens 10.71%; 10% absenteeism 20.32 / 9.89 / 3.09%.
+- Speed: pipeline ~20 min; optimiser median 0.08 ms, max 5.9 ms; 5,000 × 500 in 0.047 s.
+
+---
+
+## M9 — 16 Oct 2026 — Server + dashboard wired to real results
+
+**Built**: `server/app.py` (FastAPI: /api/results, /api/health, /api/whatif, /api/plant,
+/api/upload, static /web and /eval). Dashboard wired to the real results by the parallel UI
+session (branch m9-wire-real-results, merged as 9ab294c): every tab renders, What-if live,
+"What failed" box, ablation CIs. Checked in the browser: no console errors.
+
+## M10 — 16 Oct 2026 — What-if, brief, Upload CSV
+
+**Built**: `opslens/whatif.py` (volume ×k, agents ± per team, all three policies),
+`opslens/brief.py` (LLM writes {{keys}}; digits and number words rejected → template; Gemini
+brief now in results.json), `server/upload.py` (column mapping, priority ranking, ISO/day-first
+dates, SLA flag; UCI example: 24,918 incidents, 36.6% breach, ~10 s), `patterns.find_patterns_basic`
+(same scans on any export; spikes compared with nearby days for uneven exports).
+Dependency added: `python-multipart` (FastAPI's own form/file extra).
+
+## M11 — 16 Oct 2026 — Plant-a-problem live, make demo
+
+**Built**: `server/plant_demo.py` (fresh 21 days, clean floor, judge's problem, same matcher as
+the blind test): refund spike found+diagnosed in 18 s; app-bug mislabels in 16 s; Hindi skill
+gaps found; a regional-language gap in a small team can be missed (as in the blind test).
+`server/demo.py` (`make demo` refuses fixture or missing results). Tests: 104 passing.
+
+**Open issues**
+- UI polish (What-failed timeline v1→v2→v3, story mode on real numbers, loading states) is with
+  the parallel UI session (branch m10-polish), not merged yet.
+- DEMO_SCRIPT.md and rehearsal (M12).

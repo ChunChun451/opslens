@@ -38,14 +38,14 @@ DAYS = 42
 SEED_BASE = 5000
 
 
-def run_set(cfg: dict, roster: dict, sla: dict, calendar: dict, seed: int) -> list[dict]:
+def run_set(cfg: dict, roster: dict, sla: dict, calendar: dict, seed: int, days: int = DAYS) -> list[dict]:
     """Generate, simulate, ingest and run the pattern finder for one dataset. Returns cards."""
-    cfg = {**cfg, "seed": seed, "days": DAYS}
+    cfg = {**cfg, "seed": seed, "days": days}
     tickets = make_tickets(cfg, bank=None)
     agents = load_agents(roster)
     agents_df = agents_table(agents)
     world = build_world(tickets, seed=seed, agents=agents, gen_cfg=cfg, sla_cfg=sla)
-    result = simulate(world, baseline_a(), 0, DAYS * MINUTES_PER_DAY)
+    result = simulate(world, baseline_a(), 0, days * MINUTES_PER_DAY)
     hist = make_history(tickets, result.tickets, agents_df, pd.Timestamp(calendar["start_date"]), sla)
     hist = add_calendar(add_timing(clean(hist), sla["sla_minutes"]), calendar["start_date"], calendar["splits"])
     team_skills = {t: v["skills"] for t, v in roster["teams"].items()}

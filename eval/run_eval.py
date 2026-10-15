@@ -79,14 +79,13 @@ def delay_decomposition() -> dict:
     return out
 
 
-def v1_record() -> dict:
-    """Results of the first OpsLens policy (v1), kept on purpose."""
-    if not (PARTS / "ablations_v1.json").exists():
+def version_record(version: str, note: str) -> dict:
+    """Test-day results of an earlier OpsLens policy version, kept on purpose."""
+    if not (PARTS / f"ablations_{version}.json").exists():
         return {}
-    abl, sim = part("ablations_v1"), part("sim_v1")
+    abl, sim = part(f"ablations_{version}"), part(f"sim_{version}")
     breach = {k: v["kpis"]["turnaround.breach_pct"]["mean"] for k, v in sim["policies"].items()}
-    return {"test_breach_pct": breach, "stress": abl["stress"], "ablations": abl["ablations"],
-            "note": "v1 aged tickets per hour; under +25% volume old lost tickets crowded out savable P1s."}
+    return {"test_breach_pct": breach, "stress": abl["stress"], "ablations": abl["ablations"], "note": note}
 
 
 def git_commit() -> str:
@@ -171,8 +170,13 @@ def assemble(timings: dict[str, float]) -> dict:
             # The honest record: policy v1 failed the +25% volume stress test on the test days;
             # v2 was then designed and chosen on validation days only (design_v2), and the test
             # days were re-run once.
-            "v1_record": v1_record(),
+            "v1_record": version_record("v1", "aged tickets per hour; under +25% volume old lost tickets crowded out savable P1s."),
+            "v2_record": version_record("v2", "aged tickets in SLA units but a lost ticket kept its full age value; still lost "
+                                              "the +25% volume test on the test days (it lands on a sale day and a surge)."),
             "design_v2": part("design_v2") if (PARTS / "design_v2.json").exists() else {},
+            "design_v3": part("design_v3") if (PARTS / "design_v3.json").exists() else {},
+            "test_runs_note": ("The test days were run three times in total: v1, v2 and v3 (current). Each new version "
+                               "was designed and chosen on validation days only; all three test results are kept here."),
         },
     }
     results["brief"] = make_brief(results)

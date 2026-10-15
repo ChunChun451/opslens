@@ -23,4 +23,12 @@ time_budget_s: 1.0                             # solver time limit, then greedy 
 aging_in_sla_units: true
 aging_per_sla: 3.0
 aging_cap: 1.0
-max_late_min: 240
+max_late_min: 480
+# v3 (chosen in M8 on validation days 36-42 at normal, +25% and +40% volume; see
+# eval/parts/design_v3.json). v2 still lost the +25% stress test on the test days because a
+# ticket past its SLA kept its full age value. v3: past its SLA a ticket is worth a small fixed
+# amount until the guard serves it (480 min late), and the guard pauses while more than 150
+# tickets wait ("crisis mode": protect what can still be saved).
+# Validation: normal 2.13% (B 5.94%), +25% 6.17% (B 16.55%), +40% 15.07% (B 32.23%).
+aging_lost: 0.2
+guard_queue_limit: 150

@@ -188,3 +188,51 @@ unseen test days it held: 5.08% vs 6.82%. The tuning log is in eval/parts/tuning
 Reopens rise from 3.93% to 4.35%, because OpsLens sometimes asks an agent to rescue a ticket
 outside their training (1.6× slower, more reopens). It only does so when the ticket's rescue
 value is at least 0.5; without those jobs, breaches on validation rose to 6.48%.
+
+---
+
+## M8 — Evaluation, ablations, stress tests
+
+**Q31. (Attack) You changed the policy after seeing test results. Isn't that cheating?**
+We say it openly: the test days were run three times. v1 failed the +25% volume stress test
+(51.7% vs 29.1% for priority-first), v2 still lost (40.5%), v3 wins (10.7%). Each new version
+was designed and chosen on validation days only, and all three test results are kept in
+results.json. The lesson: a stress test is a release gate.
+
+**Q32. Which part of OpsLens actually creates the gain?**
+The risk model. Switching it off raises breaches from 2.20% to 4.21% (+2.01, 95% CI [+1.55,
++2.47]). The classifier adds +0.14 [+0.01, +0.27]. Staffing, scarcity and the min-cost flow are
+within noise on these days — we report that rather than hide it.
+
+**Q33. What happens on a really bad day?**
+With 25% more tickets (on top of a sale day and an unseen surge), FIFO breaches 53.6%,
+priority-first 29.1%, OpsLens 10.7%. With 10% of agents absent: 20.3%, 9.9% and 3.1%. In a
+crisis OpsLens pauses its fairness guard to protect what can still be saved.
+
+**Q34. How do I know every number in your deck is real?**
+One command (`make eval`, ~20 minutes) regenerates eval/results.json and NUMBERS.md. The dashboard
+reads only that file, every number on screen clicks through to its path in it, and `make demo`
+refuses to start on fixture data.
+
+---
+
+## M9–M11 — Dashboard and live demos
+
+**Q35. Can I try it myself?**
+Yes. What-if re-runs any test day with more or fewer agents per team or more volume, for all
+three policies, in about 10–20 seconds. Plant-a-problem hides a problem you choose in 21 fresh
+days; OpsLens is not told where, and the same matcher as our blind test checks the answer.
+
+**Q36. (Attack) Your LLM brief could invent numbers.**
+It cannot put one on screen. The LLM gets keys, not values, and must write {{key}}; our code
+fills each value from results.json. A digit or a number word written by the LLM sends the brief
+back to a template. The dashboard labels it "written by LLM, numbers by code".
+
+**Q37. Does it only work on your generated data?**
+Upload any export with a column mapping. On the real UCI ServiceNow log (24,918 incidents) it
+reports 36.6% breaches, the worst groups and evidence cards in about 10 seconds; the risk model
+on the same data scores AUC 0.857 against 0.552 for the priority rule.
+
+**Q38. Does the demo need the internet?**
+No. Results, LLM answers (cached), data and Chart.js are local; What-if, Plant and Upload run
+on the laptop. `make demo` checks that real results exist before it starts.

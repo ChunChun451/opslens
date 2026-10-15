@@ -287,12 +287,17 @@ now" and show the drop. Same code run on UCI → real-data AUC.
 **`optimize.py`** — at every decision tick, assign waiting tickets to free agent slots.
 - Bipartite graph: ticket → agent edge only if the agent can handle it
   (language required; skill mismatch allowed with penalty).
-- Edge value = urgency_weight[priority] × (0.2 + P(breach)) × impact
-  (gold ×1.5, order value term) − mismatch_penalty − **scarcity_cost**.
-- **Scarcity cost:** using an agent with a rare skill pair (e.g. Hindi + refund) on a ticket
-  many others could take costs extra, so scarce skills stay free for tickets only they can do.
-- **Starvation guard:** a ticket waiting longer than `max_wait` gets top value, so OpsLens
-  never "gives up" on hopeless tickets to game the breach number. We report P90 and max wait.
+- Edge value = urgency_weight[priority] × impact (gold ×1.5, order value term)
+  × (**rescue** + aging) − mismatch_penalty − **scarcity_cost**, where
+  rescue = P(breach if it waits) − P(breach if served now) (risk model, every 3 minutes) and
+  aging is counted in SLA lengths; a ticket already past its SLA drops to a small fixed value
+  (policy v3 — built in M7/M8; v1 and v2 failed the +25% volume stress test, see PROGRESS.md).
+- Cross-skill jobs (1.6× slower) only to rescue a ticket with rescue ≥ 0.5.
+- **Scarcity cost:** a rare-skill agent (e.g. Hindi + refund) prefers rare work, but the value
+  never drops so low that the agent idles.
+- **Starvation guard:** a ticket 480 minutes past its SLA gets top value, so OpsLens never
+  "gives up" on a customer; the guard pauses while more than 150 tickets wait (crisis mode:
+  protect what can still be saved). We report P90 and P99 wait.
 - Each agent has capacity = free slots. Solve as min-cost flow (`SimpleMinCostFlow`, negated
   values). Time budget 1 s; on timeout fall back to greedy by value, and log it.
 - Output each assignment with a one-line reason.

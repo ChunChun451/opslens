@@ -114,6 +114,7 @@ def choose_selected_category(cfg: dict, rng: np.random.Generator, true_cat: str,
     if ivr["enabled"] and channel == ivr["channel"]:
         p_wrong = float(ivr["wrong_selection_prob"])
     p_wrong = float(cfg.get("extra_misrouting", {}).get(channel, p_wrong))
+    p_wrong = max(p_wrong, float(cfg.get("extra_misrouting_category", {}).get(true_cat, 0.0)))
     if rng.random() >= p_wrong:
         return true_cat
     likely = cfg["likely_confusions"].get(true_cat, [])

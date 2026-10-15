@@ -122,6 +122,26 @@ function showMapping(section, columns) {
   section.querySelector("#up-run").addEventListener("click", () => run(section));
 }
 
+// The analysis of an uploaded file is computed for that file only, so its numbers are shown as
+// the server sent them (they are not part of results.json).
+function uploadAnswerHtml(a) {
+  const minutes = (v) => (v === null || v === undefined ? "–" : `${Math.round(v).toLocaleString()} min`);
+  const table = (title, rows) => (rows && rows.length
+    ? `<h3>${escapeHtml(title)}</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th class="num">Tickets</th>
+         <th class="num">Breach %</th><th class="num">Mean resolution</th></tr></thead><tbody>
+         ${rows.map((r) => `<tr><td>${escapeHtml(r.name)}</td><td class="num">${r.tickets.toLocaleString()}</td>
+           <td class="num">${r.breach_pct.toFixed(1)}%</td><td class="num">${minutes(r.mean_resolution_min)}</td></tr>`).join("")}
+       </tbody></table></div>` : "");
+  const cards = (a.cards || []).map((c) => `<div class="card"><strong>${escapeHtml(c.title)}</strong>
+      <p>${escapeHtml(c.comparison_text)}</p>
+      <p class="muted">Cause: ${escapeHtml(c.cause_type)} · ${c.affected_tickets.toLocaleString()} tickets</p></div>`).join("");
+  return `<div class="notice ok"><strong>${escapeHtml(a.source)}</strong>: ${a.rows.toLocaleString()} tickets,
+      ${escapeHtml(a.date_range[0])} to ${escapeHtml(a.date_range[1])} · breach ${a.breach_pct.toFixed(1)}% ·
+      mean resolution ${minutes(a.mean_resolution_min)} · P90 ${minutes(a.p90_resolution_min)} · ${a.seconds} s</div>
+    ${table("Worst teams by breach %", a.by_team)}${table("Worst categories by breach %", a.by_category)}
+    <h3>Findings (same pattern scans as the main engine)</h3>${cards || "<p class=\"muted\">No finding passed the thresholds.</p>"}`;
+}
+
 async function run(section) {
   const result = section.querySelector("#up-result");
   const mapping = {};
@@ -140,14 +160,18 @@ async function run(section) {
   } else {
     form.append("example", "uci_incidents");
   }
-  result.innerHTML = `<p class="muted">Uploading…</p>`;
+  result.innerHTML = `<p class="muted">Running the engine on the data… (the UCI example takes about 10 seconds)</p>`;
   try {
     if (state.staticServer) {
       throw new Error("No API on the static preview server");
     }
     const response = await fetch("/api/upload", { method: "POST", body: form });
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    result.innerHTML = `<div class="notice ok">Uploaded. The engine is running on your data.</div>`;
+    const answer = await response.json();
+    if (!response.ok) {
+      result.innerHTML = `<div class="notice warn">${escapeHtml(answer.error || ("HTTP " + response.status))}</div>`;
+      return;
+    }
+    result.innerHTML = uploadAnswerHtml(answer);
   } catch (error) {
     result.innerHTML = backendMissing("POST /api/upload", "M10",
       "Your column mapping is ready; the server will run the engine on it.");

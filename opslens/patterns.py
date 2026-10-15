@@ -116,11 +116,13 @@ def robust_z(x: float, history: np.ndarray) -> float:
 
 # ---- Scans -----------------------------------------------------------------------------------
 
-def scan_interactions(df: pd.DataFrame) -> list[Finding]:
-    """Pairs of labels whose wait is ≥ 2× both parents (see module docstring, step 2)."""
+def scan_interactions(df: pd.DataFrame, metric: str = "wait_min", dims: list[str] | None = None) -> list[Finding]:
+    """Pairs of labels whose wait is ≥ 2× both parents (see module docstring, step 2).
+    `metric` can be another time column (an upload without pickup times uses resolution time)."""
     findings: list[Finding] = []
-    wait = df["wait_min"]
-    for d1, d2 in combinations(PAIR_DIMS, 2):
+    wait = df[metric]
+    word = "wait" if metric == "wait_min" else "resolution time"
+    for d1, d2 in combinations(dims or PAIR_DIMS, 2):
         counts = df.groupby([d1, d2], observed=True).size()
         for (v1, v2), n in counts.items():
             if n < MIN_PAIR_TICKETS:
@@ -138,10 +140,10 @@ def scan_interactions(df: pd.DataFrame) -> list[Finding]:
             if z < MIN_Z:
                 continue
             findings.append(Finding(
-                title=f"{describe(d1, v1)} × {describe(d2, v2)} wait {m_seg / worse_parent:.1f}× longer",
-                cause_type="other", metric="mean wait (min)", value=float(m_seg),
+                title=f"{describe(d1, v1)} × {describe(d2, v2)} {word} {m_seg / worse_parent:.1f}× longer",
+                cause_type="other", metric=f"mean {word} (min)", value=float(m_seg),
                 comparison_value=float(worse_parent),
-                comparison_text=(f"{describe(d1, v1)} × {describe(d2, v2)}: {m_seg:.0f} min mean wait vs "
+                comparison_text=(f"{describe(d1, v1)} × {describe(d2, v2)}: {m_seg:.0f} min mean {word} vs "
                                  f"{m_a:.0f} min ({describe(d1, v1)}, other {d2}) and "
                                  f"{m_b:.0f} min ({describe(d2, v2)}, other {d1})"),
                 segment={d1: v1, d2: v2}, mask=seg.to_numpy(),
@@ -205,8 +207,11 @@ def scan_partners(df: pd.DataFrame, min_tickets: int = 50) -> list[Finding]:
     return findings
 
 
-def scan_spikes(df: pd.DataFrame, known_event_days: set[int], dates: dict[int, str]) -> tuple[list[Finding], list[dict]]:
-    """Unusual days per category (robust z on daily counts). Known sale days are explained."""
+def scan_spikes(df: pd.DataFrame, known_event_days: set[int], dates: dict[int, str],
+                window_days: int | None = None, min_usual: float = 0.0) -> tuple[list[Finding], list[dict]]:
+    """Unusual days per category (robust z on daily counts). Known sale days are explained.
+    `window_days`: compare only with days at most this far away (for long, uneven exports);
+    `min_usual`: skip categories whose usual day has fewer tickets than this."""
     findings: list[Finding] = []
     explained: list[dict] = []
     daily = df.groupby(["category", "day"]).size().unstack(fill_value=0)
@@ -216,7 +221,10 @@ def scan_spikes(df: pd.DataFrame, known_event_days: set[int], dates: dict[int, s
         values = counts.to_numpy(dtype=float)
         same_type = day_is_weekend.reindex(counts.index).to_numpy()
         for day, x in counts.items():
-            others = values[(counts.index != day) & (same_type == day_is_weekend[day])]
+            near = np.abs(counts.index - day) <= window_days if window_days else True
+            others = values[(counts.index != day) & (same_type == day_is_weekend[day]) & near]
+            if len(others) < 5 or np.median(others) < min_usual:
+                continue
             z = robust_z(float(x), others)
             if z < SPIKE_Z:
                 continue
@@ -398,13 +406,17 @@ def merge_overlapping(findings: list[Finding], overlap: float = 0.5) -> list[Fin
 def add_examples(f: Finding, df: pd.DataFrame, n: int = 3) -> None:
     """Three affected tickets, worst first, with masked text."""
     rows = df[f.mask]
-    sort_col = "wait_min" if f.metric.startswith("mean wait") else "transfers"
+    sort_col = {"mean wait (min)": "wait_min", "mean resolution time (min)": "resolution_min"}.get(f.metric, "transfers")
+    if sort_col not in df:
+        sort_col = "created_at"
     rows = rows.sort_values([sort_col, "created_at"], ascending=[False, True]).head(n)
-    f.examples = [
-        {"ticket_id": r.ticket_id, "created_at": str(r.created_at)[:16], "text": mask_pii(str(r.text)).text,
-         "wait_min": None if pd.isna(r.wait_min) else round(float(r.wait_min), 1), "breached": bool(r.breached)}
-        for r in rows.itertuples()
-    ]
+    f.examples = []
+    for r in rows.itertuples():
+        wait = getattr(r, "wait_min", None)  # an uploaded export may have no pickup times
+        f.examples.append({"ticket_id": str(r.ticket_id), "created_at": str(r.created_at)[:16],
+                           "text": mask_pii(str(r.text)).text,
+                           "wait_min": None if wait is None or pd.isna(wait) else round(float(wait), 1),
+                           "breached": bool(r.breached)})
 
 
 def default_recommendation(f: Finding) -> str:
@@ -525,3 +537,40 @@ def live_alerts(tickets: pd.DataFrame, category_col: str, first_day: int, last_d
                                "count_last_hour": int(x), "usual": median, "z": round(z, 1),
                                "explained": day in known_event_days})
     return pd.DataFrame(alerts, columns=["minute", "day", "category", "count_last_hour", "usual", "z", "explained"])
+
+
+# ---- Any company's export (Upload CSV) -------------------------------------------------------
+
+def find_patterns_basic(df: pd.DataFrame, max_cards: int = 8) -> dict:
+    """The same scans for an uploaded export, using only the columns it has.
+
+    Expects canonical columns from ingest (ticket_id, created_at, day, hour, weekday,
+    resolution_min, breached) plus any of: final_category, resolved_by_team, priority, channel,
+    transfers, wait_min, text. Without agent rosters there is no capacity or skill-gap typing:
+    findings keep the cause "other", "process" (transfers) or "volume_spike".
+    """
+    data = df.copy().reset_index(drop=True)
+    data["category"] = data["final_category"].astype(str) if "final_category" in data else "all"
+    data["team"] = data["resolved_by_team"].astype(str) if "resolved_by_team" in data else "all"
+    for col in ("channel", "priority"):
+        if col not in data:
+            data[col] = "all"
+        data[col] = data[col].astype(str)
+    band = data["hour"].map(hour_band)
+    data["when"] = np.where(data["weekday"].isin(WEEKEND), "weekend ", "weekday ") + band
+    if "text" not in data:
+        data["text"] = ""
+    metric = "wait_min" if "wait_min" in data and data["wait_min"].notna().mean() > 0.5 else "resolution_min"
+    dims = [d for d in ("category", "team", "priority", "channel", "when") if data[d].nunique() > 1]
+    findings = scan_interactions(data, metric=metric, dims=dims)  # means skip missing values
+    if "transfers" in data:
+        data["language"], data["tier"] = "all", "all"  # dimensions scan_transfers expects
+        findings += scan_transfers(data)
+    dates = {int(d): pd.Timestamp(t).strftime("%a %d %b %Y") for d, t in data.groupby("day")["created_at"].min().items()}
+    spikes, _ = scan_spikes(data, set(), dates, window_days=28, min_usual=3.0)
+    findings += sorted(spikes, key=lambda f: -f.strength)[:3]  # z-scores dwarf ratios; keep the top 3
+    kept = merge_overlapping(findings)[:max_cards]
+    for f in kept:
+        add_examples(f, data)
+    return {"cards": [to_card(f, i + 1, len(data)) for i, f in enumerate(kept)], "metric": metric,
+            "candidates": len(findings)}

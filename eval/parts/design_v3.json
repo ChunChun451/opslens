@@ -1,0 +1,109 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "rows": [
+  {
+   "variant": "Baseline B",
+   "normal breach_pct": 5.938631599008958,
+   "normal p99_wait_min": 735.3006570883832,
+   "normal p1_breach_pct": 8.52384062704115,
+   "+25% volume breach_pct": 16.54619208832769,
+   "+25% volume p99_wait_min": 2114.039109320039,
+   "+25% volume p1_breach_pct": 12.288505145648003,
+   "+40% volume breach_pct": 32.22648282614016,
+   "+40% volume p99_wait_min": 4832.995337011683,
+   "+40% volume p1_breach_pct": 16.80672268907563
+  },
+  {
+   "variant": "v2 (current)",
+   "normal breach_pct": 2.2222222222222223,
+   "normal p99_wait_min": 521.4284339667383,
+   "normal p1_breach_pct": 4.713694752884826,
+   "+25% volume breach_pct": 12.816055143806997,
+   "+25% volume p99_wait_min": 1693.8404630564128,
+   "+25% volume p1_breach_pct": 8.669108669108669,
+   "+40% volume breach_pct": 50.39297272306982,
+   "+40% volume p99_wait_min": 3364.7129769283506,
+   "+40% volume p1_breach_pct": 42.0712729536259
+  },
+  {
+   "variant": "v3 lost value 0.5",
+   "normal breach_pct": 2.138364779874214,
+   "normal p99_wait_min": 505.1108170059906,
+   "normal p1_breach_pct": 4.637491835401698,
+   "+25% volume breach_pct": 11.535059627291304,
+   "+25% volume p99_wait_min": 1695.980596924499,
+   "+25% volume p1_breach_pct": 7.814407814407814,
+   "+40% volume breach_pct": 46.97451796252482,
+   "+40% volume p99_wait_min": 3363.475447489129,
+   "+40% volume p1_breach_pct": 39.00560224089636
+  },
+  {
+   "variant": "v3 lost value 0.2",
+   "normal breach_pct": 2.161234991423671,
+   "normal p99_wait_min": 519.8844392489065,
+   "normal p1_breach_pct": 4.746353146091878,
+   "+25% volume breach_pct": 11.559459541891604,
+   "+25% volume p99_wait_min": 1697.2957379935972,
+   "+25% volume p1_breach_pct": 7.962672248386533,
+   "+40% volume breach_pct": 46.90652960213212,
+   "+40% volume p99_wait_min": 3330.6733058703103,
+   "+40% volume p1_breach_pct": 38.88110799875506
+  },
+  {
+   "variant": "v3 lost 0.2, guard 480",
+   "normal breach_pct": 2.1345530779493043,
+   "normal p99_wait_min": 536.0170924031314,
+   "normal p1_breach_pct": 4.691922490746788,
+   "+25% volume breach_pct": 10.220514228200203,
+   "+25% volume p99_wait_min": 1748.7813030315126,
+   "+25% volume p1_breach_pct": 7.892900750043608,
+   "+40% volume breach_pct": 39.6535313154388,
+   "+40% volume p99_wait_min": 2979.6439355812113,
+   "+40% volume p1_breach_pct": 31.948334889511358
+  },
+  {
+   "variant": "v3 lost 0.2, no guard",
+   "normal breach_pct": 2.1002477606251193,
+   "normal p99_wait_min": 529.5730658198373,
+   "normal p1_breach_pct": 4.659264097539734,
+   "+25% volume breach_pct": 6.26772806295178,
+   "+25% volume p99_wait_min": 2029.0323772413494,
+   "+25% volume p1_breach_pct": 6.45386359672074,
+   "+40% volume breach_pct": 14.889450926001468,
+   "+40% volume p99_wait_min": 5364.219540170761,
+   "+40% volume p1_breach_pct": 9.959539371304077
+  },
+  {
+   "variant": "v3 crisis mode 150",
+   "normal breach_pct": 2.1345530779493043,
+   "normal p99_wait_min": 536.0170924031314,
+   "normal p1_breach_pct": 4.691922490746788,
+   "+25% volume breach_pct": 6.170128404550584,
+   "+25% volume p99_wait_min": 1989.5554265301316,
+   "+25% volume p1_breach_pct": 6.366649223792081,
+   "+40% volume breach_pct": 15.066220663022492,
+   "+40% volume p99_wait_min": 5560.155263591868,
+   "+40% volume p1_breach_pct": 10.006224712107064
+  },
+  {
+   "variant": "v3 crisis mode 100",
+   "normal breach_pct": 2.145988183724033,
+   "normal p99_wait_min": 523.4738521885239,
+   "normal p1_breach_pct": 4.724580883953843,
+   "+25% volume breach_pct": 6.24332814835148,
+   "+25% volume p99_wait_min": 2002.9861903654516,
+   "+25% volume p1_breach_pct": 6.331763474620618,
+   "+40% volume breach_pct": 15.030866715618288,
+   "+40% volume p99_wait_min": 5379.674981212144,
+   "+40% volume p1_breach_pct": 9.98288204170557
+  }
+ ]
+}

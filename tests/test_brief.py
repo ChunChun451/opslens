@@ -27,7 +27,8 @@ def results_stub() -> dict:
     k = lambda v: {"mean": v, "std": 0.1}  # noqa: E731
     pol = {p: {"kpis": {"turnaround.breach_pct": k(b), "turnaround.p90_resolution_min": k(t)}}
            for p, b, t in (("opslens", 5.08, 130.2), ("baseline_b", 6.82, 198.4), ("baseline_a", 13.11, 184.8))}
-    return {"sim": {"policies": pol}, "patterns": {"cards": [{"title": "Hindi x Team B", "affected_tickets": 2871}]}}
+    return {"sim": {"policies": pol}, "patterns": {"cards": [{"title": "Hindi x Team B wait 5.1x longer", "affected_tickets": 2871,
+                                                            "value": 336.0, "comparison_value": 66.0, "metric": "mean wait (min)"}]}}
 
 
 def test_llm_brief_or_template_fallback() -> None:
@@ -37,3 +38,8 @@ def test_llm_brief_or_template_fallback() -> None:
     bad = MockProvider(replies=[json.dumps({"brief": "Breaches were 4% lower."})])
     out = write_brief(results_stub(), LLMClient([bad]))
     assert out["source"] == "template" and "13.1%" in out["text"]
+
+
+def test_numbers_in_words_are_rejected() -> None:
+    assert check_and_fill("Ninety percent of tickets closed fast at {{opslens_breach}}.", FACTS) is None
+    assert check_and_fill("Breaches doubled to {{opslens_breach}}.", FACTS) is not None  # "doubled" is not a number word

@@ -241,6 +241,9 @@ class OpsLensPolicy:
     def candidates(self, free: list[AgentView], waiting: list[TicketView], now: float) -> list[Candidate]:
         """Every (agent, ticket) pair the agent can serve, with its value; top-k per agent."""
         out: list[Candidate] = []
+        # Crisis mode: with a very long queue, serving long-lost tickets first would sink tickets
+        # that can still be saved, so the fairness guard pauses until the queue is back to normal.
+        guard_on = len(waiting) <= self.w.get("guard_queue_limit", float("inf"))
         for agent in free:
             rare_here = [p for p in self.rare if p[0] in agent.languages and p[1] in agent.skills]
             values: list[float] = []
@@ -255,7 +258,7 @@ class OpsLensPolicy:
                 if not skilled and rescue < self.w["cross_skill_min_rescue"]:
                     continue  # cross-skill work (1.6x slower) only to save a ticket that is in real danger
                 value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, self.w,
-                                     sla_min=t.sla_deadline_min - t.created_min)
+                                     sla_min=t.sla_deadline_min - t.created_min, guard_on=guard_on)
                 if not skilled:
                     value -= self.w["mismatch_penalty"]
                 scarcity = 0.0

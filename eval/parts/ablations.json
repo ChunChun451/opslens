@@ -4,120 +4,120 @@
    "key": "full",
    "label": "OpsLens (full)",
    "breach_pct": {
-    "mean": 2.3791038154392194,
-    "std": 0.5364296965922581
+    "mean": 2.2005323868677906,
+    "std": 0.32177945426767895
    },
    "p90_resolution_min": {
-    "mean": 140.785121634073,
-    "std": 31.153764751488712
+    "mean": 140.50762711516273,
+    "std": 30.64544248103611
    },
    "delta_breach_vs_full": 0.0,
    "ci_low": 0.0,
    "ci_high": 0.0,
-   "transfers_per_100": 0.9693877551020409,
-   "reopen_rate_pct": 4.392191659272404
+   "transfers_per_100": 0.9693877551020407,
+   "reopen_rate_pct": 4.404392191659272
   },
   {
    "key": "no_staffing",
    "label": "without staffing plan",
    "breach_pct": {
-    "mean": 2.4811446317657495,
-    "std": 0.5205663546822327
+    "mean": 2.249334516415262,
+    "std": 0.2988662254903326
    },
    "p90_resolution_min": {
-    "mean": 150.916227093352,
-    "std": 34.0502584688903
+    "mean": 149.34680632871033,
+    "std": 32.37303513550296
    },
-   "delta_breach_vs_full": 0.10204081632653068,
-   "ci_low": 0.04452089647544382,
-   "ci_high": 0.15956073617761754,
-   "transfers_per_100": 0.9627329192546583,
-   "reopen_rate_pct": 4.41659272404614
+   "delta_breach_vs_full": 0.04880212954747112,
+   "ci_low": -0.06457759655570766,
+   "ci_high": 0.16218185565064988,
+   "transfers_per_100": 0.959405501330967,
+   "reopen_rate_pct": 4.412156166814552
   },
   {
    "key": "no_risk",
    "label": "without risk scores",
    "breach_pct": {
-    "mean": 5.158606921029281,
-    "std": 1.3265660838262658
+    "mean": 4.209183673469388,
+    "std": 0.5671813520650216
    },
    "p90_resolution_min": {
-    "mean": 178.31327591424034,
-    "std": 48.006517402322935
+    "mean": 169.1405634339829,
+    "std": 38.17659057369004
    },
-   "delta_breach_vs_full": 2.779503105590062,
-   "ci_low": 1.700155878001288,
-   "ci_high": 3.858850333178836,
-   "transfers_per_100": 1.0226264418811004,
+   "delta_breach_vs_full": 2.008651286601597,
+   "ci_low": 1.549007258613752,
+   "ci_high": 2.468295314589442,
+   "transfers_per_100": 1.0215173025732034,
    "reopen_rate_pct": 3.9341171251109137
   },
   {
    "key": "no_optimizer",
    "label": "without optimiser (greedy per agent)",
    "breach_pct": {
-    "mean": 2.404614019520852,
-    "std": 0.5594643136740339
+    "mean": 2.1761313220940552,
+    "std": 0.3251121732131546
    },
    "p90_resolution_min": {
-    "mean": 139.80332202414075,
-    "std": 30.211415976938138
+    "mean": 139.19750219513804,
+    "std": 29.951323493644587
    },
-   "delta_breach_vs_full": 0.025510204081632803,
-   "ci_low": -0.024517148649665896,
-   "ci_high": 0.0755375568129315,
-   "transfers_per_100": 0.957187222715173,
-   "reopen_rate_pct": 4.409937888198757
+   "delta_breach_vs_full": -0.02440106477373556,
+   "ci_low": -0.11074958954473656,
+   "ci_high": 0.06194745999726543,
+   "transfers_per_100": 0.9549689440993788,
+   "reopen_rate_pct": 4.37111801242236
   },
   {
    "key": "no_classifier",
    "label": "without classifier (menu choice routing)",
    "breach_pct": {
-    "mean": 2.596495119787045,
-    "std": 0.6965249145074511
+    "mean": 2.3425022182786157,
+    "std": 0.3841690966469815
    },
    "p90_resolution_min": {
-    "mean": 154.95453407723886,
-    "std": 37.09161351957371
+    "mean": 154.98783172526888,
+    "std": 36.53075061021512
    },
-   "delta_breach_vs_full": 0.21739130434782616,
-   "ci_low": 8.925124961561837e-05,
-   "ci_high": 0.4346933574460367,
-   "transfers_per_100": 4.249112688553683,
-   "reopen_rate_pct": 4.413265306122449
+   "delta_breach_vs_full": 0.14196983141082514,
+   "ci_low": 0.010022374249973681,
+   "ci_high": 0.27391728857167663,
+   "transfers_per_100": 4.255767524401065,
+   "reopen_rate_pct": 4.439884649511979
   },
   {
    "key": "no_scarcity",
    "label": "without scarcity cost",
    "breach_pct": {
-    "mean": 2.4467613132209403,
-    "std": 0.5709428582138043
+    "mean": 2.2304791481810113,
+    "std": 0.36298691493351404
    },
    "p90_resolution_min": {
-    "mean": 141.47718007420562,
-    "std": 32.72321376255555
+    "mean": 142.07074128183302,
+    "std": 30.613287633380242
    },
-   "delta_breach_vs_full": 0.06765749778172143,
-   "ci_low": 0.0242778706934244,
-   "ci_high": 0.11103712487001846,
-   "transfers_per_100": 0.9638420585625553,
-   "reopen_rate_pct": 4.42435669920142
+   "delta_breach_vs_full": 0.029946761313220847,
+   "ci_low": -0.09780269845956488,
+   "ci_high": 0.1576962210860066,
+   "transfers_per_100": 0.9494232475598935,
+   "reopen_rate_pct": 4.40882874889086
   }
  ],
  "sensitivity": [
   {
    "gold_weight": 1.0,
-   "breach_pct": 2.3691215616681456,
-   "gold_breach_pct": 2.2685693377241125
+   "breach_pct": 2.202750665483585,
+   "gold_breach_pct": 2.0783022319795097
   },
   {
    "gold_weight": 1.5,
-   "breach_pct": 2.3791038154392194,
-   "gold_breach_pct": 1.8075375045737285
+   "breach_pct": 2.2005323868677906,
+   "gold_breach_pct": 1.8294914013904133
   },
   {
    "gold_weight": 2.0,
-   "breach_pct": 2.441215616681455,
-   "gold_breach_pct": 1.8002195389681668
+   "breach_pct": 2.250443655723159,
+   "gold_breach_pct": 1.8514452982070986
   }
  ],
  "stress": [
@@ -127,11 +127,11 @@
    "baseline_a_p99_wait": 1923.9963941363585,
    "baseline_b": 29.057073062402843,
    "baseline_b_p99_wait": 5542.813928891375,
-   "opslens": 40.53475460803909,
-   "opslens_p99_wait": 3333.728463773651,
-   "opslens_minus_b": 11.477681545636244,
-   "ci_low": 4.95779724730317,
-   "ci_high": 17.99756584396932
+   "opslens": 10.712858094603599,
+   "opslens_p99_wait": 8177.603152008189,
+   "opslens_minus_b": -18.344214967799246,
+   "ci_low": -22.17427941340089,
+   "ci_high": -14.514150522197605
   },
   {
    "scenario": "10% absenteeism",
@@ -139,11 +139,11 @@
    "baseline_a_p99_wait": 1074.4468267291852,
    "baseline_b": 9.889086069210293,
    "baseline_b_p99_wait": 1512.785803829313,
-   "opslens": 3.6845607808340732,
-   "opslens_p99_wait": 1019.0288384571368,
-   "opslens_minus_b": -6.20452528837622,
-   "ci_low": -7.016396213744679,
-   "ci_high": -5.392654363007761
+   "opslens": 3.09449866903283,
+   "opslens_p99_wait": 971.7601849189399,
+   "opslens_minus_b": -6.794587400177463,
+   "ci_low": -8.063009364415153,
+   "ci_high": -5.526165435939772
   }
  ],
  "seeds": [

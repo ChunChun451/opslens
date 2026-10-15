@@ -59,7 +59,7 @@ class SolveStats:
 
 
 def ticket_value(priority: str, tier: str, order_value: float, rescue: float, waited_min: float,
-                 w: dict, sla_min: float | None = None) -> float:
+                 w: dict, sla_min: float | None = None, guard_on: bool = True) -> float:
     """Value of serving this ticket now (before agent-specific costs).
 
     Two ways to value time already waited (config `aging_in_sla_units`):
@@ -73,12 +73,16 @@ def ticket_value(priority: str, tier: str, order_value: float, rescue: float, wa
     impact += w["order_value_weight"] * math.log1p(order_value / 350.0)
     if w.get("aging_in_sla_units") and sla_min:
         aging = w["aging_per_sla"] * min(waited_min / sla_min, w["aging_cap"])
+        if waited_min > sla_min and w.get("aging_lost") is not None:
+            # v3: a ticket past its SLA cannot be saved any more, so it drops to a small value
+            # until the guard serves it — it no longer outranks tickets that can still make it.
+            aging = w["aging_lost"]
         guard = waited_min - sla_min >= w["max_late_min"]
     else:
         aging = w["aging_per_hour"] * waited_min / 60.0
         guard = waited_min >= w["max_wait_min"]
     value = w["urgency_weight"][priority] * impact * (max(rescue, w["rescue_floor"]) + aging)
-    if guard:
+    if guard and guard_on:
         value += w["starvation_bonus"]  # the guard: never leave a customer behind
     return value
 

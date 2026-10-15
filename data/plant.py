@@ -31,6 +31,7 @@ def clean_config(cfg: dict) -> dict:
     for plant in out["planted"].values():
         plant["enabled"] = False
     out["extra_lifts"], out["extra_partners"], out["extra_misrouting"] = [], [], {}
+    out["extra_misrouting_category"] = {}
     return out
 
 
@@ -113,6 +114,10 @@ def apply_plants(cfg: dict, roster: dict, plants: list[dict]) -> tuple[dict, dic
                                           "multiplier": p["multiplier"]})
             records.append({"id": pid, "name": f"cluster {p['cluster_id']} {p['category']}", "cause_type": "partner_issue",
                             "segment": {"category": p["category"], "restaurant_cluster_id": p["cluster_id"]}})
+        elif p["type"] == "process_category":  # used by the live Plant-a-problem demo
+            cfg["extra_misrouting_category"][p["category"]] = p["wrong_prob"]
+            records.append({"id": pid, "name": f"{p['category']} menu mislabels", "cause_type": "process",
+                            "segment": {"category": p["category"]}})
         else:
             cfg["extra_misrouting"][p["channel"]] = p["wrong_prob"]
             records.append({"id": pid, "name": f"{p['channel']} menu mislabels", "cause_type": "process",
