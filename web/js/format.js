@@ -1,0 +1,262 @@
+// format.js — how numbers look, what each KPI is called, and what each metric means.
+//
+// Why one file: the same value must look the same on every tab, and the evidence popover
+// needs a one-line definition for every metric. Definitions follow CLAUDE.md section 4.
+// This file holds NO result numbers — only words and formatting rules.
+//
+// Example:
+//   fmt(13.0, "pct")        -> "13.0%"
+//   fmt(0.92, "frac_pct")   -> "92%"
+//   fmtSigned(-8.9, "pts")  -> "−8.9 pts"
+
+const MINUS = "−"; // a real minus sign reads better on a projector than "-"
+
+// Units used by ev() and the charts:
+//   pct      value is already a percent (13.0 -> "13.0%")
+//   pts      percentage points, for differences and spreads of a pct (1.04 -> "1.0 pts")
+//   frac_pct a fraction shown as a percent (0.92 -> "92%")
+//   min      minutes; int count; num plain number; ratio two decimals (rho, AUC)
+//   hours    agent-hours; sec seconds; ms milliseconds; text a string
+// scale multiplies the value; minDigits/maxDigits are decimal places; suffix is the unit text.
+const UNIT_RULES = {
+  pct: { scale: 1, minDigits: 1, maxDigits: 1, suffix: "%" },
+  pts: { scale: 1, minDigits: 1, maxDigits: 1, suffix: " pts" },
+  frac_pct: { scale: 100, minDigits: 0, maxDigits: 1, suffix: "%" },
+  min: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " min" },
+  int: { scale: 1, minDigits: 0, maxDigits: 0, suffix: "" },
+  ratio: { scale: 1, minDigits: 2, maxDigits: 2, suffix: "" },
+  hours: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " h" },
+  sec: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " s" },
+  ms: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " ms" },
+  num: { scale: 1, minDigits: 0, maxDigits: 2, suffix: "" },
+};
+
+// `bare` drops the unit text, for table cells whose header already names the unit.
+export function fmt(value, unit = "num", bare = false) {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return "—";
+  }
+  if (typeof value !== "number") {
+    return String(value);
+  }
+  const rule = UNIT_RULES[unit] || UNIT_RULES.num;
+  const scaled = value * rule.scale;
+  // Minutes above 100 need no decimals ("816 min", not "816.0 min").
+  const maxDigits = unit === "min" && Math.abs(scaled) >= 100 ? 0 : rule.maxDigits;
+  const text = num(scaled, Math.min(rule.minDigits, maxDigits), maxDigits);
+  return bare ? text : text + rule.suffix;
+}
+
+// Like fmt, but always shows the sign: "+0.8 pts", "−8.9 pts".
+export function fmtSigned(value, unit = "num", bare = false) {
+  if (typeof value !== "number") {
+    return fmt(value, unit, bare);
+  }
+  const text = fmt(Math.abs(value), unit, bare);
+  if (value > 0) return "+" + text;
+  if (value < 0) return MINUS + text;
+  return text;
+}
+
+// The unit text for a table header: "%" for pct, "min" for min, "" when there is none.
+export function unitSuffix(unit) {
+  const rule = UNIT_RULES[unit] || UNIT_RULES.num;
+  return rule.suffix.trim();
+}
+
+// The unit of a value found at `path`, for places that render arbitrary paths (the brief).
+export function unitForPath(path) {
+  const kpi = path.match(/kpis\.(.+)\.(mean|std)$/);
+  if (kpi) {
+    return kpiInfo(kpi[1]).unit;
+  }
+  const parts = path.replace(/\[\d+\]/g, "").split(".").filter((p) => p !== "mean" && p !== "std");
+  return unitForKey(parts[parts.length - 1]);
+}
+
+// The unit for a spread or difference of a value in `unit` (a spread of 13.0% is "1.0 pts").
+export function spreadUnit(unit) {
+  return unit === "pct" ? "pts" : unit;
+}
+
+// Indian digit grouping (1,00,000) because the judges are in India.
+function num(value, minDigits, maxDigits) {
+  return value.toLocaleString("en-IN", {
+    minimumFractionDigits: minDigits,
+    maximumFractionDigits: maxDigits,
+  });
+}
+
+// Guess a unit from a key name, for generic tables (sensitivity, stress, speed).
+export function unitForKey(key) {
+  if (/_pct$/.test(key)) return "pct";
+  if (/_min$/.test(key)) return "min";
+  if (/_ms$|^ms_|_ms_/.test(key)) return "ms";
+  if (/seconds$/.test(key)) return "sec";
+  if (/^(tickets|agents|n|sets)$/.test(key)) return "int";
+  return "num";
+}
+
+// "gold_breach_pct" -> "Gold breach %"
+export function prettyKey(key) {
+  const words = key.replace(/_pct$/, " %").replace(/_min$/, " (min)").replace(/_/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+// Every text we put into innerHTML goes through this, because ticket texts are user input.
+export function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// The KPI groups, in the words of the problem statement:
+// "turnaround time, productivity, and service quality".
+export const KPI_GROUPS = {
+  turnaround: "Turnaround",
+  productivity: "Productivity",
+  quality: "Service quality",
+};
+
+// Label, unit and direction for each simulator KPI. A KPI that is missing here still shows,
+// with a label made from its key (see kpiInfo), so a new KPI from the engine never vanishes.
+export const KPIS = {
+  "turnaround.breach_pct": { label: "SLA breach rate", unit: "pct", better: "lower" },
+  "turnaround.mean_resolution_min": { label: "Mean resolution time", unit: "min", better: "lower" },
+  "turnaround.p90_resolution_min": { label: "P90 resolution time", unit: "min", better: "lower" },
+  "turnaround.mean_wait_min": { label: "Mean wait", unit: "min", better: "lower" },
+  "turnaround.max_backlog": { label: "Max backlog (tickets)", unit: "int", better: "lower" },
+  "productivity.tickets_per_agent_hour": { label: "Tickets per agent-hour", unit: "num", better: "higher" },
+  "productivity.transfers_per_100": { label: "Transfers per 100 tickets", unit: "num", better: "lower" },
+  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: "lower" },
+  "quality.reopen_rate_pct": { label: "Reopen rate", unit: "pct", better: "lower" },
+  "quality.p99_wait_min": { label: "P99 wait", unit: "min", better: "lower" },
+  "quality.max_wait_min": { label: "Max wait", unit: "min", better: "lower" },
+  "quality.mean_utilisation": { label: "Mean utilisation (ρ)", unit: "ratio", better: null },
+  "quality.load_fairness_std": { label: "Load fairness (std of utilisation)", unit: "ratio", better: "lower" },
+};
+
+export function kpiInfo(kpiKey) {
+  if (KPIS[kpiKey]) {
+    return KPIS[kpiKey];
+  }
+  const short = kpiKey.split(".").pop();
+  return { label: prettyKey(short), unit: unitForKey(short), better: null };
+}
+
+// One-line definitions for the evidence popover, keyed by the last part of a path.
+// Wording from CLAUDE.md section 4. No result numbers here — only definitions.
+export const DEFINITIONS = {
+  breach_pct: "SLA breach = resolution time longer than the SLA for the ticket's priority. This is the share of tickets that breached.",
+  gold_breach_pct: "Breach rate for gold-tier customers only.",
+  mean_resolution_min: "Resolution (turnaround) time = resolved_at − created_at, averaged over tickets.",
+  p90_resolution_min: "P90 resolution time: 90% of tickets resolve faster than this.",
+  mean_wait_min: "Wait time = first agent pickup − created_at, averaged over tickets.",
+  wait_min: "Wait time = first agent pickup − created_at.",
+  max_backlog: "The largest number of tickets waiting at the same moment.",
+  tickets_per_agent_hour: "Tickets resolved per agent-hour on shift.",
+  transfers_per_100: "Transfer = a ticket moved to another team after an agent finds it is in the wrong queue. Counted per 100 tickets.",
+  busy_agent_hours: "Total agent-hours spent actively handling tickets.",
+  reopen_rate_pct: "Reopen rate = reopens ÷ resolved. A reopen is a customer coming back because the fix did not work.",
+  p99_wait_min: "P99 wait: 99% of tickets wait less than this. It shows no ticket is abandoned to game the breach number.",
+  max_wait_min: "The longest any single ticket waited.",
+  mean_utilisation: "Utilisation ρ = arrival rate ÷ (agents × tickets per agent-hour). ρ above 1 means the backlog grows.",
+  load_fairness_std: "Load fairness = standard deviation of agent utilisation. Lower is fairer.",
+  mean_diff: "Paired difference (policy − baseline) averaged over seeds. Same seed = same tickets and same luck.",
+  ci_low: "Paired 95% CI: the range for (OpsLens − baseline) across seeds; same seed = same luck.",
+  ci_high: "Paired 95% CI: the range for (OpsLens − baseline) across seeds; same seed = same luck.",
+  n: "Number of seeds (independent simulator runs) in the comparison.",
+  waiting: "Tickets waiting in the queue at this moment of the replay.",
+  breached_cum: "Tickets that have breached their SLA so far in the replay.",
+  value: "The measured value for this segment.",
+  comparison_value: "The same metric for the comparison group.",
+  affected_tickets: "Number of tickets in this segment over the history window.",
+  affected_share_pct: "Share of all tickets that fall in this segment.",
+  strength: "How unusual the finding is (robust z or ratio). Robust z = 0.6745 × (x − median) ÷ MAD; flagged when above 3.5.",
+  planted: "Problems planted in the generated data. Only the evaluation reads the plant list; the engine never does.",
+  found: "Planted problems the engine found on its own.",
+  false_alarms: "Findings that match no planted problem (for example, a known sale day flagged by mistake).",
+  found_pct: "Blind recall: share of randomly planted problems found, over many random plant sets.",
+  false_alarms_mean: "Average false alarms per random plant set.",
+  sets: "Number of random plant sets in the blind recall test.",
+  live_detection_latency_min: "Detection latency = time from the start of a real spike to our first alert.",
+  waiting_decomp: "Average minutes a ticket spends in this stage.",
+  accuracy_local: "Share of tickets the local TF-IDF + logistic regression model classifies correctly.",
+  accuracy_cascade: "Accuracy of the cascade: local model first, LLM only for low-confidence tickets.",
+  accuracy_llm_sample: "Accuracy of the LLM alone on a ticket sample.",
+  pct_sent_to_llm: "Share of tickets the local model was unsure about and sent to the LLM.",
+  cost_per_million_tickets_usd: "LLM cost to classify one million tickets with the cascade.",
+  transfers_avoided_per_100: "Transfers avoided per 100 tickets by routing on the predicted category instead of the customer's pick.",
+  size: "Number of tickets in this cluster.",
+  wape_model: "WAPE = Σ|forecast − actual| ÷ Σ actual, for our LightGBM forecast. Lower is better.",
+  wape_naive: "WAPE of the seasonal-naive baseline (same hour last week).",
+  coverage_80: "Coverage = share of actual values that fell inside the 80% conformal interval (should be about 80%).",
+  coverage_90: "Coverage = share of actual values that fell inside the 90% conformal interval (should be about 90%).",
+  demand_hours: "Forecast agent-hours of work arriving in this hour.",
+  lo80: "Lower edge of the 80% conformal interval for demand.",
+  hi80: "Upper edge (P80) of the 80% conformal interval. A bottleneck is when this exceeds capacity.",
+  capacity_hours: "Agent-hours of capacity scheduled for this team in this hour.",
+  actual_hours: "Agent-hours of work that actually arrived.",
+  peak_rho: "Peak utilisation ρ in the bottleneck window. Above 1 the queue grows.",
+  auc: "AUC = probability a breached ticket gets a higher risk score than a non-breached one.",
+  pr_auc: "PR-AUC = area under the precision–recall curve; honest when breaches are rare.",
+  top10_precision: "Top-10% precision = share of the 10% riskiest tickets that actually breached.",
+  brier: "Brier score = mean of (predicted probability − outcome)². Lower = better calibrated.",
+  base_rate: "Share of all test tickets that breached. A random guess scores this precision.",
+  realdata_auc: "AUC of the same risk code on the real UCI ServiceNow incident log (made_sla flag).",
+  realdata_n: "Number of real incidents in the UCI check.",
+  predicted: "Average predicted breach probability in this bin.",
+  observed: "Share of tickets in this bin that actually breached. Close to predicted = well calibrated.",
+  probability: "Calibrated probability that this ticket breaches its SLA (LightGBM + isotonic calibration).",
+  probability_after_action: "Re-scored probability if the suggested action is taken now.",
+  minutes_to_sla: "Minutes left before this ticket breaches its SLA.",
+  contribution: "TreeSHAP contribution of this feature, in probability points.",
+  agent_value: "Edge value in the optimiser: grows with urgency, breach risk and customer impact, minus skill-mismatch and scarcity penalties.",
+  expected_effect: "Change the simulator measured when this staffing move is applied.",
+  delta_breach_vs_full: "Breach rate without this part minus breach rate of full OpsLens. Bigger = the part matters more.",
+  gold_weight: "How much more a gold-tier ticket counts in the optimiser.",
+  pipeline_seconds: "Wall-clock time for the full pipeline.",
+  optimizer_ms_median: "Median time the optimiser needs for one decision step.",
+  optimizer_ms_max: "Slowest optimiser decision step.",
+  tickets: "Waiting tickets in the scale test.",
+  agents: "Agents in the scale test.",
+  seconds: "Seconds the optimiser took in the scale test.",
+  n_tickets: "Tickets in the generated dataset.",
+  data_seed: "Random seed of the data generator (same seed = same data).",
+  run_seconds: "Time the evaluation run took.",
+  seeds: "Simulator seeds. Every policy runs on every seed with the same luck (common random numbers).",
+  test_days: "Held-out days. No model, threshold or weight was chosen on them.",
+  train_days: "Days used to train models.",
+  validation_days: "Days used to choose thresholds and weights.",
+  numbers_used: "Paths of the numbers the brief refers to. Code fills them in; the LLM never writes a digit.",
+};
+
+// Find the definition for a path: walk its parts from the end and take the first match.
+// "sim.policies.opslens.kpis.turnaround.breach_pct.mean" -> DEFINITIONS.breach_pct
+export function definitionFor(path) {
+  if (/^patterns\.delay_decomposition\./.test(path)) {
+    return DEFINITIONS.waiting_decomp;
+  }
+  if (/^recommendations\.assignments\[\d+\]\.value$/.test(path)) {
+    return DEFINITIONS.agent_value;
+  }
+  if (/\.expected_effect\./.test(path)) {
+    return DEFINITIONS.expected_effect;
+  }
+  const parts = path.replace(/\[\d+\]/g, "").split(".");
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const part = parts[i];
+    if (part === "mean" || part === "std") continue;
+    if (DEFINITIONS[part]) return DEFINITIONS[part];
+  }
+  return "A value from the results file.";
+}
+
+// Food-delivery ticket categories (CLAUDE.md section 5.3). Words only, used by input forms.
+export const CATEGORIES = [
+  "late_delivery", "missing_item", "wrong_item", "refund",
+  "payment_failure", "app_bug", "account", "restaurant_partner",
+];

@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+  OpsLens dashboard — the one page the judges see.
+
+  Why it is built this way:
+  - Plain HTML + vanilla JS + CSS, no build step, so the owner can read every line.
+  - Everything is local (Chart.js is in web/vendor/, no web fonts), because the demo
+    runs on a projector with Wi-Fi off.
+  - This file is only the frame. app.js loads the results JSON and fills each tab.
+    Every number on screen comes from that JSON (CLAUDE.md rule 1.5).
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpsLens</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js 4.5.0, downloaded once and kept in the repo (works offline). -->
+  <script src="vendor/chart.umd.js"></script>
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <!-- Shown only when meta.fixture is true. Fixed to the top so it is on every screenshot. -->
+  <div id="fixture-banner" class="fixture-banner" hidden>
+    FIXTURE DATA — numbers are invented. Not real results.
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Ops<span>Lens</span></span>
+      <span class="brand-tag">decision engine for support operations</span>
+    </div>
+    <div id="data-source" class="data-source"></div>
+    <button id="story-button" class="btn btn-primary" type="button">Story mode</button>
+  </header>
+
+  <div class="layout">
+    <nav id="tab-nav" class="tab-nav" aria-label="Dashboard sections"></nav>
+    <main id="tab-panels" class="tab-panels">
+      <div id="load-message" class="panel">Loading results…</div>
+    </main>
+  </div>
+
+  <!-- Click-to-evidence popover. evidence.js fills and positions it. -->
+  <div id="evidence-popover" class="evidence-popover" role="dialog" aria-label="Evidence" hidden></div>
+
+  <!-- Story mode card. story.js fills it. -->
+  <div id="story-card" class="story-card" role="dialog" aria-label="Story mode" hidden></div>
+</body>
+</html>
