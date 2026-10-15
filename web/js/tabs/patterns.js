@@ -12,7 +12,7 @@
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, SLOTS } from "../charts.js";
-import { pageHeader, card, stat, missing, backendMissing, postJson } from "../ui.js";
+import { pageHeader, card, stat, missing, backendMissing, postJson, showWaiting } from "../ui.js";
 import { escapeHtml, prettyKey, CATEGORIES } from "../format.js";
 
 // Plain-language names for the cause types in the schema.
@@ -27,6 +27,7 @@ export const CAUSE_LABELS = {
 
 // How many clusters to show before "Show all" (a layout choice, not a result).
 const CLUSTERS_SHOWN = 6;
+const PLANT_TIMEOUT_MS = 120000; // fresh data + detection takes 20-40 s; give up after 2 minutes
 
 export function render(section) {
   const p = state.results.patterns;
@@ -222,7 +223,7 @@ function plantDialog() {
     dayOptions.push(`<option value="${day}">Day ${day}</option>`);
   }
   const categoryOptions = CATEGORIES.map((c) => `<option value="${c}">${escapeHtml(prettyKey(c))}</option>`).join("");
-  return `<dialog id="plant-dialog" aria-labelledby="plant-title">
+  return `<dialog id="plant-dialog" class="wide" aria-labelledby="plant-title">
       <form method="dialog">
         <h2 id="plant-title">Plant a problem</h2>
         <p class="muted small" style="margin-bottom: 18px">Pick a segment and an effect. OpsLens gets fresh data with the
@@ -249,13 +250,49 @@ function plantDialog() {
     </dialog>`;
 }
 
+// The live answer from POST /api/plant. It is computed for this request only (not part of
+// results.json); it is kept in state.plant so its numbers are clickable ("plant.*" paths).
+// Example answer: { planted: { description: "hi x Team B skill gap", cause_type: "skill_gap",
+//   fresh_days: 21 }, found: true, diagnosed: true, card: {...}, other_cards: [...], seconds: 16.4 }
+function plantAnswerHtml(answer) {
+  if (!answer || answer.error) {
+    return `<div class="callout warn">${escapeHtml((answer && answer.error) || "No answer from the server.")}</div>`;
+  }
+  let verdict = `<div class="callout warn"><strong>Missed it.</strong> OpsLens did not flag the planted problem.</div>`;
+  if (answer.found) {
+    verdict = answer.diagnosed
+      ? `<div class="callout good"><strong>Found it, and named the right cause.</strong></div>`
+      : `<div class="callout warn"><strong>Found it, but named a different cause.</strong></div>`;
+  }
+  const c = answer.card;
+  const card = c ? `<div class="card" style="margin-top: 14px; box-shadow: none">
+      <div class="finding-meta">
+        <span class="pill">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
+        <span class="small muted">${ev("plant.card.affected_tickets", "int")} tickets · ${ev("plant.card.affected_share_pct", "pct")} of all</span>
+      </div>
+      <h3 style="font-size: 1.05rem">${evText("plant.card.title")}</h3>
+      <p class="finding-compare">${evText("plant.card.comparison_text")}</p>
+      ${c.not_explained_by ? `<p class="small muted" style="margin-top: 6px">${evText("plant.card.not_explained_by")}</p>` : ""}
+    </div>` : "";
+  const others = (answer.other_cards || []).length
+    ? `<p class="small muted" style="margin-top: 12px">Other findings in the fresh data:
+        ${answer.other_cards.map((_, i) => evText(`plant.other_cards[${i}]`)).join("; ")}</p>`
+    : "";
+  return `${verdict}
+    <p class="small" style="margin-top: 10px">Planted: <strong>${evText("plant.planted.description")}</strong>
+      (${escapeHtml(CAUSE_LABELS[answer.planted.cause_type] || answer.planted.cause_type)}) in
+      ${ev("plant.planted.fresh_days", "int")} fresh days · detection took ${ev("plant.seconds", "sec")}</p>
+    ${card}${others}`;
+}
+
 function wirePlantDialog(section) {
   const dialog = section.querySelector("#plant-dialog");
+  const run = section.querySelector("#plant-run");
   section.querySelector("#plant-open").addEventListener("click", () => {
     section.querySelector("#plant-result").innerHTML = "";
     dialog.showModal();
   });
-  section.querySelector("#plant-run").addEventListener("click", async () => {
+  run.addEventListener("click", async () => {
     const form = dialog.querySelector("form");
     const request = {
       category: form.category.value,
@@ -264,13 +301,19 @@ function wirePlantDialog(section) {
       day: Number(form.day.value),
     };
     const result = section.querySelector("#plant-result");
-    result.innerHTML = `<div class="wait"><span class="spinner" aria-hidden="true"></span>Planting and detecting…</div>`;
+    run.disabled = true;
+    showWaiting(result, "Generating fresh days with your problem hidden in them, then running detection…");
     try {
-      const answer = await postJson("/api/plant", request);
-      result.innerHTML = `<div class="callout good">Server answered:</div><pre>${escapeHtml(JSON.stringify(answer, null, 2))}</pre>`;
+      state.plant = await postJson("/api/plant", request, PLANT_TIMEOUT_MS);
+      result.innerHTML = plantAnswerHtml(state.plant);
     } catch (error) {
-      result.innerHTML = backendMissing("POST /api/plant", "M11",
-        "The blind recall test on random plant sets is already in How we tested.");
+      state.plant = null;
+      result.innerHTML = state.staticServer || /HTTP (404|405|501)/.test(error.message)
+        ? backendMissing("POST /api/plant",
+          "Start it with uvicorn server.app:app. The blind recall test on random plant sets is in How we tested.")
+        : `<div class="callout warn"><strong>Detection did not finish.</strong> ${escapeHtml(error.message)}.</div>`;
+    } finally {
+      run.disabled = false;
     }
   });
 }

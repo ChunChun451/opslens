@@ -14,7 +14,7 @@
 
 import { state, policyKeys, policyLabel, teamNames } from "../data.js";
 import { ev } from "../evidence.js";
-import { pageHeader, card, postJson, policyName, shortLabel } from "../ui.js";
+import { pageHeader, card, postJson, policyName, shortLabel, showWaiting } from "../ui.js";
 import { escapeHtml, kpiInfo, unitSuffix } from "../format.js";
 
 // Slider ranges. These are input limits for the judge, not results.
@@ -114,10 +114,7 @@ async function run(section) {
   const button = section.querySelector("#wi-run");
   const request = buildRequest(section);
   button.disabled = true;
-  result.innerHTML = `<div class="wait" role="status">
-      <span class="spinner" aria-hidden="true"></span>
-      Simulating the whole day for all three policies with your changes…
-    </div>`;
+  showWaiting(result, "Simulating the whole day for all three policies with your changes…");
   try {
     state.whatif = await postJson("/api/whatif", request, TIMEOUT_MS);
     result.innerHTML = answerHtml(state.whatif);

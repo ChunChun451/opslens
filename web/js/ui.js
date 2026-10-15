@@ -57,11 +57,12 @@ export function missing(sectionName, milestone) {
     It is computed in ${escapeHtml(milestone)}.</p>` });
 }
 
-// Shown when a button calls a server endpoint that is not built yet.
-export function backendMissing(endpoint, milestone, detail) {
+// Shown when a button needs the OpsLens server but the page is served without it
+// (for example by python -m http.server).
+export function backendMissing(endpoint, detail) {
   return `<div class="callout warn">
-    <strong>Arrives in ${escapeHtml(milestone)}.</strong>
-    <code>${escapeHtml(endpoint)}</code> is not running yet, so nothing was computed.
+    <strong>This needs the OpsLens server.</strong>
+    <code>${escapeHtml(endpoint)}</code> is not reachable from this page, so nothing was computed.
     ${detail ? escapeHtml(detail) : ""}
   </div>`;
 }
@@ -105,6 +106,57 @@ export function deltaPill(base, unit, better = "lower", valueKey = "mean_diff") 
     if (sign * row.ci_low > 0) tone = "bad";
   }
   return `<span class="delta ${tone}">${ev(`${base}.${valueKey}`, unit, { signed: true })}</span>`;
+}
+
+// ---- Loading states -----------------------------------------------------------------------------
+
+// A spinner with a message and a seconds counter, for server calls that take 10-40 s.
+// The counter is the time waited so far (a clock, not a result). It stops by itself when the
+// element is replaced by the answer.
+export function showWaiting(container, message) {
+  container.innerHTML = `<div class="wait" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span class="wait-text">${message}</span>
+      <span class="wait-clock">0 s</span>
+    </div>`;
+  const clock = container.querySelector(".wait-clock");
+  const started = Date.now();
+  const timer = setInterval(() => {
+    if (!clock.isConnected) {
+      clearInterval(timer);
+      return;
+    }
+    clock.textContent = Math.round((Date.now() - started) / 1000) + " s";
+  }, 1000);
+}
+
+// POST a form (file upload) with a time limit. Same rules as postJson below.
+export async function postForm(url, form, timeoutMs = 120000) {
+  if (state.staticServer) {
+    throw new Error("No API on the static preview server");
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { method: "POST", body: form, signal: controller.signal });
+    let answer = null;
+    try {
+      answer = await response.json();
+    } catch (error) {
+      // not JSON
+    }
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status + (answer && answer.error ? ": " + answer.error : ""));
+    }
+    return answer;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("No answer after " + Math.round(timeoutMs / 1000) + " s");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // ---- Small helpers ----------------------------------------------------------------------------

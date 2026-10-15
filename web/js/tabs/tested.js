@@ -10,7 +10,7 @@
 // Example (real results, 16 Oct): removing the risk scores raises breaches by +2.8 pts
 // (paired 95% CI +1.7 to +3.9) versus full OpsLens.
 
-import { state, policyLabel } from "../data.js";
+import { state, policyLabel, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS } from "../charts.js";
 import { pageHeader, missing } from "../ui.js";
@@ -115,45 +115,104 @@ function verdict(ciLow, ciHigh) {
 
 // ---- What failed, and what we changed ----------------------------------------------------
 
-function honestPanel() {
+// The policy versions, oldest first. Each was designed and chosen on validation days only; the
+// test days were run once per version and every result is kept (details.test_runs_note).
+// A kept version has a record: { test_breach_pct, stress, ablations, note }. The current
+// version reads the main results (sim + stress). Names and short titles are our words;
+// every number is read by path.
+function versions() {
   const d = details();
-  const v1 = d.v1_record && Object.keys(d.v1_record).length ? d.v1_record : null;
-  const v2 = d.design_v2 && Array.isArray(d.design_v2.rows) ? d.design_v2 : null;
-  const steps = [];
-
-  if (v1) {
-    const b = "details.v1_record.test_breach_pct";
-    steps.push(`<li><h4>Our first policy (v1), on the test days</h4>
-        <p>Breach rate ${ev(b + ".opslens", "pct")} against ${ev(b + ".baseline_a", "pct")} for
-        ${escapeHtml(policyLabel("baseline_a"))} and ${ev(b + ".baseline_b", "pct")} for
-        ${escapeHtml(policyLabel("baseline_b"))}. Then the stress tests:</p>
-        ${stressVerdicts("details.v1_record.stress", v1.stress)}
-        ${v1.note ? `<p class="small muted" style="margin-top: 6px">Why: ${evText("details.v1_record.note")}</p>` : ""}</li>`);
+  const kept = [];
+  if (d.v1_record && d.v1_record.stress) {
+    kept.push({ base: "details.v1_record", title: "Ages tickets per hour", design: null });
   }
-
-  if (v2) {
-    steps.push(`<li><h4>What we changed, on validation days only</h4>
-        <p>Days ${ev("details.design_v2.validation_days[0]", "int")}–${ev("details.design_v2.validation_days[1]", "int")},
-        seeds ${evText("details.design_v2.seeds")}. We tried these designs; the test days were not used to choose.</p>
-        <details class="disclosure"><summary>Show every design we tried</summary>${designTable(v2)}</details>
-        ${hasValue("details.weights.aging_per_sla")
-          ? `<p class="small" style="margin-top: 6px">Chosen setting: aging per SLA = ${ev("details.weights.aging_per_sla", "num")}.</p>`
-          : ""}</li>`);
+  if (d.v2_record && d.v2_record.stress) {
+    kept.push({ base: "details.v2_record", title: "Ages tickets in SLA units", design: d.design_v2 ? "details.design_v2" : null });
   }
+  const crisis = hasValue("details.weights.aging_lost") && hasValue("details.weights.guard_queue_limit");
+  const designKey = `design_v${kept.length + 1}`;
+  const current = {
+    base: null,
+    title: crisis ? "Crisis mode" : "Current policy",
+    design: d[designKey] ? `details.${designKey}` : (kept.length === 0 && d.design_v2 ? "details.design_v2" : null),
+    current: true,
+  };
+  return kept.concat([current]).map((v, i) => ({ ...v, name: "v" + (i + 1) }));
+}
 
-  steps.push(`<li><h4>${v1 ? "v2 on the test days, run once after the choice" : "The current policy on the test days"}</h4>
-      <p>Breach rate ${ev("sim.policies.opslens.kpis.turnaround.breach_pct.mean", "pct")} on normal days. Stress tests:</p>
-      ${stressVerdicts("stress", state.results.stress)}</li>`);
+// Paths for one version: its normal-day breach rates and its stress rows.
+function versionPaths(v) {
+  if (v.current) {
+    return {
+      ours: "sim.policies.opslens.kpis.turnaround.breach_pct.mean",
+      baseB: "sim.policies.baseline_b.kpis.turnaround.breach_pct.mean",
+      stress: "stress",
+    };
+  }
+  return { ours: `${v.base}.test_breach_pct.opslens`, baseB: `${v.base}.test_breach_pct.baseline_b`, stress: `${v.base}.stress` };
+}
 
-  const pending = !v1 || !v2
-    ? `<p class="card-foot">The v1 record and the validation-day design table appear here after the next
-         <code>make eval</code> (they are in <code>details.v1_record</code> and <code>details.design_v2</code>).</p>`
-    : "";
+// Index of the "+25% volume" stress row (the test that decided v1 -> v2 -> v3), else the first.
+function volumeRow(rows) {
+  const i = rows.findIndex((row) => /^\+\s*25/.test(String(row.scenario)));
+  return i >= 0 ? i : 0;
+}
+
+function honestPanel() {
+  const list = versions();
+  // The strip: one tile per version with its +25% volume result and verdict.
+  const tiles = list.map((v) => {
+    const paths = versionPaths(v);
+    const rows = lookup(paths.stress) || [];
+    if (!rows.length) return "";
+    const i = volumeRow(rows);
+    const row = `${paths.stress}[${i}]`;
+    return `<div class="version ${v.current ? "is-current" : ""}">
+        <div class="stat-label">${v.name} · ${escapeHtml(v.title)}</div>
+        <div class="stat-value">${ev(row + ".opslens", "pct")}</div>
+        <div class="stat-sub">breaches at ${evText(row + ".scenario")} vs ${ev(row + ".baseline_b", "pct")} for ${escapeHtml(policyLabel("baseline_b"))}</div>
+        <div style="margin-top: 8px">${typeof rows[i].ci_low === "number" ? verdict(rows[i].ci_low, rows[i].ci_high) : ""}</div>
+      </div>`;
+  }).join("");
+
+  // The steps: what each version did on the test days, why it changed, and the designs tried.
+  const steps = list.map((v) => {
+    const paths = versionPaths(v);
+    const rows = lookup(paths.stress) || [];
+    let why = "";
+    if (v.current && hasValue("details.weights.aging_lost")) {
+      why = `<p class="small" style="margin-top: 6px">What changed: a ticket that is already lost keeps only
+        ${ev("details.weights.aging_lost", "num")} of its waiting value, so it stops crowding out tickets that can
+        still be saved; and the fairness guard pauses while more than ${ev("details.weights.guard_queue_limit", "int")}
+        tickets wait.</p>`;
+    } else if (!v.current && lookup(v.base + ".note")) {
+      why = `<p class="small muted" style="margin-top: 6px">Why it changed: ${evText(v.base + ".note")}</p>`;
+    }
+    const design = v.design
+      ? `<details class="disclosure"><summary>Show the designs tried on validation days
+          (days ${ev(v.design + ".validation_days[0]", "int")}–${ev(v.design + ".validation_days[1]", "int")})</summary>
+          ${designTable(v.design)}</details>`
+      : "";
+    return `<li>
+        <h4>${v.name} · ${escapeHtml(v.title)}${v.current ? ` <span class="pill">current</span>` : ""}</h4>
+        <p>Normal test days: OpsLens ${ev(paths.ours, "pct")} vs ${ev(paths.baseB, "pct")} for
+          ${escapeHtml(policyLabel("baseline_b"))}. Stress tests:</p>
+        ${stressVerdicts(paths.stress, rows)}
+        ${why}${design}
+      </li>`;
+  }).join("");
+
+  const note = hasValue("details.test_runs_note")
+    ? `<div class="callout info" style="margin-top: 16px">${evText("details.test_runs_note")}</div>`
+    : `<p class="card-foot">Earlier versions appear here once <code>make eval</code> keeps their records
+        (<code>details.v1_record</code>, <code>details.v2_record</code>).</p>`;
   return `<section class="card honest" id="what-failed">
       <div class="card-head"><div><h3 class="card-title">What failed, and what we changed</h3>
-        <div class="card-sub">Verdicts come from the sign of each 95% CI of (OpsLens − Baseline B), so they stay honest when numbers change</div></div></div>
-      <ol class="steps">${steps.join("")}</ol>
-      ${pending}
+        <div class="card-sub">Verdicts come from the sign of each 95% CI of (OpsLens − ${escapeHtml(policyLabel("baseline_b"))}),
+          so the words stay honest when numbers change</div></div></div>
+      ${list.length > 1 ? `<div class="versions">${tiles}</div>` : ""}
+      <ol class="steps" style="margin-top: 22px">${steps}</ol>
+      ${note}
     </section>`;
 }
 
@@ -166,21 +225,23 @@ function stressVerdicts(base, rows) {
       return `<li><strong>${evText(path + ".scenario")}</strong> OpsLens ${ev(path + ".opslens", "pct")}</li>`;
     }
     return `<li>${verdict(row.ci_low, row.ci_high)} <strong>${evText(path + ".scenario")}</strong>
-        <span>OpsLens − ${escapeHtml(policyLabel("baseline_b"))} ${ev(path + ".opslens_minus_b", "pts", { signed: true })}</span>
+        <span>OpsLens ${ev(path + ".opslens", "pct")} vs ${ev(path + ".baseline_b", "pct")}:
+          ${ev(path + ".opslens_minus_b", "pts", { signed: true })}</span>
         <span class="muted">95% CI ${ev(path + ".ci_low", "pts", { signed: true })} to ${ev(path + ".ci_high", "pts", { signed: true })}</span></li>`;
   }).join("");
   return `<ul class="verdicts">${items}</ul>`;
 }
 
-// The validation-day design table: one row per candidate, breach columns only (to fit).
-function designTable(v2) {
-  const columns = Object.keys(v2.rows[0]).filter((k) => k !== "variant" && /breach_pct$/.test(k));
+// A validation-day design table: one row per candidate, breach columns only (to fit).
+function designTable(base) {
+  const design = lookup(base);
+  const columns = Object.keys(design.rows[0]).filter((k) => k !== "variant" && /breach_pct$/.test(k));
   const header = columns.map((c) => `<th class="num">${escapeHtml(designHeader(c))}</th>`).join("");
-  const body = v2.rows.map((row, i) => `<tr>
-      <td>${evText(`details.design_v2.rows[${i}].variant`)}</td>
-      ${columns.map((c) => `<td class="num">${ev(`details.design_v2.rows[${i}].${c}`, "pct", { bare: true })}</td>`).join("")}
+  const body = design.rows.map((row, i) => `<tr>
+      <td>${evText(`${base}.rows[${i}].variant`)}</td>
+      ${columns.map((c) => `<td class="num">${ev(`${base}.rows[${i}].${c}`, "pct", { bare: true })}</td>`).join("")}
     </tr>`).join("");
-  return `<div class="table-wrap"><table class="design-table">
+  return `<div class="table-wrap"><table>
       <thead><tr><th>Design</th>${header}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 

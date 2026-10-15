@@ -1,31 +1,36 @@
-// story.js — the guided 6-step walkthrough for the demo.
+// story.js — the guided 6-step walkthrough for the demo, on the real numbers.
 //
 // Why: in a five-minute pitch the order matters. Story mode walks the judges through
-// problem -> replay -> pattern -> at-risk ticket -> recommendation + impact -> their turn.
-// Each step switches tab, outlines the element being discussed in red, and explains it in
-// two or three sentences. Numbers in the story text are ev() numbers too: read from the JSON
-// and clickable. Next / Back (or the arrow keys) move; Esc closes.
+// problem -> Saturday replay -> one pattern with evidence -> one at-risk ticket -> impact with
+// CIs -> their turn. Each step switches tab, outlines the element being discussed in red, and
+// explains it in two or three sentences. Every number in the story text is ev()/evText():
+// read from the results file and clickable. The pattern and the ticket are CHOSEN from the
+// data (rules below), so the story stays correct when the results change.
+// Next / Back (or the arrow keys) move; Esc closes.
 //
-// Example step 4 (fixture): "T000003 has a 92% chance of breaching, 12 min before its SLA.
-// Top reason: 18 tickets ahead in queue (+0.21). If we assign to a free skilled agent now,
-// the risk falls to 35%."
+// Example step 4 (real results): "T060582, a P2 refund ticket, has a 99.7% chance of
+// breaching ... If we assign now to a free agent who handles refund in Hindi, the risk falls
+// to 29%."
 
-import { state, policyLabel } from "./data.js";
+import { state } from "./data.js";
+import { shortLabel } from "./ui.js";
 import { ev, evText } from "./evidence.js";
 import { showTab } from "./router.js";
 import { startReplay, pauseReplay } from "./replay.js";
-import { escapeHtml } from "./format.js";
+import { escapeHtml, prettyKey } from "./format.js";
 import { CAUSE_LABELS } from "./tabs/patterns.js";
 
 const BREACH = "turnaround.breach_pct";
 
+// Each step: the tab to open, a function returning the id of the element to outline, a title,
+// a function writing the text, and optionally something to start (the replay).
 const STEPS = [
-  { tab: "overview", target: "#ov-headline", title: "The problem", body: problemText },
-  { tab: "compare", target: "#replay", title: "The same evening, three ways", body: replayText, enter: startReplay },
-  { tab: "patterns", target: "#tab-patterns .evidence-card", title: "A pattern, with evidence", body: patternText },
+  { tab: "overview", target: () => "ov-headline", title: "The problem", body: problemText },
+  { tab: "compare", target: () => "replay", title: "One busy Saturday, three ways", body: replayText, enter: startReplay },
+  { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
-  { tab: "recommendations", target: "#rec-staffing", title: "What to do, and what it is worth", body: impactText },
-  { tab: "whatif", target: "#whatif-form", title: "Your turn", body: yourTurnText },
+  { tab: "compare", target: () => "kpi-table-panel", title: "What it is worth, with confidence intervals", body: impactText },
+  { tab: "whatif", target: () => "whatif-form", title: "Your turn", body: yourTurnText },
 ];
 
 let step = -1; // -1 = story mode is off
@@ -62,10 +67,7 @@ function goTo(i) {
   step = i;
   const s = STEPS[step];
   showTab(s.tab);
-  // A target is a CSS selector, or a function that returns an element id (chosen from the data).
-  const target = typeof s.target === "function"
-    ? document.getElementById(s.target())
-    : document.querySelector(s.target);
+  const target = document.getElementById(s.target());
   if (target) {
     target.classList.add("story-target");
     highlighted = target;
@@ -117,48 +119,87 @@ function breachPath(policy) {
   return `sim.policies.${policy}.kpis.${BREACH}.mean`;
 }
 
+// The paired difference (OpsLens − baseline) for one KPI: "−4.6 pts (95% CI −5.8 to −3.4)".
+function diffText(baseline, kpi, unit) {
+  const i = state.results.sim.comparisons.findIndex((c) => c.policy === "opslens" && c.baseline === baseline && c.kpi === kpi);
+  if (i < 0) return "";
+  const base = `sim.comparisons[${i}]`;
+  return `${ev(base + ".mean_diff", unit, { signed: true })} (95% CI ${ev(base + ".ci_low", unit, { signed: true })} to
+    ${ev(base + ".ci_high", unit, { signed: true })})`;
+}
+
 function problemText() {
   if (!state.results.sim) return "The simulator results are not in the results file yet.";
-  return `Helpdesk tools tell you a ticket is already late. On held-out test days a
-    first-come-first-served floor (${escapeHtml(policyLabel("baseline_a"))}) breaches
-    ${ev(breachPath("baseline_a"), "pct")} of SLAs; priority-first (${escapeHtml(policyLabel("baseline_b"))})
-    breaches ${ev(breachPath("baseline_b"), "pct")}. OpsLens: ${ev(breachPath("opslens"), "pct")}.
-    Click any number to see where it comes from.`;
+  return `Helpdesk tools tell you a ticket is already late. On the held-out test days a
+    first-come-first-served floor (${escapeHtml(shortLabel("baseline_a"))}) breaches
+    ${ev(breachPath("baseline_a"), "pct")} of SLAs, and priority-first (${escapeHtml(shortLabel("baseline_b"))})
+    ${ev(breachPath("baseline_b"), "pct")}. OpsLens: ${ev(breachPath("opslens"), "pct")}, with the same tickets and
+    the same agents. Click any number to see where it comes from.`;
 }
 
 function replayText() {
   const replay = state.results.sim && state.results.sim.replay;
   if (!replay) return "No replay in the results file yet.";
   const last = replay.times.length - 1;
-  return `${evText("sim.replay.title")}. Same tickets and the same luck for every policy;
-    only the decisions differ. By the end of the evening:
-    ${escapeHtml(policyLabel("baseline_a"))} ${ev(`sim.replay.series.baseline_a.breached_cum[${last}]`, "int")} breaches,
-    ${escapeHtml(policyLabel("baseline_b"))} ${ev(`sim.replay.series.baseline_b.breached_cum[${last}]`, "int")},
+  return `${evText("sim.replay.title")}: the same tickets and the same luck for every policy;
+    only the decisions differ. Breaches by the end of the evening:
+    ${escapeHtml(shortLabel("baseline_a"))} ${ev(`sim.replay.series.baseline_a.breached_cum[${last}]`, "int")},
+    ${escapeHtml(shortLabel("baseline_b"))} ${ev(`sim.replay.series.baseline_b.breached_cum[${last}]`, "int")},
     OpsLens ${ev(`sim.replay.series.opslens.breached_cum[${last}]`, "int")}.`;
+}
+
+// The pattern the story shows: the strongest skill-gap card (Hindi refunds wait for the few
+// agents who speak Hindi and know refunds), or simply the strongest card if there is none.
+function storyCard() {
+  const cards = state.results.patterns.cards;
+  let best = -1;
+  cards.forEach((c, i) => {
+    if (c.cause_type === "skill_gap" && (best < 0 || c.strength > cards[best].strength)) best = i;
+  });
+  if (best < 0) {
+    best = 0;
+    cards.forEach((c, i) => { if (c.strength > cards[best].strength) best = i; });
+  }
+  return { card: cards[best], index: best };
+}
+
+function storyCardId() {
+  const p = state.results.patterns;
+  return p && p.cards.length ? "card-" + storyCard().card.id : "";
 }
 
 function patternText() {
   const p = state.results.patterns;
   if (!p || !p.cards.length) return "Patterns are not in the results file yet.";
-  let top = 0;
-  p.cards.forEach((card, i) => { if (card.strength > p.cards[top].strength) top = i; });
-  const card = p.cards[top];
-  return `${evText(`patterns.cards[${top}].title`)} — ${evText(`patterns.cards[${top}].comparison_text`)}.
-    Cause: ${escapeHtml(CAUSE_LABELS[card.cause_type] || card.cause_type)}. Each card shows the volume affected,
-    why it is not a known event, and real (masked) example tickets.`;
+  const { card, index } = storyCard();
+  const base = `patterns.cards[${index}]`;
+  const why = card.not_explained_by ? ` (${evText(base + ".not_explained_by")})` : "";
+  const action = card.recommendation ? ` Suggested action: ${evText(base + ".recommendation")}.` : "";
+  return `${evText(base + ".title")}: ${evText(base + ".comparison_text")}.
+    Cause: ${escapeHtml(CAUSE_LABELS[card.cause_type] || card.cause_type)}${why}.${action}`;
 }
 
-// The ticket where acting now helps most (biggest drop from probability to
-// probability_after_action); without "after action" numbers, the riskiest ticket.
+// The ticket the story shows: among tickets in the story pattern's language (if it has one),
+// the one where acting now helps most (biggest drop from probability to
+// probability_after_action); otherwise the same rule over all tickets.
 // A choice made by comparing JSON values; no new number is shown.
 function storyTicket() {
   const list = state.results.risk.at_risk;
+  const p = state.results.patterns;
+  const language = p && p.cards.length ? storyCard().card.segment.language : null;
   const drop = (t) => (typeof t.probability_after_action === "number" ? t.probability - t.probability_after_action : -1);
-  let best = 0;
-  list.forEach((t, i) => {
-    const better = drop(t) > drop(list[best]) || (drop(t) === drop(list[best]) && t.probability > list[best].probability);
-    if (better) best = i;
-  });
+  const pick = (allowed) => {
+    let best = -1;
+    list.forEach((t, i) => {
+      if (!allowed(t)) return;
+      const better = best < 0 || drop(t) > drop(list[best])
+        || (drop(t) === drop(list[best]) && t.probability > list[best].probability);
+      if (better) best = i;
+    });
+    return best;
+  };
+  let best = typeof language === "string" ? pick((t) => t.language === language) : -1;
+  if (best < 0) best = pick(() => true);
   return { ticket: list[best], index: best };
 }
 
@@ -172,36 +213,24 @@ function ticketText() {
   if (!risk || !risk.at_risk.length) return "The risk model is not in the results file yet.";
   const { ticket: t, index: top } = storyTicket();
   const base = `risk.at_risk[${top}]`;
-  const reason = t.reasons.length ? ` Top reason: ${evText(base + ".reasons[0].text")}.` : "";
+  const reasons = t.reasons.slice(0, 2).map((_, j) => evText(`${base}.reasons[${j}].text`)).join("; ");
   const action = t.action && typeof t.probability_after_action === "number"
     ? ` If we ${evText(base + ".action")}, the risk falls to ${ev(base + ".probability_after_action", "frac_pct")}.`
     : "";
-  return `${evText(base + ".ticket_id")} has a ${ev(base + ".probability", "frac_pct")} chance of breaching,
-    ${ev(base + ".minutes_to_sla", "min")} before its SLA.${reason}${action}`;
+  return `${evText(base + ".ticket_id")}, a ${escapeHtml(t.priority)} ${escapeHtml(prettyKey(t.category).toLowerCase())}
+    ticket, has a ${ev(base + ".probability", "frac_pct")} chance of breaching, ${ev(base + ".minutes_to_sla", "min")}
+    before its SLA. Why: ${reasons}.${action}`;
 }
 
 function impactText() {
   const r = state.results;
-  const parts = [];
-  const plans = r.details && r.details.forecast && r.details.forecast.plans;
-  if (plans && plans.length) {
-    const p = "details.forecast.plans[0]";
-    parts.push(`For days ${ev(p + ".first_day", "int")}–${ev(p + ".last_day", "int")} a few shift changes, with the same
-      people and the same agent-hours, cut the forecast shortage from ${ev(p + ".shortage_before", "num")} to
-      ${ev(p + ".shortage_after", "num")} agent-hours; every assignment comes with its reason.`);
-  } else if (r.recommendations && r.recommendations.staffing_moves.length) {
-    parts.push(`${evText("recommendations.staffing_moves[0].text")} — same headcount, same agent-hours.`);
-  }
-  if (r.sim) {
-    const i = r.sim.comparisons.findIndex((c) => c.policy === "opslens" && c.baseline === "baseline_a" && c.kpi === BREACH);
-    if (i >= 0) {
-      const base = `sim.comparisons[${i}]`;
-      parts.push(`Over all test days, OpsLens − ${escapeHtml(policyLabel("baseline_a"))} on breaches:
-        ${ev(base + ".mean_diff", "pts", { signed: true })} (paired 95% CI
-        ${ev(base + ".ci_low", "pts", { signed: true })} to ${ev(base + ".ci_high", "pts", { signed: true })}).`);
-    }
-  }
-  return parts.length ? parts.join(" ") : "Recommendations are not in the results file yet.";
+  if (!r.sim) return "The simulator results are not in the results file yet.";
+  const hindi = r.sim.policies.opslens.kpis["segment.hindi_breach_pct"]
+    ? ` Hindi tickets: ${diffText("baseline_b", "segment.hindi_breach_pct", "pts")}.` : "";
+  return `Doing this for every waiting ticket, all day, over all held-out days: breaches
+    ${diffText("baseline_b", BREACH, "pts")} against ${escapeHtml(shortLabel("baseline_b"))}, and
+    ${diffText("baseline_a", BREACH, "pts")} against ${escapeHtml(shortLabel("baseline_a"))}.${hindi}
+    Every row of this table is a paired comparison over the same seeds.`;
 }
 
 function yourTurnText() {

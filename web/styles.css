@@ -1707,3 +1707,61 @@ dialog h2 {
 .dropzone + #up-mapping:empty {
   display: none;
 }
+
+/* Loading: the seconds counter sits at the right; result areas keep their height while
+   loading, so nothing jumps when the answer arrives. */
+.wait-text {
+  flex: 1 1 auto;
+}
+
+.wait-clock {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+#whatif-result,
+#up-result:not(:empty),
+#plant-result:not(:empty) {
+  min-height: 280px;
+}
+
+dialog {
+  max-height: 86vh;
+  overflow-y: auto;
+}
+
+dialog.wide {
+  width: min(820px, 94vw);
+}
+
+/* The v1 -> v2 -> v3 strip on "How we tested": one tile per policy version, with arrows. */
+.versions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 40px;
+}
+
+.version {
+  position: relative;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-3);
+}
+
+.version.is-current {
+  background: var(--good-soft);
+  border-color: #bfe3cc;
+}
+
+.version + .version::before {
+  content: "→";
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 1.2rem;
+}

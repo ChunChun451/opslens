@@ -9,7 +9,9 @@
 // ticket_id = number, created_at = opened_at, resolved_at = resolved_at, team = assignment_group.
 
 import { state } from "../data.js";
-import { pageHeader, card, backendMissing } from "../ui.js";
+import { pageHeader, card, stat, backendMissing, postForm, showWaiting } from "../ui.js";
+import { ev, evText } from "../evidence.js";
+import { CAUSE_LABELS } from "./patterns.js";
 import { escapeHtml } from "../format.js";
 
 // The fields OpsLens needs, and column names that usually mean the same thing.
@@ -36,6 +38,7 @@ const UCI_COLUMNS = [
 ];
 
 let chosenFile = null;
+const UPLOAD_TIMEOUT_MS = 180000; // the UCI example takes about 10 s; big files longer
 
 export function render(section) {
   section.innerHTML = `
@@ -124,8 +127,51 @@ function showMapping(section, columns) {
   section.querySelector("#up-run").addEventListener("click", () => run(section));
 }
 
+// The live answer from POST /api/upload: the same analysis as the main engine, run on the
+// uploaded file only. Not part of results.json; kept in state.upload so its numbers are
+// clickable ("upload.*" paths).
+// Example (UCI example): 24,918 incidents, 2016-02-29 to 2017-02-16, breach 36.6%,
+// worst teams and categories, and 4 evidence cards.
+function uploadAnswerHtml(a) {
+  const range = Array.isArray(a.date_range)
+    ? `${evText("upload.date_range[0]")} to ${evText("upload.date_range[1]")}` : "";
+  const stats = `<div class="grid cols-4 stretch" style="margin-top: 4px">
+      ${card({ body: stat("Tickets", ev("upload.rows", "int"), range) })}
+      ${card({ body: stat("SLA breach rate", ev("upload.breach_pct", "pct"), "share that missed its SLA") })}
+      ${card({ body: stat("Mean resolution", ev("upload.mean_resolution_min", "dur"), "created to resolved") })}
+      ${card({ body: stat("P90 resolution", ev("upload.p90_resolution_min", "dur"), `analysed in ${ev("upload.seconds", "sec")}`) })}
+    </div>`;
+  const table = (title, key) => {
+    const rows = a[key] || [];
+    if (!rows.length) return "";
+    const body = rows.map((r, i) => `<tr><td>${evText(`upload.${key}[${i}].name`)}</td>
+        <td class="num">${ev(`upload.${key}[${i}].tickets`, "int")}</td>
+        <td class="num">${ev(`upload.${key}[${i}].breach_pct`, "pct")}</td>
+        <td class="num">${ev(`upload.${key}[${i}].mean_resolution_min`, "dur")}</td></tr>`).join("");
+    return card({
+      title,
+      body: `<div class="table-wrap"><table><thead><tr><th>Name</th><th class="num">Tickets</th>
+        <th class="num">Breach</th><th class="num">Mean resolution</th></tr></thead><tbody>${body}</tbody></table></div>`,
+    });
+  };
+  const cards = (a.cards || []).map((c, i) => `<li>
+      <div class="issue">
+        <span class="issue-title">${evText(`upload.cards[${i}].title`)}</span>
+        <span class="pill">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
+        <span class="issue-text">${evText(`upload.cards[${i}].comparison_text`)} · ${ev(`upload.cards[${i}].affected_tickets`, "int")} tickets</span>
+      </div></li>`).join("");
+  return `<div class="callout good"><strong>${evText("upload.source")}</strong>: analysed with the same pattern scans as the main engine.</div>
+    ${stats}
+    <div class="grid cols-2" style="margin-top: 20px">${table("Worst teams by breach rate", "by_team")}${table("Worst categories by breach rate", "by_category")}</div>
+    <div style="margin-top: 20px">${card({
+      title: "Findings in your data",
+      body: cards ? `<ul class="list">${cards}</ul>` : `<p class="muted">No finding passed the thresholds.</p>`,
+    })}</div>`;
+}
+
 async function run(section) {
   const result = section.querySelector("#up-result");
+  const button = section.querySelector("#up-run");
   const mapping = {};
   section.querySelectorAll("[data-field]").forEach((select) => {
     mapping[select.dataset.field] = select.value;
@@ -142,16 +188,17 @@ async function run(section) {
   } else {
     form.append("example", "uci_incidents");
   }
-  result.innerHTML = `<p class="muted">Uploading…</p>`;
+  button.disabled = true;
+  showWaiting(result, "Reading the file and running the engine's pattern scans on it…");
   try {
-    if (state.staticServer) {
-      throw new Error("No API on the static preview server");
-    }
-    const response = await fetch("/api/upload", { method: "POST", body: form });
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    result.innerHTML = `<div class="callout good">Uploaded. The engine is running on your data.</div>`;
+    state.upload = await postForm("/api/upload", form, UPLOAD_TIMEOUT_MS);
+    result.innerHTML = uploadAnswerHtml(state.upload);
   } catch (error) {
-    result.innerHTML = backendMissing("POST /api/upload", "M10",
-      "Your column mapping is ready; the server will run the engine on it.");
+    state.upload = null;
+    result.innerHTML = state.staticServer || /HTTP (404|405|501)/.test(error.message)
+      ? backendMissing("POST /api/upload", "Your column mapping is ready; start the server to run the engine on it.")
+      : `<div class="callout warn"><strong>The analysis did not finish.</strong> ${escapeHtml(error.message)}.</div>`;
+  } finally {
+    button.disabled = false;
   }
 }
