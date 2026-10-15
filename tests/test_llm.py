@@ -123,3 +123,26 @@ def test_minute_window_makes_third_call_wait(tmp_path) -> None:
     waited = limiter.wait_for_slot("p", requests_per_minute=2)
     assert waited == pytest.approx(58.0)
     assert limiter.calls_today("p") == 2
+
+
+def test_retry_after_parsing() -> None:
+    from opslens.llm.client import retry_after_seconds
+    assert retry_after_seconds("Please try again in 21.36s. Need more") == pytest.approx(21.36)
+    assert retry_after_seconds("try again in 1m9.552s") == pytest.approx(69.552)
+    assert retry_after_seconds("try again in 659.99ms") == pytest.approx(0.66, abs=0.01)
+    assert retry_after_seconds("quota exceeded for today") is None
+
+
+def test_short_rate_limit_waits_and_retries_same_provider(tmp_path) -> None:
+    class RateLimitedOnce(MockProvider):
+        def send(self, messages):
+            if not self.sent:
+                self.sent.append(messages)
+                raise RuntimeError("429 Rate limit reached. Please try again in 2.5s.")
+            return super().send(messages)
+
+    waits: list[float] = []
+    main = RateLimitedOnce(ProviderConfig(name="main", kind="mock", model="m"), replies=['{"ok": 1}'])
+    client = LLMClient([main, mock("backup", replies=['{"b": 1}'])], sleep_fn=waits.append)
+    result = client.ask_json("t", "sys", "hi")
+    assert result.provider == "main" and waits == [3.5]

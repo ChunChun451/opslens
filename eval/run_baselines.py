@@ -34,8 +34,7 @@ SHOW = [
 
 
 def main() -> int:
-    cfg = load_config("generator")
-    splits = cfg["splits"]
+    splits = load_config("calendar")["splits"]
     tickets = pd.read_csv(ROOT / "data" / "generated" / "world_tickets.csv")
     warmup_start, _ = day_bounds(splits["validation_last_day"], splits["validation_last_day"])
     test_start, test_end = day_bounds(splits["validation_last_day"] + 1, splits["test_last_day"])

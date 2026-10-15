@@ -57,9 +57,10 @@ def day_totals(cfg: dict, rng: np.random.Generator, first_weekday: int) -> np.nd
         if (first_weekday + d - 1) % 7 in (5, 6):
             totals[d - 1] *= float(cfg["weekend_multiplier"])
     for event in cfg["known_events"]:
-        totals[event["day"] - 1] *= float(event["multiplier"])
+        if event["day"] <= days:  # shorter runs (blind test) may end before a sale day
+            totals[event["day"] - 1] *= float(cfg["known_event_multiplier"])
     for decoy in cfg["decoys"]:
-        if decoy["kind"] == "busy_normal_day":
+        if decoy["kind"] == "busy_normal_day" and decoy["day"] <= days:
             totals[decoy["day"] - 1] *= float(decoy["multiplier"])
     noise = np.exp(rng.normal(0.0, float(cfg["day_noise_sd"]), days))
     return totals * noise
@@ -79,6 +80,15 @@ def category_lift(cfg: dict, day: int, weekday: int, hour: int, category: str) -
         spike = planted[key]
         if spike["enabled"] and day == spike["day"] and hour in spike["hours"] and category == spike["category"]:
             lift *= float(spike["multiplier"])
+    # Generic lifts, used by data/plant.py for the blind recall test.
+    for extra in cfg.get("extra_lifts", []):
+        if category not in extra["categories"] or hour not in extra["hours"]:
+            continue
+        if extra.get("days") is not None and day not in extra["days"]:
+            continue
+        if extra.get("weekdays") is not None and weekday not in extra["weekdays"]:
+            continue
+        lift *= float(extra["multiplier"])
     return lift
 
 
@@ -103,6 +113,7 @@ def choose_selected_category(cfg: dict, rng: np.random.Generator, true_cat: str,
     ivr = cfg["planted"]["ivr_misrouting"]
     if ivr["enabled"] and channel == ivr["channel"]:
         p_wrong = float(ivr["wrong_selection_prob"])
+    p_wrong = float(cfg.get("extra_misrouting", {}).get(channel, p_wrong))
     if rng.random() >= p_wrong:
         return true_cat
     likely = cfg["likely_confusions"].get(true_cat, [])
@@ -112,7 +123,26 @@ def choose_selected_category(cfg: dict, rng: np.random.Generator, true_cat: str,
     return str(rng.choice(others))
 
 
-def make_tickets(cfg: dict, bank: TextBank) -> pd.DataFrame:
+def cluster_weights_by_category(cfg: dict) -> dict[str, np.ndarray]:
+    """Cluster popularity per category, with partner plants (one cluster sends more of a category)."""
+    base = cluster_weights(cfg)
+    partners = []
+    main = cfg["planted"]["partner_cluster"]
+    if main["enabled"]:
+        partners.append(main)
+    partners += cfg.get("extra_partners", [])
+    out = {}
+    for category in cfg["categories"]:
+        weights = base.copy()
+        for partner in partners:
+            if partner["category"] == category:
+                weights[int(partner["cluster_id"])] *= float(partner["multiplier"])
+        out[category] = weights / weights.sum()
+    return out
+
+
+def make_tickets(cfg: dict, bank: TextBank | None) -> pd.DataFrame:
+    """All tickets for the run. `bank=None` skips the text (the blind recall test does not need it)."""
     seed = int(cfg["seed"])
     rng = np.random.default_rng([seed, 10])  # structure: counts, times, attributes
     rng_text = np.random.default_rng([seed, 11])  # text only, so editing templates moves nothing else
@@ -120,8 +150,7 @@ def make_tickets(cfg: dict, bank: TextBank) -> pd.DataFrame:
     profile = np.array(cfg["hourly_profile"], dtype=float)
     profile = profile / profile.sum()
     totals = day_totals(cfg, rng, first_weekday)
-    clusters = cluster_weights(cfg)
-    partner = cfg["planted"]["partner_cluster"]
+    weights_by_category = cluster_weights_by_category(cfg)
 
     rows: list[dict] = []
     for day in range(1, int(cfg["days"]) + 1):
@@ -131,12 +160,15 @@ def make_tickets(cfg: dict, bank: TextBank) -> pd.DataFrame:
             for category, share in cfg["categories"].items():
                 expected = hour_total * float(share) * category_lift(cfg, day, weekday, hour, category)
                 for _ in range(rng.poisson(expected)):
-                    rows.append(one_ticket(cfg, rng, day, hour, category, clusters, partner))
+                    rows.append(one_ticket(cfg, rng, day, hour, category, weights_by_category[category]))
 
     tickets = pd.DataFrame(rows).sort_values("created_min", kind="stable").reset_index(drop=True)
     tickets.insert(0, "ticket_id", [f"T{n:06d}" for n in range(1, len(tickets) + 1)])
     start = pd.Timestamp(cfg["start_date"])
     tickets["created_at"] = start + pd.to_timedelta(tickets["created_min"], unit="m")
+    if bank is None:
+        tickets["text"] = ""
+        return tickets
     tickets["text"] = [
         bank.make_text(rng_text, r.category, r.language, r.restaurant_name, r.order_id)
         for r in tickets.itertuples()
@@ -144,7 +176,7 @@ def make_tickets(cfg: dict, bank: TextBank) -> pd.DataFrame:
     return tickets
 
 
-def one_ticket(cfg, rng, day, hour, category, clusters, partner) -> dict:
+def one_ticket(cfg, rng, day, hour, category, cluster_weights_for_category) -> dict:
     channel = pick(rng, cfg["channels"])
     priority = ["P1", "P2", "P3"][int(rng.choice(3, p=cfg["priority_probs"][category]))]
     if channel == "email" and priority == "P1":
@@ -153,11 +185,7 @@ def one_ticket(cfg, rng, day, hour, category, clusters, partner) -> dict:
     value = float(cfg["order_value_median_inr"]) * np.exp(rng.normal(0, float(cfg["order_value_sigma"])))
     if tier == "gold":
         value *= 1.3
-    weights = clusters
-    if partner["enabled"] and category == partner["category"]:
-        weights = clusters.copy()
-        weights[int(partner["cluster_id"])] *= float(partner["multiplier"])
-        weights = weights / weights.sum()
+    weights = cluster_weights_for_category
     cluster = int(rng.choice(len(weights), p=weights))
     return {
         "created_min": (day - 1) * MINUTES_PER_DAY + hour * 60 + float(rng.uniform(0, 60)),
@@ -276,10 +304,10 @@ def print_report(cfg, world, tickets, result, history, seconds: float) -> None:
 
 
 def main() -> int:
-    cfg = load_config("generator")
+    cfg = {**load_config("generator"), **load_config("calendar")}
     sla = load_config("sla")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    bank = TextBank.from_bitext_csv(BITEXT_PATH)
+    bank = TextBank.from_bitext_csv(BITEXT_PATH, ROOT / "data" / "llm_templates.json")
     tickets = make_tickets(cfg, bank)
     if "--tickets-only" in sys.argv:  # calibration helper: skip the slow history simulation
         tickets.to_csv(OUT_DIR / "world_tickets.csv", index=False)

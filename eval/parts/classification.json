@@ -1,0 +1,640 @@
+{
+ "accuracy_local": 0.9797027506654836,
+ "accuracy_cascade": 0.9808118899733806,
+ "accuracy_llm_sample": 0.9,
+ "pct_sent_to_llm": 1.54170363797693,
+ "transfers_avoided_per_100": 4.514196983141082,
+ "confusion": {
+  "account": {
+   "account": 1313,
+   "app_bug": 8,
+   "late_delivery": 2,
+   "missing_item": 0,
+   "payment_failure": 1,
+   "refund": 3,
+   "restaurant_partner": 3,
+   "wrong_item": 2
+  },
+  "app_bug": {
+   "account": 16,
+   "app_bug": 1085,
+   "late_delivery": 3,
+   "missing_item": 1,
+   "payment_failure": 7,
+   "refund": 0,
+   "restaurant_partner": 6,
+   "wrong_item": 1
+  },
+  "late_delivery": {
+   "account": 6,
+   "app_bug": 6,
+   "late_delivery": 4892,
+   "missing_item": 32,
+   "payment_failure": 6,
+   "refund": 2,
+   "restaurant_partner": 9,
+   "wrong_item": 1
+  },
+  "missing_item": {
+   "account": 4,
+   "app_bug": 2,
+   "late_delivery": 18,
+   "missing_item": 2626,
+   "payment_failure": 4,
+   "refund": 3,
+   "restaurant_partner": 6,
+   "wrong_item": 17
+  },
+  "payment_failure": {
+   "account": 3,
+   "app_bug": 8,
+   "late_delivery": 2,
+   "missing_item": 2,
+   "payment_failure": 1705,
+   "refund": 19,
+   "restaurant_partner": 5,
+   "wrong_item": 1
+  },
+  "refund": {
+   "account": 6,
+   "app_bug": 2,
+   "late_delivery": 5,
+   "missing_item": 4,
+   "payment_failure": 26,
+   "refund": 2597,
+   "restaurant_partner": 6,
+   "wrong_item": 5
+  },
+  "restaurant_partner": {
+   "account": 1,
+   "app_bug": 7,
+   "late_delivery": 8,
+   "missing_item": 3,
+   "payment_failure": 7,
+   "refund": 4,
+   "restaurant_partner": 1728,
+   "wrong_item": 14
+  },
+  "wrong_item": {
+   "account": 2,
+   "app_bug": 2,
+   "late_delivery": 5,
+   "missing_item": 27,
+   "payment_failure": 2,
+   "refund": 1,
+   "restaurant_partner": 0,
+   "wrong_item": 1740
+  }
+ },
+ "clusters": [
+  {
+   "category": "late_delivery",
+   "name": "Order Status Inquiry",
+   "root_cause": "Customers are requesting updates on the estimated arrival time of their orders",
+   "size": 3743,
+   "examples": [
+    "need help to see how soon can i expect the order",
+    "help to see how soon can i expect my order",
+    "help to see how soon can i expect my order"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Delayed Food Delivery",
+   "root_cause": "The order failed to arrive by the scheduled delivery time",
+   "size": 299,
+   "examples": [
+    "food was supposed to arrive by 8 pm, its way past that",
+    "food was supposed to arrive by 8 pm, its way past that",
+    "food was supposed to arrive by 8 pm, its way past that"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Delayed Order Delivery Inquiries",
+   "root_cause": "Orders are failing to arrive within the expected delivery timeframe",
+   "size": 4752,
+   "examples": [
+    "please check my order status, very late, kids are hungry. call me on [phone]",
+    "please check my order status, very late, kids are hungry. call me on [phone]",
+    "please check my order status, very late, kids are hungry. call me on [phone]"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Delivery Time Estimate Discrepancies",
+   "root_cause": "Actual delivery times consistently exceed the initial estimated arrival time provided",
+   "size": 1424,
+   "examples": [
+    "why is my order delayed? it showed 30 min and now its 40",
+    "why is my order delayed? it showed 30 min and now its 30",
+    "why is my order delayed? it showed 30 min and now its 45"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Stalled Out For Delivery Status",
+   "root_cause": "System delay in updating the final delivery status for customer orders",
+   "size": 878,
+   "examples": [
+    "order stuck at 'out for delivery' for 60 minutes",
+    "order stuck at 'out for delivery' for 40 minutes",
+    "order stuck at 'out for delivery' for 30 minutes"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Stationary Rider Delivery Delays",
+   "root_cause": "Delivery riders are failing to move toward the destination causing significant delays",
+   "size": 3792,
+   "examples": [
+    "why is the rider not moving? my order is late. i have been waiting for 40 mins. i am very puset about this.",
+    "really annoying. rider is not reachable and my order is late. i have been waiting for 50 mins. hwat is the delay?",
+    "why is the rider not moving? order id [order_id] is late. i have been waiting for 75 mins. i am very upset about this."
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Incomplete Order Delivery",
+   "root_cause": "Restaurant staff failed to include all ordered items in the delivery package",
+   "size": 3027,
+   "examples": [
+    "really? idli sambar is missing from my wok this way order. i am confused why they forgot it. can you check the kitchen logs?, and the app is not working properly. call me on [phone]",
+    "also please update my phone number. this is so annoying. veg thali did not arrive with my food from wok this way. i waited 25 and it just wasn't there. refund pls?",
+    "really? butter chicken is missing from my biryani junction order. i am confused why they forgot it. can you check the kitchen logs?. call me on [phone]"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Salad Items",
+   "root_cause": "The salad component is consistently omitted from customer orders during fulfillment",
+   "size": 249,
+   "examples": [
+    "received incomplete order, aslad missing",
+    "received incomplete order, salad missing",
+    "received incomplete order, salad missing"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Items From Order",
+   "root_cause": "Items listed on the bill were omitted from the delivered package",
+   "size": 1944,
+   "examples": [
+    "where is my garlci naan? it was in the bill but not delivered",
+    "the slaad is not there in the package, please refund it",
+    "the papda is not there in the package, please refund it"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Incomplete Order Delivery",
+   "root_cause": "Warehouse staff failed to include all purchased items in the shipment",
+   "size": 913,
+   "examples": [
+    "half my order is missing. paid for 3 items received 2",
+    "half my order is missing. paid for 3 items received 2",
+    "half my order is missing. paid for 3 items received 2"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Order Item",
+   "root_cause": "The fulfillment process failed to include a specific item in the shipment",
+   "size": 510,
+   "examples": [
+    "you missed one item in my order",
+    "you missed one item in my order",
+    "you missed one item in my order"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Incomplete Order Delivery",
+   "root_cause": "Items were omitted from the package during the order fulfillment process",
+   "size": 1288,
+   "examples": [
+    "pura order nahi aaya, aadha saman missing hai",
+    "pura order nahi aaya, aadha saman missing hai",
+    "pura order nahi aaya, aadha saman missing hai"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Spice Level and Size",
+   "root_cause": "Kitchen staff failed to follow specific spice level and portion size instructions",
+   "size": 172,
+   "examples": [
+    "ordered medium spicy, got extra spicy and wrong size",
+    "ordered medium spicy, got extra spicy and wrong size",
+    "ordered medium spicy, got extra spicy and wrong size"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Item Delivered",
+   "root_cause": "The restaurant prepared or dispatched the wrong food item for the order",
+   "size": 2759,
+   "examples": [
+    "wrong dish delivered from biryani junction, this is not what i ordered",
+    "wrong dish delivered from biryani junction, this is not what i ordered",
+    "wrong dish delivered from biryani junction, this is not what i ordered"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Items Received",
+   "root_cause": "Warehouse fulfillment error resulting in the shipment of incorrect product items",
+   "size": 641,
+   "examples": [
+    "they sent the wrong items, please fix",
+    "they sent the wrong items, please fix",
+    "they sent the wrong items, please fix"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Dietary Preference Order",
+   "root_cause": "Restaurant staff mistakenly swapped vegetarian and non vegetarian food items during packing",
+   "size": 319,
+   "examples": [
+    "received non veg instead of veg! i am vegetarian, this is serious",
+    "received non veg instead of veg! i am vegetarian, this is serious",
+    "received non veg instead of veg! i am vegetarian, this is serious"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Order Delivery",
+   "root_cause": "Courier delivered the wrong order to the customer",
+   "size": 306,
+   "examples": [
+    "the order belongs to someone else, wrong name on the bill",
+    "the order belongs to someone else, wrong name on the bill",
+    "the order belongs to someone else, wrong name on the bill"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Order Fulfillment Issues",
+   "root_cause": "Customer received the wrong items instead of the products they originally ordered",
+   "size": 1107,
+   "examples": [
+    "i haev a prbolem with my order",
+    "something went wrong with my order, help",
+    "something went wrong with my order, help"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Urgent Refund Requests",
+   "root_cause": "Customers are demanding immediate financial reimbursement for their transactions",
+   "size": 2788,
+   "examples": [
+    "refundingrs256",
+    "refundingrs306",
+    "refundingrs272"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Refund Policy Inquiry",
+   "root_cause": "Customers are seeking clarification regarding eligibility criteria for obtaining a financial refund",
+   "size": 2804,
+   "examples": [
+    "help me to see in which cases can i ask for my money back",
+    "help me to see in what cases can i ask for my money back",
+    "want help to see in which cases can i request my money back"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Delayed Refund Processing",
+   "root_cause": "Refunds are not being processed within the promised timeframe",
+   "size": 145,
+   "examples": [
+    "aapne bola tha 5 din mein refund, ek hafta ho gaya",
+    "aapne bola tha 5 din mein refund, ek hafta ho gaya",
+    "aapne bola tha 5 din mein refund, ek hafta ho gaya"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Delayed Order Refund Inquiries",
+   "root_cause": "Customer refund has not been processed or received within expected timeframe",
+   "size": 753,
+   "examples": [
+    "refund for order id [order_id] not received yet",
+    "refund for order id [order_id] not received yet",
+    "refund for order id [order_id] not received yet"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Delayed Refund Status Inquiries",
+   "root_cause": "Customers are waiting for processed refunds that have not yet been credited",
+   "size": 774,
+   "examples": [
+    "refund kab milega? rs 785 abhi tak nahi aaye",
+    "refund kab milega? rs 177 abhi tak nahi aaye",
+    "refund kab milega? rs 1116 abhi tak nahi aaye"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Delayed Refund After Order Cancellation",
+   "root_cause": "The system failed to process the refund after the order was cancelled",
+   "size": 823,
+   "examples": [
+    "i cancelled my order but money not returned",
+    "i cancelled my order but money not returned",
+    "i cancelled my order but money not returned"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "UPI Payment Deduction Failure",
+   "root_cause": "Funds deducted from user account but order status remains failed",
+   "size": 482,
+   "examples": [
+    "upi se payment kiya, paise kat gaye, order fail",
+    "upi se payment kiya, paise kat gaye, order fail",
+    "upi se payment kiya, paise kat gaye, order fail"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Online Payment Processing Errors",
+   "root_cause": "Customers are experiencing technical difficulties while attempting to complete online payment transa",
+   "size": 1868,
+   "examples": [
+    "i want assistance to inform of an error with online payment",
+    "want help to inform of an issue with online payments",
+    "i want help to inform of an issue with online payments"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Payment Debited Without Order Confirmation",
+   "root_cause": "Transaction processed successfully but order creation failed in the backend system",
+   "size": 254,
+   "examples": [
+    "money debited but order not placed",
+    "money debited but order not placed",
+    "money debited but order not placed"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Duplicate Order Charges",
+   "root_cause": "System error causing multiple transactions for a single customer order",
+   "size": 2174,
+   "examples": [
+    "charged twice for the same my order",
+    "charged twice for the same my order",
+    "charged twice for the same my order"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Failed Payments With Deducted Funds",
+   "root_cause": "Transaction failed at gateway but funds were debited from user account",
+   "size": 252,
+   "examples": [
+    "payment failed but rs 1032 deducted from my account",
+    "payment failed but rs 101 deducted from my account",
+    "payment failed but rs 547 deducted from my account"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Ghost Debit Payment Failures",
+   "root_cause": "Bank holds funds despite transaction being declined by the payment processor",
+   "size": 154,
+   "examples": [
+    "card payment declined but bank shows debit",
+    "card payment declined but bank shows debit",
+    "card payment declined but bank shows debit"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Shopping Cart Application Crash",
+   "root_cause": "The application crashes consistently when users attempt to access their shopping cart",
+   "size": 117,
+   "examples": [
+    "app keeps crashing when i open my cart",
+    "app keeps crashing when i open my cart",
+    "app keeps crashing when i open my cart"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Order Tracking Map Failure",
+   "root_cause": "The delivery tracking map interface fails to load for active orders",
+   "size": 1938,
+   "examples": [
+    "unable to track my order, map not loading",
+    "unable to track my order, map not loading",
+    "unable to track my order, map not loading"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Coupon Application Button Failure",
+   "root_cause": "The coupon application button is unresponsive and fails to trigger the action",
+   "size": 181,
+   "examples": [
+    "cannot apply coupon, button not working",
+    "cannot apply coupon, button not working",
+    "cannot apply coupon, button not working"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Authentication and OTP Delivery Failure",
+   "root_cause": "System failing to send verification codes during the user login process",
+   "size": 233,
+   "examples": [
+    "app logged me out and otp is not coming",
+    "app logged me out and otp is not coming",
+    "app logged me out and otp is not coming"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Address Saving Failure",
+   "root_cause": "Application fails to persist user address updates to the database",
+   "size": 391,
+   "examples": [
+    "address not saving in the app",
+    "address not saving in the app",
+    "address not saving in the app"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Invalid Promo Code Error",
+   "root_cause": "The application fails to recognize valid promotional codes during the checkout process",
+   "size": 241,
+   "examples": [
+    "promo code error even though it is valid",
+    "promo code error even though it is valid",
+    "promo code error even though it is valid"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Upgrade Assistance Requests",
+   "root_cause": "Users are uncertain about the specific steps required to upgrade their accounts",
+   "size": 2833,
+   "examples": [
+    "i dont know what i have to do to change to the gold account. call me on [phone]",
+    "i don't know what i need to do to change to the pro account. call me on [phone]",
+    "i don't know what i have to do to change to the pro account. call me on [phone]"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Block Inquiry",
+   "root_cause": "User is requesting clarification regarding the reason for their account suspension",
+   "size": 104,
+   "examples": [
+    "mera account block kyun hua?",
+    "mera account block kyun hua?",
+    "mera account block kyun hua?"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Password Recovery Assistance",
+   "root_cause": "Users are unable to access their accounts due to forgotten passwords",
+   "size": 106,
+   "examples": [
+    "password bhool gaya, login nahi ho raha",
+    "password bhool gaya, login nahi ho raha",
+    "password bhool gaya, login nahi ho raha"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Deletion Requests",
+   "root_cause": "Users are actively seeking to permanently remove their personal account profiles",
+   "size": 608,
+   "examples": [
+    "i want to delete my account",
+    "i want to delete my account",
+    "i want to delete my account"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Deletion Assistance",
+   "root_cause": "Users are unable to locate the account deletion option within the application",
+   "size": 197,
+   "examples": [
+    "account delete kaise karu",
+    "account delete kaise karu",
+    "account delete kaise karu"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Login Access Issues",
+   "root_cause": "Users are unable to authenticate due to forgotten account passwords",
+   "size": 151,
+   "examples": [
+    "cannot log in, forgot password",
+    "cannot log in, forgot password",
+    "cannot log in, forgot password"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Incorrect Restaurant Menu Pricing",
+   "root_cause": "The restaurant is charging prices higher than those listed on the menu",
+   "size": 330,
+   "examples": [
+    "restaurant menu se zyada paise le raha hai",
+    "restaurant menu se zyada paise le raha hai",
+    "restaurant menu se zyada paise le raha hai"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Restaurant Order Cancellation After Payment",
+   "root_cause": "Restaurant cancelled the order after successfully collecting payment from the customer",
+   "size": 129,
+   "examples": [
+    "pizza piont ne order cancel kar diya paise lene ke baad",
+    "momo steret ne order cancel kar diya paise lene ke baad",
+    "spice rotue kitchen ne order cancel kar diya paise lene ke baad"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Restaurant Refusal To Provide Bill",
+   "root_cause": "Partner restaurants are failing to provide physical receipts to customers upon request",
+   "size": 2480,
+   "examples": [
+    "biryani jucntion refused to give the bill",
+    "spice route kitchen refused to give the bill. call me on [phone]",
+    "spice route kitchen refused to give the bill. call me on [phone]"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Incorrect Restaurant Operating Status",
+   "root_cause": "The application displays restaurants as open when they are actually closed",
+   "size": 593,
+   "examples": [
+    "restaurant is closed but still showing open in app",
+    "restaurant is closed but still showing open in app",
+    "restaurant is closed but still showing open in app"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Restaurant Order Cancellations",
+   "root_cause": "Restaurant partners are cancelling orders after a significant wait time",
+   "size": 1277,
+   "examples": [
+    "biryani junction cancelled my order after 40 minutes",
+    "biryani junction cancelled my order after 40 minutes",
+    "biryani junction cancelled my order after 40 minutes"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Unavailable Items After Payment",
+   "root_cause": "Restaurant failed to update inventory status before the customer completed their purchase",
+   "size": 195,
+   "examples": [
+    "restaurant said item not available after i paid",
+    "restaurant said item not available after i paid",
+    "restaurant said item not available after i paid"
+   ]
+  }
+ ],
+ "details": {
+  "menu_choice_accuracy": 0.9091614906832298,
+  "accuracy_local": 0.9797027506654836,
+  "accuracy_cascade": 0.9808118899733806,
+  "accuracy_local_calls": 0.9582872928176795,
+  "accuracy_cascade_calls": 0.9571823204419889,
+  "menu_choice_accuracy_calls": 0.7580110497237569,
+  "accuracy_cascade_hinglish": 0.9729319504174045,
+  "threshold": 0.6,
+  "pct_sent_to_llm": 1.54170363797693,
+  "llm_fixed": 57,
+  "llm_broke": 37,
+  "misrouted_per_100_menu": 5.71206743566992,
+  "misrouted_per_100_opslens": 1.1978704525288377,
+  "misrouted_per_100_menu_calls": 14.834254143646408,
+  "misrouted_per_100_opslens_calls": 2.541436464088398,
+  "llm_requests_per_million_tickets": 616.681455190772,
+  "test_tickets": 18032,
+  "accuracy_llm_sample": 0.9,
+  "llm_sample_answered": 400
+ }
+}

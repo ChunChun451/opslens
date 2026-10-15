@@ -25,6 +25,16 @@ def test_engine_never_reads_planted_json() -> None:
     assert offenders == []
 
 
+def test_engine_never_reads_generator_config() -> None:
+    """generator.yaml describes the planted problems, so the engine must not read it
+    (world.py builds the simulator — the test bench — and is the one exception)."""
+    offenders = [
+        str(p.relative_to(ROOT)) for p in (ROOT / "opslens").rglob("*.py")
+        if 'load_config("generator")' in p.read_text(encoding="utf-8") and p.name != "world.py"
+    ]
+    assert offenders == []
+
+
 def test_engine_never_reads_world_truth() -> None:
     """The engine reads the helpdesk export (history.csv), never the simulator's truth file,
     except world.py, which builds the simulator."""
@@ -70,7 +80,7 @@ def test_typos_keep_word_count() -> None:
 
 
 def test_make_text_hinglish_for_hindi() -> None:
-    bank = TextBank(bitext_pool={})
+    bank = TextBank(bitext_pool={}, vague_prob=0.0)
     rng = np.random.default_rng(3)
     texts = [bank.make_text(rng, "refund", "hi", "Dosa Corner", "4815162342") for _ in range(20)]
     hinglish_words = {"kab", "paisa", "wapas", "karo", "batao", "nahi", "chahiye", "mera", "kiya", "hafta"}
@@ -110,3 +120,10 @@ def test_generated_data_shape_and_signals() -> None:
     # No raw placeholder or template slot leaked into the text.
     assert not hist["text"].str.contains(r"\{|\}", regex=True).any()
     assert not hist["text"].str.contains("order my order").any()
+
+
+def test_vague_tickets_have_no_category_words() -> None:
+    bank = TextBank(bitext_pool={}, vague_prob=1.0, typo_prob=0.0, phone_prob=0.0, email_prob=0.0)
+    rng = np.random.default_rng(5)
+    texts = [bank.make_text(rng, "refund", "en", "Dosa Corner", "4815162342") for _ in range(30)]
+    assert not any("refund" in t or "money" in t for t in texts)

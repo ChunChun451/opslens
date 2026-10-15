@@ -1,7 +1,7 @@
 # OpsLens — the decision engine for support operations
 
 Deviathon 2.0 finale · problem DEV_103 (Eternal Ltd) · GLA University Mathura · 29–31 Oct 2026
-Team SoyaChaap: Jijnasu Mishra (owner, tech), Sneha Kumari (story, demo, business)
+Team SoyaChaap
 
 **OpsLens is the team's only finale project** (decided 15 Oct 2026); all days go to it.
 

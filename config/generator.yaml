@@ -3,12 +3,8 @@
 # They are tuned so Baseline A hits the calibration targets at the bottom (printed by `make gen`).
 
 seed: 2026
-start_date: "2026-08-31"   # day 1 = Monday 31 Aug 2026
-days: 56                   # 8 weeks: train 1-35, validation 36-42, test 43-56
-splits:
-  train_last_day: 35
-  validation_last_day: 42
-  test_last_day: 56
+# Calendar facts (start date, days, splits, known sale days) live in config/calendar.yaml,
+# because the engine may read those — but never this file, which describes the planted problems.
 
 # ---- Volume --------------------------------------------------------------------------------
 tickets_per_weekday: 1130
@@ -20,9 +16,8 @@ day_noise_sd: 0.06               # day-to-day variation (log-normal sd)
 hourly_profile: [2.5, 1.5, 0.9, 0.6, 0.5, 0.6, 1.0, 1.8, 2.8, 3.5, 4.0, 4.6,
                  5.8, 6.3, 5.6, 4.6, 4.3, 4.6, 5.4, 6.6, 7.3, 7.3, 6.2, 4.6]
 
-known_events:                    # in the engine's event calendar (marketing knows these)
-  - {day: 25, name: "Mega sale", multiplier: 1.35}
-  - {day: 50, name: "Festive sale", multiplier: 1.35}
+# Sale-day volume: the days come from config/calendar.yaml (known_events); this is how big they are.
+known_event_multiplier: 1.35
 
 # ---- Ticket attributes -----------------------------------------------------------------------
 categories:                      # base share of tickets

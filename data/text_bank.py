@@ -10,7 +10,12 @@ Why this design:
 - Bitext has nothing for missing items, wrong items, restaurants or app bugs, so those come
   from templates with slots (dish, restaurant, minutes, amount). Hindi-language customers
   write Hinglish (Hindi in Latin letters), as most do in chat.
-- Realism on purpose: ~10% of tickets mention a second issue, ~20% get typos, and many
+- Hand-written templates alone are too easy to memorise, so half of the template-based
+  messages come from ~600 LLM-written patterns (data/llm_templates.json, made once by
+  data/make_llm_templates.py with Groq's Qwen — a different model from the classifier's Gemini).
+- ~12% of first messages are vague ("I have a problem with my order") — only the menu
+  choice can tell what they are about, as in real chats.
+- Realism on purpose: ~15% of tickets mention a second issue, ~20% get typos, and many
   contain an order ID or phone number (which privacy.py must then mask).
 - The text is partly synthetic, and we say so (data/SOURCES.md).
 
@@ -23,6 +28,7 @@ Example:
 from __future__ import annotations
 
 import csv
+import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -232,7 +238,32 @@ TEMPLATES_HI: dict[str, list[str]] = {
     ],
 }
 
-# Short second-issue sentences for multi-issue tickets (~10%).
+# Vague first messages (~12% of tickets): no category words at all, as in real chats. Only the
+# menu choice (or a human) can tell what these are about.
+VAGUE_EN = [
+    "I have a problem with my order",
+    "please call me back urgently",
+    "need help with my last order",
+    "worst experience ever, fix this now",
+    "nobody is helping me, this is the third time",
+    "there is an issue with {order_ref}",
+    "please resolve this asap",
+    "very disappointed with your service today",
+    "hello? is anyone there?",
+    "I want to talk to a human agent",
+    "still waiting for a reply on my complaint",
+    "something went wrong with my order, help",
+]
+VAGUE_HI = [
+    "mere order mein problem hai",
+    "please jaldi call karo",
+    "koi help nahi kar raha, teesri baar bol raha hoon",
+    "bahut bura experience tha aaj",
+    "issue jaldi solve karo please",
+    "hello koi hai? reply karo",
+]
+
+# Short second-issue sentences for multi-issue tickets.
 SECOND_ISSUE_EN: dict[str, str] = {
     "late_delivery": "also it came very late",
     "missing_item": "and one item was missing too",
@@ -260,14 +291,20 @@ class TextBank:
     """Holds the Bitext pools and produces one message per ticket."""
 
     bitext_pool: dict[str, list[str]] = field(default_factory=dict)
-    multi_issue_prob: float = 0.10
+    vague_prob: float = 0.12
+    multi_issue_prob: float = 0.15
+    second_issue_first_prob: float = 0.3  # "app not working and refund pending..." — main issue second
     typo_prob: float = 0.20
     phone_prob: float = 0.05
     email_prob: float = 0.02
     order_ref_prob: float = 0.45
 
+    # LLM-written message patterns (data/llm_templates.json), {category: {language: [..]}}.
+    llm_pool: dict[str, dict[str, list[str]]] = field(default_factory=dict)
+    llm_share: float = 0.5  # share of template-based messages taken from the LLM-written pool
+
     @classmethod
-    def from_bitext_csv(cls, path: Path) -> "TextBank":
+    def from_bitext_csv(cls, path: Path, llm_templates: Path | None = None) -> "TextBank":
         pool: dict[str, list[str]] = {}
         with path.open("r", encoding="utf-8") as handle:
             for row in csv.DictReader(handle):
@@ -275,7 +312,19 @@ class TextBank:
                 if category is None:
                     continue
                 pool.setdefault(category, []).append(food_flavour(row["instruction"]))
-        return cls(bitext_pool=pool)
+        llm_pool: dict[str, dict[str, list[str]]] = {}
+        if llm_templates is not None and llm_templates.exists():
+            llm_pool = json.loads(llm_templates.read_text(encoding="utf-8"))["templates"]
+        return cls(bitext_pool=pool, llm_pool=llm_pool)
+
+    def _template(self, rng: np.random.Generator, category: str, language: str) -> str:
+        """A hand-written template, or (half the time, if available) an LLM-written one."""
+        lang = "hi" if language == "hi" else "en"
+        llm_options = self.llm_pool.get(category, {}).get(lang, [])
+        if llm_options and rng.random() < self.llm_share:
+            return str(rng.choice(llm_options))
+        templates = TEMPLATES_HI if language == "hi" else TEMPLATES_EN
+        return str(rng.choice(templates[category]))
 
     def make_text(
         self,
@@ -285,6 +334,9 @@ class TextBank:
         restaurant: str,
         order_id: str,
     ) -> str:
+        if rng.random() < self.vague_prob:
+            text = str(rng.choice(VAGUE_HI if language == "hi" else VAGUE_EN))
+            return self._finish(rng, fill_slots(rng, text, restaurant, order_id, self.order_ref_prob))
         use_bitext = (
             language != "hi"
             and category in self.bitext_pool
@@ -293,15 +345,21 @@ class TextBank:
         if use_bitext:
             text = str(rng.choice(self.bitext_pool[category]))
         else:
-            templates = TEMPLATES_HI if language == "hi" else TEMPLATES_EN
-            text = str(rng.choice(templates[category]))
+            text = self._template(rng, category, language)
         text = fill_slots(rng, text, restaurant, order_id, self.order_ref_prob)
 
         if rng.random() < self.multi_issue_prob:
             others = [c for c in TEMPLATES_EN if c != category]
             second = str(rng.choice(others))
             cue = SECOND_ISSUE_HI[second] if language == "hi" else SECOND_ISSUE_EN[second]
-            text = f"{text}, {cue}"
+            if rng.random() < self.second_issue_first_prob:
+                text = f"{cue}. {text}"
+            else:
+                text = f"{text}, {cue}"
+        return self._finish(rng, text)
+
+    def _finish(self, rng: np.random.Generator, text: str) -> str:
+        """Contact details and typos, added the same way to every kind of message."""
         if rng.random() < self.phone_prob:
             text += f". call me on {random_phone(rng)}"
         elif rng.random() < self.email_prob:

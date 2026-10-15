@@ -88,12 +88,13 @@ def build_world(
     """World for `tickets` (needs columns ticket_id, created_min, category, selected_category,
     channel, priority, language, customer_tier, order_value_inr) and one seed's luck."""
     gen_cfg = gen_cfg or load_config("generator")
+    calendar = load_config("calendar")
     sla_cfg = sla_cfg or load_config("sla")
     agents = agents or load_agents()
     tickets = tickets.sort_values("created_min", kind="stable").reset_index(drop=True)
     nums = ticket_numbers(tickets["ticket_id"])
     max_num = int(nums.max()) + 1 if len(nums) else 1
-    n_days = n_days or int(gen_cfg["days"]) + 7  # a week of slack for the drain period
+    n_days = n_days or int(calendar["days"]) + 7  # a week of slack for the drain period
 
     # Luck draws, indexed by ticket number (common random numbers).
     z = np.random.default_rng([seed, STREAM_HANDLE]).standard_normal((max_num, 3))[nums]
@@ -109,7 +110,7 @@ def build_world(
     base_handle = (medians * channel_factor)[:, None] * np.exp(float(gen_cfg["handle_sigma"]) * z)
 
     sla_minutes = tickets["priority"].map(sla_cfg["sla_minutes"]).to_numpy(dtype=float)
-    first_weekday = pd.Timestamp(gen_cfg["start_date"]).weekday()
+    first_weekday = pd.Timestamp(calendar["start_date"]).weekday()
 
     return World(
         ticket_ids=tickets["ticket_id"].tolist(),
@@ -143,3 +144,16 @@ def day_bounds(first_day: int, last_day: int) -> tuple[float, float]:
 
 def load_world_tickets(path: Path) -> pd.DataFrame:
     return pd.read_csv(path)
+
+
+def apply_staffing_plan(agents: list[Agent], plans: list[dict]) -> list[Agent]:
+    """Agents with week-specific shifts from data/generated/staffing_plan.json (same people,
+    same hours per week — only start times and days off move)."""
+    from dataclasses import replace
+
+    by_agent: dict[str, list] = {}
+    for plan in plans:
+        for s in plan["shifts"]:
+            by_agent.setdefault(s["agent_id"], []).append(
+                (plan["first_day"], plan["last_day"], int(s["start_hour"]) * 60, frozenset(s["days_off"])))
+    return [replace(a, overrides=tuple(by_agent.get(a.agent_id, []))) for a in agents]

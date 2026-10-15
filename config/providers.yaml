@@ -26,10 +26,13 @@ providers:
     base_url: https://api.groq.com/openai/v1
     model: qwen/qwen3.8-27b       # alternative if its quota runs out: openai/gpt-oss-120b
     api_key_env: GROQ_API_KEY
-    requests_per_minute: 20     # free tier reported at 30 RPM
+    # Free tier for this model allows only 1,000 OUTPUT tokens per minute (seen on 15 Oct).
+    # One 40-ticket batch is ~800 output tokens, so we pace ourselves to 1 request/minute.
+    requests_per_minute: 1
     requests_per_day: 800       # free tier reported at 1,000 RPD
     timeout_s: 60
-    extra_params: {}
+    extra_params:
+      max_tokens: 900           # a request expecting > 1,000 output tokens is refused outright
 
   mock:
     kind: mock
