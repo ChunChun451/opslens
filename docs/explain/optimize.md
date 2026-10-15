@@ -38,9 +38,10 @@ validation days only**, at normal volume and +25% volume: v2 2.22% / 12.82% vs B
 
 ## Worked example (Saturday 17 Oct, 18:00–24:00, test day 48)
 Breaches that evening add up to **7** with OpsLens, **26** with priority-first and **83** with
-FIFO; the queue peaks at 89 tickets vs 141 and 132. A typical decision: agent B10 (Team B,
-regional language) takes T060593, a P1 payment failure waiting 8 minutes — value 1.81, the
-highest of his options: "P1 payment failure, English, waiting 8 min; low risk - served in turn".
+FIFO; the queue peaks at 89 tickets vs 141 and 132. A typical decision at 20:30: agent B09
+(Team B, regional language) takes T060594, a P1 payment failure waiting 9 minutes — value 1.86,
+the highest of the agent's options: "P1 payment failure, English, waiting 9 min; low risk - served
+in turn; rare-skill agent, no rare work is more urgent".
 
 ## Results on the held-out test days (43–56, 5 seeds, same tickets and luck)
 | | Baseline A (FIFO) | Baseline B (priority) | **OpsLens** |
