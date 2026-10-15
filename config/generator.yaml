@@ -1,0 +1,132 @@
+# Parameters for data/generate_ops.py — the synthetic operations layer.
+# Every number here is an ASSUMPTION about a food / quick-commerce support floor.
+# They are tuned so Baseline A hits the calibration targets at the bottom (printed by `make gen`).
+
+seed: 2026
+start_date: "2026-08-31"   # day 1 = Monday 31 Aug 2026
+days: 56                   # 8 weeks: train 1-35, validation 36-42, test 43-56
+splits:
+  train_last_day: 35
+  validation_last_day: 42
+  test_last_day: 56
+
+# ---- Volume --------------------------------------------------------------------------------
+tickets_per_weekday: 1130
+weekend_multiplier: 1.15         # Sat, Sun
+day_noise_sd: 0.06               # day-to-day variation (log-normal sd)
+
+# Share of a day's tickets in each hour 0..23 (normalised in code). Lunch and dinner peaks.
+# Ticket peaks are smoother than ORDER peaks: complaints arrive during and after delivery.
+hourly_profile: [2.5, 1.5, 0.9, 0.6, 0.5, 0.6, 1.0, 1.8, 2.8, 3.5, 4.0, 4.6,
+                 5.8, 6.3, 5.6, 4.6, 4.3, 4.6, 5.4, 6.6, 7.3, 7.3, 6.2, 4.6]
+
+known_events:                    # in the engine's event calendar (marketing knows these)
+  - {day: 25, name: "Mega sale", multiplier: 1.35}
+  - {day: 50, name: "Festive sale", multiplier: 1.35}
+
+# ---- Ticket attributes -----------------------------------------------------------------------
+categories:                      # base share of tickets
+  late_delivery: 0.26
+  missing_item: 0.14
+  wrong_item: 0.10
+  refund: 0.16
+  payment_failure: 0.10
+  app_bug: 0.06
+  account: 0.08
+  restaurant_partner: 0.10
+
+# Late deliveries and missing items rise at meal peaks (kitchens and riders are stretched).
+peak_category_lift:
+  hours: [12, 13, 19, 20, 21, 22]
+  lift: {late_delivery: 1.35, missing_item: 1.2}
+
+channels: {chat: 0.65, call: 0.20, email: 0.15}
+
+# P(priority) by category: [P1, P2, P3]. Email tickets are never P1 (moved to P2).
+priority_probs:
+  late_delivery:      [0.70, 0.25, 0.05]
+  missing_item:       [0.55, 0.40, 0.05]
+  wrong_item:         [0.30, 0.60, 0.10]
+  refund:             [0.10, 0.65, 0.25]
+  payment_failure:    [0.60, 0.35, 0.05]
+  app_bug:            [0.15, 0.45, 0.40]
+  account:            [0.02, 0.28, 0.70]
+  restaurant_partner: [0.20, 0.50, 0.30]
+
+languages: {en: 0.72, hi: 0.22, other: 0.06}   # from the customer's app-language setting
+gold_share: 0.15
+order_value_median_inr: 350
+order_value_sigma: 0.55
+restaurant_clusters: 40          # popularity follows a Zipf-like curve
+
+# The customer picks a category in the app / IVR menu. Sometimes it is wrong.
+wrong_selection_prob: {chat: 0.05, email: 0.05, call: 0.05}
+likely_confusions:               # when wrong, pick from these first (70%), else random
+  late_delivery: [missing_item]
+  missing_item: [wrong_item, late_delivery]
+  wrong_item: [missing_item]
+  refund: [payment_failure]
+  payment_failure: [refund, app_bug]
+  app_bug: [payment_failure, account]
+  account: [app_bug]
+  restaurant_partner: [wrong_item, late_delivery]
+
+# ---- Work ------------------------------------------------------------------------------------
+handle_median_min:               # median minutes of active work, by true category
+  late_delivery: 6
+  missing_item: 7
+  wrong_item: 8
+  refund: 9
+  payment_failure: 9
+  app_bug: 11
+  account: 6
+  restaurant_partner: 12
+handle_sigma: 0.5                # log-normal spread
+channel_handle_factor: {chat: 1.0, call: 1.0, email: 0.8}
+skill_mismatch_factor: 1.6       # an agent without the skill is 60% slower
+reopen_prob: {matched: 0.04, mismatch: 0.15}
+reopen_delay_min: [30, 180]      # customer comes back between 30 min and 3 h later
+reopen_handle_factor: 0.6
+transfer_discovery_min: 4        # time an agent spends before saying "wrong queue"
+absent_prob: 0.05                # chance an agent is absent on a given day
+
+# ---- Planted problems (written to data/planted.json; the engine never reads it) --------------
+planted:
+  hindi_refunds:                 # 1. skill gap — set up in config/roster.yaml (only 3 hi+refund agents)
+    enabled: true
+  team_c_weekend_dinner:         # 2. capacity — thin weekend-evening roster + extra volume
+    enabled: true
+    hours: [19, 20, 21, 22]
+    weekend_lift: {missing_item: 1.35, wrong_item: 1.35}
+  payment_spike:                 # 3a. volume spike in history ("bad app release")
+    enabled: true
+    day: 18
+    hours: [17, 18, 19, 20, 21, 22]
+    category: payment_failure
+    multiplier: 4.0
+  app_bug_surge:                 # 3b. unseen spike in the TEST period (no forecast knows it)
+    enabled: true
+    day: 47
+    hours: [18, 19, 20, 21, 22]
+    category: app_bug
+    multiplier: 5.0
+  partner_cluster:               # 4. partner issue — one restaurant cluster sends 3x wrong items
+    enabled: true
+    cluster_id: 17
+    category: wrong_item
+    multiplier: 3.0
+  ivr_misrouting:                # 5. process issue — the IVR menu mislabels call tickets
+    enabled: true
+    channel: call
+    wrong_selection_prob: 0.25
+
+decoys:                          # must NOT be flagged as problems
+  - {kind: known_event, day: 25}
+  - {kind: known_event, day: 50}
+  - {kind: busy_normal_day, day: 32, multiplier: 1.12}
+
+# ---- Calibration targets for Baseline A (checked and printed by `make gen`) -----------------
+calibration_targets:
+  breach_pct: [12, 18]
+  mean_utilisation: [0.70, 0.80]
+  team_c_weekend_dinner_rho: [1.20, 1.50]

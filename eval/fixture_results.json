@@ -1,0 +1,3024 @@
+{
+ "meta": {
+  "fixture": true,
+  "generated_at": "2026-10-15T17:24:21",
+  "git_commit": "",
+  "data_seed": 2026,
+  "n_tickets": 71530,
+  "start_date": "2026-08-31",
+  "days": 56,
+  "train_days": [
+   1,
+   35
+  ],
+  "validation_days": [
+   36,
+   42
+  ],
+  "test_days": [
+   43,
+   56
+  ],
+  "run_seconds": 0.0
+ },
+ "sim": {
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "test_days": [
+   43,
+   56
+  ],
+  "policies": {
+   "baseline_a": {
+    "key": "baseline_a",
+    "label": "Baseline A (FIFO)",
+    "kpis": {
+     "turnaround.breach_pct": {
+      "mean": 13.0,
+      "std": 1.04
+     },
+     "turnaround.mean_resolution_min": {
+      "mean": 80.0,
+      "std": 6.4
+     },
+     "turnaround.p90_resolution_min": {
+      "mean": 185.0,
+      "std": 14.8
+     },
+     "turnaround.mean_wait_min": {
+      "mean": 64.0,
+      "std": 5.12
+     },
+     "turnaround.max_backlog": {
+      "mean": 227.0,
+      "std": 18.16
+     },
+     "productivity.tickets_per_agent_hour": {
+      "mean": 5.3,
+      "std": 0.424
+     },
+     "productivity.transfers_per_100": {
+      "mean": 4.7,
+      "std": 0.376
+     },
+     "productivity.busy_agent_hours": {
+      "mean": 3100.0,
+      "std": 248.0
+     },
+     "quality.reopen_rate_pct": {
+      "mean": 3.9,
+      "std": 0.312
+     },
+     "quality.p99_wait_min": {
+      "mean": 816.0,
+      "std": 65.28
+     },
+     "quality.mean_utilisation": {
+      "mean": 0.87,
+      "std": 0.07
+     },
+     "quality.load_fairness_std": {
+      "mean": 0.12,
+      "std": 0.01
+     }
+    },
+    "per_seed": [
+     {
+      "turnaround.breach_pct": 13.082,
+      "turnaround.mean_resolution_min": 79.472,
+      "turnaround.p90_resolution_min": 190.924,
+      "turnaround.mean_wait_min": 64.336,
+      "turnaround.max_backlog": 220.92,
+      "productivity.tickets_per_agent_hour": 5.396,
+      "productivity.transfers_per_100": 5.006,
+      "productivity.busy_agent_hours": 3246.798,
+      "quality.reopen_rate_pct": 3.763,
+      "quality.p99_wait_min": 764.371,
+      "quality.mean_utilisation": 0.843,
+      "quality.load_fairness_std": 0.12
+     },
+     {
+      "turnaround.breach_pct": 11.489,
+      "turnaround.mean_resolution_min": 79.125,
+      "turnaround.p90_resolution_min": 173.475,
+      "turnaround.mean_wait_min": 61.657,
+      "turnaround.max_backlog": 220.823,
+      "productivity.tickets_per_agent_hour": 5.216,
+      "productivity.transfers_per_100": 4.797,
+      "productivity.busy_agent_hours": 3261.59,
+      "quality.reopen_rate_pct": 3.875,
+      "quality.p99_wait_min": 871.752,
+      "quality.mean_utilisation": 0.841,
+      "quality.load_fairness_std": 0.122
+     },
+     {
+      "turnaround.breach_pct": 13.587,
+      "turnaround.mean_resolution_min": 80.376,
+      "turnaround.p90_resolution_min": 178.123,
+      "turnaround.mean_wait_min": 61.05,
+      "turnaround.max_backlog": 221.805,
+      "productivity.tickets_per_agent_hour": 5.358,
+      "productivity.transfers_per_100": 4.463,
+      "productivity.busy_agent_hours": 3067.578,
+      "quality.reopen_rate_pct": 3.869,
+      "quality.p99_wait_min": 838.066,
+      "quality.mean_utilisation": 0.879,
+      "quality.load_fairness_std": 0.122
+     },
+     {
+      "turnaround.breach_pct": 12.575,
+      "turnaround.mean_resolution_min": 79.482,
+      "turnaround.p90_resolution_min": 192.252,
+      "turnaround.mean_wait_min": 68.779,
+      "turnaround.max_backlog": 212.71,
+      "productivity.tickets_per_agent_hour": 5.701,
+      "productivity.transfers_per_100": 5.016,
+      "productivity.busy_agent_hours": 3221.103,
+      "quality.reopen_rate_pct": 3.952,
+      "quality.p99_wait_min": 803.192,
+      "quality.mean_utilisation": 0.933,
+      "quality.load_fairness_std": 0.132
+     },
+     {
+      "turnaround.breach_pct": 14.171,
+      "turnaround.mean_resolution_min": 85.26,
+      "turnaround.p90_resolution_min": 188.306,
+      "turnaround.mean_wait_min": 60.133,
+      "turnaround.max_backlog": 226.949,
+      "productivity.tickets_per_agent_hour": 5.474,
+      "productivity.transfers_per_100": 4.397,
+      "productivity.busy_agent_hours": 3161.244,
+      "quality.reopen_rate_pct": 3.984,
+      "quality.p99_wait_min": 844.399,
+      "quality.mean_utilisation": 0.818,
+      "quality.load_fairness_std": 0.116
+     }
+    ]
+   },
+   "baseline_b": {
+    "key": "baseline_b",
+    "label": "Baseline B (priority)",
+    "kpis": {
+     "turnaround.breach_pct": {
+      "mean": 6.8,
+      "std": 0.544
+     },
+     "turnaround.mean_resolution_min": {
+      "mean": 85.0,
+      "std": 6.8
+     },
+     "turnaround.p90_resolution_min": {
+      "mean": 198.0,
+      "std": 15.84
+     },
+     "turnaround.mean_wait_min": {
+      "mean": 68.0,
+      "std": 5.44
+     },
+     "turnaround.max_backlog": {
+      "mean": 234.0,
+      "std": 18.72
+     },
+     "productivity.tickets_per_agent_hour": {
+      "mean": 5.3,
+      "std": 0.424
+     },
+     "productivity.transfers_per_100": {
+      "mean": 4.6,
+      "std": 0.368
+     },
+     "productivity.busy_agent_hours": {
+      "mean": 3100.0,
+      "std": 248.0
+     },
+     "quality.reopen_rate_pct": {
+      "mean": 3.9,
+      "std": 0.312
+     },
+     "quality.p99_wait_min": {
+      "mean": 1007.0,
+      "std": 80.56
+     },
+     "quality.mean_utilisation": {
+      "mean": 0.87,
+      "std": 0.07
+     },
+     "quality.load_fairness_std": {
+      "mean": 0.12,
+      "std": 0.01
+     }
+    },
+    "per_seed": [
+     {
+      "turnaround.breach_pct": 6.652,
+      "turnaround.mean_resolution_min": 80.028,
+      "turnaround.p90_resolution_min": 215.22,
+      "turnaround.mean_wait_min": 66.314,
+      "turnaround.max_backlog": 237.849,
+      "productivity.tickets_per_agent_hour": 5.231,
+      "productivity.transfers_per_100": 4.964,
+      "productivity.busy_agent_hours": 3304.656,
+      "quality.reopen_rate_pct": 4.024,
+      "quality.p99_wait_min": 896.053,
+      "quality.mean_utilisation": 0.872,
+      "quality.load_fairness_std": 0.124
+     },
+     {
+      "turnaround.breach_pct": 7.141,
+      "turnaround.mean_resolution_min": 82.374,
+      "turnaround.p90_resolution_min": 216.038,
+      "turnaround.mean_wait_min": 63.511,
+      "turnaround.max_backlog": 226.26,
+      "productivity.tickets_per_agent_hour": 5.548,
+      "productivity.transfers_per_100": 4.611,
+      "productivity.busy_agent_hours": 3410.371,
+      "quality.reopen_rate_pct": 3.937,
+      "quality.p99_wait_min": 975.119,
+      "quality.mean_utilisation": 0.854,
+      "quality.load_fairness_std": 0.113
+     },
+     {
+      "turnaround.breach_pct": 6.366,
+      "turnaround.mean_resolution_min": 87.679,
+      "turnaround.p90_resolution_min": 203.754,
+      "turnaround.mean_wait_min": 72.401,
+      "turnaround.max_backlog": 225.171,
+      "productivity.tickets_per_agent_hour": 5.748,
+      "productivity.transfers_per_100": 4.534,
+      "productivity.busy_agent_hours": 3344.033,
+      "quality.reopen_rate_pct": 3.816,
+      "quality.p99_wait_min": 969.968,
+      "quality.mean_utilisation": 0.881,
+      "quality.load_fairness_std": 0.126
+     },
+     {
+      "turnaround.breach_pct": 6.855,
+      "turnaround.mean_resolution_min": 82.512,
+      "turnaround.p90_resolution_min": 184.722,
+      "turnaround.mean_wait_min": 63.235,
+      "turnaround.max_backlog": 239.881,
+      "productivity.tickets_per_agent_hour": 5.562,
+      "productivity.transfers_per_100": 4.562,
+      "productivity.busy_agent_hours": 2933.473,
+      "quality.reopen_rate_pct": 4.07,
+      "quality.p99_wait_min": 942.532,
+      "quality.mean_utilisation": 0.839,
+      "quality.load_fairness_std": 0.124
+     },
+     {
+      "turnaround.breach_pct": 6.035,
+      "turnaround.mean_resolution_min": 86.642,
+      "turnaround.p90_resolution_min": 192.242,
+      "turnaround.mean_wait_min": 68.372,
+      "turnaround.max_backlog": 233.114,
+      "productivity.tickets_per_agent_hour": 5.354,
+      "productivity.transfers_per_100": 4.76,
+      "productivity.busy_agent_hours": 2982.453,
+      "quality.reopen_rate_pct": 4.177,
+      "quality.p99_wait_min": 1043.559,
+      "quality.mean_utilisation": 0.907,
+      "quality.load_fairness_std": 0.127
+     }
+    ]
+   },
+   "opslens": {
+    "key": "opslens",
+    "label": "OpsLens",
+    "kpis": {
+     "turnaround.breach_pct": {
+      "mean": 4.1,
+      "std": 0.328
+     },
+     "turnaround.mean_resolution_min": {
+      "mean": 61.0,
+      "std": 4.88
+     },
+     "turnaround.p90_resolution_min": {
+      "mean": 140.0,
+      "std": 11.2
+     },
+     "turnaround.mean_wait_min": {
+      "mean": 47.0,
+      "std": 3.76
+     },
+     "turnaround.max_backlog": {
+      "mean": 160.0,
+      "std": 12.8
+     },
+     "productivity.tickets_per_agent_hour": {
+      "mean": 5.6,
+      "std": 0.448
+     },
+     "productivity.transfers_per_100": {
+      "mean": 1.9,
+      "std": 0.152
+     },
+     "productivity.busy_agent_hours": {
+      "mean": 2950.0,
+      "std": 236.0
+     },
+     "quality.reopen_rate_pct": {
+      "mean": 3.6,
+      "std": 0.288
+     },
+     "quality.p99_wait_min": {
+      "mean": 420.0,
+      "std": 33.6
+     },
+     "quality.mean_utilisation": {
+      "mean": 0.83,
+      "std": 0.066
+     },
+     "quality.load_fairness_std": {
+      "mean": 0.08,
+      "std": 0.006
+     }
+    },
+    "per_seed": [
+     {
+      "turnaround.breach_pct": 4.261,
+      "turnaround.mean_resolution_min": 63.574,
+      "turnaround.p90_resolution_min": 140.529,
+      "turnaround.mean_wait_min": 43.647,
+      "turnaround.max_backlog": 158.92,
+      "productivity.tickets_per_agent_hour": 5.385,
+      "productivity.transfers_per_100": 1.765,
+      "productivity.busy_agent_hours": 2988.122,
+      "quality.reopen_rate_pct": 3.498,
+      "quality.p99_wait_min": 398.374,
+      "quality.mean_utilisation": 0.787,
+      "quality.load_fairness_std": 0.081
+     },
+     {
+      "turnaround.breach_pct": 4.174,
+      "turnaround.mean_resolution_min": 65.033,
+      "turnaround.p90_resolution_min": 139.903,
+      "turnaround.mean_wait_min": 49.448,
+      "turnaround.max_backlog": 171.218,
+      "productivity.tickets_per_agent_hour": 5.922,
+      "productivity.transfers_per_100": 1.675,
+      "productivity.busy_agent_hours": 3131.231,
+      "quality.reopen_rate_pct": 3.661,
+      "quality.p99_wait_min": 428.899,
+      "quality.mean_utilisation": 0.845,
+      "quality.load_fairness_std": 0.082
+     },
+     {
+      "turnaround.breach_pct": 4.165,
+      "turnaround.mean_resolution_min": 59.905,
+      "turnaround.p90_resolution_min": 126.689,
+      "turnaround.mean_wait_min": 46.744,
+      "turnaround.max_backlog": 153.57,
+      "productivity.tickets_per_agent_hour": 5.902,
+      "productivity.transfers_per_100": 1.873,
+      "productivity.busy_agent_hours": 2962.313,
+      "quality.reopen_rate_pct": 3.447,
+      "quality.p99_wait_min": 409.277,
+      "quality.mean_utilisation": 0.83,
+      "quality.load_fairness_std": 0.074
+     },
+     {
+      "turnaround.breach_pct": 4.162,
+      "turnaround.mean_resolution_min": 60.676,
+      "turnaround.p90_resolution_min": 131.7,
+      "turnaround.mean_wait_min": 41.364,
+      "turnaround.max_backlog": 164.104,
+      "productivity.tickets_per_agent_hour": 5.517,
+      "productivity.transfers_per_100": 1.85,
+      "productivity.busy_agent_hours": 2915.167,
+      "quality.reopen_rate_pct": 3.927,
+      "quality.p99_wait_min": 418.954,
+      "quality.mean_utilisation": 0.834,
+      "quality.load_fairness_std": 0.074
+     },
+     {
+      "turnaround.breach_pct": 4.438,
+      "turnaround.mean_resolution_min": 63.798,
+      "turnaround.p90_resolution_min": 147.469,
+      "turnaround.mean_wait_min": 47.112,
+      "turnaround.max_backlog": 167.333,
+      "productivity.tickets_per_agent_hour": 5.704,
+      "productivity.transfers_per_100": 1.958,
+      "productivity.busy_agent_hours": 2927.552,
+      "quality.reopen_rate_pct": 3.335,
+      "quality.p99_wait_min": 441.606,
+      "quality.mean_utilisation": 0.75,
+      "quality.load_fairness_std": 0.079
+     }
+    ]
+   }
+  },
+  "comparisons": [
+   {
+    "policy": "opslens",
+    "baseline": "baseline_a",
+    "kpi": "turnaround.breach_pct",
+    "mean_diff": -8.9,
+    "ci_low": -9.700000000000001,
+    "ci_high": -8.1,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_b",
+    "kpi": "turnaround.breach_pct",
+    "mean_diff": -2.7,
+    "ci_low": -3.5,
+    "ci_high": -1.9000000000000001,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_a",
+    "kpi": "turnaround.p90_resolution_min",
+    "mean_diff": -45.0,
+    "ci_low": -45.8,
+    "ci_high": -44.2,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_b",
+    "kpi": "turnaround.p90_resolution_min",
+    "mean_diff": -58.0,
+    "ci_low": -58.8,
+    "ci_high": -57.2,
+    "n": 5
+   }
+  ],
+  "replay": {
+   "title": "Saturday 17 Oct, 18:00-23:59 (FIXTURE)",
+   "day": 48,
+   "start_minute": 68760,
+   "step_min": 15.0,
+   "times": [
+    "18:00",
+    "18:15",
+    "18:30",
+    "18:45",
+    "19:00",
+    "19:15",
+    "19:30",
+    "19:45",
+    "20:00",
+    "20:15",
+    "20:30",
+    "20:45",
+    "21:00",
+    "21:15",
+    "21:30",
+    "21:45",
+    "22:00",
+    "22:15",
+    "22:30",
+    "22:45",
+    "23:00",
+    "23:15",
+    "23:30",
+    "23:45"
+   ],
+   "series": {
+    "baseline_a": {
+     "waiting": [
+      40,
+      59,
+      77,
+      95,
+      112,
+      128,
+      142,
+      154,
+      164,
+      171,
+      177,
+      179,
+      179,
+      177,
+      171,
+      164,
+      154,
+      142,
+      128,
+      112,
+      95,
+      77,
+      59,
+      40
+     ],
+     "breached_cum": [
+      0,
+      4,
+      9,
+      14,
+      19,
+      24,
+      28,
+      33,
+      38,
+      43,
+      48,
+      52,
+      57,
+      62,
+      67,
+      72,
+      76,
+      81,
+      86,
+      91,
+      96,
+      100,
+      105,
+      110
+     ]
+    },
+    "baseline_b": {
+     "waiting": [
+      40,
+      57,
+      75,
+      91,
+      107,
+      122,
+      135,
+      146,
+      155,
+      162,
+      167,
+      169,
+      169,
+      167,
+      162,
+      155,
+      146,
+      135,
+      122,
+      107,
+      91,
+      75,
+      57,
+      40
+     ],
+     "breached_cum": [
+      0,
+      2,
+      5,
+      8,
+      10,
+      13,
+      16,
+      18,
+      21,
+      24,
+      27,
+      29,
+      32,
+      35,
+      37,
+      40,
+      43,
+      45,
+      48,
+      51,
+      54,
+      56,
+      59,
+      62
+     ]
+    },
+    "opslens": {
+     "waiting": [
+      30,
+      40,
+      51,
+      61,
+      71,
+      80,
+      88,
+      95,
+      101,
+      105,
+      108,
+      109,
+      109,
+      108,
+      105,
+      101,
+      95,
+      88,
+      80,
+      71,
+      61,
+      51,
+      40,
+      30
+     ],
+     "breached_cum": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      24,
+      25,
+      27,
+      28,
+      29,
+      31
+     ]
+    }
+   }
+  }
+ },
+ "patterns": {
+  "cards": [
+   {
+    "id": "C1",
+    "title": "Hindi payments & refunds wait 6x longer",
+    "cause_type": "skill_gap",
+    "metric": "mean wait (min)",
+    "value": 302.0,
+    "comparison_value": 47.0,
+    "comparison_text": "Hindi refund/payment tickets wait 302 min vs 47 min for English ones (FIXTURE)",
+    "segment": {
+     "language": "hi",
+     "category": [
+      "refund",
+      "payment_failure"
+     ]
+    },
+    "affected_tickets": 3900,
+    "affected_share_pct": 5.5,
+    "strength": 9.1,
+    "not_explained_by": "volume is normal; only 3 agents have both skills",
+    "examples": [
+     {
+      "ticket_id": "T000001",
+      "created_at": "2026-08-31 00:02",
+      "text": "refund ka status batao my order",
+      "wait_min": 417.6,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000006",
+      "created_at": "2026-08-31 00:14",
+      "text": "refund kab milega? Rs 456 abhi tak nahi aaye",
+      "wait_min": 433.3,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000014",
+      "created_at": "2026-08-31 00:32",
+      "text": "order cancel kiya tha paisa wapas nahi aaya",
+      "wait_min": 423.2,
+      "breached": true
+     }
+    ],
+    "recommendation": "Cross-train 2 Hindi-speaking agents on refunds; route Hindi refunds to them first"
+   },
+   {
+    "id": "C2",
+    "title": "Team C overloaded at weekend dinner",
+    "cause_type": "capacity",
+    "metric": "utilisation (rho)",
+    "value": 1.4,
+    "comparison_value": 0.8,
+    "comparison_text": "Sat/Sun 19-23h: rho 1.40 vs 0.80 on weekdays (FIXTURE)",
+    "segment": {
+     "team": "C",
+     "weekday": [
+      5,
+      6
+     ],
+     "hour": [
+      19,
+      20,
+      21,
+      22
+     ]
+    },
+    "affected_tickets": 1500,
+    "affected_share_pct": 2.1,
+    "strength": 6.2,
+    "not_explained_by": "every weekend, not a one-off",
+    "examples": [
+     {
+      "ticket_id": "T000011",
+      "created_at": "2026-08-31 00:28",
+      "text": "half my order is missing. paid for 3 items received 2",
+      "wait_min": 391.8,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000015",
+      "created_at": "2026-08-31 00:33",
+      "text": "bag was sealed but extra chutney was not inside",
+      "wait_min": 395.0,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000020",
+      "created_at": "2026-08-31 00:45",
+      "text": "received incomplete order, garlic naan missing",
+      "wait_min": 392.4,
+      "breached": true
+     }
+    ],
+    "recommendation": "Move 3 cross-trained Team D agents to Team C queue, Sat-Sun 19:00-23:00"
+   },
+   {
+    "id": "C3",
+    "title": "Payment-failure spike on 17 Sep",
+    "cause_type": "volume_spike",
+    "metric": "tickets per hour",
+    "value": 96.0,
+    "comparison_value": 22.0,
+    "comparison_text": "96 payment-failure tickets/h vs 22 usual (robust z 8.4) (FIXTURE)",
+    "segment": {
+     "category": "payment_failure",
+     "day": 18
+    },
+    "affected_tickets": 420,
+    "affected_share_pct": 0.6,
+    "strength": 8.4,
+    "not_explained_by": "not a known sale day",
+    "examples": [
+     {
+      "ticket_id": "T000003",
+      "created_at": "2026-08-31 00:04",
+      "text": "do baar paise kat gaye ek hi order ke",
+      "wait_min": 419.4,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000029",
+      "created_at": "2026-08-31 00:59",
+      "text": "payment went through but app shows payment failed, the restaurant quality is also bad",
+      "wait_min": 407.2,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000040",
+      "created_at": "2026-08-31 01:27",
+      "text": "UPI payment stuck in pending, order not confirmed",
+      "wait_min": 396.8,
+      "breached": true
+     }
+    ],
+    "recommendation": "Check the app release of 17 Sep"
+   },
+   {
+    "id": "C4",
+    "title": "Wrong items from restaurant cluster 17",
+    "cause_type": "partner_issue",
+    "metric": "share of wrong-item tickets",
+    "value": 5.1,
+    "comparison_value": 2.0,
+    "comparison_text": "Cluster 17 sends 5.1% of wrong-item tickets but only 2.0% of all tickets (FIXTURE)",
+    "segment": {
+     "category": "wrong_item",
+     "restaurant_cluster_id": 17
+    },
+    "affected_tickets": 380,
+    "affected_share_pct": 0.5,
+    "strength": 5.0,
+    "examples": [
+     {
+      "ticket_id": "T000185",
+      "created_at": "2026-08-31 10:01",
+      "text": "rceeived non veg instead of veg! I am vegetarian, this is seirous",
+      "wait_min": 4.2,
+      "breached": false
+     },
+     {
+      "ticket_id": "T000417",
+      "created_at": "2026-08-31 13:32",
+      "text": "got shawarma roll instead of what I ordered, my order",
+      "wait_min": 32.6,
+      "breached": false
+     },
+     {
+      "ticket_id": "T000695",
+      "created_at": "2026-08-31 17:59",
+      "text": "I got the wrong order, ordered butter chicken but received something else",
+      "wait_min": 0.0,
+      "breached": false
+     }
+    ],
+    "recommendation": "Raise with the partner team: packing checks at cluster 17 kitchens"
+   },
+   {
+    "id": "C5",
+    "title": "Phone (IVR) tickets are transferred 5x more",
+    "cause_type": "process",
+    "metric": "transfers per 100 tickets",
+    "value": 12.8,
+    "comparison_value": 2.6,
+    "comparison_text": "12.8 transfers per 100 call tickets vs 2.6 for chat (FIXTURE)",
+    "segment": {
+     "channel": "call"
+    },
+    "affected_tickets": 14000,
+    "affected_share_pct": 20.0,
+    "strength": 7.7,
+    "examples": [
+     {
+      "ticket_id": "T000039",
+      "created_at": "2026-08-31 01:22",
+      "text": "food quality from Pizza Point was terrible, stale and cold",
+      "wait_min": 398.1,
+      "breached": false
+     },
+     {
+      "ticket_id": "T000137",
+      "created_at": "2026-08-31 09:00",
+      "text": "galat order aa gaya, maine idli sambar manga tha",
+      "wait_min": 3.0,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000188",
+      "created_at": "2026-08-31 10:03",
+      "text": "Spice Route Kitchen se order kiya tha, ab tak nahi pahuncha",
+      "wait_min": 288.3,
+      "breached": true
+     }
+    ],
+    "recommendation": "Route call tickets by text classification, not the IVR menu choice"
+   }
+  ],
+  "recall": {
+   "planted": 6,
+   "found": 6,
+   "false_alarms": 1,
+   "details": [
+    {
+     "id": "C1",
+     "found": true
+    },
+    {
+     "id": "C2",
+     "found": true
+    },
+    {
+     "id": "C3",
+     "found": true
+    },
+    {
+     "id": "C4",
+     "found": true
+    },
+    {
+     "id": "C5",
+     "found": true
+    }
+   ]
+  },
+  "blind_recall": {
+   "sets": 20,
+   "found_pct": 90.0,
+   "false_alarms_mean": 0.4
+  },
+  "live_detection_latency_min": 45.0,
+  "delay_decomposition": {
+   "A": {
+    "waiting": 55.0,
+    "handling": 9.0,
+    "transfer": 3.0,
+    "reopen": 2.0
+   },
+   "B": {
+    "waiting": 95.0,
+    "handling": 9.0,
+    "transfer": 2.0,
+    "reopen": 2.0
+   },
+   "C": {
+    "waiting": 48.0,
+    "handling": 9.0,
+    "transfer": 4.0,
+    "reopen": 2.0
+   },
+   "D": {
+    "waiting": 30.0,
+    "handling": 9.0,
+    "transfer": 2.5,
+    "reopen": 2.0
+   }
+  }
+ },
+ "classification": {
+  "accuracy_local": 0.91,
+  "accuracy_cascade": 0.94,
+  "accuracy_llm_sample": 0.95,
+  "pct_sent_to_llm": 8.0,
+  "cost_per_million_tickets_usd": 0.0,
+  "transfers_avoided_per_100": 2.8,
+  "confusion": {},
+  "clusters": [
+   {
+    "category": "refund",
+    "name": "Refund promised but not received (FIXTURE)",
+    "root_cause": "refund stuck after cancellation",
+    "size": 1200,
+    "examples": [
+     "refund not received yet",
+     "cancelled but money not returned"
+    ]
+   }
+  ]
+ },
+ "forecast": {
+  "wape_model": 0.14,
+  "wape_naive": 0.22,
+  "coverage_80": 0.81,
+  "coverage_90": 0.9,
+  "horizon": [
+   {
+    "time": "2026-10-26T00:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T00:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T00:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T00:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T01:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T01:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T01:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T01:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T02:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T02:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T02:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T02:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T03:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T03:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T03:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T03:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T04:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T04:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T04:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T04:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T05:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T05:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T05:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T05:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T06:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T06:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T06:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T06:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T07:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T07:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T07:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T07:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T08:00",
+    "team": "A",
+    "demand_hours": 0.31,
+    "lo80": 0.24,
+    "hi80": 0.37,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T08:00",
+    "team": "B",
+    "demand_hours": 0.4,
+    "lo80": 0.32,
+    "hi80": 0.48,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T08:00",
+    "team": "C",
+    "demand_hours": 0.31,
+    "lo80": 0.24,
+    "hi80": 0.37,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T08:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.31,
+    "hi80": 0.46,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-26T09:00",
+    "team": "A",
+    "demand_hours": 0.35,
+    "lo80": 0.28,
+    "hi80": 0.43,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T09:00",
+    "team": "B",
+    "demand_hours": 0.46,
+    "lo80": 0.37,
+    "hi80": 0.55,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T09:00",
+    "team": "C",
+    "demand_hours": 0.35,
+    "lo80": 0.28,
+    "hi80": 0.43,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T09:00",
+    "team": "D",
+    "demand_hours": 0.44,
+    "lo80": 0.35,
+    "hi80": 0.53,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T10:00",
+    "team": "A",
+    "demand_hours": 0.62,
+    "lo80": 0.49,
+    "hi80": 0.74,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T10:00",
+    "team": "B",
+    "demand_hours": 0.8,
+    "lo80": 0.64,
+    "hi80": 0.96,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T10:00",
+    "team": "C",
+    "demand_hours": 0.62,
+    "lo80": 0.49,
+    "hi80": 0.74,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T10:00",
+    "team": "D",
+    "demand_hours": 0.77,
+    "lo80": 0.62,
+    "hi80": 0.92,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T11:00",
+    "team": "A",
+    "demand_hours": 1.4,
+    "lo80": 1.12,
+    "hi80": 1.68,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T11:00",
+    "team": "B",
+    "demand_hours": 1.82,
+    "lo80": 1.46,
+    "hi80": 2.19,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T11:00",
+    "team": "C",
+    "demand_hours": 1.4,
+    "lo80": 1.12,
+    "hi80": 1.68,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T11:00",
+    "team": "D",
+    "demand_hours": 1.75,
+    "lo80": 1.4,
+    "hi80": 2.11,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T12:00",
+    "team": "A",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.16,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T12:00",
+    "team": "B",
+    "demand_hours": 3.43,
+    "lo80": 2.74,
+    "hi80": 4.11,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T12:00",
+    "team": "C",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.16,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T12:00",
+    "team": "D",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.95,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T13:00",
+    "team": "A",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T13:00",
+    "team": "B",
+    "demand_hours": 4.29,
+    "lo80": 3.43,
+    "hi80": 5.15,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T13:00",
+    "team": "C",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T13:00",
+    "team": "D",
+    "demand_hours": 4.13,
+    "lo80": 3.3,
+    "hi80": 4.95,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T14:00",
+    "team": "A",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.17,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T14:00",
+    "team": "B",
+    "demand_hours": 3.43,
+    "lo80": 2.75,
+    "hi80": 4.12,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T14:00",
+    "team": "C",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.17,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T14:00",
+    "team": "D",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.96,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T15:00",
+    "team": "A",
+    "demand_hours": 1.43,
+    "lo80": 1.14,
+    "hi80": 1.72,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T15:00",
+    "team": "B",
+    "demand_hours": 1.86,
+    "lo80": 1.49,
+    "hi80": 2.23,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T15:00",
+    "team": "C",
+    "demand_hours": 1.43,
+    "lo80": 1.14,
+    "hi80": 1.72,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T15:00",
+    "team": "D",
+    "demand_hours": 1.79,
+    "lo80": 1.43,
+    "hi80": 2.14,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T16:00",
+    "team": "A",
+    "demand_hours": 0.75,
+    "lo80": 0.6,
+    "hi80": 0.9,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T16:00",
+    "team": "B",
+    "demand_hours": 0.98,
+    "lo80": 0.78,
+    "hi80": 1.17,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T16:00",
+    "team": "C",
+    "demand_hours": 0.75,
+    "lo80": 0.6,
+    "hi80": 0.9,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T16:00",
+    "team": "D",
+    "demand_hours": 0.94,
+    "lo80": 0.75,
+    "hi80": 1.13,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T17:00",
+    "team": "A",
+    "demand_hours": 0.87,
+    "lo80": 0.7,
+    "hi80": 1.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T17:00",
+    "team": "B",
+    "demand_hours": 1.14,
+    "lo80": 0.91,
+    "hi80": 1.36,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T17:00",
+    "team": "C",
+    "demand_hours": 0.87,
+    "lo80": 0.7,
+    "hi80": 1.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T17:00",
+    "team": "D",
+    "demand_hours": 1.09,
+    "lo80": 0.87,
+    "hi80": 1.31,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T18:00",
+    "team": "A",
+    "demand_hours": 1.72,
+    "lo80": 1.37,
+    "hi80": 2.06,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T18:00",
+    "team": "B",
+    "demand_hours": 2.23,
+    "lo80": 1.79,
+    "hi80": 2.68,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T18:00",
+    "team": "C",
+    "demand_hours": 1.72,
+    "lo80": 1.37,
+    "hi80": 2.06,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T18:00",
+    "team": "D",
+    "demand_hours": 2.15,
+    "lo80": 1.72,
+    "hi80": 2.58,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T19:00",
+    "team": "A",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T19:00",
+    "team": "B",
+    "demand_hours": 3.96,
+    "lo80": 3.17,
+    "hi80": 4.76,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T19:00",
+    "team": "C",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T19:00",
+    "team": "D",
+    "demand_hours": 3.81,
+    "lo80": 3.05,
+    "hi80": 4.57,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T20:00",
+    "team": "A",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T20:00",
+    "team": "B",
+    "demand_hours": 5.38,
+    "lo80": 4.3,
+    "hi80": 6.45,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T20:00",
+    "team": "C",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T20:00",
+    "team": "D",
+    "demand_hours": 5.17,
+    "lo80": 4.14,
+    "hi80": 6.21,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T21:00",
+    "team": "A",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T21:00",
+    "team": "B",
+    "demand_hours": 5.38,
+    "lo80": 4.3,
+    "hi80": 6.45,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T21:00",
+    "team": "C",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T21:00",
+    "team": "D",
+    "demand_hours": 5.17,
+    "lo80": 4.14,
+    "hi80": 6.21,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T22:00",
+    "team": "A",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T22:00",
+    "team": "B",
+    "demand_hours": 3.96,
+    "lo80": 3.17,
+    "hi80": 4.76,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T22:00",
+    "team": "C",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T22:00",
+    "team": "D",
+    "demand_hours": 3.81,
+    "lo80": 3.05,
+    "hi80": 4.57,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-26T23:00",
+    "team": "A",
+    "demand_hours": 1.71,
+    "lo80": 1.37,
+    "hi80": 2.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T23:00",
+    "team": "B",
+    "demand_hours": 2.22,
+    "lo80": 1.78,
+    "hi80": 2.67,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-26T23:00",
+    "team": "C",
+    "demand_hours": 1.71,
+    "lo80": 1.37,
+    "hi80": 2.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-26T23:00",
+    "team": "D",
+    "demand_hours": 2.14,
+    "lo80": 1.71,
+    "hi80": 2.57,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T00:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T00:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T00:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T00:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T01:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T01:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T01:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T01:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T02:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T02:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T02:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T02:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T03:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T03:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T03:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T03:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T04:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T04:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T04:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T04:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T05:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T05:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T05:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T05:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T06:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T06:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T06:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T06:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T07:00",
+    "team": "A",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T07:00",
+    "team": "B",
+    "demand_hours": 0.39,
+    "lo80": 0.31,
+    "hi80": 0.47,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T07:00",
+    "team": "C",
+    "demand_hours": 0.3,
+    "lo80": 0.24,
+    "hi80": 0.36,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T07:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.3,
+    "hi80": 0.45,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T08:00",
+    "team": "A",
+    "demand_hours": 0.31,
+    "lo80": 0.24,
+    "hi80": 0.37,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T08:00",
+    "team": "B",
+    "demand_hours": 0.4,
+    "lo80": 0.32,
+    "hi80": 0.48,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T08:00",
+    "team": "C",
+    "demand_hours": 0.31,
+    "lo80": 0.24,
+    "hi80": 0.37,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T08:00",
+    "team": "D",
+    "demand_hours": 0.38,
+    "lo80": 0.31,
+    "hi80": 0.46,
+    "capacity_hours": 1.2
+   },
+   {
+    "time": "2026-10-27T09:00",
+    "team": "A",
+    "demand_hours": 0.35,
+    "lo80": 0.28,
+    "hi80": 0.43,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T09:00",
+    "team": "B",
+    "demand_hours": 0.46,
+    "lo80": 0.37,
+    "hi80": 0.55,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T09:00",
+    "team": "C",
+    "demand_hours": 0.35,
+    "lo80": 0.28,
+    "hi80": 0.43,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T09:00",
+    "team": "D",
+    "demand_hours": 0.44,
+    "lo80": 0.35,
+    "hi80": 0.53,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T10:00",
+    "team": "A",
+    "demand_hours": 0.62,
+    "lo80": 0.49,
+    "hi80": 0.74,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T10:00",
+    "team": "B",
+    "demand_hours": 0.8,
+    "lo80": 0.64,
+    "hi80": 0.96,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T10:00",
+    "team": "C",
+    "demand_hours": 0.62,
+    "lo80": 0.49,
+    "hi80": 0.74,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T10:00",
+    "team": "D",
+    "demand_hours": 0.77,
+    "lo80": 0.62,
+    "hi80": 0.92,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T11:00",
+    "team": "A",
+    "demand_hours": 1.4,
+    "lo80": 1.12,
+    "hi80": 1.68,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T11:00",
+    "team": "B",
+    "demand_hours": 1.82,
+    "lo80": 1.46,
+    "hi80": 2.19,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T11:00",
+    "team": "C",
+    "demand_hours": 1.4,
+    "lo80": 1.12,
+    "hi80": 1.68,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T11:00",
+    "team": "D",
+    "demand_hours": 1.75,
+    "lo80": 1.4,
+    "hi80": 2.11,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T12:00",
+    "team": "A",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.16,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T12:00",
+    "team": "B",
+    "demand_hours": 3.43,
+    "lo80": 2.74,
+    "hi80": 4.11,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T12:00",
+    "team": "C",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.16,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T12:00",
+    "team": "D",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.95,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T13:00",
+    "team": "A",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T13:00",
+    "team": "B",
+    "demand_hours": 4.29,
+    "lo80": 3.43,
+    "hi80": 5.15,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T13:00",
+    "team": "C",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T13:00",
+    "team": "D",
+    "demand_hours": 4.13,
+    "lo80": 3.3,
+    "hi80": 4.95,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T14:00",
+    "team": "A",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.17,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T14:00",
+    "team": "B",
+    "demand_hours": 3.43,
+    "lo80": 2.75,
+    "hi80": 4.12,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T14:00",
+    "team": "C",
+    "demand_hours": 2.64,
+    "lo80": 2.11,
+    "hi80": 3.17,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T14:00",
+    "team": "D",
+    "demand_hours": 3.3,
+    "lo80": 2.64,
+    "hi80": 3.96,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T15:00",
+    "team": "A",
+    "demand_hours": 1.43,
+    "lo80": 1.14,
+    "hi80": 1.72,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T15:00",
+    "team": "B",
+    "demand_hours": 1.86,
+    "lo80": 1.49,
+    "hi80": 2.23,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T15:00",
+    "team": "C",
+    "demand_hours": 1.43,
+    "lo80": 1.14,
+    "hi80": 1.72,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T15:00",
+    "team": "D",
+    "demand_hours": 1.79,
+    "lo80": 1.43,
+    "hi80": 2.14,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T16:00",
+    "team": "A",
+    "demand_hours": 0.75,
+    "lo80": 0.6,
+    "hi80": 0.9,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T16:00",
+    "team": "B",
+    "demand_hours": 0.98,
+    "lo80": 0.78,
+    "hi80": 1.17,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T16:00",
+    "team": "C",
+    "demand_hours": 0.75,
+    "lo80": 0.6,
+    "hi80": 0.9,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T16:00",
+    "team": "D",
+    "demand_hours": 0.94,
+    "lo80": 0.75,
+    "hi80": 1.13,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T17:00",
+    "team": "A",
+    "demand_hours": 0.87,
+    "lo80": 0.7,
+    "hi80": 1.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T17:00",
+    "team": "B",
+    "demand_hours": 1.14,
+    "lo80": 0.91,
+    "hi80": 1.36,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T17:00",
+    "team": "C",
+    "demand_hours": 0.87,
+    "lo80": 0.7,
+    "hi80": 1.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T17:00",
+    "team": "D",
+    "demand_hours": 1.09,
+    "lo80": 0.87,
+    "hi80": 1.31,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T18:00",
+    "team": "A",
+    "demand_hours": 1.72,
+    "lo80": 1.37,
+    "hi80": 2.06,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T18:00",
+    "team": "B",
+    "demand_hours": 2.23,
+    "lo80": 1.79,
+    "hi80": 2.68,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T18:00",
+    "team": "C",
+    "demand_hours": 1.72,
+    "lo80": 1.37,
+    "hi80": 2.06,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T18:00",
+    "team": "D",
+    "demand_hours": 2.15,
+    "lo80": 1.72,
+    "hi80": 2.58,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T19:00",
+    "team": "A",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T19:00",
+    "team": "B",
+    "demand_hours": 3.96,
+    "lo80": 3.17,
+    "hi80": 4.76,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T19:00",
+    "team": "C",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T19:00",
+    "team": "D",
+    "demand_hours": 3.81,
+    "lo80": 3.05,
+    "hi80": 4.57,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T20:00",
+    "team": "A",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T20:00",
+    "team": "B",
+    "demand_hours": 5.38,
+    "lo80": 4.3,
+    "hi80": 6.45,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T20:00",
+    "team": "C",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T20:00",
+    "team": "D",
+    "demand_hours": 5.17,
+    "lo80": 4.14,
+    "hi80": 6.21,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T21:00",
+    "team": "A",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T21:00",
+    "team": "B",
+    "demand_hours": 5.38,
+    "lo80": 4.3,
+    "hi80": 6.45,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T21:00",
+    "team": "C",
+    "demand_hours": 4.14,
+    "lo80": 3.31,
+    "hi80": 4.96,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T21:00",
+    "team": "D",
+    "demand_hours": 5.17,
+    "lo80": 4.14,
+    "hi80": 6.21,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T22:00",
+    "team": "A",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T22:00",
+    "team": "B",
+    "demand_hours": 3.96,
+    "lo80": 3.17,
+    "hi80": 4.76,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T22:00",
+    "team": "C",
+    "demand_hours": 3.05,
+    "lo80": 2.44,
+    "hi80": 3.66,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T22:00",
+    "team": "D",
+    "demand_hours": 3.81,
+    "lo80": 3.05,
+    "hi80": 4.57,
+    "capacity_hours": 5.625
+   },
+   {
+    "time": "2026-10-27T23:00",
+    "team": "A",
+    "demand_hours": 1.71,
+    "lo80": 1.37,
+    "hi80": 2.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T23:00",
+    "team": "B",
+    "demand_hours": 2.22,
+    "lo80": 1.78,
+    "hi80": 2.67,
+    "capacity_hours": 5.8500000000000005
+   },
+   {
+    "time": "2026-10-27T23:00",
+    "team": "C",
+    "demand_hours": 1.71,
+    "lo80": 1.37,
+    "hi80": 2.05,
+    "capacity_hours": 4.5
+   },
+   {
+    "time": "2026-10-27T23:00",
+    "team": "D",
+    "demand_hours": 2.14,
+    "lo80": 1.71,
+    "hi80": 2.57,
+    "capacity_hours": 5.625
+   }
+  ],
+  "bottlenecks": [
+   {
+    "team": "C",
+    "start": "2026-10-31T19:00",
+    "end": "2026-10-31T23:00",
+    "peak_rho": 1.4,
+    "text": "Team C short by ~2 agents, Sat 19:00-23:00 (FIXTURE)"
+   }
+  ]
+ },
+ "risk": {
+  "auc": 0.86,
+  "pr_auc": 0.52,
+  "top10_precision": 0.61,
+  "brier": 0.07,
+  "base_rate": 0.13,
+  "calibration": [
+   {
+    "predicted": 0.05,
+    "observed": 0.048,
+    "n": 1000
+   },
+   {
+    "predicted": 0.15,
+    "observed": 0.142,
+    "n": 1000
+   },
+   {
+    "predicted": 0.3,
+    "observed": 0.285,
+    "n": 1000
+   },
+   {
+    "predicted": 0.5,
+    "observed": 0.475,
+    "n": 1000
+   },
+   {
+    "predicted": 0.7,
+    "observed": 0.665,
+    "n": 1000
+   },
+   {
+    "predicted": 0.9,
+    "observed": 0.855,
+    "n": 1000
+   }
+  ],
+  "at_risk": [
+   {
+    "ticket_id": "T000003",
+    "created_at": "2026-08-31 00:04",
+    "category": "payment_failure",
+    "priority": "P1",
+    "language": "hi",
+    "text": "do baar paise kat gaye ek hi order ke",
+    "probability": 0.92,
+    "minutes_to_sla": 12.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language hi (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.35
+   },
+   {
+    "ticket_id": "T000005",
+    "created_at": "2026-08-31 00:12",
+    "category": "late_delivery",
+    "priority": "P1",
+    "language": "en",
+    "text": "showing me current status of purchase [NUMBER]",
+    "probability": 0.88,
+    "minutes_to_sla": 16.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.33
+   },
+   {
+    "ticket_id": "T000009",
+    "created_at": "2026-08-31 00:24",
+    "category": "late_delivery",
+    "priority": "P1",
+    "language": "hi",
+    "text": "order kab aayega? bahut late ho gaya hai",
+    "probability": 0.84,
+    "minutes_to_sla": 20.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language hi (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.31
+   },
+   {
+    "ticket_id": "T000013",
+    "created_at": "2026-08-31 00:31",
+    "category": "late_delivery",
+    "priority": "P1",
+    "language": "en",
+    "text": "still no sign of my fried rice, very delayed",
+    "probability": 0.8,
+    "minutes_to_sla": 24.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.29
+   },
+   {
+    "ticket_id": "T000015",
+    "created_at": "2026-08-31 00:33",
+    "category": "missing_item",
+    "priority": "P1",
+    "language": "en",
+    "text": "bag was sealed but extra chutney was not inside",
+    "probability": 0.76,
+    "minutes_to_sla": 28.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.27
+   },
+   {
+    "ticket_id": "T000017",
+    "created_at": "2026-08-31 00:41",
+    "category": "late_delivery",
+    "priority": "P1",
+    "language": "en",
+    "text": "help seeing the ETA of order [ORDER_ID]",
+    "probability": 0.72,
+    "minutes_to_sla": 32.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.25
+   },
+   {
+    "ticket_id": "T000020",
+    "created_at": "2026-08-31 00:45",
+    "category": "missing_item",
+    "priority": "P1",
+    "language": "en",
+    "text": "received incomplete order, garlic naan missing",
+    "probability": 0.68,
+    "minutes_to_sla": 36.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.23
+   },
+   {
+    "ticket_id": "T000024",
+    "created_at": "2026-08-31 00:54",
+    "category": "wrong_item",
+    "priority": "P1",
+    "language": "en",
+    "text": "my masala dosa was replaced with some other dish without asking",
+    "probability": 0.64,
+    "minutes_to_sla": 40.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.21
+   },
+   {
+    "ticket_id": "T000029",
+    "created_at": "2026-08-31 00:59",
+    "category": "payment_failure",
+    "priority": "P1",
+    "language": "en",
+    "text": "payment went through but app shows payment failed, the restaurant quality is also bad",
+    "probability": 0.6,
+    "minutes_to_sla": 44.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.19
+   },
+   {
+    "ticket_id": "T000030",
+    "created_at": "2026-08-31 01:02",
+    "category": "restaurant_partner",
+    "priority": "P1",
+    "language": "en",
+    "text": "Thali Express refused to give the bill",
+    "probability": 0.56,
+    "minutes_to_sla": 48.0,
+    "reasons": [
+     {
+      "feature": "queue_length_skilled",
+      "contribution": 0.21,
+      "text": "18 tickets ahead in queue (+0.21)"
+     },
+     {
+      "feature": "language",
+      "contribution": 0.12,
+      "text": "language en (+0.12)"
+     },
+     {
+      "feature": "hour",
+      "contribution": 0.07,
+      "text": "dinner peak (+0.07)"
+     }
+    ],
+    "action": "assign to a free skilled agent now",
+    "probability_after_action": 0.17
+   }
+  ],
+  "realdata_auc": 0.78,
+  "realdata_n": 24918
+ },
+ "recommendations": {
+  "assignments": [
+   {
+    "ticket_id": "T000003",
+    "agent_id": "B01",
+    "agent_name": "Kavita D.",
+    "reason": "Hindi refund, 91% breach risk, Kavita is one of 3 agents with both skills (FIXTURE)",
+    "value": 2.4
+   },
+   {
+    "ticket_id": "T000005",
+    "agent_id": "B01",
+    "agent_name": "Kavita D.",
+    "reason": "Hindi refund, 91% breach risk, Kavita is one of 3 agents with both skills (FIXTURE)",
+    "value": 2.4
+   },
+   {
+    "ticket_id": "T000009",
+    "agent_id": "B01",
+    "agent_name": "Kavita D.",
+    "reason": "Hindi refund, 91% breach risk, Kavita is one of 3 agents with both skills (FIXTURE)",
+    "value": 2.4
+   },
+   {
+    "ticket_id": "T000013",
+    "agent_id": "B01",
+    "agent_name": "Kavita D.",
+    "reason": "Hindi refund, 91% breach risk, Kavita is one of 3 agents with both skills (FIXTURE)",
+    "value": 2.4
+   },
+   {
+    "ticket_id": "T000015",
+    "agent_id": "B01",
+    "agent_name": "Kavita D.",
+    "reason": "Hindi refund, 91% breach risk, Kavita is one of 3 agents with both skills (FIXTURE)",
+    "value": 2.4
+   }
+  ],
+  "staffing_moves": [
+   {
+    "text": "Move Chetan G., Esha P., Gita K. (Team D, trained on missing/wrong items) to the Team C queue, Sat-Sun 19:00-23:00 (FIXTURE)",
+    "team_from": "D",
+    "team_to": "C",
+    "agents": [
+     "D06",
+     "D07",
+     "D09"
+    ],
+    "when": "Sat-Sun 19:00-23:00",
+    "expected_effect": {
+     "turnaround.breach_pct": -1.2
+    }
+   }
+  ]
+ },
+ "ablations": [
+  {
+   "key": "full",
+   "label": "OpsLens (full)",
+   "breach_pct": {
+    "mean": 4.1,
+    "std": 0.3
+   },
+   "p90_resolution_min": {
+    "mean": 150.0,
+    "std": 8.0
+   },
+   "delta_breach_vs_full": 0.0
+  },
+  {
+   "key": "no_staffing",
+   "label": "without staffing",
+   "breach_pct": {
+    "mean": 4.9,
+    "std": 0.3
+   },
+   "p90_resolution_min": {
+    "mean": 150.0,
+    "std": 8.0
+   },
+   "delta_breach_vs_full": 0.8
+  },
+  {
+   "key": "no_risk",
+   "label": "without risk scores",
+   "breach_pct": {
+    "mean": 5.8,
+    "std": 0.3
+   },
+   "p90_resolution_min": {
+    "mean": 150.0,
+    "std": 8.0
+   },
+   "delta_breach_vs_full": 1.7
+  },
+  {
+   "key": "no_optimizer",
+   "label": "risk-sorted greedy",
+   "breach_pct": {
+    "mean": 5.2,
+    "std": 0.3
+   },
+   "p90_resolution_min": {
+    "mean": 150.0,
+    "std": 8.0
+   },
+   "delta_breach_vs_full": 1.1
+  },
+  {
+   "key": "no_classifier",
+   "label": "without classifier",
+   "breach_pct": {
+    "mean": 5.5,
+    "std": 0.3
+   },
+   "p90_resolution_min": {
+    "mean": 150.0,
+    "std": 8.0
+   },
+   "delta_breach_vs_full": 1.4
+  },
+  {
+   "key": "no_scarcity",
+   "label": "without scarcity cost",
+   "breach_pct": {
+    "mean": 4.7,
+    "std": 0.3
+   },
+   "p90_resolution_min": {
+    "mean": 150.0,
+    "std": 8.0
+   },
+   "delta_breach_vs_full": 0.6
+  }
+ ],
+ "sensitivity": [
+  {
+   "gold_weight": 1.0,
+   "breach_pct": 4.0,
+   "gold_breach_pct": 4.3
+  },
+  {
+   "gold_weight": 1.5,
+   "breach_pct": 4.1,
+   "gold_breach_pct": 3.2
+  },
+  {
+   "gold_weight": 2.0,
+   "breach_pct": 4.4,
+   "gold_breach_pct": 2.5
+  }
+ ],
+ "stress": [
+  {
+   "scenario": "+25% volume",
+   "baseline_a": 31.0,
+   "baseline_b": 19.0,
+   "opslens": 11.0
+  },
+  {
+   "scenario": "10% absent",
+   "baseline_a": 18.0,
+   "baseline_b": 9.5,
+   "opslens": 6.0
+  },
+  {
+   "scenario": "surprise spike day 47",
+   "baseline_a": 22.0,
+   "baseline_b": 12.0,
+   "opslens": 7.0
+  }
+ ],
+ "speed": {
+  "pipeline_seconds": 210.0,
+  "optimizer_ms_median": 3.1,
+  "optimizer_ms_max": 48.0,
+  "scale_test": {
+   "tickets": 5000,
+   "agents": 500,
+   "seconds": 0.9
+  }
+ },
+ "brief": {
+  "text": "FIXTURE brief: breaches would fall from 13.0% to 4.1% on the test days.",
+  "source": "template",
+  "numbers_used": [
+   "sim.policies.baseline_a.kpis.turnaround.breach_pct.mean"
+  ]
+ }
+}

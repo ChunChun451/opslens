@@ -1,0 +1,73 @@
+"""Turn simulation results into the KPIs the problem statement asks for.
+
+The PS asks how recommendations improve "turnaround time, productivity, and service
+quality", so the KPIs are grouped under exactly those three headings:
+- Turnaround:   breach %, mean / P90 resolution time, mean wait, max backlog
+- Productivity: tickets resolved per agent-hour, transfers per 100 tickets, busy agent-hours
+- Quality:      reopen rate, P99 wait, mean utilisation, load fairness (std of utilisation)
+
+Comparisons between policies are **paired by seed**: seed 3 of OpsLens and seed 3 of a
+baseline saw the same tickets and the same luck, so we take the difference per seed and
+report its mean with a 95% confidence interval (t-distribution, n = number of seeds).
+
+Example: breach % for seeds 1..5 — Baseline A [12.1, 12.6, 11.9, 12.4, 12.2],
+OpsLens [8.0, 8.3, 7.7, 8.4, 8.1] → differences [-4.1, -4.3, -4.2, -4.0, -4.1],
+mean -4.14, sd 0.11, CI = -4.14 ± 2.776 × 0.11 / √5 = [-4.28, -4.00] percentage points.
+"""
+
+from __future__ import annotations
+
+import math
+
+import numpy as np
+
+from opslens.simulate import SimResult
+
+# 97.5% quantile of Student's t for small n (df = n - 1). Avoids a scipy dependency.
+T_975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262}
+
+
+def summarize(result: SimResult) -> dict[str, float]:
+    """KPIs for one policy run (one seed), flat dict with group prefixes."""
+    t = result.tickets
+    resolved = t["resolution_min"].dropna()
+    busy_min = sum(result.agent_busy_minutes.values())
+    avail_min = sum(result.agent_available_minutes.values())
+    utils = np.array([
+        result.agent_busy_minutes[a] / result.agent_available_minutes[a]
+        for a in result.agent_available_minutes
+        if result.agent_available_minutes[a] > 0
+    ])
+    snaps = result.snapshots
+    in_window = snaps[(snaps["minute"] >= t["created_min"].min()) & (snaps["minute"] <= t["created_min"].max())]
+    return {
+        "turnaround.breach_pct": 100.0 * float(t["breached"].mean()),
+        "turnaround.mean_resolution_min": float(resolved.mean()),
+        "turnaround.p90_resolution_min": float(np.percentile(resolved, 90)),
+        "turnaround.mean_wait_min": float(t["wait_min"].mean()),
+        "turnaround.max_backlog": float(in_window["waiting"].max()) if len(in_window) else 0.0,
+        "productivity.tickets_per_agent_hour": len(resolved) / (avail_min / 60.0) if avail_min else 0.0,
+        "productivity.transfers_per_100": 100.0 * float(t["transfers"].mean()),
+        "productivity.busy_agent_hours": busy_min / 60.0,
+        "quality.reopen_rate_pct": 100.0 * float((t["reopens"] > 0).mean()),
+        "quality.p99_wait_min": float(np.percentile(t["wait_min"].dropna(), 99)),
+        "quality.mean_utilisation": float(utils.mean()) if len(utils) else 0.0,
+        "quality.load_fairness_std": float(utils.std()) if len(utils) else 0.0,
+        "tickets": float(len(t)),
+    }
+
+
+def mean_std(values: list[float]) -> tuple[float, float]:
+    arr = np.asarray(values, dtype=float)
+    return float(arr.mean()), float(arr.std(ddof=1)) if len(arr) > 1 else 0.0
+
+
+def paired_ci(treatment: list[float], control: list[float]) -> dict[str, float]:
+    """Mean difference (treatment − control) over paired seeds, with a 95% t-interval."""
+    diffs = np.asarray(treatment, dtype=float) - np.asarray(control, dtype=float)
+    n = len(diffs)
+    mean = float(diffs.mean())
+    if n < 2:
+        return {"mean_diff": mean, "ci_low": mean, "ci_high": mean, "n": n}
+    half = T_975.get(n - 1, 1.96) * float(diffs.std(ddof=1)) / math.sqrt(n)
+    return {"mean_diff": mean, "ci_low": mean - half, "ci_high": mean + half, "n": n}

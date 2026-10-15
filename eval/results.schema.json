@@ -1,0 +1,1355 @@
+{
+ "$defs": {
+  "AblationRow": {
+   "additionalProperties": false,
+   "properties": {
+    "key": {
+     "title": "Key",
+     "type": "string"
+    },
+    "label": {
+     "title": "Label",
+     "type": "string"
+    },
+    "breach_pct": {
+     "$ref": "#/$defs/MeanStd"
+    },
+    "p90_resolution_min": {
+     "$ref": "#/$defs/MeanStd"
+    },
+    "delta_breach_vs_full": {
+     "title": "Delta Breach Vs Full",
+     "type": "number"
+    }
+   },
+   "required": [
+    "key",
+    "label",
+    "breach_pct",
+    "p90_resolution_min",
+    "delta_breach_vs_full"
+   ],
+   "title": "AblationRow",
+   "type": "object"
+  },
+  "AssignmentRec": {
+   "additionalProperties": false,
+   "properties": {
+    "ticket_id": {
+     "title": "Ticket Id",
+     "type": "string"
+    },
+    "agent_id": {
+     "title": "Agent Id",
+     "type": "string"
+    },
+    "agent_name": {
+     "title": "Agent Name",
+     "type": "string"
+    },
+    "reason": {
+     "title": "Reason",
+     "type": "string"
+    },
+    "value": {
+     "title": "Value",
+     "type": "number"
+    }
+   },
+   "required": [
+    "ticket_id",
+    "agent_id",
+    "agent_name",
+    "reason",
+    "value"
+   ],
+   "title": "AssignmentRec",
+   "type": "object"
+  },
+  "AtRiskTicket": {
+   "additionalProperties": false,
+   "properties": {
+    "ticket_id": {
+     "title": "Ticket Id",
+     "type": "string"
+    },
+    "created_at": {
+     "title": "Created At",
+     "type": "string"
+    },
+    "category": {
+     "title": "Category",
+     "type": "string"
+    },
+    "priority": {
+     "title": "Priority",
+     "type": "string"
+    },
+    "language": {
+     "title": "Language",
+     "type": "string"
+    },
+    "text": {
+     "title": "Text",
+     "type": "string"
+    },
+    "probability": {
+     "title": "Probability",
+     "type": "number"
+    },
+    "minutes_to_sla": {
+     "title": "Minutes To Sla",
+     "type": "number"
+    },
+    "reasons": {
+     "items": {
+      "$ref": "#/$defs/Reason"
+     },
+     "title": "Reasons",
+     "type": "array"
+    },
+    "action": {
+     "default": "",
+     "title": "Action",
+     "type": "string"
+    },
+    "probability_after_action": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Probability After Action"
+    }
+   },
+   "required": [
+    "ticket_id",
+    "created_at",
+    "category",
+    "priority",
+    "language",
+    "text",
+    "probability",
+    "minutes_to_sla",
+    "reasons"
+   ],
+   "title": "AtRiskTicket",
+   "type": "object"
+  },
+  "Bottleneck": {
+   "additionalProperties": false,
+   "properties": {
+    "team": {
+     "title": "Team",
+     "type": "string"
+    },
+    "start": {
+     "title": "Start",
+     "type": "string"
+    },
+    "end": {
+     "title": "End",
+     "type": "string"
+    },
+    "peak_rho": {
+     "title": "Peak Rho",
+     "type": "number"
+    },
+    "text": {
+     "title": "Text",
+     "type": "string"
+    }
+   },
+   "required": [
+    "team",
+    "start",
+    "end",
+    "peak_rho",
+    "text"
+   ],
+   "title": "Bottleneck",
+   "type": "object"
+  },
+  "Brief": {
+   "additionalProperties": false,
+   "properties": {
+    "text": {
+     "title": "Text",
+     "type": "string"
+    },
+    "source": {
+     "enum": [
+      "llm",
+      "template"
+     ],
+     "title": "Source",
+     "type": "string"
+    },
+    "numbers_used": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Numbers Used",
+     "type": "array"
+    }
+   },
+   "required": [
+    "text",
+    "source",
+    "numbers_used"
+   ],
+   "title": "Brief",
+   "type": "object"
+  },
+  "CalibrationBin": {
+   "additionalProperties": false,
+   "properties": {
+    "predicted": {
+     "title": "Predicted",
+     "type": "number"
+    },
+    "observed": {
+     "title": "Observed",
+     "type": "number"
+    },
+    "n": {
+     "title": "N",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "predicted",
+    "observed",
+    "n"
+   ],
+   "title": "CalibrationBin",
+   "type": "object"
+  },
+  "ClassificationSection": {
+   "additionalProperties": false,
+   "properties": {
+    "accuracy_local": {
+     "title": "Accuracy Local",
+     "type": "number"
+    },
+    "accuracy_cascade": {
+     "title": "Accuracy Cascade",
+     "type": "number"
+    },
+    "accuracy_llm_sample": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Accuracy Llm Sample"
+    },
+    "pct_sent_to_llm": {
+     "title": "Pct Sent To Llm",
+     "type": "number"
+    },
+    "cost_per_million_tickets_usd": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cost Per Million Tickets Usd"
+    },
+    "transfers_avoided_per_100": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Transfers Avoided Per 100"
+    },
+    "confusion": {
+     "additionalProperties": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object"
+     },
+     "default": {},
+     "title": "Confusion",
+     "type": "object"
+    },
+    "clusters": {
+     "default": [],
+     "items": {
+      "$ref": "#/$defs/Cluster"
+     },
+     "title": "Clusters",
+     "type": "array"
+    }
+   },
+   "required": [
+    "accuracy_local",
+    "accuracy_cascade",
+    "pct_sent_to_llm"
+   ],
+   "title": "ClassificationSection",
+   "type": "object"
+  },
+  "Cluster": {
+   "additionalProperties": false,
+   "properties": {
+    "category": {
+     "title": "Category",
+     "type": "string"
+    },
+    "name": {
+     "title": "Name",
+     "type": "string"
+    },
+    "root_cause": {
+     "title": "Root Cause",
+     "type": "string"
+    },
+    "size": {
+     "title": "Size",
+     "type": "integer"
+    },
+    "examples": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Examples",
+     "type": "array"
+    }
+   },
+   "required": [
+    "category",
+    "name",
+    "root_cause",
+    "size",
+    "examples"
+   ],
+   "title": "Cluster",
+   "type": "object"
+  },
+  "Comparison": {
+   "additionalProperties": false,
+   "properties": {
+    "policy": {
+     "title": "Policy",
+     "type": "string"
+    },
+    "baseline": {
+     "title": "Baseline",
+     "type": "string"
+    },
+    "kpi": {
+     "title": "Kpi",
+     "type": "string"
+    },
+    "mean_diff": {
+     "title": "Mean Diff",
+     "type": "number"
+    },
+    "ci_low": {
+     "title": "Ci Low",
+     "type": "number"
+    },
+    "ci_high": {
+     "title": "Ci High",
+     "type": "number"
+    },
+    "n": {
+     "title": "N",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "policy",
+    "baseline",
+    "kpi",
+    "mean_diff",
+    "ci_low",
+    "ci_high",
+    "n"
+   ],
+   "title": "Comparison",
+   "type": "object"
+  },
+  "EvidenceCard": {
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "title": "Id",
+     "type": "string"
+    },
+    "title": {
+     "title": "Title",
+     "type": "string"
+    },
+    "cause_type": {
+     "enum": [
+      "capacity",
+      "skill_gap",
+      "volume_spike",
+      "partner_issue",
+      "process",
+      "other"
+     ],
+     "title": "Cause Type",
+     "type": "string"
+    },
+    "metric": {
+     "title": "Metric",
+     "type": "string"
+    },
+    "value": {
+     "title": "Value",
+     "type": "number"
+    },
+    "comparison_value": {
+     "title": "Comparison Value",
+     "type": "number"
+    },
+    "comparison_text": {
+     "title": "Comparison Text",
+     "type": "string"
+    },
+    "segment": {
+     "additionalProperties": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "integer"
+       },
+       {
+        "type": "number"
+       },
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "items": {
+         "type": "integer"
+        },
+        "type": "array"
+       }
+      ]
+     },
+     "title": "Segment",
+     "type": "object"
+    },
+    "affected_tickets": {
+     "title": "Affected Tickets",
+     "type": "integer"
+    },
+    "affected_share_pct": {
+     "title": "Affected Share Pct",
+     "type": "number"
+    },
+    "strength": {
+     "title": "Strength",
+     "type": "number"
+    },
+    "not_explained_by": {
+     "default": "",
+     "title": "Not Explained By",
+     "type": "string"
+    },
+    "examples": {
+     "default": [],
+     "items": {
+      "$ref": "#/$defs/ExampleTicket"
+     },
+     "title": "Examples",
+     "type": "array"
+    },
+    "recommendation": {
+     "default": "",
+     "title": "Recommendation",
+     "type": "string"
+    }
+   },
+   "required": [
+    "id",
+    "title",
+    "cause_type",
+    "metric",
+    "value",
+    "comparison_value",
+    "comparison_text",
+    "segment",
+    "affected_tickets",
+    "affected_share_pct",
+    "strength"
+   ],
+   "title": "EvidenceCard",
+   "type": "object"
+  },
+  "ExampleTicket": {
+   "additionalProperties": false,
+   "properties": {
+    "ticket_id": {
+     "title": "Ticket Id",
+     "type": "string"
+    },
+    "created_at": {
+     "title": "Created At",
+     "type": "string"
+    },
+    "text": {
+     "title": "Text",
+     "type": "string"
+    },
+    "wait_min": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Wait Min"
+    },
+    "breached": {
+     "anyOf": [
+      {
+       "type": "boolean"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Breached"
+    }
+   },
+   "required": [
+    "ticket_id",
+    "created_at",
+    "text"
+   ],
+   "title": "ExampleTicket",
+   "type": "object"
+  },
+  "ForecastPoint": {
+   "additionalProperties": false,
+   "properties": {
+    "time": {
+     "title": "Time",
+     "type": "string"
+    },
+    "team": {
+     "title": "Team",
+     "type": "string"
+    },
+    "demand_hours": {
+     "title": "Demand Hours",
+     "type": "number"
+    },
+    "lo80": {
+     "title": "Lo80",
+     "type": "number"
+    },
+    "hi80": {
+     "title": "Hi80",
+     "type": "number"
+    },
+    "capacity_hours": {
+     "title": "Capacity Hours",
+     "type": "number"
+    },
+    "actual_hours": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Actual Hours"
+    }
+   },
+   "required": [
+    "time",
+    "team",
+    "demand_hours",
+    "lo80",
+    "hi80",
+    "capacity_hours"
+   ],
+   "title": "ForecastPoint",
+   "type": "object"
+  },
+  "ForecastSection": {
+   "additionalProperties": false,
+   "properties": {
+    "wape_model": {
+     "title": "Wape Model",
+     "type": "number"
+    },
+    "wape_naive": {
+     "title": "Wape Naive",
+     "type": "number"
+    },
+    "coverage_80": {
+     "title": "Coverage 80",
+     "type": "number"
+    },
+    "coverage_90": {
+     "title": "Coverage 90",
+     "type": "number"
+    },
+    "horizon": {
+     "items": {
+      "$ref": "#/$defs/ForecastPoint"
+     },
+     "title": "Horizon",
+     "type": "array"
+    },
+    "bottlenecks": {
+     "items": {
+      "$ref": "#/$defs/Bottleneck"
+     },
+     "title": "Bottlenecks",
+     "type": "array"
+    }
+   },
+   "required": [
+    "wape_model",
+    "wape_naive",
+    "coverage_80",
+    "coverage_90",
+    "horizon",
+    "bottlenecks"
+   ],
+   "title": "ForecastSection",
+   "type": "object"
+  },
+  "MeanStd": {
+   "additionalProperties": false,
+   "properties": {
+    "mean": {
+     "title": "Mean",
+     "type": "number"
+    },
+    "std": {
+     "title": "Std",
+     "type": "number"
+    }
+   },
+   "required": [
+    "mean",
+    "std"
+   ],
+   "title": "MeanStd",
+   "type": "object"
+  },
+  "Meta": {
+   "additionalProperties": false,
+   "properties": {
+    "fixture": {
+     "title": "Fixture",
+     "type": "boolean"
+    },
+    "generated_at": {
+     "title": "Generated At",
+     "type": "string"
+    },
+    "git_commit": {
+     "default": "",
+     "title": "Git Commit",
+     "type": "string"
+    },
+    "data_seed": {
+     "title": "Data Seed",
+     "type": "integer"
+    },
+    "n_tickets": {
+     "title": "N Tickets",
+     "type": "integer"
+    },
+    "start_date": {
+     "title": "Start Date",
+     "type": "string"
+    },
+    "days": {
+     "title": "Days",
+     "type": "integer"
+    },
+    "train_days": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Train Days",
+     "type": "array"
+    },
+    "validation_days": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Validation Days",
+     "type": "array"
+    },
+    "test_days": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Test Days",
+     "type": "array"
+    },
+    "run_seconds": {
+     "default": 0.0,
+     "title": "Run Seconds",
+     "type": "number"
+    }
+   },
+   "required": [
+    "fixture",
+    "generated_at",
+    "data_seed",
+    "n_tickets",
+    "start_date",
+    "days",
+    "train_days",
+    "validation_days",
+    "test_days"
+   ],
+   "title": "Meta",
+   "type": "object"
+  },
+  "PatternsSection": {
+   "additionalProperties": false,
+   "properties": {
+    "cards": {
+     "items": {
+      "$ref": "#/$defs/EvidenceCard"
+     },
+     "title": "Cards",
+     "type": "array"
+    },
+    "recall": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/RecallResult"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "blind_recall": {
+     "anyOf": [
+      {
+       "additionalProperties": {
+        "type": "number"
+       },
+       "type": "object"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Blind Recall"
+    },
+    "live_detection_latency_min": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Live Detection Latency Min"
+    },
+    "delay_decomposition": {
+     "additionalProperties": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object"
+     },
+     "default": {},
+     "title": "Delay Decomposition",
+     "type": "object"
+    }
+   },
+   "required": [
+    "cards"
+   ],
+   "title": "PatternsSection",
+   "type": "object"
+  },
+  "PolicyResult": {
+   "additionalProperties": false,
+   "properties": {
+    "key": {
+     "title": "Key",
+     "type": "string"
+    },
+    "label": {
+     "title": "Label",
+     "type": "string"
+    },
+    "kpis": {
+     "additionalProperties": {
+      "$ref": "#/$defs/MeanStd"
+     },
+     "title": "Kpis",
+     "type": "object"
+    },
+    "per_seed": {
+     "items": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object"
+     },
+     "title": "Per Seed",
+     "type": "array"
+    }
+   },
+   "required": [
+    "key",
+    "label",
+    "kpis",
+    "per_seed"
+   ],
+   "title": "PolicyResult",
+   "type": "object"
+  },
+  "Reason": {
+   "additionalProperties": false,
+   "properties": {
+    "feature": {
+     "title": "Feature",
+     "type": "string"
+    },
+    "contribution": {
+     "title": "Contribution",
+     "type": "number"
+    },
+    "text": {
+     "title": "Text",
+     "type": "string"
+    }
+   },
+   "required": [
+    "feature",
+    "contribution",
+    "text"
+   ],
+   "title": "Reason",
+   "type": "object"
+  },
+  "RecallResult": {
+   "additionalProperties": false,
+   "properties": {
+    "planted": {
+     "title": "Planted",
+     "type": "integer"
+    },
+    "found": {
+     "title": "Found",
+     "type": "integer"
+    },
+    "false_alarms": {
+     "title": "False Alarms",
+     "type": "integer"
+    },
+    "details": {
+     "items": {
+      "additionalProperties": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "boolean"
+        }
+       ]
+      },
+      "type": "object"
+     },
+     "title": "Details",
+     "type": "array"
+    }
+   },
+   "required": [
+    "planted",
+    "found",
+    "false_alarms",
+    "details"
+   ],
+   "title": "RecallResult",
+   "type": "object"
+  },
+  "RecommendationsSection": {
+   "additionalProperties": false,
+   "properties": {
+    "assignments": {
+     "items": {
+      "$ref": "#/$defs/AssignmentRec"
+     },
+     "title": "Assignments",
+     "type": "array"
+    },
+    "staffing_moves": {
+     "items": {
+      "$ref": "#/$defs/StaffingMove"
+     },
+     "title": "Staffing Moves",
+     "type": "array"
+    }
+   },
+   "required": [
+    "assignments",
+    "staffing_moves"
+   ],
+   "title": "RecommendationsSection",
+   "type": "object"
+  },
+  "Replay": {
+   "additionalProperties": false,
+   "properties": {
+    "title": {
+     "title": "Title",
+     "type": "string"
+    },
+    "day": {
+     "title": "Day",
+     "type": "integer"
+    },
+    "start_minute": {
+     "title": "Start Minute",
+     "type": "number"
+    },
+    "step_min": {
+     "title": "Step Min",
+     "type": "number"
+    },
+    "times": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Times",
+     "type": "array"
+    },
+    "series": {
+     "additionalProperties": {
+      "$ref": "#/$defs/ReplaySeries"
+     },
+     "title": "Series",
+     "type": "object"
+    }
+   },
+   "required": [
+    "title",
+    "day",
+    "start_minute",
+    "step_min",
+    "times",
+    "series"
+   ],
+   "title": "Replay",
+   "type": "object"
+  },
+  "ReplaySeries": {
+   "additionalProperties": false,
+   "properties": {
+    "waiting": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Waiting",
+     "type": "array"
+    },
+    "breached_cum": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Breached Cum",
+     "type": "array"
+    }
+   },
+   "required": [
+    "waiting",
+    "breached_cum"
+   ],
+   "title": "ReplaySeries",
+   "type": "object"
+  },
+  "RiskSection": {
+   "additionalProperties": false,
+   "properties": {
+    "auc": {
+     "title": "Auc",
+     "type": "number"
+    },
+    "pr_auc": {
+     "title": "Pr Auc",
+     "type": "number"
+    },
+    "top10_precision": {
+     "title": "Top10 Precision",
+     "type": "number"
+    },
+    "brier": {
+     "title": "Brier",
+     "type": "number"
+    },
+    "base_rate": {
+     "title": "Base Rate",
+     "type": "number"
+    },
+    "calibration": {
+     "items": {
+      "$ref": "#/$defs/CalibrationBin"
+     },
+     "title": "Calibration",
+     "type": "array"
+    },
+    "at_risk": {
+     "items": {
+      "$ref": "#/$defs/AtRiskTicket"
+     },
+     "title": "At Risk",
+     "type": "array"
+    },
+    "realdata_auc": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Realdata Auc"
+    },
+    "realdata_n": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Realdata N"
+    }
+   },
+   "required": [
+    "auc",
+    "pr_auc",
+    "top10_precision",
+    "brier",
+    "base_rate",
+    "calibration",
+    "at_risk"
+   ],
+   "title": "RiskSection",
+   "type": "object"
+  },
+  "SimSection": {
+   "additionalProperties": false,
+   "properties": {
+    "seeds": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Seeds",
+     "type": "array"
+    },
+    "test_days": {
+     "items": {
+      "type": "integer"
+     },
+     "title": "Test Days",
+     "type": "array"
+    },
+    "policies": {
+     "additionalProperties": {
+      "$ref": "#/$defs/PolicyResult"
+     },
+     "title": "Policies",
+     "type": "object"
+    },
+    "comparisons": {
+     "items": {
+      "$ref": "#/$defs/Comparison"
+     },
+     "title": "Comparisons",
+     "type": "array"
+    },
+    "replay": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Replay"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    }
+   },
+   "required": [
+    "seeds",
+    "test_days",
+    "policies",
+    "comparisons"
+   ],
+   "title": "SimSection",
+   "type": "object"
+  },
+  "SpeedSection": {
+   "additionalProperties": false,
+   "properties": {
+    "pipeline_seconds": {
+     "title": "Pipeline Seconds",
+     "type": "number"
+    },
+    "optimizer_ms_median": {
+     "title": "Optimizer Ms Median",
+     "type": "number"
+    },
+    "optimizer_ms_max": {
+     "title": "Optimizer Ms Max",
+     "type": "number"
+    },
+    "scale_test": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "default": {},
+     "title": "Scale Test",
+     "type": "object"
+    }
+   },
+   "required": [
+    "pipeline_seconds",
+    "optimizer_ms_median",
+    "optimizer_ms_max"
+   ],
+   "title": "SpeedSection",
+   "type": "object"
+  },
+  "StaffingMove": {
+   "additionalProperties": false,
+   "properties": {
+    "text": {
+     "title": "Text",
+     "type": "string"
+    },
+    "team_from": {
+     "title": "Team From",
+     "type": "string"
+    },
+    "team_to": {
+     "title": "Team To",
+     "type": "string"
+    },
+    "agents": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Agents",
+     "type": "array"
+    },
+    "when": {
+     "title": "When",
+     "type": "string"
+    },
+    "expected_effect": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Expected Effect",
+     "type": "object"
+    }
+   },
+   "required": [
+    "text",
+    "team_from",
+    "team_to",
+    "agents",
+    "when",
+    "expected_effect"
+   ],
+   "title": "StaffingMove",
+   "type": "object"
+  }
+ },
+ "additionalProperties": false,
+ "properties": {
+  "meta": {
+   "$ref": "#/$defs/Meta"
+  },
+  "sim": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/SimSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "patterns": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/PatternsSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "classification": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/ClassificationSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "forecast": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/ForecastSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "risk": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/RiskSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "recommendations": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/RecommendationsSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "ablations": {
+   "default": [],
+   "items": {
+    "$ref": "#/$defs/AblationRow"
+   },
+   "title": "Ablations",
+   "type": "array"
+  },
+  "sensitivity": {
+   "default": [],
+   "items": {
+    "additionalProperties": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "string"
+      }
+     ]
+    },
+    "type": "object"
+   },
+   "title": "Sensitivity",
+   "type": "array"
+  },
+  "stress": {
+   "default": [],
+   "items": {
+    "additionalProperties": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "string"
+      }
+     ]
+    },
+    "type": "object"
+   },
+   "title": "Stress",
+   "type": "array"
+  },
+  "speed": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/SpeedSection"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "brief": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/Brief"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  }
+ },
+ "required": [
+  "meta"
+ ],
+ "title": "Results",
+ "type": "object"
+}
