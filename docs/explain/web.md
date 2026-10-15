@@ -29,18 +29,35 @@
 | File | What it does |
 |---|---|
 | `index.html` | The frame: banner, top bar, side menu, empty content area, popover, story card. |
-| `styles.css` | All styles. Light theme, base text 19 px (21 px on Full HD), red accent used sparingly. |
+| `styles.css` | All styles: the design system (colours, card, stat, pill, table, button, chart, popover). Base text 18 px (20 px on Full HD). |
 | `app.js` | Start: load the JSON, show the banner, build tabs, popover and story mode. |
 | `js/data.js` | `loadResults()`, `state` (the loaded JSON), `getPath()` / `lookup()` to read a value by path. |
 | `js/format.js` | Number formats (`13.1%`, `92%`, `−10.7 pts`), KPI names and units, the definitions (from CLAUDE.md section 4). |
 | `js/evidence.js` | `ev()` and `evText()` draw clickable values; one click listener opens the popover. |
 | `js/charts.js` | Chart.js defaults, policy colours and line styles, `makeChart()` (clickable points), two small plugins (whiskers for ± std or a 95% CI, shaded hours). |
-| `js/ui.js` | Shared pieces: policy name with colour, "not computed yet" box, `postJson()` (with a time limit). |
+| `js/ui.js` | The building blocks every tab uses: `pageHeader()`, `card()`, `stat()`, `deltaPill()` (a difference coloured by its 95% CI), `policyName()`, `postJson()` (with a time limit). |
 | `js/router.js` | The list of tabs (`TABS`), the side menu, `showTab()`. |
 | `js/replay.js` | The side-by-side replay player (play, pause, scrub, speed). |
 | `js/story.js` | Story mode: 6 steps, Next / Back / arrow keys / Esc. |
 | `js/tabs/*.js` | One file per tab. Each exports `render(section)`. |
 | `vendor/chart.umd.js` | Chart.js 4.5.0 from jsDelivr. SHA-256 `b7929ad4d5323b8244f85d79bba0b3d1495e66f79a2f0023be7f4de5ba4fbac8` (matches jsDelivr's published hash). |
+
+## How it looks, and why (the design rules)
+- **Frame**: dark navy side menu with icons; a slim top bar (live/fixture status, "click any
+  number" hint, Story mode); a light grey page with white cards. Every tab starts with the same
+  page header (title + one sentence).
+- **One hero per tab**: the number that matters is big (e.g. OpsLens's breach rate on the
+  Overview); everything else is smaller. Long evidence (example tickets, every tuning step,
+  every design we tried) sits behind a "Show …" disclosure, so the first view stays calm.
+- **Same pieces everywhere**: tabs never write their own frames. They call `card()`, `stat()`,
+  `pageHeader()` and `deltaPill()` from `ui.js`, so a change to the look is one change.
+- **Quiet numbers**: numbers are clickable but have no underline; they get a soft blue
+  highlight under the mouse. The top bar says once: "Click any number to see its source".
+- **Colour means something**: policy colours (blue OpsLens, orange Baseline A, green Baseline B)
+  are the same in dots, bars and lines. Green/red pills only repeat what the sign and the 95% CI
+  already say (green = CI entirely on the better side, red = entirely on the worse side, grey =
+  CI includes zero). Red is otherwise kept for the brand dot, the active menu item and FIXTURE.
+- **Projector**: 18 px base text, 20 px on Full HD, high contrast, tabular numbers.
 
 ## How the data flows, step by step
 1. `app.js` calls `loadResults()`.
@@ -90,9 +107,10 @@ honest when the numbers change.
 
 ## How to add a tab
 1. Create `web/js/tabs/mytab.js` with `export function render(section) { ... }`.
-   Put HTML into `section.innerHTML`. Draw charts after that.
-2. In `js/router.js`: add `import * as mytab from "./tabs/mytab.js";` and one line in
-   `TABS`: `{ id: "mytab", label: "My tab", module: mytab }`.
+   Put HTML into `section.innerHTML`: start with `pageHeader(...)`, then `card({...})` blocks.
+   Draw charts after that.
+2. In `js/router.js`: add `import * as mytab from "./tabs/mytab.js";`, one line in
+   `TABS`: `{ id: "mytab", label: "My tab", module: mytab }`, and an icon in `ICONS`.
 3. Every number goes through `ev(path, unit)`. Every text from the JSON that may contain
    numbers goes through `evText(path)`. Never type a number into the HTML.
 4. If the results section may be missing, show `missing("Name", "M5")` instead.

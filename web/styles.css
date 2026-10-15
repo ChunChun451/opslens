@@ -1,34 +1,64 @@
 /*
   OpsLens dashboard styles.
 
-  Why it looks like this:
-  - Built for a projector: light background, high contrast, base text 19px, big numbers.
-  - The red accent is used sparingly (FIXTURE banner, active tab, story highlight,
-    "over capacity" marks) so that red always means "look here".
-  - System fonts only — no web fonts, because the demo runs with Wi-Fi off.
-  - Policy colours (blue / orange / aqua) live in js/charts.js, so charts and swatches
-    use one source.
+  Design rules (why it looks like this):
+  - One calm system: dark navy side menu, light grey page, white cards with soft shadows.
+    Every card has the same radius, padding and title style, so the eye goes to the content.
+  - Hierarchy: each tab has ONE hero (the number that matters); details are smaller, and
+    long evidence (example tickets, every tuning step) sits behind "Show ..." disclosures.
+  - Numbers from the results file are clickable but quiet: no underline, a soft blue highlight
+    on hover. The top bar says once "Click any number to see its source".
+  - Built for a projector: base text 18px (20px on Full HD), high contrast, tabular numbers.
+  - Red is the brand accent and is used sparingly (logo dot, active menu item, FIXTURE banner).
+    Green / red / amber in pills always come with words or a sign, never colour alone.
+  - System fonts only (Segoe UI Variable on Windows 11): no web fonts, works with Wi-Fi off.
+  - Policy colours (blue / orange / aqua) live in js/charts.js, one source for charts and dots.
 */
 
 :root {
   color-scheme: light;
-  --font: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
-  --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
-  --bg: #f4f4f1;
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+
+  --bg: #f3f5f8;
   --surface: #ffffff;
-  --soft: #f1f1ec;
-  --ink: #16181d;
-  --ink-2: #33363d;
-  --muted: #555960;
-  --line: #dcdcd5;
-  --accent: #c8102e;
-  --accent-soft: #fbe9ec;
-  --banner-h: 46px;
-  --topbar-h: 64px;
-  --nav-w: 230px;
+  --surface-2: #f8fafc;
+  --surface-3: #eef2f6;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --muted: #5b6b80;
+
+  --brand: #d0263e;
+  --blue: #2a78d6;
+  --blue-soft: #e6f0fb;
+  --good: #137a3e;
+  --good-soft: #e6f4ec;
+  --bad: #c22b33;
+  --bad-soft: #fcebec;
+  --warn: #a8570b;
+  --warn-soft: #fdf3e3;
+
+  --nav-bg: #0b1322;
+  --nav-ink: #b8c2d1;
+  --nav-active: rgba(255, 255, 255, 0.09);
+
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 2px 10px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 18px 48px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+
+  --sidebar-w: 244px;
+  --banner-h: 40px;
+  --topbar-h: 60px;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -39,7 +69,7 @@
 }
 
 html {
-  font-size: 19px;
+  font-size: 18px;
 }
 
 body {
@@ -50,275 +80,487 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
-  line-height: 1.45;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 body.has-fixture {
   padding-top: var(--banner-h);
 }
 
-h1, h2, h3 {
-  margin: 0 0 0.5rem;
-  line-height: 1.2;
-}
-
-h2 {
-  font-size: 1.45rem;
-}
-
-h3 {
-  font-size: 1.1rem;
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 p {
-  margin: 0 0 0.6rem;
+  margin: 0;
 }
 
 code, pre {
   font-family: var(--mono);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+}
+
+code {
+  background: var(--surface-3);
+  padding: 1px 6px;
+  border-radius: 5px;
 }
 
 pre {
-  background: var(--soft);
-  padding: 10px 12px;
-  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
   overflow-x: auto;
 }
 
-/* ---- Frame: banner, top bar, side menu, scrolling content ----------------------------- */
+/* ---- Frame -------------------------------------------------------------------------------- */
 
 .fixture-banner {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 auto 0;
   z-index: 300;
   height: var(--banner-h);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent);
+  background: var(--brand);
   color: #fff;
-  font-weight: 800;
-  font-size: 1.05rem;
+  font-weight: 700;
+  font-size: 0.9rem;
   letter-spacing: 0.04em;
 }
 
-.topbar {
-  flex: 0 0 var(--topbar-h);
+.app {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+}
+
+.sidebar {
   display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 0 24px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
+  flex-direction: column;
+  min-height: 0;
+  background: var(--nav-bg);
+  color: var(--nav-ink);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-right: auto;
-  min-width: 0;
+  padding: 22px 22px 18px;
 }
 
-/* Our own mark: a lens (ring) with a small red focus dot. */
+/* Our own mark: a lens (ring) with a red focus dot. */
 .brand-mark {
   position: relative;
+  flex: 0 0 auto;
   width: 30px;
   height: 30px;
-  border: 4px solid var(--ink);
+  border: 3.5px solid #fff;
   border-radius: 50%;
-  flex: 0 0 auto;
 }
 
 .brand-mark::after {
   content: "";
   position: absolute;
+  inset: 0;
+  margin: auto;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent);
-  top: 7px;
-  left: 7px;
+  background: var(--brand);
 }
 
 .brand-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.brand-name span {
-  font-weight: 400;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .brand-tag {
+  font-size: 0.68rem;
+  color: #8792a6;
+  line-height: 1.3;
+}
+
+.nav {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: var(--nav-ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.nav a[aria-current="page"] {
+  background: var(--nav-active);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--brand);
+}
+
+.nav-icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.sidebar-foot {
+  padding: 16px 22px 20px;
+  font-size: 0.68rem;
+  color: #7c879b;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.topbar {
+  flex: 0 0 var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
   color: var(--muted);
-  font-size: 0.85rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.data-source {
+.status strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 4px var(--good-soft);
+  flex: 0 0 auto;
+}
+
+.status-dot.fixture {
+  background: var(--brand);
+  box-shadow: 0 0 0 4px var(--bad-soft);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
   color: var(--muted);
-  font-size: 0.8rem;
   white-space: nowrap;
 }
 
-.layout {
+.hint svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.content {
   flex: 1 1 auto;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: var(--nav-w) minmax(0, 1fr);
-}
-
-.tab-nav {
   overflow-y: auto;
-  padding: 16px 0;
-  border-right: 1px solid var(--line);
-  background: var(--soft);
+  padding: 28px 32px 140px; /* bottom room so the story card never covers content */
 }
 
-.tab-nav a {
-  display: block;
-  padding: 11px 20px 11px 24px;
-  border-left: 5px solid transparent;
-  color: var(--ink-2);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.tab-nav a:hover {
-  background: #e8e8e2;
-}
-
-.tab-nav a[aria-current="page"] {
-  background: var(--surface);
-  border-left-color: var(--accent);
-  color: var(--ink);
-}
-
-.tab-panels {
-  overflow-y: auto;
-  padding: 24px 28px 160px; /* bottom room so the story card never covers content */
+.tab-panel {
+  max-width: 1480px;
+  margin: 0 auto;
 }
 
 .tab-panel > * + * {
   margin-top: 20px;
 }
 
-.tab-head {
+/* ---- Page header -------------------------------------------------------------------------- */
+
+.page-head {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 4px;
 }
 
-.tab-head p {
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.page-sub {
+  margin-top: 4px;
+  max-width: 78ch;
   color: var(--muted);
-  margin: 0;
+  font-size: 0.9rem;
 }
 
-/* ---- Building blocks ------------------------------------------------------------------- */
+.page-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
 
-.panel {
+/* ---- Grid and cards ----------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  gap: 20px;
+  align-items: start;
+}
+
+.grid.stretch {
+  align-items: stretch;
+}
+
+.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cols-2-1 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+.cols-3-2 { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.cols-side { grid-template-columns: 380px minmax(0, 1fr); }
+
+.card {
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  min-width: 0;
 }
 
-.panel.error {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.panel-note {
+.card-head > div:last-child:not(:first-child) {
+  flex: 0 0 auto; /* actions (buttons, team picker) never squeeze or wrap */
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.card-sub {
+  margin-top: 2px;
   color: var(--muted);
-  font-size: 0.85rem;
-  margin-top: 8px;
+  font-size: 0.8rem;
 }
 
-.grid-2, .grid-3, .grid-4 {
-  display: grid;
-  gap: 20px;
-}
-
-.grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.grid-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.grid-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-/* A table with a chart beside it: the table gets more room. */
-.split-wide {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 20px;
-}
-
-.tile-label {
+.card-foot {
+  margin-top: 14px;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
+}
+
+.section-label {
+  margin: 18px 0 8px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.section-label:first-child {
+  margin-top: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 18px 0;
+}
+
+/* ---- Stats -------------------------------------------------------------------------------- */
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
-.tile-value {
-  font-size: 2.3rem;
-  font-weight: 800;
-  line-height: 1.15;
+.stat-value {
+  margin-top: 4px;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
 
-.tile-value.big {
-  font-size: 3rem;
+.stat-value.xl {
+  font-size: 3.4rem;
+  letter-spacing: -0.035em;
 }
 
-.tile-sub {
+.stat-value.md {
+  font-size: 1.45rem;
+}
+
+.stat-sub {
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
 }
 
-.policy-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+.stat-sub .delta {
+  margin-right: 6px;
 }
 
-.policy-cell {
-  border-top: 5px solid var(--line);
-  padding-top: 10px;
+/* ---- Pills, dots, deltas ------------------------------------------------------------------ */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.policy-name {
-  font-weight: 700;
-  display: flex;
+.pill.p1 {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.policy {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-/* A short line sample in the policy's colour and dash, like a chart legend. */
-.swatch {
+/* A difference with its sign. Colour only repeats what the sign and words already say. */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.delta.good {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.delta.bad {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.verdict {
   display: inline-block;
-  width: 30px;
-  height: 0;
-  border-top-width: 4px;
-  vertical-align: middle;
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  white-space: nowrap;
 }
 
-.headline {
-  font-size: 1.15rem;
-  margin-top: 14px;
+.verdict.good {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.verdict.bad {
+  background: var(--bad-soft);
+  color: var(--bad);
 }
 
 .muted {
@@ -326,80 +568,93 @@ pre {
 }
 
 .small {
-  font-size: 0.85rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 1px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--soft);
   font-size: 0.8rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.badge.p1 {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--surface);
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .chip {
   display: inline-flex;
   gap: 6px;
   align-items: baseline;
-  padding: 2px 10px;
+  padding: 2px 9px;
   border-radius: 6px;
-  background: var(--soft);
-  font-size: 0.85rem;
+  background: var(--surface-3);
+  font-size: 0.75rem;
+  color: var(--ink-2);
 }
 
 .chip b {
-  font-weight: 600;
   color: var(--muted);
+  font-weight: 600;
 }
 
-.notice {
-  border-left: 6px solid var(--muted);
-  background: var(--soft);
+/* ---- Callouts ------------------------------------------------------------------------------ */
+
+.callout {
   padding: 12px 16px;
-  border-radius: 4px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
 }
 
-.notice.warn {
-  border-left-color: #c98500;
-  background: #fff6df;
+.callout.warn {
+  background: var(--warn-soft);
+  border-color: #f2d7a9;
 }
 
-.notice.ok {
-  border-left-color: #1c7f5a;
-  background: #e8f6ef;
+.callout.good {
+  background: var(--good-soft);
+  border-color: #bfe3cc;
 }
 
-/* ---- Buttons and forms ---------------------------------------------------------------- */
+.callout.info {
+  background: var(--blue-soft);
+  border-color: #c7dcf5;
+}
+
+.callout strong {
+  font-weight: 650;
+}
+
+/* ---- Buttons and forms -------------------------------------------------------------------- */
 
 .btn {
-  font: inherit;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 9px 18px;
-  border: 1px solid #9a9da3;
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
 }
 
 .btn:hover {
-  background: var(--soft);
+  background: var(--surface-2);
+}
+
+.btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .btn-primary {
@@ -409,48 +664,88 @@ pre {
 }
 
 .btn-primary:hover {
-  background: #2c2f36;
+  background: #1e293b;
 }
 
-.btn-small {
-  font-size: 0.8rem;
-  padding: 5px 12px;
+.btn-sm {
+  height: 30px;
+  padding: 0 11px;
+  font-size: 0.75rem;
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: default;
 }
 
 .btn-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   align-items: center;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px 24px;
+/* Segmented control: a group of buttons where one is pressed (team picker, sub-navigation). */
+.segmented {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--surface-3);
 }
 
-label {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-select, input[type="number"], input[type="text"] {
-  display: block;
-  width: 100%;
-  margin-top: 4px;
+.segmented button {
+  white-space: nowrap;
+  border: 0;
+  background: transparent;
+  padding: 5px 12px;
+  border-radius: 8px;
   font: inherit;
-  font-size: 0.95rem;
-  padding: 7px 10px;
-  border: 1px solid #9a9da3;
-  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.segmented button[aria-pressed="true"] {
   background: var(--surface);
   color: var(--ink);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.field-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-weight: 650;
+}
+
+select,
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
 }
 
 input[type="range"] {
@@ -460,20 +755,21 @@ input[type="range"] {
 
 input[type="file"] {
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
-.slider-value {
-  float: right;
-  font-variant-numeric: tabular-nums;
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px 20px;
 }
 
 :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid rgba(42, 120, 214, 0.45);
   outline-offset: 2px;
 }
 
-/* ---- Tables ---------------------------------------------------------------------------- */
+/* ---- Tables ------------------------------------------------------------------------------- */
 
 .table-wrap {
   overflow-x: auto;
@@ -482,26 +778,43 @@ input[type="file"] {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 th, td {
-  padding: 9px 12px;
-  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 thead th {
   color: var(--muted);
-  font-size: 0.85rem;
-  border-bottom: 2px solid var(--line);
+  font-size: 0.74rem;
+  font-weight: 650;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
-tr.group-row th {
-  background: var(--soft);
-  color: var(--ink);
-  font-size: 0.95rem;
+tbody td {
+  border-bottom: 1px solid var(--surface-3);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover td {
+  background: var(--surface-2);
+}
+
+tr.group th {
+  padding-top: 20px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
 }
 
 td.num, th.num {
@@ -511,17 +824,47 @@ td.num, th.num {
 }
 
 td.best {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .pm {
   color: var(--muted);
-  font-size: 0.85em;
+  font-size: 0.78em;
+  font-weight: 400;
 }
 
-/* ---- Click-to-evidence ----------------------------------------------------------------- */
+.better {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
 
-/* Numbers from the JSON: a dotted underline says "click me for the source". */
+td.chosen, th.chosen {
+  background: var(--blue-soft) !important;
+}
+
+/* Paired differences whose 95% CI includes zero: still shown, but quiet. */
+td.ci-unclear .delta {
+  background: transparent;
+  color: var(--muted);
+}
+
+.kv {
+  width: 100%;
+}
+
+.kv td {
+  padding: 8px 0;
+}
+
+.kv td:first-child {
+  color: var(--ink-2);
+  padding-right: 16px;
+}
+
+/* ---- Click-to-evidence -------------------------------------------------------------------- */
+
+/* Numbers from the JSON are buttons, but they look like text until you point at them. */
 .ev, .ev-text {
   font: inherit;
   color: inherit;
@@ -531,20 +874,19 @@ td.best {
   padding: 0;
   cursor: pointer;
   line-height: inherit;
+  letter-spacing: inherit;
   text-align: inherit;
+  border-radius: 4px;
+  transition: background-color 0.12s, box-shadow 0.12s;
 }
 
 .ev {
-  border-bottom: 2px dotted #8d9199;
   font-variant-numeric: tabular-nums;
 }
 
-.ev-text {
-  border-bottom: 1px dotted transparent;
-}
-
 .ev:hover, .ev-text:hover {
-  border-bottom-color: var(--accent);
+  background: var(--blue-soft);
+  box-shadow: 0 0 0 3px var(--blue-soft);
 }
 
 .ev-missing {
@@ -554,13 +896,13 @@ td.best {
 .evidence-popover {
   position: fixed;
   z-index: 250;
-  width: min(460px, 92vw);
+  width: min(440px, 92vw);
   background: var(--surface);
-  border: 1px solid #b9bbbf;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-  padding: 14px 18px;
-  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 16px 18px;
+  font-size: 0.82rem;
 }
 
 .pop-head {
@@ -571,45 +913,55 @@ td.best {
 }
 
 .pop-title {
-  font-weight: 700;
+  font-weight: 650;
+  color: var(--ink-2);
 }
 
 .pop-close {
-  font: inherit;
-  font-size: 1.3rem;
-  line-height: 1;
   border: 0;
   background: none;
   cursor: pointer;
   color: var(--muted);
+  font: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .pop-value {
+  margin: 6px 0 8px;
+  font-family: var(--font-display);
   font-size: 1.8rem;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  margin: 4px 0 6px;
 }
 
 .pop-value.is-text {
-  font-size: 1rem;
+  font-family: var(--font);
+  font-size: 0.95rem;
   font-weight: 600;
+  letter-spacing: 0;
 }
 
 .pop-raw {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--muted);
   margin-left: 6px;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
 }
 
 .pop-spread {
-  margin: 0 0 8px;
-  padding-left: 18px;
+  margin: 0 0 10px;
+  padding: 10px 12px 10px 28px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
 }
 
 .pop-def {
   color: var(--ink-2);
+  margin-bottom: 10px;
 }
 
 .pop-path {
@@ -617,411 +969,523 @@ td.best {
   gap: 8px;
   align-items: baseline;
   flex-wrap: wrap;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   color: var(--muted);
 }
 
 .pop-path code {
   color: var(--ink);
-  background: var(--soft);
-  padding: 2px 6px;
-  border-radius: 4px;
   word-break: break-all;
 }
 
 .pop-source {
-  font-size: 0.8rem;
+  margin-top: 6px;
+  font-size: 0.72rem;
   color: var(--muted);
-  margin-top: 4px;
 }
 
 .pop-fixture {
-  color: var(--accent);
+  color: var(--brand);
 }
 
-/* ---- Charts ------------------------------------------------------------------------------ */
+/* ---- Charts ------------------------------------------------------------------------------- */
 
-.chart-box {
+.chart {
   position: relative;
-  height: 330px;
+  height: 320px;
 }
 
-.chart-box.tall {
-  height: 400px;
+.chart.sm {
+  height: 230px;
 }
 
-.chart-box.short {
-  height: 260px;
+.chart.lg {
+  height: 380px;
 }
 
-/* Short enough that counters and charts fit on one 768-px-high screen. */
-.chart-box.replay-chart {
-  height: 210px;
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.78rem;
+  color: var(--ink-2);
 }
 
-/* ---- Patterns -------------------------------------------------------------------------- */
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 
-.card-top {
+/* ---- Overview ----------------------------------------------------------------------------- */
+
+.hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 44px;
+  align-items: center;
+}
+
+.ci {
+  display: block;
+  margin: 2px 0 0 2px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* Two small "label  value" rows under a KPI (the baselines, for context). */
+.pairs {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--surface-3);
+}
+
+.pair {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.75rem;
 }
 
-.card-compare {
-  font-size: 1.05rem;
-  margin: 6px 0 12px;
+.pair .ev {
+  color: var(--ink-2);
+  font-weight: 600;
 }
 
-.card-numbers {
+.hero-deltas {
   display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
 }
 
-.card-numbers .tile-value {
-  font-size: 1.8rem;
+.hero-deltas > div {
+  font-size: 0.82rem;
+  color: var(--muted);
 }
 
-.examples td:nth-child(3) {
-  width: 50%;
+/* Horizontal comparison bars: a picture of three numbers, scaled to the largest one. */
+.cbars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.cause {
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 2px 10px;
+.cbar {
+  display: grid;
+  grid-template-columns: 10.5rem minmax(60px, 1fr) 3.6rem;
+  gap: 14px;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.cbar-track {
+  height: 12px;
   border-radius: 999px;
-  border: 1px solid #9a9da3;
-  white-space: nowrap;
+  background: var(--surface-3);
+  overflow: hidden;
 }
 
-dialog {
-  margin-top: calc(var(--banner-h) + 24px); /* keep the FIXTURE banner visible above it */
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 24px 28px;
-  width: min(640px, 92vw);
+.cbar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.cbar-value {
+  text-align: right;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.cbar.is-ours .cbar-value,
+.cbar.is-ours .policy {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.brief {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1.45;
   color: var(--ink);
 }
 
-dialog::backdrop {
-  background: rgba(20, 22, 26, 0.45);
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* ---- At-risk tickets ------------------------------------------------------------------- */
+.list > li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--surface-3);
+}
+
+.list > li:first-child {
+  padding-top: 0;
+}
+
+.list > li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.issue {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 16px;
+  cursor: pointer;
+}
+
+.issue-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.issue-text {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.issue:hover .issue-title {
+  color: var(--blue);
+}
+
+/* ---- Patterns ----------------------------------------------------------------------------- */
+
+.finding {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 28px;
+}
+
+.finding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.finding h3 {
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.finding-compare {
+  margin-top: 6px;
+  color: var(--ink-2);
+  font-size: 0.88rem;
+}
+
+.finding-action {
+  margin-top: 14px;
+}
+
+.finding-side {
+  border-left: 1px solid var(--border);
+  padding-left: 28px;
+}
+
+.mini-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mini-bar {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 70px;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.mini-bar .cbar-track {
+  height: 8px;
+}
+
+.mini-bar .cbar-value {
+  color: var(--ink);
+}
+
+/* "Show ..." disclosures keep long evidence out of the way until someone asks for it. */
+details.disclosure {
+  margin-top: 14px;
+  border-top: 1px solid var(--surface-3);
+  padding-top: 10px;
+}
+
+details.disclosure > summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--blue);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+details.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.disclosure > summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform 0.15s;
+}
+
+details.disclosure[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+details.disclosure > :not(summary) {
+  margin-top: 12px;
+}
+
+dialog {
+  margin-top: calc(var(--banner-h) + 40px);
+  width: min(620px, 92vw);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px 28px;
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+}
+
+dialog::backdrop {
+  background: rgba(11, 19, 34, 0.5);
+}
+
+dialog h2 {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+/* ---- At-risk tickets --------------------------------------------------------------------- */
 
 .ticket {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1.3fr) minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: 120px minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
   align-items: start;
 }
 
-.ticket-prob .tile-value {
-  font-size: 2.4rem;
+/* A risk ring: conic-gradient filled to the probability (a picture of the % next to it). */
+.ring {
+  --p: 0;
+  --c: var(--bad);
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: conic-gradient(var(--c) calc(var(--p) * 1%), var(--surface-3) 0);
+  display: grid;
+  place-items: center;
 }
 
-.prob-bar {
-  height: 10px;
-  background: var(--soft);
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 4px;
+.ring::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: var(--surface);
 }
 
-.prob-bar span {
-  display: block;
-  height: 100%;
-  background: var(--ink);
+.ring-value {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.ring-sub {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .ticket-text {
+  margin: 8px 0 6px;
   font-size: 1.05rem;
-  margin: 6px 0;
+  font-weight: 500;
+  color: var(--ink);
 }
 
 .reason {
   display: grid;
-  grid-template-columns: 70px minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-}
-
-.reason-bar {
-  height: 10px;
-  background: #2a78d6;
-  border-radius: 0 5px 5px 0;
-}
-
-.action {
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: var(--soft);
-  border-radius: 6px;
-  font-size: 0.9rem;
-}
-
-/* ---- Replay ---------------------------------------------------------------------------- */
-
-.replay-controls {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: center;
-  margin: 12px 0 16px;
-}
-
-.replay-clock {
-  font-size: 1.6rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  min-width: 5ch;
-}
-
-.lane {
-  border-top: 6px solid var(--line);
-  padding-top: 10px;
-}
-
-.lane-numbers {
-  display: flex;
-  gap: 24px;
-}
-
-.queue-track {
-  height: 18px;
-  background: var(--soft);
-  border-radius: 9px;
-  overflow: hidden;
-  margin: 8px 0 4px;
-}
-
-.queue-fill {
-  height: 100%;
-  border-radius: 9px;
-  transition: width 0.35s linear;
-}
-
-/* ---- Story mode ------------------------------------------------------------------------ */
-
-/* Docked bottom-right and kept compact, so on a 768-px screen it covers as little as
-   possible of the element being discussed. */
-.story-card {
-  position: fixed;
-  z-index: 200;
-  right: 20px;
-  bottom: 16px;
-  width: min(620px, 60vw);
-  background: var(--ink);
-  color: #fff;
-  border-radius: 12px;
-  padding: 12px 18px 14px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
-}
-
-.story-card .ev {
-  border-bottom-color: #c7cad0;
-}
-
-.story-step {
-  font-size: 0.75rem;
-  color: #c7cad0;
-  font-weight: 600;
-}
-
-.story-card h3 {
-  font-size: 1.15rem;
-  margin: 2px 0 4px;
-}
-
-.story-card p {
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-}
-
-.story-card .btn {
-  font-size: 0.85rem;
-  padding: 5px 14px;
-  background: transparent;
-  color: #fff;
-  border-color: #8d9199;
-}
-
-.story-card .btn-primary {
-  background: #fff;
-  color: var(--ink);
-  border-color: #fff;
-}
-
-.story-target {
-  scroll-margin-top: 24px; /* room for the outline when scrolled to the top */
-  outline: 4px solid var(--accent);
-  outline-offset: 6px;
-  border-radius: 10px;
-  box-shadow: 0 0 0 14px rgba(200, 16, 46, 0.1);
-}
-
-/* ---- Screen sizes ------------------------------------------------------------------------ */
-
-/* Full HD projectors: a little bigger text, since there is room. */
-@media (min-width: 1800px) {
-  html {
-    font-size: 21px;
-  }
-}
-
-/* Smaller screens (1366x768 still gets two columns). */
-
-@media (max-width: 1500px) {
-  :root {
-    --nav-w: 210px;
-  }
-
-  .brand-tag {
-    display: none;
-  }
-}
-
-@media (max-width: 1100px) {
-  .split-wide {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .grid-4 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .grid-2, .grid-3 {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ticket {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .data-source {
-    display: none;
-  }
-}
-
-/* ---- Lists used on several tabs ---------------------------------------------------------- */
-
-.issue-list, .cluster-list, .plain-list {
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
-}
-
-.issue, .cluster, .plain-list li {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.issue:last-child, .cluster:last-child, .plain-list li:last-child {
-  border-bottom: 0;
-}
-
-.issue .cause {
-  float: right;
-  margin-left: 12px;
-}
-
-.brief-text {
-  font-size: 1.1rem;
-}
-
-.move {
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-}
-
-.move-text {
-  font-size: 1.05rem;
-}
-
-.metric-table td:first-child {
+  margin-top: 8px;
+  font-size: 0.78rem;
   color: var(--ink-2);
 }
 
-/* The results table must fit 1366 px: a wide KPI column, narrow number columns whose
-   headers may wrap onto two lines. */
-.kpi-table {
-  font-size: 0.9rem;
+.reason-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--blue);
 }
 
-.kpi-table td:first-child {
-  min-width: 220px;
+.action {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--good-soft);
+  font-size: 0.8rem;
+  color: var(--ink-2);
 }
 
-.kpi-table thead th.num {
-  white-space: normal;
-  vertical-align: bottom;
+.action strong {
+  color: var(--good);
 }
 
-.kpi-table .policy-name {
-  justify-content: flex-end;
-}
+/* ---- Recommendations ---------------------------------------------------------------------- */
 
-.headline {
-  padding-left: 22px;
-  margin-bottom: 0;
-}
-
-/* Half-width panels with one KPI per policy: smaller numbers so "185 min" fits on one line. */
-.strip .tile-value {
-  font-size: 1.7rem;
+.agent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   white-space: nowrap;
 }
 
-.strip .policy-name {
-  font-size: 0.85rem;
-}
-
-/* Recommendations: keep agent names and the two decision buttons on one line. */
-#rec-assignments td:nth-child(2) {
-  white-space: nowrap;
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex: 0 0 auto;
 }
 
 .decision .btn-row {
   flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
-/* Recommendations: staffing moves grouped by week, decision buttons on the right. */
-.week h4 {
-  margin: 14px 0 4px;
-  font-size: 1rem;
+.week + .week {
+  margin-top: 22px;
 }
 
-.move-row {
+.week-head {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: 16px;
-  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
-.move .move-text {
+.week-head h4 {
+  font-size: 0.95rem;
+}
+
+.move {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--surface-3);
+}
+
+.move:last-child {
+  border-bottom: 0;
+}
+
+.move-text {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+/* ---- Replay ------------------------------------------------------------------------------- */
+
+.replay-controls {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.clock {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 4.5ch;
+}
+
+.lane {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-3);
+}
+
+.lane-numbers {
+  display: flex;
+  gap: 28px;
+  margin-top: 8px;
+}
+
+.queue-track {
+  height: 8px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.queue-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s linear;
+}
+
+/* ---- What-if ------------------------------------------------------------------------------ */
+
+.wi-empty {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  min-height: 260px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.wi-empty strong {
+  display: block;
+  color: var(--ink);
+  font-size: 1rem;
   margin-bottom: 4px;
 }
 
-/* What-if: spinner while the server simulates; the chosen policy's column is tinted. */
-.whatif-wait {
+.wait {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
-  background: var(--soft);
-  border-radius: 6px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--surface-2);
   font-weight: 600;
+  font-size: 0.88rem;
 }
 
 .spinner {
-  width: 26px;
-  height: 26px;
-  border: 4px solid var(--line);
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border);
   border-top-color: var(--ink);
   border-radius: 50%;
   animation: spin 0.9s linear infinite;
@@ -1034,82 +1498,212 @@ dialog::backdrop {
   }
 }
 
-.whatif-table th.chosen,
-.whatif-table td.chosen {
-  background: #eef4fc;
+/* ---- How we tested ------------------------------------------------------------------------ */
+
+.honest {
+  border-left: 4px solid var(--warn);
 }
 
-.whatif-table .policy-name {
-  justify-content: flex-end;
-}
-
-/* How we tested: the "what failed" box and the plain verdict labels. Verdicts always carry a
-   word, never colour alone. */
-.panel.honest {
-  border-left: 6px solid #c98500;
-}
-
-.honest-steps {
-  padding-left: 22px;
+.steps {
+  list-style: none;
+  counter-reset: step;
   margin: 0;
+  padding: 0;
 }
 
-.honest-steps > li {
+.steps > li {
+  position: relative;
+  counter-increment: step;
+  padding: 0 0 18px 44px;
+}
+
+.steps > li:last-child {
+  padding-bottom: 0;
+}
+
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface-3);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.steps h4 {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.steps p {
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.verdicts {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  font-size: 0.82rem;
+}
+
+.verdicts li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.subnav {
+  position: sticky;
+  top: -28px;
+  z-index: 5;
+  padding: 10px 0;
+  background: var(--bg);
+}
+
+/* ---- Upload ------------------------------------------------------------------------------- */
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 24px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+/* ---- Story mode --------------------------------------------------------------------------- */
+
+.story-card {
+  position: fixed;
+  z-index: 200;
+  right: 24px;
+  bottom: 20px;
+  width: min(600px, 58vw);
+  padding: 16px 20px 16px;
+  border-radius: var(--radius);
+  background: var(--nav-bg);
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+}
+
+.story-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.story-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.story-dots span {
+  width: 22px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.story-dots span.on {
+  background: #fff;
+}
+
+.story-step {
+  font-size: 0.7rem;
+  color: #9aa5b8;
+  font-weight: 600;
+}
+
+.story-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.story-card p {
+  font-size: 0.85rem;
+  color: #d6dce6;
   margin-bottom: 12px;
 }
 
-.verdict-list {
-  margin: 4px 0;
-  padding-left: 20px;
+.story-card .ev:hover,
+.story-card .ev-text:hover {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
 }
 
-.verdict {
-  display: inline-block;
-  padding: 0 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  border: 1px solid #9a9da3;
-  white-space: nowrap;
+.story-card .btn {
+  height: 32px;
+  font-size: 0.78rem;
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
-.verdict.good {
-  color: #1c6b4c;
-  border-color: #1c6b4c;
+.story-card .btn-primary {
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
 }
 
-.verdict.bad {
-  color: var(--accent);
-  border-color: var(--accent);
+.story-target {
+  scroll-margin-top: 24px;
+  outline: 3px solid var(--brand);
+  outline-offset: 5px;
+  box-shadow: 0 0 0 10px rgba(208, 38, 62, 0.08), var(--shadow);
 }
 
-.design-table, .stress-table {
-  font-size: 0.85rem;
+/* ---- Screen sizes ------------------------------------------------------------------------- */
+
+/* Full HD projectors: a little bigger text, since there is room. */
+@media (min-width: 1800px) {
+  html {
+    font-size: 20px;
+  }
 }
 
-.panel h4 {
-  font-size: 0.95rem;
-  margin: 14px 0 4px;
+@media (max-width: 1500px) {
+  :root {
+    --sidebar-w: 220px;
+  }
+
+  .hint {
+    display: none;
+  }
 }
 
-/* Keep What-if numbers close to their labels instead of stretching across the screen. */
-.whatif-table {
-  width: auto;
-  min-width: 70%;
+/* 1366 x 768 keeps two and four columns; below 1150 px things stack. */
+@media (max-width: 1150px) {
+  .cols-2, .cols-3, .cols-2-1, .cols-3-2, .cols-side, .hero, .finding, .ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .finding-side {
+    border-left: 0;
+    padding-left: 0;
+  }
 }
 
-.whatif-table th.num, .whatif-table td.num {
-  min-width: 150px;
+/* The jump bar on "How we tested" wraps on narrow screens instead of overflowing. */
+.subnav .segmented {
+  flex-wrap: wrap;
 }
 
-/* Paired differences whose 95% CI includes zero: still shown, but greyed out. */
-td.ci-unclear,
-td.ci-unclear .ev {
-  color: #8a8d93;
-}
-
-/* The validation-day design table: compact, not stretched across a wide screen. */
-.design-table {
-  width: auto;
-  min-width: 60%;
+.dropzone + #up-mapping:empty {
+  display: none;
 }

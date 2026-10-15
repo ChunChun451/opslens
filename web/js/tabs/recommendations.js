@@ -11,80 +11,87 @@
 
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { missing } from "../ui.js";
+import { pageHeader, card, missing, initials } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
 
 // Every Accept / Override click, oldest first, ready to send once the server accepts them.
 export const decisionLog = [];
 
+// Assignments shown before "Show all" (a layout choice, not a result).
+const ASSIGNMENTS_SHOWN = 8;
+
 export function render(section) {
   const rec = state.results.recommendations;
-  const head = `<div class="tab-head"><div>
-      <h2>Recommendations</h2>
-      <p>Who should take which ticket, and staffing moves that keep the same headcount and
-         agent-hours. Accept or override — every click is logged.</p>
-    </div></div>`;
+  const head = pageHeader("Recommendations",
+    "Who should take which ticket right now, and staffing moves that keep the same people and the same agent-hours. Accept or override: every click is logged.");
   if (!rec) {
     section.innerHTML = head + missing("Recommendations", "M7");
     return;
   }
   section.innerHTML = `${head}
-    ${assignmentsPanel(rec)}
-    ${staffingPanel(rec)}`;
+    ${assignmentsCard(rec)}
+    ${staffingCard(rec)}`;
 
   section.querySelectorAll("[data-decision]").forEach((button) => {
     button.addEventListener("click", () => logDecision(button));
   });
 }
 
-function assignmentsPanel(rec) {
+function assignmentsCard(rec) {
   if (!rec.assignments.length) {
-    return `<div class="panel"><h3>Assignments</h3><p class="muted">No assignments right now.</p></div>`;
+    return card({ title: "Assignments", body: `<p class="muted">No assignments right now.</p>` });
   }
-  const rows = rec.assignments.map((a, i) => {
+  const row = (a, i) => {
     const base = `recommendations.assignments[${i}]`;
     return `<tr id="assign-${i}">
         <td>${evText(base + ".ticket_id")}</td>
-        <td><strong>${evText(base + ".agent_name")}</strong><div class="small muted">${evText(base + ".agent_id")}</div></td>
+        <td><div class="agent"><span class="avatar">${escapeHtml(initials(a.agent_name))}</span>
+          <div><div><strong>${evText(base + ".agent_name")}</strong></div><div class="small muted">${evText(base + ".agent_id")}</div></div></div></td>
         <td>${evText(base + ".reason")}</td>
-        <td class="num">${ev(base + ".value", "num")}</td>
+        <td class="num">${ev(base + ".value", "ratio")}</td>
         <td class="decision">${decisionButtons("assignment", i)}</td>
       </tr>`;
-  }).join("");
-  return `<div class="panel" id="rec-assignments">
-      <h3>Assignments from the optimiser</h3>
-      <p class="muted small">Min-cost flow over tickets and free agent slots. Value grows with urgency, breach risk and customer impact, minus skill-mismatch and scarcity penalties.</p>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Ticket</th><th>Agent</th><th>Why</th><th class="num">Value</th><th>Decision</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table></div>
-    </div>`;
+  };
+  const head = `<thead><tr><th>Ticket</th><th>Agent</th><th>Why this agent</th><th class="num">Value</th><th></th></tr></thead>`;
+  const first = rec.assignments.slice(0, ASSIGNMENTS_SHOWN).map((a, i) => row(a, i)).join("");
+  const rest = rec.assignments.slice(ASSIGNMENTS_SHOWN).map((a, i) => row(a, i + ASSIGNMENTS_SHOWN)).join("");
+  return card({
+    id: "rec-assignments",
+    title: "Assignments from the optimiser",
+    sub: "Min-cost flow over waiting tickets and free agent slots. Value grows with urgency, breach risk and customer impact, minus skill-mismatch and scarcity penalties.",
+    body: `<div class="table-wrap"><table>${head}<tbody>${first}</tbody></table></div>
+      ${rest ? `<details class="disclosure"><summary>Show all assignments</summary>
+        <div class="table-wrap"><table>${head}<tbody>${rest}</tbody></table></div></details>` : ""}`,
+  });
 }
 
-function staffingPanel(rec) {
+function staffingCard(rec) {
   if (!rec.staffing_moves.length) {
-    return `<div class="panel"><h3>Staffing moves</h3><p class="muted">No staffing change needed.</p></div>`;
+    return card({ title: "Staffing moves", body: `<p class="muted">No staffing change needed.</p>` });
   }
   const plans = weeklyPlans(rec);
   let body;
   if (plans) {
     // One block per week: the week's shortage before and after, then that week's moves.
-    body = plans.map(({ plan, p, moveIndexes }) => `
+    body = `<div class="grid cols-2">${plans.map(({ p, moveIndexes }) => `
       <div class="week">
-        <h4>Days ${ev(`details.forecast.plans[${p}].first_day`, "int")}–${ev(`details.forecast.plans[${p}].last_day`, "int")}:
-          agent-hours short ${ev(`details.forecast.plans[${p}].shortage_before`, "num")} →
-          ${ev(`details.forecast.plans[${p}].shortage_after`, "num")}</h4>
+        <div class="week-head">
+          <h4>Days ${ev(`details.forecast.plans[${p}].first_day`, "int")}–${ev(`details.forecast.plans[${p}].last_day`, "int")}</h4>
+          <span class="small muted">agent-hours short
+            <strong>${ev(`details.forecast.plans[${p}].shortage_before`, "num")}</strong> →
+            <strong>${ev(`details.forecast.plans[${p}].shortage_after`, "num")}</strong></span>
+        </div>
         ${moveIndexes.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")}
-      </div>`).join("");
+      </div>`).join("")}</div>`;
   } else {
     body = rec.staffing_moves.map((m, i) => moveHtml(m, i)).join("");
   }
-  return `<div class="panel" id="rec-staffing">
-      <h3>Staffing moves (budget-neutral)</h3>
-      <p class="muted small">Erlang C on the forecast's upper band. Only moves that keep the same people and the
-         same agent-hours: start a shift earlier or later, or swap a day off.</p>
-      ${body}
-    </div>`;
+  return card({
+    id: "rec-staffing",
+    title: "Staffing moves (budget-neutral)",
+    sub: "Erlang C on the forecast's upper band. Same people, same agent-hours: start a shift earlier or later, or swap a day off.",
+    body,
+  });
 }
 
 // Group the moves by week using details.forecast.plans (the engine lists the moves in plan
@@ -110,35 +117,23 @@ function weeklyPlans(rec) {
 
 function moveHtml(m, i) {
   const base = `recommendations.staffing_moves[${i}]`;
-  const effectKeys = Object.keys(m.expected_effect);
-  const effects = effectKeys.map((kpi) => {
+  const effects = Object.keys(m.expected_effect).map((kpi) => {
     const unit = spreadUnit(kpiInfo(kpi).unit);
-    return `<li>${escapeHtml(kpiInfo(kpi).label)}: <strong>${ev(`${base}.expected_effect.${kpi}`, unit, { signed: true })}</strong></li>`;
-  }).join("");
-  const teams = m.team_from === m.team_to
-    ? `<span class="chip"><b>Team</b>${evText(base + ".team_from")}</span>`
-    : `<span class="chip"><b>From</b>Team ${evText(base + ".team_from")}</span>
-       <span class="chip"><b>To</b>Team ${evText(base + ".team_to")}</span>`;
-  return `<article class="move" id="move-${i}">
-      <div class="move-row">
-        <div>
-          <p class="move-text"><strong>${evText(base + ".text")}</strong></p>
-          <div class="chips">
-            ${teams}
-            <span class="chip"><b>Agents</b>${evText(base + ".agents")}</span>
-            <span class="chip"><b>When</b>${evText(base + ".when")}</span>
-          </div>
-          ${effects ? `<div class="small"><strong>Expected effect (measured in the simulator):</strong><ul>${effects}</ul></div>` : ""}
-        </div>
-        <div class="decision">${decisionButtons("staffing_move", i)}</div>
+    return `${escapeHtml(kpiInfo(kpi).label)} ${ev(`${base}.expected_effect.${kpi}`, unit, { signed: true })}`;
+  }).join(" · ");
+  return `<div class="move" id="move-${i}">
+      <div>
+        <div class="move-text">${evText(base + ".text")}</div>
+        ${effects ? `<div class="small muted">Expected effect (simulated): ${effects}</div>` : ""}
       </div>
-    </article>`;
+      <div class="decision">${decisionButtons("staffing_move", i)}</div>
+    </div>`;
 }
 
 function decisionButtons(kind, index) {
   return `<div class="btn-row">
-      <button type="button" class="btn btn-small" data-decision="accept" data-kind="${kind}" data-index="${index}">Accept</button>
-      <button type="button" class="btn btn-small" data-decision="override" data-kind="${kind}" data-index="${index}">Override</button>
+      <button type="button" class="btn btn-sm" data-decision="accept" data-kind="${kind}" data-index="${index}">Accept</button>
+      <button type="button" class="btn btn-sm" data-decision="override" data-kind="${kind}" data-index="${index}">Override</button>
     </div>`;
 }
 
@@ -158,5 +153,5 @@ function logDecision(button) {
   decisionLog.push(entry);
   console.log("[OpsLens] decision logged (kept in the browser until the server has /api/decisions):", entry);
   const label = entry.decision === "accept" ? "Accepted" : "Overridden";
-  button.closest(".decision").innerHTML = `<span class="badge">${label} — logged</span>`;
+  button.closest(".decision").innerHTML = `<span class="pill">${label} · logged</span>`;
 }

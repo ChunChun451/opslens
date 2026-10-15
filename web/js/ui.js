@@ -1,47 +1,117 @@
-// ui.js — small HTML pieces that several tabs share.
+// ui.js — the small building blocks every tab is made of.
 //
-// Why: the same "policy name with its colour", "not computed yet" box and "server not ready"
-// message appear on many tabs. Writing them once keeps the tabs short and consistent.
+// Why: a dashboard looks professional when every card, title, number and badge looks the same
+// everywhere. So the tabs do not write their own frames: they call these few functions, and
+// the look lives in one place (here + styles.css).
 //
 // Example:
-//   policyName("opslens")  -> a line sample in OpsLens blue + the label "OpsLens"
-//   missing("Risk", "M5")  -> a box saying the risk section is not in the results yet
+//   card({ title: "Forecast", sub: "Next 48 hours", body: "<canvas ...>" })
+//   stat("AUC", ev("risk.auc", "ratio"), "real UCI data: 0.86")
+//   deltaPill("sim.comparisons[0]", "pts", "lower")  -> a green "−10.7 pts" pill when the
+//                                                      whole 95% CI is below zero
 
-import { state, policyLabel } from "./data.js";
+import { state, policyLabel, lookup } from "./data.js";
 import { policyStyle } from "./charts.js";
+import { ev } from "./evidence.js";
 import { escapeHtml } from "./format.js";
 
-// A short line in the policy's colour and dash pattern, like a chart legend entry.
-export function swatch(key) {
-  const style = policyStyle(key);
-  const lineStyle = style.dash.length === 0 ? "solid" : style.dash[0] > 5 ? "dashed" : "dotted";
-  return `<span class="swatch" style="border-top: 4px ${lineStyle} ${style.color}"></span>`;
+// ---- Frames ---------------------------------------------------------------------------------
+
+// The title row at the top of every tab.
+export function pageHeader(title, subtitle, actions = "") {
+  return `<header class="page-head">
+      <div>
+        <h1 class="page-title">${escapeHtml(title)}</h1>
+        ${subtitle ? `<p class="page-sub">${subtitle}</p>` : ""}
+      </div>
+      ${actions ? `<div class="page-actions">${actions}</div>` : ""}
+    </header>`;
 }
 
-export function policyName(key) {
-  return `<span class="policy-name">${swatch(key)}${escapeHtml(policyLabel(key))}</span>`;
+// A white card with an optional title, subtitle and actions on the right.
+// `title` is plain text; `sub`, `actions` and `body` are HTML.
+export function card({ title = "", sub = "", actions = "", body = "", id = "", cls = "" }) {
+  const head = title || actions
+    ? `<div class="card-head">
+        <div>${title ? `<h3 class="card-title">${escapeHtml(title)}</h3>` : ""}
+          ${sub ? `<div class="card-sub">${sub}</div>` : ""}</div>
+        ${actions ? `<div>${actions}</div>` : ""}
+      </div>`
+    : "";
+  return `<section class="card ${cls}" ${id ? `id="${id}"` : ""}>${head}${body}</section>`;
 }
 
-// The coloured top border of a policy column.
-export function policyBorder(key) {
-  return `border-top-color: ${policyStyle(key).color}`;
+// One headline number with a label above and a short line below.
+// size: "" (normal), "md" (smaller) or "xl" (hero).
+export function stat(label, valueHtml, subHtml = "", size = "") {
+  return `<div class="stat">
+      <div class="stat-label">${escapeHtml(label)}</div>
+      <div class="stat-value ${size}">${valueHtml}</div>
+      ${subHtml ? `<div class="stat-sub">${subHtml}</div>` : ""}
+    </div>`;
 }
 
 // Shown when a results section is missing (milestones fill the JSON one by one).
 export function missing(sectionName, milestone) {
-  return `<div class="panel notice">
-    <strong>${escapeHtml(sectionName)}</strong> is not in the results file yet.
-    It is computed in ${escapeHtml(milestone)}.
-  </div>`;
+  return card({ body: `<p class="muted"><strong>${escapeHtml(sectionName)}</strong> is not in the results file yet.
+    It is computed in ${escapeHtml(milestone)}.</p>` });
 }
 
 // Shown when a button calls a server endpoint that is not built yet.
 export function backendMissing(endpoint, milestone, detail) {
-  return `<div class="notice warn">
-    <strong>Backend arrives in ${escapeHtml(milestone)}.</strong>
+  return `<div class="callout warn">
+    <strong>Arrives in ${escapeHtml(milestone)}.</strong>
     <code>${escapeHtml(endpoint)}</code> is not running yet, so nothing was computed.
     ${detail ? escapeHtml(detail) : ""}
   </div>`;
+}
+
+// ---- Policies -------------------------------------------------------------------------------
+
+// A small dot in the policy's colour (the same colour as its lines and bars in charts).
+export function policyDot(key) {
+  return `<span class="dot" style="background: ${policyStyle(key).color}"></span>`;
+}
+
+// Dot + name, e.g. "● OpsLens". `label` overrides the name (for short labels in tables).
+export function policyName(key, label) {
+  return `<span class="policy">${policyDot(key)}${escapeHtml(label || policyLabel(key))}</span>`;
+}
+
+// "Baseline A (FIFO)" -> "Baseline A", for narrow table headers.
+export function shortLabel(key) {
+  return policyLabel(key).replace(/\s*\(.*\)$/, "");
+}
+
+// ---- Differences with a 95% CI -----------------------------------------------------------------
+
+// Index of the comparison (policy − baseline) for one KPI in sim.comparisons, or -1.
+export function comparisonIndex(policy, baseline, kpi) {
+  const sim = state.results.sim;
+  if (!sim) return -1;
+  return sim.comparisons.findIndex((c) => c.policy === policy && c.baseline === baseline && c.kpi === kpi);
+}
+
+// A pill with a signed difference. Its colour comes from the whole 95% CI:
+// good when the CI is entirely on the better side, bad when entirely on the worse side,
+// grey when it includes zero. `base` is the path of an object with mean_diff, ci_low, ci_high.
+export function deltaPill(base, unit, better = "lower", valueKey = "mean_diff") {
+  const row = lookup(base);
+  if (!row) return "";
+  let tone = "";
+  if (better === "lower" || better === "higher") {
+    const sign = better === "lower" ? 1 : -1;
+    if (sign * row.ci_high < 0) tone = "good";
+    if (sign * row.ci_low > 0) tone = "bad";
+  }
+  return `<span class="delta ${tone}">${ev(`${base}.${valueKey}`, unit, { signed: true })}</span>`;
+}
+
+// ---- Small helpers ----------------------------------------------------------------------------
+
+// "Neha G." -> "NG" (for the round agent badges).
+export function initials(name) {
+  return String(name).split(/\s+/).map((w) => w.charAt(0)).join("").slice(0, 2).toUpperCase();
 }
 
 // POST JSON to the server. Returns the parsed answer, or throws when the server is not

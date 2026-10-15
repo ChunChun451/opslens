@@ -6,8 +6,9 @@
   - Plain HTML + vanilla JS + CSS, no build step, so the owner can read every line.
   - Everything is local (Chart.js is in web/vendor/, no web fonts), because the demo
     runs on a projector with Wi-Fi off.
-  - This file is only the frame. app.js loads the results JSON and fills each tab.
-    Every number on screen comes from that JSON (CLAUDE.md rule 1.5).
+  - This file is only the frame: side menu, top bar, empty content area. app.js loads the
+    results JSON and fills each tab. Every number on screen comes from that JSON
+    (CLAUDE.md rule 1.5).
 -->
 <html lang="en">
 <head>
@@ -25,21 +26,37 @@
     FIXTURE DATA — numbers are invented. Not real results.
   </div>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"></span>
-      <span class="brand-name">Ops<span>Lens</span></span>
-      <span class="brand-tag">decision engine for support operations</span>
-    </div>
-    <div id="data-source" class="data-source"></div>
-    <button id="story-button" class="btn btn-primary" type="button">Story mode</button>
-  </header>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <div class="brand-name">OpsLens</div>
+          <div class="brand-tag">Decision engine for support operations</div>
+        </div>
+      </div>
+      <nav id="tab-nav" class="nav" aria-label="Dashboard sections"></nav>
+      <div class="sidebar-foot">Team SoyaChaap · Deviathon 2.0</div>
+    </aside>
 
-  <div class="layout">
-    <nav id="tab-nav" class="tab-nav" aria-label="Dashboard sections"></nav>
-    <main id="tab-panels" class="tab-panels">
-      <div id="load-message" class="panel">Loading results…</div>
-    </main>
+    <div class="main">
+      <header class="topbar">
+        <div id="data-source" class="status"></div>
+        <div class="topbar-actions">
+          <span class="hint">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+            Click any number to see its source
+          </span>
+          <button id="story-button" class="btn btn-primary" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            Story mode
+          </button>
+        </div>
+      </header>
+      <main id="tab-panels" class="content">
+        <div id="load-message" class="card">Loading results…</div>
+      </main>
+    </div>
   </div>
 
   <!-- Click-to-evidence popover. evidence.js fills and positions it. -->
