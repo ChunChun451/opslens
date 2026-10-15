@@ -1,0 +1,991 @@
+/*
+  OpsLens dashboard styles.
+
+  Why it looks like this:
+  - Built for a projector: light background, high contrast, base text 19px, big numbers.
+  - The red accent is used sparingly (FIXTURE banner, active tab, story highlight,
+    "over capacity" marks) so that red always means "look here".
+  - System fonts only — no web fonts, because the demo runs with Wi-Fi off.
+  - Policy colours (blue / orange / aqua) live in js/charts.js, so charts and swatches
+    use one source.
+*/
+
+:root {
+  color-scheme: light;
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+  --bg: #f4f4f1;
+  --surface: #ffffff;
+  --soft: #f1f1ec;
+  --ink: #16181d;
+  --ink-2: #33363d;
+  --muted: #555960;
+  --line: #dcdcd5;
+  --accent: #c8102e;
+  --accent-soft: #fbe9ec;
+  --banner-h: 46px;
+  --topbar-h: 64px;
+  --nav-w: 230px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* The hidden attribute must always win, even over classes that set display (the FIXTURE
+   banner uses display: flex; without this rule it would show on real results too). */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  font-size: 19px;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  line-height: 1.45;
+}
+
+body.has-fixture {
+  padding-top: var(--banner-h);
+}
+
+h1, h2, h3 {
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 1.45rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+p {
+  margin: 0 0 0.6rem;
+}
+
+code, pre {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+pre {
+  background: var(--soft);
+  padding: 10px 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+/* ---- Frame: banner, top bar, side menu, scrolling content ----------------------------- */
+
+.fixture-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  height: var(--banner-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.topbar {
+  flex: 0 0 var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;
+  min-width: 0;
+}
+
+/* Our own mark: a lens (ring) with a small red focus dot. */
+.brand-mark {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  top: 7px;
+  left: 7px;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.brand-name span {
+  font-weight: 400;
+}
+
+.brand-tag {
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-source {
+  color: var(--muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--nav-w) minmax(0, 1fr);
+}
+
+.tab-nav {
+  overflow-y: auto;
+  padding: 16px 0;
+  border-right: 1px solid var(--line);
+  background: var(--soft);
+}
+
+.tab-nav a {
+  display: block;
+  padding: 11px 20px 11px 24px;
+  border-left: 5px solid transparent;
+  color: var(--ink-2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tab-nav a:hover {
+  background: #e8e8e2;
+}
+
+.tab-nav a[aria-current="page"] {
+  background: var(--surface);
+  border-left-color: var(--accent);
+  color: var(--ink);
+}
+
+.tab-panels {
+  overflow-y: auto;
+  padding: 24px 28px 160px; /* bottom room so the story card never covers content */
+}
+
+.tab-panel > * + * {
+  margin-top: 20px;
+}
+
+.tab-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tab-head p {
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ---- Building blocks ------------------------------------------------------------------- */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px 24px;
+}
+
+.panel.error {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.panel-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.grid-2, .grid-3, .grid-4 {
+  display: grid;
+  gap: 20px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* A table with a chart beside it: the table gets more room. */
+.split-wide {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.tile-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tile-value {
+  font-size: 2.3rem;
+  font-weight: 800;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-value.big {
+  font-size: 3rem;
+}
+
+.tile-sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.policy-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.policy-cell {
+  border-top: 5px solid var(--line);
+  padding-top: 10px;
+}
+
+.policy-name {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* A short line sample in the policy's colour and dash, like a chart legend. */
+.swatch {
+  display: inline-block;
+  width: 30px;
+  height: 0;
+  border-top-width: 4px;
+  vertical-align: middle;
+}
+
+.headline {
+  font-size: 1.15rem;
+  margin-top: 14px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge.p1 {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: var(--soft);
+  font-size: 0.85rem;
+}
+
+.chip b {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.notice {
+  border-left: 6px solid var(--muted);
+  background: var(--soft);
+  padding: 12px 16px;
+  border-radius: 4px;
+}
+
+.notice.warn {
+  border-left-color: #c98500;
+  background: #fff6df;
+}
+
+.notice.ok {
+  border-left-color: #1c7f5a;
+  background: #e8f6ef;
+}
+
+/* ---- Buttons and forms ---------------------------------------------------------------- */
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 9px 18px;
+  border: 1px solid #9a9da3;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--soft);
+}
+
+.btn-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #2c2f36;
+}
+
+.btn-small {
+  font-size: 0.8rem;
+  padding: 5px 12px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px 24px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+select, input[type="number"], input[type="text"] {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 7px 10px;
+  border: 1px solid #9a9da3;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--ink);
+}
+
+input[type="file"] {
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.slider-value {
+  float: right;
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- Tables ---------------------------------------------------------------------------- */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th {
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-bottom: 2px solid var(--line);
+}
+
+tr.group-row th {
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+td.num, th.num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+td.best {
+  font-weight: 800;
+}
+
+.pm {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+/* ---- Click-to-evidence ----------------------------------------------------------------- */
+
+/* Numbers from the JSON: a dotted underline says "click me for the source". */
+.ev, .ev-text {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  line-height: inherit;
+  text-align: inherit;
+}
+
+.ev {
+  border-bottom: 2px dotted #8d9199;
+  font-variant-numeric: tabular-nums;
+}
+
+.ev-text {
+  border-bottom: 1px dotted transparent;
+}
+
+.ev:hover, .ev-text:hover {
+  border-bottom-color: var(--accent);
+}
+
+.ev-missing {
+  color: var(--muted);
+}
+
+.evidence-popover {
+  position: fixed;
+  z-index: 250;
+  width: min(460px, 92vw);
+  background: var(--surface);
+  border: 1px solid #b9bbbf;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  padding: 14px 18px;
+  font-size: 0.9rem;
+}
+
+.pop-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.pop-title {
+  font-weight: 700;
+}
+
+.pop-close {
+  font: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.pop-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  margin: 4px 0 6px;
+}
+
+.pop-value.is-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pop-raw {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.pop-spread {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.pop-def {
+  color: var(--ink-2);
+}
+
+.pop-path {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.pop-path code {
+  color: var(--ink);
+  background: var(--soft);
+  padding: 2px 6px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.pop-source {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.pop-fixture {
+  color: var(--accent);
+}
+
+/* ---- Charts ------------------------------------------------------------------------------ */
+
+.chart-box {
+  position: relative;
+  height: 330px;
+}
+
+.chart-box.tall {
+  height: 400px;
+}
+
+.chart-box.short {
+  height: 260px;
+}
+
+/* Short enough that counters and charts fit on one 768-px-high screen. */
+.chart-box.replay-chart {
+  height: 210px;
+}
+
+/* ---- Patterns -------------------------------------------------------------------------- */
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.card-compare {
+  font-size: 1.05rem;
+  margin: 6px 0 12px;
+}
+
+.card-numbers {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.card-numbers .tile-value {
+  font-size: 1.8rem;
+}
+
+.examples td:nth-child(3) {
+  width: 50%;
+}
+
+.cause {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid #9a9da3;
+  white-space: nowrap;
+}
+
+dialog {
+  margin-top: calc(var(--banner-h) + 24px); /* keep the FIXTURE banner visible above it */
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px 28px;
+  width: min(640px, 92vw);
+  color: var(--ink);
+}
+
+dialog::backdrop {
+  background: rgba(20, 22, 26, 0.45);
+}
+
+/* ---- At-risk tickets ------------------------------------------------------------------- */
+
+.ticket {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.ticket-prob .tile-value {
+  font-size: 2.4rem;
+}
+
+.prob-bar {
+  height: 10px;
+  background: var(--soft);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.prob-bar span {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+
+.ticket-text {
+  font-size: 1.05rem;
+  margin: 6px 0;
+}
+
+.reason {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.reason-bar {
+  height: 10px;
+  background: #2a78d6;
+  border-radius: 0 5px 5px 0;
+}
+
+.action {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--soft);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* ---- Replay ---------------------------------------------------------------------------- */
+
+.replay-controls {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  margin: 12px 0 16px;
+}
+
+.replay-clock {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  min-width: 5ch;
+}
+
+.lane {
+  border-top: 6px solid var(--line);
+  padding-top: 10px;
+}
+
+.lane-numbers {
+  display: flex;
+  gap: 24px;
+}
+
+.queue-track {
+  height: 18px;
+  background: var(--soft);
+  border-radius: 9px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+}
+
+.queue-fill {
+  height: 100%;
+  border-radius: 9px;
+  transition: width 0.35s linear;
+}
+
+/* ---- Story mode ------------------------------------------------------------------------ */
+
+/* Docked bottom-right and kept compact, so on a 768-px screen it covers as little as
+   possible of the element being discussed. */
+.story-card {
+  position: fixed;
+  z-index: 200;
+  right: 20px;
+  bottom: 16px;
+  width: min(620px, 60vw);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 18px 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+}
+
+.story-card .ev {
+  border-bottom-color: #c7cad0;
+}
+
+.story-step {
+  font-size: 0.75rem;
+  color: #c7cad0;
+  font-weight: 600;
+}
+
+.story-card h3 {
+  font-size: 1.15rem;
+  margin: 2px 0 4px;
+}
+
+.story-card p {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.story-card .btn {
+  font-size: 0.85rem;
+  padding: 5px 14px;
+  background: transparent;
+  color: #fff;
+  border-color: #8d9199;
+}
+
+.story-card .btn-primary {
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+}
+
+.story-target {
+  scroll-margin-top: 24px; /* room for the outline when scrolled to the top */
+  outline: 4px solid var(--accent);
+  outline-offset: 6px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 14px rgba(200, 16, 46, 0.1);
+}
+
+/* ---- Screen sizes ------------------------------------------------------------------------ */
+
+/* Full HD projectors: a little bigger text, since there is room. */
+@media (min-width: 1800px) {
+  html {
+    font-size: 21px;
+  }
+}
+
+/* Smaller screens (1366x768 still gets two columns). */
+
+@media (max-width: 1500px) {
+  :root {
+    --nav-w: 210px;
+  }
+
+  .brand-tag {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .split-wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-2, .grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ticket {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .data-source {
+    display: none;
+  }
+}
+
+/* ---- Lists used on several tabs ---------------------------------------------------------- */
+
+.issue-list, .cluster-list, .plain-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.issue, .cluster, .plain-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.issue:last-child, .cluster:last-child, .plain-list li:last-child {
+  border-bottom: 0;
+}
+
+.issue .cause {
+  float: right;
+  margin-left: 12px;
+}
+
+.brief-text {
+  font-size: 1.1rem;
+}
+
+.move {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.move-text {
+  font-size: 1.05rem;
+}
+
+.metric-table td:first-child {
+  color: var(--ink-2);
+}
+
+/* The results table must fit 1366 px: a wide KPI column, narrow number columns whose
+   headers may wrap onto two lines. */
+.kpi-table {
+  font-size: 0.9rem;
+}
+
+.kpi-table td:first-child {
+  min-width: 220px;
+}
+
+.kpi-table thead th.num {
+  white-space: normal;
+  vertical-align: bottom;
+}
+
+.kpi-table .policy-name {
+  justify-content: flex-end;
+}
+
+.headline {
+  padding-left: 22px;
+  margin-bottom: 0;
+}
+
+/* Half-width panels with one KPI per policy: smaller numbers so "185 min" fits on one line. */
+.strip .tile-value {
+  font-size: 1.7rem;
+  white-space: nowrap;
+}
+
+.strip .policy-name {
+  font-size: 0.85rem;
+}
+
+/* Recommendations: keep agent names and the two decision buttons on one line. */
+#rec-assignments td:nth-child(2) {
+  white-space: nowrap;
+}
+
+.decision .btn-row {
+  flex-wrap: nowrap;
+}
