@@ -1,0 +1,1476 @@
+{
+ "summary": {
+  "sets": 20,
+  "planted": 60,
+  "found": 57,
+  "diagnosed": 57,
+  "found_pct": 95.0,
+  "diagnosed_pct": 95.0,
+  "unplanted_cards_per_set": 2.35,
+  "clean_set_cards": 3,
+  "by_type": {
+   "capacity": {
+    "planted": 10,
+    "found": 10,
+    "diagnosed": 10
+   },
+   "volume_spike": {
+    "planted": 12,
+    "found": 11,
+    "diagnosed": 11
+   },
+   "skill_gap": {
+    "planted": 14,
+    "found": 12,
+    "diagnosed": 12
+   },
+   "partner_issue": {
+    "planted": 14,
+    "found": 14,
+    "diagnosed": 14
+   },
+   "process": {
+    "planted": 10,
+    "found": 10,
+    "diagnosed": 10
+   }
+  }
+ },
+ "sets": [
+  {
+   "set": 1,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "missing_item spike day 13",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "missing_item",
+      "day": 13,
+      "hour": [
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Team D \u00d7 weekend afternoon wait 2.3\u00d7 longer",
+    "Late delivery spike on Sat 12 Sep",
+    "Account spike on Tue 29 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "missing_item spike day 13",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    }
+   ]
+  },
+  {
+   "set": 2,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team C weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "C",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 17 restaurant_partner",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 17
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team A skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "late_delivery"
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Hindi \u00d7 weekend late wait 2.4\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team C weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 17 restaurant_partner",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team A skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  },
+  {
+   "set": 3,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 42",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 42,
+      "hour": [
+       16,
+       17,
+       18,
+       19,
+       20,
+       21
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 11 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 11
+     }
+    }
+   ],
+   "found": 2,
+   "diagnosed": 2,
+   "unmatched": [],
+   "details": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 42",
+     "found": false,
+     "diagnosed": false,
+     "card": ""
+    },
+    {
+     "id": "R2",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 11 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ]
+  },
+  {
+   "set": 4,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "other x Team A skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "late_delivery"
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 13 restaurant_partner",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 13
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "wrong item \u00d7 Hindi wait 2.2\u00d7 longer",
+    "Wrong item spike on Sat 26 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "other x Team A skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 13 restaurant_partner",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ]
+  },
+  {
+   "set": 5,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 9 restaurant_partner",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 9
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Team D \u00d7 weekend dinner wait 2.5\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.1\u00d7 longer",
+    "Missing item spike on Fri 02 Oct",
+    "Missing item spike on Fri 04 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 9 restaurant_partner",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ]
+  },
+  {
+   "set": 6,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 20",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 20,
+      "hour": [
+       10,
+       11,
+       12,
+       13
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 6 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 6
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Team D \u00d7 weekend dinner wait 2.3\u00d7 longer",
+    "Team C \u00d7 weekday night wait 2.1\u00d7 longer",
+    "Hindi \u00d7 weekday night wait 2.0\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer",
+    "Team D \u00d7 weekend late wait 2.3\u00d7 longer",
+    "Late delivery spike on Wed 16 Sep",
+    "Wrong item spike on Wed 16 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 20",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 6 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ]
+  },
+  {
+   "set": 7,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "cluster 16 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 16
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team D skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "account",
+       "app_bug",
+       "restaurant_partner"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
+    "Hindi \u00d7 weekend night wait 2.0\u00d7 longer",
+    "Team D \u00d7 weekend night wait 2.0\u00d7 longer",
+    "Late delivery spike on Sat 10 Oct",
+    "Payment failure spike on Sat 10 Oct"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "cluster 16 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team D skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ]
+  },
+  {
+   "set": 8,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 12
+     }
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "A",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Team B \u00d7 weekday late wait 2.1\u00d7 longer",
+    "Missing item spike on Sun 27 Sep",
+    "Restaurant partner spike on Thu 01 Oct",
+    "Late delivery spike on Thu 01 Oct"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  },
+  {
+   "set": 9,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team A weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "A",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "payment_failure spike day 29",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "payment_failure",
+      "day": 29,
+      "hour": [
+       15,
+       16,
+       17,
+       18,
+       19
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 15 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 15
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "wrong item \u00d7 Hindi wait 2.3\u00d7 longer",
+    "Team B \u00d7 weekday late wait 2.3\u00d7 longer"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team A weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "payment_failure spike day 29",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 15 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ]
+  },
+  {
+   "set": 10,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "late_delivery spike day 13",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "late_delivery",
+      "day": 13,
+      "hour": [
+       14,
+       15,
+       16,
+       17
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Team D \u00d7 weekend afternoon wait 2.6\u00d7 longer",
+    "Restaurant partner spike on Sun 06 Sep",
+    "Payment failure spike on Sun 06 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "late_delivery spike day 13",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    }
+   ]
+  },
+  {
+   "set": 11,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "wrong_item spike day 13",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "wrong_item",
+      "day": 13,
+      "hour": [
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "other x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "found": 2,
+   "diagnosed": 2,
+   "unmatched": [
+    "Payment failure spike on Tue 15 Sep",
+    "Missing item spike on Mon 31 Aug"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "wrong_item spike day 13",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "other x Team C skill gap",
+     "found": false,
+     "diagnosed": false,
+     "card": ""
+    }
+   ]
+  },
+  {
+   "set": 12,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 19",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 19,
+      "hour": [
+       15,
+       16,
+       17,
+       18,
+       19,
+       20
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "other x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 4 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 4
+     }
+    }
+   ],
+   "found": 2,
+   "diagnosed": 2,
+   "unmatched": [
+    "regional-language \u00d7 Team D wait 2.2\u00d7 longer",
+    "App bug spike on Wed 02 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 19",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "other x Team C skill gap",
+     "found": false,
+     "diagnosed": false,
+     "card": ""
+    },
+    {
+     "id": "R3",
+     "name": "cluster 4 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ]
+  },
+  {
+   "set": 13,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 12
+     }
+    },
+    {
+     "id": "R3",
+     "name": "other x Team A skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "late_delivery"
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "wrong item \u00d7 Hindi wait 2.2\u00d7 longer"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "other x Team A skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ]
+  },
+  {
+   "set": 14,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 40",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 40,
+      "hour": [
+       16,
+       17,
+       18,
+       19,
+       20,
+       21
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 16 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 16
+     }
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "A",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Refund spike on Sat 26 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 40",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 16 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  },
+  {
+   "set": 15,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 9 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 9
+     }
+    },
+    {
+     "id": "R3",
+     "name": "account spike day 18",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "account",
+      "day": 18,
+      "hour": [
+       16,
+       17,
+       18,
+       19
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "wrong item \u00d7 Hindi wait 2.4\u00d7 longer",
+    "Team B \u00d7 weekday night wait 2.3\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 9 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    },
+    {
+     "id": "R3",
+     "name": "account spike day 18",
+     "found": true,
+     "diagnosed": true,
+     "card": "F6"
+    }
+   ]
+  },
+  {
+   "set": 16,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 20
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team D skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "account",
+       "app_bug",
+       "restaurant_partner"
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "regional-language \u00d7 weekday morning wait 2.4\u00d7 longer",
+    "Refund spike on Thu 17 Sep"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team D skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  },
+  {
+   "set": 17,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 20
+     }
+    },
+    {
+     "id": "R3",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "Team B \u00d7 weekday late wait 2.1\u00d7 longer"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ]
+  },
+  {
+   "set": 18,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "payment_failure spike day 10",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "payment_failure",
+      "day": 10,
+      "hour": [
+       14,
+       15,
+       16,
+       17,
+       18
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team B skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "refund",
+       "payment_failure"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "Team B weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "B",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [],
+   "details": [
+    {
+     "id": "R1",
+     "name": "payment_failure spike day 10",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team B skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "Team B weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  },
+  {
+   "set": 19,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "app_bug spike day 26",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 26,
+      "hour": [
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [
+    "late delivery \u00d7 Hindi wait 2.1\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
+    "Late delivery spike on Thu 01 Oct"
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "app_bug spike day 26",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  },
+  {
+   "set": 20,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 29",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 29,
+      "hour": [
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "found": 3,
+   "diagnosed": 3,
+   "unmatched": [],
+   "details": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 29",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ]
+  }
+ ],
+ "clean_set_cards": [
+  "wrong item \u00d7 Hindi wait 2.6\u00d7 longer",
+  "Team D \u00d7 weekend late wait 2.5\u00d7 longer",
+  "regional-language \u00d7 weekday morning wait 2.1\u00d7 longer"
+ ]
+}
