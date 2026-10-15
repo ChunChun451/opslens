@@ -54,8 +54,19 @@ function recallStrip(p) {
       false alarms ${ev("patterns.recall.false_alarms", "int")}`);
   }
   if (p.blind_recall) {
-    parts.push(`Blind recall ${ev("patterns.blind_recall.found_pct", "pct")} over ${ev("patterns.blind_recall.sets", "int")} random plant sets
-      (false alarms per set ${ev("patterns.blind_recall.false_alarms_mean", "num")})`);
+    // Older results had false_alarms_mean; the real engine reports found / planted and diagnosed_pct.
+    const b = p.blind_recall;
+    let extra = "";
+    if (typeof b.diagnosed_pct === "number") {
+      extra = `, right cause ${ev("patterns.blind_recall.diagnosed_pct", "pct")}`;
+    } else if (typeof b.false_alarms_mean === "number") {
+      extra = `, false alarms per set ${ev("patterns.blind_recall.false_alarms_mean", "num")}`;
+    }
+    const counts = typeof b.planted === "number"
+      ? ` (${ev("patterns.blind_recall.found", "int")} of ${ev("patterns.blind_recall.planted", "int")})`
+      : "";
+    parts.push(`Blind recall ${ev("patterns.blind_recall.found_pct", "pct")}${counts} over
+      ${ev("patterns.blind_recall.sets", "int")} random plant sets${extra}`);
   }
   if (p.live_detection_latency_min !== null && p.live_detection_latency_min !== undefined) {
     parts.push(`Live spike detected after ${ev("patterns.live_detection_latency_min", "min")}`);

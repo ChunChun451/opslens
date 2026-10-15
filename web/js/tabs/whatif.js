@@ -1,23 +1,27 @@
 // tabs/whatif.js — the judges' turn: change staffing or volume and re-run the simulator.
 //
 // Why: moat number three, "touch it". A judge picks a test day, adds or removes agents per
-// team, scales the volume and picks a policy; the server (M10, opslens/whatif.py) simulates
-// that day and answers in a few seconds. Until then the panel says clearly that the backend
-// is not there, and shows the exact request it would send.
+// team, scales the volume and picks a policy. The server (opslens/whatif.py) simulates that
+// day for ALL three policies under the same changes and the same luck, so the answer is a fair
+// side-by-side comparison, not one number. It takes a while (three full-day simulations), so
+// the panel shows a spinner and keeps the button disabled until the answer arrives.
 //
 // Example request: { "day": 48, "policy": "opslens", "volume_factor": 1.25,
-//                    "agents_delta": { "A": 0, "B": 0, "C": 2, "D": -2 } }
-// Expected answer (proposed for M10): { "kpis": { "turnaround.breach_pct": 5.2, ... } }
+//                    "agents_delta": { "A": 0, "B": 0, "C": 2, "D": 0 } }
+// Answer: { "request": {...}, "kpis": {...chosen policy...},
+//           "all_policies": { "baseline_a": {...}, "baseline_b": {...}, "opslens": {...} },
+//           "agents_on_roster": 42 }
 
 import { state, policyKeys, policyLabel, teamNames } from "../data.js";
 import { ev } from "../evidence.js";
-import { backendMissing, postJson } from "../ui.js";
-import { escapeHtml, kpiInfo } from "../format.js";
+import { postJson, policyName } from "../ui.js";
+import { escapeHtml, kpiInfo, unitSuffix } from "../format.js";
 
 // Slider ranges. These are input limits for the judge, not results.
 const AGENT_DELTA_LIMIT = 5;
 const VOLUME_MIN = 0.5;
 const VOLUME_MAX = 2;
+const TIMEOUT_MS = 180000; // give up after 3 minutes, so a stuck server never freezes the panel
 
 export function render(section) {
   const meta = state.results.meta;
@@ -104,32 +108,72 @@ function updateLabels(section) {
 async function run(section) {
   const result = section.querySelector("#whatif-result");
   const button = section.querySelector("#wi-run");
+  const request = buildRequest(section);
   button.disabled = true;
-  result.innerHTML = `<p class="muted">Simulating…</p>`;
+  result.innerHTML = `<div class="whatif-wait" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Simulating the whole day for all three policies with your changes…
+    </div>`;
   try {
-    state.whatif = await postJson("/api/whatif", buildRequest(section));
+    state.whatif = await postJson("/api/whatif", request, TIMEOUT_MS);
     result.innerHTML = answerHtml(state.whatif);
   } catch (error) {
     state.whatif = null;
-    result.innerHTML = backendMissing("POST /api/whatif", "M10",
-      "When server/app.py serves this endpoint, the simulated KPIs for your settings appear here in a few seconds.");
+    if (state.staticServer || /HTTP (404|405|501)/.test(error.message)) {
+      // The page is served without the OpsLens API (for example by python -m http.server).
+      result.innerHTML = `<div class="notice warn"><strong>What-if needs the OpsLens server.</strong>
+        Start it with <code>.venv/Scripts/python.exe -m uvicorn server.app:app --port 8000</code>
+        and open <code>http://localhost:8000/web/</code>.</div>`;
+    } else {
+      result.innerHTML = `<div class="notice warn"><strong>The simulation did not finish.</strong>
+        ${escapeHtml(error.message)}. Try again, or check the server window.</div>`;
+    }
   } finally {
     button.disabled = false;
   }
 }
 
-// Render whatever KPIs the server returns. Each value is clickable like any other number;
+// The three policies side by side, the chosen one highlighted. Every value is clickable;
 // its path starts with "whatif." and the popover names the live simulation as the source.
 function answerHtml(answer) {
-  if (!answer || !answer.kpis) {
-    return `<div class="notice warn">The server answered, but without a "kpis" object.</div>`;
+  if (!answer || !answer.all_policies) {
+    return `<div class="notice warn">The server answered, but without "all_policies".</div>`;
   }
-  const rows = Object.keys(answer.kpis).map((kpi) => {
+  const chosen = answer.request ? answer.request.policy : "opslens";
+  const keys = policyKeys().filter((k) => answer.all_policies[k]);
+  const kpis = Object.keys(answer.all_policies[keys[0]]);
+  const header = keys.map((k) => `<th class="num ${k === chosen ? "chosen" : ""}">${policyName(k)}
+      ${k === chosen ? `<div class="small">your choice</div>` : ""}</th>`).join("");
+  const rows = kpis.map((kpi) => {
     const info = kpiInfo(kpi);
-    const value = answer.kpis[kpi];
-    const path = typeof value === "object" ? `whatif.kpis.${kpi}.mean` : `whatif.kpis.${kpi}`;
-    return `<tr><td>${escapeHtml(info.label)}</td><td class="num">${ev(path, info.unit)}</td></tr>`;
+    const best = bestOf(answer.all_policies, keys, kpi, info.better);
+    const suffix = unitSuffix(info.unit);
+    const cells = keys.map((k) => `<td class="num ${k === chosen ? "chosen" : ""} ${k === best ? "best" : ""}">
+        ${ev(`whatif.all_policies.${k}.${kpi}`, info.unit, { bare: true })}</td>`).join("");
+    const label = escapeHtml(info.label) + (suffix ? ` <span class="muted">(${escapeHtml(suffix)})</span>` : "");
+    return `<tr><td>${label}</td>${cells}</tr>`;
   }).join("");
-  return `<div class="notice ok">Simulated.</div>
-    <div class="table-wrap"><table><thead><tr><th>KPI</th><th class="num">Value</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  return `<div class="notice ok">Simulated day ${ev("whatif.request.day", "int")},
+      volume ×${ev("whatif.request.volume_factor", "num")}, ${ev("whatif.agents_on_roster", "int")} agents
+      on the roster. Same tickets and the same luck for every policy.</div>
+    <div class="table-wrap"><table class="whatif-table">
+      <thead><tr><th>KPI</th>${header}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <p class="panel-note">Bold = best on that row. Tinted column = the policy you picked.</p>`;
+}
+
+// Which policy is best on this KPI (a comparison only; no new number is shown).
+function bestOf(allPolicies, keys, kpi, better) {
+  if (!better) return null;
+  let bestKey = null;
+  keys.forEach((k) => {
+    const value = allPolicies[k][kpi];
+    if (typeof value !== "number") return;
+    const current = bestKey === null ? null : allPolicies[bestKey][kpi];
+    if (bestKey === null || (better === "lower" ? value < current : value > current)) {
+      bestKey = k;
+    }
+  });
+  return bestKey;
 }

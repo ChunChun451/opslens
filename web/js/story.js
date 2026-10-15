@@ -23,7 +23,7 @@ const STEPS = [
   { tab: "overview", target: "#ov-headline", title: "The problem", body: problemText },
   { tab: "compare", target: "#replay", title: "The same evening, three ways", body: replayText, enter: startReplay },
   { tab: "patterns", target: "#tab-patterns .evidence-card", title: "A pattern, with evidence", body: patternText },
-  { tab: "atrisk", target: "#ticket-list .ticket", title: "One ticket, before it is late", body: ticketText },
+  { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
   { tab: "recommendations", target: "#rec-staffing", title: "What to do, and what it is worth", body: impactText },
   { tab: "whatif", target: "#whatif-form", title: "Your turn", body: yourTurnText },
 ];
@@ -62,7 +62,10 @@ function goTo(i) {
   step = i;
   const s = STEPS[step];
   showTab(s.tab);
-  const target = document.querySelector(s.target);
+  // A target is a CSS selector, or a function that returns an element id (chosen from the data).
+  const target = typeof s.target === "function"
+    ? document.getElementById(s.target())
+    : document.querySelector(s.target);
   if (target) {
     target.classList.add("story-target");
     highlighted = target;
@@ -140,12 +143,29 @@ function patternText() {
     why it is not a known event, and real (masked) example tickets.`;
 }
 
+// The ticket where acting now helps most (biggest drop from probability to
+// probability_after_action); without "after action" numbers, the riskiest ticket.
+// A choice made by comparing JSON values; no new number is shown.
+function storyTicket() {
+  const list = state.results.risk.at_risk;
+  const drop = (t) => (typeof t.probability_after_action === "number" ? t.probability - t.probability_after_action : -1);
+  let best = 0;
+  list.forEach((t, i) => {
+    const better = drop(t) > drop(list[best]) || (drop(t) === drop(list[best]) && t.probability > list[best].probability);
+    if (better) best = i;
+  });
+  return { ticket: list[best], index: best };
+}
+
+function storyTicketId() {
+  const risk = state.results.risk;
+  return risk && risk.at_risk.length ? "ticket-" + storyTicket().ticket.ticket_id : "";
+}
+
 function ticketText() {
   const risk = state.results.risk;
   if (!risk || !risk.at_risk.length) return "The risk model is not in the results file yet.";
-  let top = 0;
-  risk.at_risk.forEach((t, i) => { if (t.probability > risk.at_risk[top].probability) top = i; });
-  const t = risk.at_risk[top];
+  const { ticket: t, index: top } = storyTicket();
   const base = `risk.at_risk[${top}]`;
   const reason = t.reasons.length ? ` Top reason: ${evText(base + ".reasons[0].text")}.` : "";
   const action = t.action && typeof t.probability_after_action === "number"
@@ -158,7 +178,13 @@ function ticketText() {
 function impactText() {
   const r = state.results;
   const parts = [];
-  if (r.recommendations && r.recommendations.staffing_moves.length) {
+  const plans = r.details && r.details.forecast && r.details.forecast.plans;
+  if (plans && plans.length) {
+    const p = "details.forecast.plans[0]";
+    parts.push(`For days ${ev(p + ".first_day", "int")}–${ev(p + ".last_day", "int")} a few shift changes, with the same
+      people and the same agent-hours, cut the forecast shortage from ${ev(p + ".shortage_before", "num")} to
+      ${ev(p + ".shortage_after", "num")} agent-hours; every assignment comes with its reason.`);
+  } else if (r.recommendations && r.recommendations.staffing_moves.length) {
     parts.push(`${evText("recommendations.staffing_moves[0].text")} — same headcount, same agent-hours.`);
   }
   if (r.sim) {

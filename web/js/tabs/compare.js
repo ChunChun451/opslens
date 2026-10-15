@@ -4,8 +4,9 @@
 // statement's three headings (turnaround, productivity, service quality) as mean ± std over
 // seeds, with the paired 95% CI wherever the engine computed one. Then the replay.
 //
-// Example (fixture): SLA breach rate 13.0 ± 1.0 / 6.8 ± 0.5 / 4.1 ± 0.3 (%);
-// OpsLens − Baseline A = −8.9 pts, CI [−9.7, −8.1].
+// Example (real results, 16 Oct): SLA breach rate 13.1 ± 2.2 / 6.8 ± 1.3 / 2.4 ± 0.5 (%);
+// OpsLens − Baseline A = −10.7 pts, CI [−12.9, −8.5]. A CI that includes zero (P99 wait vs
+// Baseline A: −84 [−276, +107]) is shown in grey: no clear difference.
 
 import { state, policyKeys, policyLabel } from "../data.js";
 import { ev, evText } from "../evidence.js";
@@ -30,7 +31,8 @@ export function render(section) {
       <h3>Results table</h3>
       ${kpiTable(sim)}
       <p class="panel-note">Bold = best policy on that row. Cells are mean ± standard deviation over seeds.
-         The last columns are paired differences with their 95% CI (same seed = same luck); — means not computed.</p>
+         The last columns are paired differences with their 95% CI (same seed = same luck); grey = the CI
+         includes zero (no clear difference); — means not computed.</p>
     </div>
     <div class="grid-2">
       <div class="panel"><h3>SLA breach rate (%)</h3><div class="chart-box"><canvas id="cmp-breach"></canvas></div></div>
@@ -96,7 +98,10 @@ function kpiRow(sim, kpi, keys, pairs) {
     }
     const base = `sim.comparisons[${i}]`;
     const unit = spreadUnit(info.unit);
-    return `<td class="num">${ev(base + ".mean_diff", unit, { signed: true, bare: true })}
+    // A CI that includes zero means "no clear difference": shown in grey, not hidden.
+    const c = sim.comparisons[i];
+    const unclear = c.ci_low <= 0 && c.ci_high >= 0;
+    return `<td class="num ${unclear ? "ci-unclear" : ""}">${ev(base + ".mean_diff", unit, { signed: true, bare: true })}
         <span class="pm">[${ev(base + ".ci_low", unit, { signed: true, bare: true })},
         ${ev(base + ".ci_high", unit, { signed: true, bare: true })}]</span></td>`;
   }).join("");

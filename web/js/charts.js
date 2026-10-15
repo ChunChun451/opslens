@@ -73,30 +73,52 @@ export function makeChart(canvas, config, evidenceFor) {
   return new Chart(canvas, config);
 }
 
-// Plugin: whiskers for mean ± std on bar charts. A dataset opts in with `errors: [std, ...]`.
+// Plugin: whiskers on bar charts. A dataset opts in with either
+//   errors: [std, ...]          -> whisker from mean − std to mean + std
+//   ranges: [[low, high], ...]  -> whisker from low to high (a 95% CI)
+// Works for vertical bars and for horizontal bars (indexAxis: "y").
 export const errorBarsPlugin = {
   id: "errorBars",
   afterDatasetsDraw(chart) {
     const ctx = chart.ctx;
-    const yScale = chart.scales.y;
+    const horizontal = chart.options.indexAxis === "y";
+    const valueScale = horizontal ? chart.scales.x : chart.scales.y;
     chart.data.datasets.forEach((dataset, datasetIndex) => {
-      if (!dataset.errors) return;
+      if (!dataset.errors && !dataset.ranges) return;
       chart.getDatasetMeta(datasetIndex).data.forEach((bar, i) => {
-        const mean = dataset.data[i];
-        const err = dataset.errors[i];
-        if (typeof mean !== "number" || typeof err !== "number") return;
-        const top = yScale.getPixelForValue(mean + err);
-        const bottom = yScale.getPixelForValue(mean - err);
+        let low;
+        let high;
+        if (dataset.ranges) {
+          if (!dataset.ranges[i]) return;
+          [low, high] = dataset.ranges[i];
+        } else {
+          const mean = dataset.data[i];
+          const err = dataset.errors[i];
+          if (typeof mean !== "number" || typeof err !== "number") return;
+          low = mean - err;
+          high = mean + err;
+        }
+        const a = valueScale.getPixelForValue(low);
+        const b = valueScale.getPixelForValue(high);
         ctx.save();
         ctx.strokeStyle = INK;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(bar.x, top);
-        ctx.lineTo(bar.x, bottom);
-        ctx.moveTo(bar.x - 8, top);
-        ctx.lineTo(bar.x + 8, top);
-        ctx.moveTo(bar.x - 8, bottom);
-        ctx.lineTo(bar.x + 8, bottom);
+        if (horizontal) {
+          ctx.moveTo(a, bar.y);
+          ctx.lineTo(b, bar.y);
+          ctx.moveTo(a, bar.y - 6);
+          ctx.lineTo(a, bar.y + 6);
+          ctx.moveTo(b, bar.y - 6);
+          ctx.lineTo(b, bar.y + 6);
+        } else {
+          ctx.moveTo(bar.x, a);
+          ctx.lineTo(bar.x, b);
+          ctx.moveTo(bar.x - 8, a);
+          ctx.lineTo(bar.x + 8, a);
+          ctx.moveTo(bar.x - 8, b);
+          ctx.lineTo(bar.x + 8, b);
+        }
         ctx.stroke();
         ctx.restore();
       });

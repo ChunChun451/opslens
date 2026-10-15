@@ -131,6 +131,12 @@ function evidenceHtml(path, unit, value) {
     <div class="pop-source">Source: ${escapeHtml(sourceFor(path))}${fixtureTag}</div>`;
 }
 
+// A readable name for a path ("SLA breach rate · OpsLens"), used as the popover title
+// and wherever a list of paths is shown (the brief's numbers).
+export function labelFor(path) {
+  return titleFor(path);
+}
+
 function titleFor(path) {
   const kpi = path.match(/^sim\.policies\.([^.]+)\.kpis\.(.+)\.(mean|std)$/);
   if (kpi) {
@@ -141,6 +147,10 @@ function titleFor(path) {
   if (cmp) {
     const c = state.results.sim.comparisons[Number(cmp[1])];
     return kpiInfo(c.kpi).label + ": " + policyLabel(c.policy) + " − " + policyLabel(c.baseline);
+  }
+  const whatif = path.match(/^whatif\.all_policies\.([^.]+)\.(.+)$/);
+  if (whatif) {
+    return kpiInfo(whatif[2]).label + " · " + policyLabel(whatif[1]) + " (What-if)";
   }
   const replay = path.match(/^sim\.replay\.series\.([^.]+)\./);
   if (replay) {
@@ -191,6 +201,26 @@ function spreadLines(path, unit) {
     const p = r.forecast.horizon[Number(point[1])];
     lines.push(`Team ${escapeHtml(p.team)}, ${escapeHtml(p.time)}`);
     lines.push(`80% interval ${fmt(p.lo80, "hours")} to ${fmt(p.hi80, "hours")}; capacity ${fmt(p.capacity_hours, "hours")}`);
+  }
+
+  // Stress rows: OpsLens − Baseline B with its 95% CI, from the same row.
+  const stress = path.match(/^stress\[(\d+)\]\./);
+  if (stress) {
+    const row = r.stress[Number(stress[1])];
+    if (typeof row.opslens_minus_b === "number") {
+      lines.push(`OpsLens − Baseline B: ${fmtSigned(row.opslens_minus_b, "pts")} (95% CI `
+        + `${fmtSigned(row.ci_low, "pts")} to ${fmtSigned(row.ci_high, "pts")})`);
+    }
+  }
+
+  // Ablation rows with CIs (details.ablations): the effect of removing one part.
+  const ablation = path.match(/^details\.ablations\[(\d+)\]\./);
+  if (ablation && r.details) {
+    const row = r.details.ablations[Number(ablation[1])];
+    if (typeof row.ci_low === "number") {
+      lines.push(`Breach vs full OpsLens: ${fmtSigned(row.delta_breach_vs_full, "pts")} (paired 95% CI `
+        + `${fmtSigned(row.ci_low, "pts")} to ${fmtSigned(row.ci_high, "pts")})`);
+    }
   }
 
   const ticket = path.match(/^risk\.at_risk\[(\d+)\]\.probability$/);

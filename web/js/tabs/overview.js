@@ -3,11 +3,12 @@
 // Why: in ten seconds a judge should see the headline (breaches on held-out days, with the
 // paired 95% CI against each baseline) and the three biggest problems we found.
 //
-// Example: with the fixture, the big numbers read 13.0% / 6.8% / 4.1% and the line below says
-// "OpsLens − Baseline A: −8.9 pts (paired 95% CI −9.7 to −8.1 pts, n = 5 seeds)".
+// Example (real results, 16 Oct): the big numbers read 13.1% / 6.8% / 2.4% and the line below
+// says "OpsLens − Baseline A: −10.7 pts (paired 95% CI −12.9 to −8.5 pts, n = 5 seeds)".
+// "Who is protected" shows the segment KPIs, e.g. Hindi tickets 22.1% / 16.2% / 3.8%.
 
 import { state, policyKeys, policyLabel } from "../data.js";
-import { ev, evText } from "../evidence.js";
+import { ev, evText, labelFor } from "../evidence.js";
 import { policyName, policyBorder, missing } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit, unitForPath } from "../format.js";
 import { CAUSE_LABELS } from "./patterns.js";
@@ -26,13 +27,38 @@ export function render(section) {
       </div>
     </div>
     ${r.sim ? headline() : missing("The simulator comparison", "M7")}
+    <div class="grid-2">
+      ${brief()}
+      ${topIssues()}
+    </div>
     ${r.sim ? `<div class="grid-2">
         ${kpiStrip("turnaround.max_backlog", "Max backlog (tickets waiting at once)")}
         ${kpiStrip("turnaround.p90_resolution_min", "P90 resolution time")}
       </div>` : ""}
-    <div class="grid-2">
-      ${topIssues()}
-      ${brief()}
+    ${r.sim ? segmentsPanel() : ""}`;
+}
+
+// Breach rate for the customers who matter most (P1 live orders, gold, Hindi), per policy.
+// Shown only when the engine reports segment KPIs ("segment.*").
+function segmentsPanel() {
+  const sim = state.results.sim;
+  const keys = policyKeys();
+  const segmentKpis = Object.keys(sim.policies[keys[0]].kpis).filter((k) => k.startsWith("segment."));
+  if (!segmentKpis.length) return "";
+  const rows = segmentKpis.map((kpi) => {
+    const info = kpiInfo(kpi);
+    const cells = keys.map((k) => {
+      const path = `sim.policies.${k}.kpis.${kpi}`;
+      return `<td class="num">${ev(path + ".mean", info.unit)} <span class="pm">± ${ev(path + ".std", spreadUnit(info.unit), { bare: true })}</span></td>`;
+    }).join("");
+    return `<tr><td>${escapeHtml(info.label)}</td>${cells}</tr>`;
+  }).join("");
+  return `<div class="panel" id="ov-segments">
+      <h3>Who is protected</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Segment</th>${keys.map((k) => `<th class="num">${policyName(k)}</th>`).join("")}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
     </div>`;
 }
 
@@ -108,10 +134,10 @@ function brief() {
     return missing("The daily brief", "M10");
   }
   const used = b.numbers_used.map((path) => `
-      <li><code>${escapeHtml(path)}</code> = ${ev(path, unitForPath(path))}</li>`).join("");
+      <li>${escapeHtml(labelFor(path))}: ${ev(path, unitForPath(path))}</li>`).join("");
   return `<div class="panel" id="ov-brief">
       <h3>Today's brief <span class="badge">${b.source === "llm" ? "written by LLM, numbers by code" : "template"}</span></h3>
       <p class="brief-text">${evText("brief.text")}</p>
-      ${used ? `<div class="small muted">Numbers used:</div><ul class="small">${used}</ul>` : ""}
+      ${used ? `<div class="small muted">Numbers used (filled in by code; click for the source):</div><ul class="small">${used}</ul>` : ""}
     </div>`;
 }

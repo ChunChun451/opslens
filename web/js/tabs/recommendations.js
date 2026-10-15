@@ -2,18 +2,19 @@
 //
 // Why: "recommend actions" with a reason for each one, and a human in charge. Accept and
 // Override are logged (overrides are a learning signal, CLAUDE.md section 8). Until the
-// server exists (M9) the log goes to the browser console and to `decisionLog` below.
+// server has an endpoint for them (proposed: POST /api/decisions) the log goes to the browser
+// console and to `decisionLog` below.
 //
-// Example (fixture): ticket T000003 -> Kavita D. (B01), "Hindi refund, 91% breach risk,
-// Kavita is one of 3 agents with both skills"; staffing: move 3 Team D agents to Team C,
-// Sat-Sun 19:00-23:00, expected breach change −1.2 pts.
+// Example (real results): ticket T060574 -> Neha G. (A04), "P2 late delivery, English,
+// waiting 12 min; low risk - served in turn". Staffing, days 43-49: six shift changes with the
+// same people and hours cut the forecast shortage from 654.2 to 635.9 agent-hours.
 
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { missing } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
 
-// Every Accept / Override click, oldest first. M9 will send these to the server.
+// Every Accept / Override click, oldest first, ready to send once the server accepts them.
 export const decisionLog = [];
 
 export function render(section) {
@@ -64,29 +65,74 @@ function staffingPanel(rec) {
   if (!rec.staffing_moves.length) {
     return `<div class="panel"><h3>Staffing moves</h3><p class="muted">No staffing change needed.</p></div>`;
   }
-  const moves = rec.staffing_moves.map((m, i) => {
-    const base = `recommendations.staffing_moves[${i}]`;
-    const effects = Object.keys(m.expected_effect).map((kpi) => {
-      const unit = spreadUnit(kpiInfo(kpi).unit);
-      return `<li>${escapeHtml(kpiInfo(kpi).label)}: <strong>${ev(`${base}.expected_effect.${kpi}`, unit, { signed: true })}</strong></li>`;
-    }).join("");
-    return `<article class="move" id="move-${i}">
-        <p class="move-text"><strong>${evText(base + ".text")}</strong></p>
-        <div class="chips">
-          <span class="chip"><b>From</b>Team ${evText(base + ".team_from")}</span>
-          <span class="chip"><b>To</b>Team ${evText(base + ".team_to")}</span>
-          <span class="chip"><b>Agents</b>${evText(base + ".agents")}</span>
-          <span class="chip"><b>When</b>${evText(base + ".when")}</span>
-        </div>
-        <div class="small"><strong>Expected effect (measured in the simulator):</strong><ul>${effects}</ul></div>
-        <div class="decision">${decisionButtons("staffing_move", i)}</div>
-      </article>`;
-  }).join("");
+  const plans = weeklyPlans(rec);
+  let body;
+  if (plans) {
+    // One block per week: the week's shortage before and after, then that week's moves.
+    body = plans.map(({ plan, p, moveIndexes }) => `
+      <div class="week">
+        <h4>Days ${ev(`details.forecast.plans[${p}].first_day`, "int")}–${ev(`details.forecast.plans[${p}].last_day`, "int")}:
+          agent-hours short ${ev(`details.forecast.plans[${p}].shortage_before`, "num")} →
+          ${ev(`details.forecast.plans[${p}].shortage_after`, "num")}</h4>
+        ${moveIndexes.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")}
+      </div>`).join("");
+  } else {
+    body = rec.staffing_moves.map((m, i) => moveHtml(m, i)).join("");
+  }
   return `<div class="panel" id="rec-staffing">
       <h3>Staffing moves (budget-neutral)</h3>
-      <p class="muted small">Erlang C on the forecast's upper band; only moves that keep headcount and agent-hours the same.</p>
-      ${moves}
+      <p class="muted small">Erlang C on the forecast's upper band. Only moves that keep the same people and the
+         same agent-hours: start a shift earlier or later, or swap a day off.</p>
+      ${body}
     </div>`;
+}
+
+// Group the moves by week using details.forecast.plans (the engine lists the moves in plan
+// order). Returns null when the plans are missing or do not line up, and we show a flat list.
+function weeklyPlans(rec) {
+  const d = state.results.details;
+  if (!d || !d.forecast || !Array.isArray(d.forecast.plans)) return null;
+  const groups = [];
+  let k = 0;
+  for (let p = 0; p < d.forecast.plans.length; p++) {
+    const plan = d.forecast.plans[p];
+    const moveIndexes = [];
+    for (const move of plan.moves) {
+      const listed = rec.staffing_moves[k];
+      if (!listed || listed.agents[0] !== move.agent_id) return null;
+      moveIndexes.push(k);
+      k++;
+    }
+    groups.push({ plan, p, moveIndexes });
+  }
+  return k === rec.staffing_moves.length ? groups : null;
+}
+
+function moveHtml(m, i) {
+  const base = `recommendations.staffing_moves[${i}]`;
+  const effectKeys = Object.keys(m.expected_effect);
+  const effects = effectKeys.map((kpi) => {
+    const unit = spreadUnit(kpiInfo(kpi).unit);
+    return `<li>${escapeHtml(kpiInfo(kpi).label)}: <strong>${ev(`${base}.expected_effect.${kpi}`, unit, { signed: true })}</strong></li>`;
+  }).join("");
+  const teams = m.team_from === m.team_to
+    ? `<span class="chip"><b>Team</b>${evText(base + ".team_from")}</span>`
+    : `<span class="chip"><b>From</b>Team ${evText(base + ".team_from")}</span>
+       <span class="chip"><b>To</b>Team ${evText(base + ".team_to")}</span>`;
+  return `<article class="move" id="move-${i}">
+      <div class="move-row">
+        <div>
+          <p class="move-text"><strong>${evText(base + ".text")}</strong></p>
+          <div class="chips">
+            ${teams}
+            <span class="chip"><b>Agents</b>${evText(base + ".agents")}</span>
+            <span class="chip"><b>When</b>${evText(base + ".when")}</span>
+          </div>
+          ${effects ? `<div class="small"><strong>Expected effect (measured in the simulator):</strong><ul>${effects}</ul></div>` : ""}
+        </div>
+        <div class="decision">${decisionButtons("staffing_move", i)}</div>
+      </div>
+    </article>`;
 }
 
 function decisionButtons(kind, index) {
@@ -110,7 +156,7 @@ function logDecision(button) {
     at: new Date().toISOString(),
   };
   decisionLog.push(entry);
-  console.log("[OpsLens] decision logged (server log arrives in M9):", entry);
+  console.log("[OpsLens] decision logged (kept in the browser until the server has /api/decisions):", entry);
   const label = entry.decision === "accept" ? "Accepted" : "Overridden";
   button.closest(".decision").innerHTML = `<span class="badge">${label} — logged</span>`;
 }
