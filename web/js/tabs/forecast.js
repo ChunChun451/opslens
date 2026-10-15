@@ -1,12 +1,12 @@
 // tabs/forecast.js — the forecast horizon (48 h): demand with its 80% band vs capacity.
 //
 // Why: "predict bottlenecks" means showing WHEN a team will run out of capacity, with honest
-// uncertainty. The band is the split-conformal 80% interval. Hours where the top of the band
-// (hi80) is above capacity are shaded red; the engine's own bottleneck windows are listed
-// below and shaded too when they fall inside the 48 hours.
+// uncertainty. The band is the split-conformal 80% interval. The engine's bottleneck windows
+// (Erlang C on the upper band) are shaded red and listed below; single hours where the top of
+// the band (hi80) is above capacity get a small red dot.
 //
-// Example (fixture, Team C, Tue 20:00): demand 4.14 agent-hours, band 3.31–4.96,
-// capacity 4.5 -> hi80 above capacity -> shaded "over capacity".
+// Example (real results, Team B, Sat 24 Oct 18:00-23:00): shaded "bottleneck", listed as
+// "Team B short by up to 5.2 agents", 19.9 agent-hours short in total.
 
 import { state, teamNames } from "../data.js";
 import { ev, evText } from "../evidence.js";
@@ -21,7 +21,8 @@ export function render(section) {
   const head = `<div class="tab-head"><div>
       <h2>Forecast</h2>
       <p>Agent-hours of work arriving per hour over the forecast horizon, with the 80% conformal
-         band. Red = the top of the band is above capacity.</p>
+         band. Red band = bottleneck flagged by the engine (Erlang C on the upper band).
+         Red dots = hours where the top of the band is above capacity.</p>
     </div></div>`;
   if (!f) {
     section.innerHTML = head + missing("The forecast", "M6");
@@ -36,7 +37,7 @@ export function render(section) {
     <div class="grid-4">
       <div class="panel"><div class="tile-label">WAPE, our model (test days)</div>
         <div class="tile-value">${ev("forecast.wape_model", "frac_pct")}</div>
-        <div class="tile-sub">lower is better</div></div>
+        <div class="tile-sub">${noiseFloor()}</div></div>
       <div class="panel"><div class="tile-label">WAPE, seasonal-naive baseline</div>
         <div class="tile-value">${ev("forecast.wape_naive", "frac_pct")}</div>
         <div class="tile-sub">same hour last week</div></div>
@@ -70,6 +71,15 @@ export function render(section) {
   drawChart(section);
 }
 
+// The WAPE no forecast can beat (random arrivals), when the engine reports it.
+function noiseFloor() {
+  const d = state.results.details;
+  if (d && d.forecast && typeof d.forecast.wape_noise_floor === "number") {
+    return `noise floor ${ev("details.forecast.wape_noise_floor", "frac_pct")} (no model can beat it)`;
+  }
+  return "lower is better";
+}
+
 // "2026-10-26T19:00" -> "Mon 19:00"
 function hourLabel(iso) {
   const weekday = new Date(iso).toLocaleDateString("en-GB", { weekday: "short" });
@@ -90,8 +100,10 @@ function drawChart(section) {
   f.horizon.forEach((p, i) => {
     if (p.team === selectedTeam) points.push({ p, i });
   });
+  // Only the engine's bottleneck windows are shaded: they use Erlang C (waiting time), which is
+  // stricter and more meaningful than "band above capacity" for a single hour (shown as dots).
   const over = points.map(({ p }) => p.hi80 > p.capacity_hours);
-  const ranges = runsOf(over, "over capacity").concat(bottleneckRanges(points));
+  const ranges = bottleneckRanges(points);
 
   const datasets = [
     { label: "lo80", data: points.map(({ p }) => p.lo80), borderWidth: 0, pointRadius: 0, fill: false },
@@ -101,7 +113,7 @@ function drawChart(section) {
       borderWidth: 0,
       backgroundColor: "rgba(42, 120, 214, 0.18)",
       fill: "-1", // fill down to the lo80 line = the band
-      pointRadius: over.map((isOver) => (isOver ? 6 : 0)),
+      pointRadius: over.map((isOver) => (isOver ? 4 : 0)),
       pointBackgroundColor: ALERT,
     },
     {
@@ -191,10 +203,15 @@ function bottleneckPanel(f) {
   const items = f.bottlenecks.map((b, i) => {
     const base = `forecast.bottlenecks[${i}]`;
     const outside = b.end <= first || b.start > last;
+    // Older results gave peak_rho; the real engine gives the agent gap instead. Show what exists.
+    const size = [];
+    if (typeof b.peak_rho === "number") size.push(`peak ρ ${ev(base + ".peak_rho", "ratio")}`);
+    if (typeof b.peak_gap_agents === "number") size.push(`up to ${ev(base + ".peak_gap_agents", "num")} agents short`);
+    if (typeof b.agent_hours_short === "number") size.push(`${ev(base + ".agent_hours_short", "num")} agent-hours short in total`);
     return `<li>
         <strong>${evText(base + ".text")}</strong>
         <div class="small muted">Team ${evText(base + ".team")} · ${evText(base + ".start")} to ${evText(base + ".end")}
-          · peak ρ ${ev(base + ".peak_rho", "ratio")}
+          ${size.length ? " · " + size.join(" · ") : ""}
           ${outside ? " · outside the chart window" : ""}</div>
       </li>`;
   }).join("");

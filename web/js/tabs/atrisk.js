@@ -85,7 +85,7 @@ function ticketHtml(t, i, biggest) {
         <div class="small muted">${evText(base + ".ticket_id")} · created ${evText(base + ".created_at")}</div>
       </div>
       <div>
-        <div class="tile-label">Why (TreeSHAP, probability points)</div>
+        <div class="tile-label">Why (TreeSHAP reasons)</div>
         ${reasons}
         ${action}
       </div>

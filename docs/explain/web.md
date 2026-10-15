@@ -3,22 +3,27 @@
 ## What it does
 - One web page with nine tabs: Overview, Patterns, Forecast, At-risk tickets,
   Recommendations, Baseline vs OpsLens (with the replay), What-if, How we tested, Upload data.
-- It reads **one file**: the results JSON (`/api/results` from the server, or
-  `eval/fixture_results.json` until the server exists). It never stores its own numbers.
+- It reads **one file**: the results JSON. The server gives it at `/api/results`
+  (`eval/results.json`). Without the server it falls back to `eval/fixture_results.json`.
+  The page never stores its own numbers.
 - **Every number is clickable.** A popover shows its JSON path, value, spread or 95% CI,
   and a one-line definition.
-- A red **FIXTURE** banner shows whenever `meta.fixture` is true.
+- A red **FIXTURE** banner shows only when `meta.fixture` is true (real results: no banner).
+- **What-if is live**: it asks the server to simulate one test day for all three policies.
 - **Story mode** walks the judges through the demo in 6 steps.
 - Plain HTML + vanilla JavaScript + CSS. No framework, no build step. Works with Wi-Fi off
   (Chart.js 4.5.0 is saved in `web/vendor/`, no web fonts).
 
 ## How to run it
-1. From the repo root: `.venv/Scripts/python.exe -m http.server 8765`
-   (or the `dashboard` entry in `.claude/launch.json`).
-2. Open `http://localhost:8765/web/`.
-3. Opening `index.html` as a file does **not** work: browsers block loading JSON from `file://`.
-4. After you edit a file, press **Ctrl+Shift+R**. Python's simple server lets Chrome cache
-   files, so a normal reload can show the old version.
+1. From the repo root: `.venv/Scripts/python.exe -m uvicorn server.app:app --port 8000`
+   (or `mingw32-make serve`).
+2. Open `http://localhost:8000/web/`.
+3. Without the server, `.venv/Scripts/python.exe -m http.server 8765` (the `dashboard`
+   entry in `.claude/launch.json`) still shows every tab, on the fixture, with the banner.
+   What-if then says it needs the server.
+4. Opening `index.html` as a file does **not** work: browsers block loading JSON from `file://`.
+5. After you edit a file, press **Ctrl+Shift+R**. Neither server tells Chrome not to cache
+   the JS files, so a normal reload can show the old version for a while.
 
 ## The files
 | File | What it does |
@@ -27,10 +32,10 @@
 | `styles.css` | All styles. Light theme, base text 19 px (21 px on Full HD), red accent used sparingly. |
 | `app.js` | Start: load the JSON, show the banner, build tabs, popover and story mode. |
 | `js/data.js` | `loadResults()`, `state` (the loaded JSON), `getPath()` / `lookup()` to read a value by path. |
-| `js/format.js` | Number formats (`13.0%`, `92%`, `−8.9 pts`), KPI names and units, the definitions (from CLAUDE.md section 4). |
+| `js/format.js` | Number formats (`13.1%`, `92%`, `−10.7 pts`), KPI names and units, the definitions (from CLAUDE.md section 4). |
 | `js/evidence.js` | `ev()` and `evText()` draw clickable values; one click listener opens the popover. |
-| `js/charts.js` | Chart.js defaults, policy colours and line styles, `makeChart()` (clickable points), two small plugins (error whiskers, shaded hours). |
-| `js/ui.js` | Shared pieces: policy name with colour, "not computed yet" box, "backend arrives in Mx" box, `postJson()`. |
+| `js/charts.js` | Chart.js defaults, policy colours and line styles, `makeChart()` (clickable points), two small plugins (whiskers for ± std or a 95% CI, shaded hours). |
+| `js/ui.js` | Shared pieces: policy name with colour, "not computed yet" box, `postJson()` (with a time limit). |
 | `js/router.js` | The list of tabs (`TABS`), the side menu, `showTab()`. |
 | `js/replay.js` | The side-by-side replay player (play, pause, scrub, speed). |
 | `js/story.js` | Story mode: 6 steps, Next / Back / arrow keys / Esc. |
@@ -48,21 +53,40 @@
    at that path from `state.results`, formats it, and returns a button with `data-path`.
 6. One click listener on the page (in `evidence.js`) opens the popover for any element
    with `data-path`. Chart points do the same through `makeChart()`.
+7. What-if answers are kept in `state.whatif`; their paths start with `whatif.`, so they are
+   clickable too and the popover says "POST /api/whatif (live simulation)".
 
 ## Worked example: one number, from JSON to screen
-The JSON has
-`"sim": {"policies": {"opslens": {"kpis": {"turnaround.breach_pct": {"mean": 4.1, "std": 0.328}}}}}`.
+The JSON (real results, 16 Oct) has
+`"sim": {"policies": {"opslens": {"kpis": {"turnaround.breach_pct": {"mean": 2.379, "std": 0.536}}}}}`.
 
 - `overview.js` calls `ev("sim.policies.opslens.kpis.turnaround.breach_pct.mean", "pct")`.
 - `getPath()` splits the path. The key `turnaround.breach_pct` itself has a dot, so at each
-  level it tries the longest key that exists first. It finds `4.1`.
-- `fmt(4.1, "pct")` gives `4.1%`. The screen shows a big **4.1%** with a dotted underline.
+  level it tries the longest key that exists first. It finds `2.379`.
+- `fmt(2.379, "pct")` gives `2.4%`. The screen shows a big **2.4%** with a dotted underline.
 - Click it. The popover shows:
-  - `4.1%  raw 4.1`
-  - `Spread across seeds: ± 0.3 pts` (from the sibling `.std`)
-  - `OpsLens − Baseline A (FIFO): −8.9 pts (paired 95% CI −9.7 pts to −8.1 pts, n = 5 seeds)`
-    (from `sim.comparisons`)
-  - the definition of SLA breach, the JSON path, and `Source: eval/fixture_results.json FIXTURE`.
+  - `2.4%  raw 2.379…`
+  - `Spread across seeds: ± 0.5 pts` (from the sibling `.std`)
+  - `OpsLens − Baseline A (FIFO): −10.7 pts (paired 95% CI −12.9 pts to −8.5 pts, n = 5 seeds)`
+    and the same against Baseline B (from `sim.comparisons`)
+  - the definition of SLA breach, the JSON path, and `Source: /api/results`.
+
+## Where each tab reads its numbers
+| Tab | Main paths |
+|---|---|
+| Overview | `sim.policies.*.kpis` (breach, backlog, P90, `segment.*`), `sim.comparisons`, `brief`, `patterns.cards` |
+| Patterns | `patterns.cards`, `patterns.recall`, `patterns.blind_recall`, `patterns.delay_decomposition`, `classification.clusters` |
+| Forecast | `forecast.horizon`, `forecast.bottlenecks` (`peak_gap_agents`, `agent_hours_short`), `details.forecast.wape_noise_floor` |
+| At-risk tickets | `risk.*`, `risk.at_risk` |
+| Recommendations | `recommendations.assignments`, `recommendations.staffing_moves`, grouped by week with `details.forecast.plans` |
+| Baseline vs OpsLens | `sim.policies`, `sim.comparisons` (grey = CI includes zero), `sim.replay` |
+| What-if | live `POST /api/whatif` → `all_policies`, `agents_on_roster`, `request` |
+| How we tested | `details.v1_record` + `details.design_v2` + `stress` (the "What failed" box), `details.ablations` (CIs), `details.blind.by_type`, `details.risk`, `details.forecast`, `details.classification`, `details.tuning`, `sensitivity`, `speed` |
+
+The "What failed, and what we changed" box gives each stress test a verdict from the sign of
+its 95% CI of (OpsLens − Baseline B): above zero = "OpsLens worse", below zero = "OpsLens
+better", across zero = "no clear difference". The words come from the data, so the box stays
+honest when the numbers change.
 
 ## How to add a tab
 1. Create `web/js/tabs/mytab.js` with `export function render(section) { ... }`.
@@ -73,28 +97,28 @@ The JSON has
    numbers goes through `evText(path)`. Never type a number into the HTML.
 4. If the results section may be missing, show `missing("Name", "M5")` instead.
 
-## What waits for the server (M9–M11)
-| Call | Used by | Request we send | Answer we expect |
+## Server calls
+| Call | Used by | Request we send | Answer we use |
 |---|---|---|---|
-| `GET /api/results` | everything | — | the results JSON (same shape as the fixture) |
-| `POST /api/whatif` (M10) | What-if | `{"day": 48, "policy": "opslens", "volume_factor": 1.25, "agents_delta": {"A": 0, "B": 0, "C": 2, "D": 0}}` | `{"kpis": {"turnaround.breach_pct": 5.2, ...}}` (a number or `{mean, std}` per KPI) |
+| `GET /api/results` | everything | — | the results JSON |
+| `POST /api/whatif` (live) | What-if | `{"day": 48, "policy": "opslens", "volume_factor": 1.25, "agents_delta": {"A": 0, "B": 0, "C": 2, "D": 0}}` | `request`, `all_policies` (three policies side by side), `agents_on_roster`; takes about 25 s, spinner meanwhile, gives up after 3 minutes |
 | `POST /api/plant` (M11) | Patterns → Plant a problem | `{"category": "refund", "language": "hi", "effect": "wait", "day": 47}` | shown as JSON for now; M11 decides the shape |
 | `POST /api/upload` (M10) | Upload data | form data: `file` (or `example=uci_incidents`) + `mapping` (JSON) | any 2xx = accepted |
-| decision log (M9) | Recommendations | `decisionLog` in `recommendations.js` (also printed to the console) | — |
+| decision log | Recommendations | `decisionLog` in `recommendations.js` (also printed to the console) | — (no endpoint yet; proposed `POST /api/decisions`) |
 
-Until then each button shows a clear "Backend arrives in M10/M11" box, and on the static
-preview server the page does not even try (so the console stays clean).
+On the static preview server the page does not even try these calls (so the console stays clean).
 
 ## Weaknesses
-- The fixture's numbers are invented. The banner says so; `make demo` must refuse them.
-- What-if, Plant-a-problem and Upload are forms only until M10/M11.
-- Some meanings are assumed because the schema does not say them: the stress table is read as
-  breach %, the delay breakdown as minutes per ticket, and the evidence card's value has no unit.
+- Plant-a-problem and Upload are forms only until their endpoints exist.
+- Some meanings are assumed because the schema does not say them: the evidence card's value
+  has no unit, and the delay breakdown is read as minutes per ticket.
 - Chart.js handles clicks on the next animation frame. If the browser is not drawing
   (window hidden), a chart click waits until it draws again.
-- Accept / Override is only kept in the browser until the server stores it (M9).
+- Accept / Override is only kept in the browser until the server stores it.
+- Browser caching (see "How to run it"): after editing web files, hard-reload.
 
 ## How to read the code
 Open `app.js` first (the start-up steps). Then `js/data.js` (`getPath`),
 then `js/evidence.js` (`ev` and the popover), then one tab: `js/tabs/overview.js`.
-After that, `js/replay.js` and `js/story.js` read top to bottom.
+After that, `js/tabs/tested.js` (the "What failed" box), `js/tabs/whatif.js`,
+`js/replay.js` and `js/story.js` read top to bottom.

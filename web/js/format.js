@@ -27,7 +27,7 @@ const UNIT_RULES = {
   ratio: { scale: 1, minDigits: 2, maxDigits: 2, suffix: "" },
   hours: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " h" },
   sec: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " s" },
-  ms: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " ms" },
+  ms: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " ms" }, // optimiser steps can be 0.07 ms
   num: { scale: 1, minDigits: 0, maxDigits: 2, suffix: "" },
 };
 
@@ -90,7 +90,7 @@ function num(value, minDigits, maxDigits) {
 // Guess a unit from a key name, for generic tables (sensitivity, stress, speed).
 export function unitForKey(key) {
   if (/_pct$/.test(key)) return "pct";
-  if (/_min$/.test(key)) return "min";
+  if (/_min$|_wait$/.test(key)) return "min";
   if (/_ms$|^ms_|_ms_/.test(key)) return "ms";
   if (/seconds$/.test(key)) return "sec";
   if (/^(tickets|agents|n|sets)$/.test(key)) return "int";
@@ -119,6 +119,7 @@ export const KPI_GROUPS = {
   turnaround: "Turnaround",
   productivity: "Productivity",
   quality: "Service quality",
+  segment: "Customer segments (who is protected)",
 };
 
 // Label, unit and direction for each simulator KPI. A KPI that is missing here still shows,
@@ -137,6 +138,10 @@ export const KPIS = {
   "quality.max_wait_min": { label: "Max wait", unit: "min", better: "lower" },
   "quality.mean_utilisation": { label: "Mean utilisation (ρ)", unit: "ratio", better: null },
   "quality.load_fairness_std": { label: "Load fairness (std of utilisation)", unit: "ratio", better: "lower" },
+  "segment.p1_breach_pct": { label: "P1 (live order) breach rate", unit: "pct", better: "lower" },
+  "segment.gold_breach_pct": { label: "Gold customers breach rate", unit: "pct", better: "lower" },
+  "segment.hindi_breach_pct": { label: "Hindi tickets breach rate", unit: "pct", better: "lower" },
+  tickets: { label: "Tickets that day", unit: "int", better: null },
 };
 
 export function kpiInfo(kpiKey) {
@@ -152,6 +157,34 @@ export function kpiInfo(kpiKey) {
 export const DEFINITIONS = {
   breach_pct: "SLA breach = resolution time longer than the SLA for the ticket's priority. This is the share of tickets that breached.",
   gold_breach_pct: "Breach rate for gold-tier customers only.",
+  p1_breach_pct: "Breach rate for P1 tickets only (live orders: late, payment debited, missing at the door).",
+  hindi_breach_pct: "Breach rate for Hindi tickets only (the planted skill gap: few agents speak Hindi and know refunds).",
+  after_first_pickup: "Average minutes from the end of the first handling to resolution: transfers, second waits and reopens.",
+  peak_gap_agents: "The most agents missing in any one hour of this window (forecast upper band vs roster, Erlang C).",
+  agent_hours_short: "Agent-hours missing over the whole window (forecast upper band vs roster, Erlang C).",
+  diagnosed_pct: "Share of planted problems found AND given the right cause type (skill gap, capacity, ...).",
+  unplanted_cards_per_set: "Average evidence cards per random set that match no plant (real patterns in the data, or false alarms).",
+  clean_set_cards: "Evidence cards produced on a data set with nothing planted.",
+  diagnosed: "Planted problems found with the right cause type.",
+  live_false_alerts_per_week: "Live hourly alerts per week that matched no real spike.",
+  wape_noise_floor: "The WAPE a perfect forecast of the average would still have, because arrivals are random (Poisson). No model can beat it.",
+  wape_team_hour_workload_model: "WAPE of our forecast for team-hour workload (what staffing uses).",
+  wape_team_hour_workload_naive: "WAPE of the seasonal-naive forecast for team-hour workload.",
+  sale_day_error_pct: "Forecast error on the known sale day, in percent of actual volume.",
+  shortage_before: "Agent-hours short in the week before the plan (forecast upper band vs roster, Erlang C).",
+  shortage_after: "Agent-hours short in the week after the plan's moves, with the same headcount.",
+  opslens_minus_b: "Breach rate of OpsLens minus Baseline B under this stress. Below zero = OpsLens is better.",
+  menu_choice_accuracy: "How often the category the customer picked in the menu was right.",
+  accuracy_cascade_hinglish: "Cascade accuracy on Hinglish tickets only.",
+  misrouted_per_100_menu: "Tickets per 100 sent to the wrong team when routing by the customer's menu choice.",
+  misrouted_per_100_opslens: "Tickets per 100 sent to the wrong team when routing by our predicted category.",
+  llm_requests_per_million_tickets: "LLM requests needed per million tickets (batches of uncertain tickets only).",
+  time_left_auc: "AUC of a simple rule: rank tickets by minutes left to SLA. Our model must beat it.",
+  priority_auc: "AUC of a simple rule: rank tickets by priority.",
+  priority_rule_auc: "AUC of the 'rank by priority' rule on the real UCI data.",
+  agents_on_roster: "Agents on the roster for this simulated day, after your changes.",
+  test_breach_pct: "Breach rate on the test days.",
+  aging_per_sla: "How fast a waiting ticket gains priority, in SLA lengths (policy v2).",
   mean_resolution_min: "Resolution (turnaround) time = resolved_at − created_at, averaged over tickets.",
   p90_resolution_min: "P90 resolution time: 90% of tickets resolve faster than this.",
   mean_wait_min: "Wait time = first agent pickup − created_at, averaged over tickets.",
@@ -237,8 +270,20 @@ export const DEFINITIONS = {
 // Find the definition for a path: walk its parts from the end and take the first match.
 // "sim.policies.opslens.kpis.turnaround.breach_pct.mean" -> DEFINITIONS.breach_pct
 export function definitionFor(path) {
+  if (path.startsWith("whatif.")) {
+    return "Simulated live for your settings. " + definitionFor(path.slice("whatif.".length));
+  }
   if (/^patterns\.delay_decomposition\./.test(path)) {
-    return DEFINITIONS.waiting_decomp;
+    return /after_first_pickup$/.test(path) ? DEFINITIONS.after_first_pickup : DEFINITIONS.waiting_decomp;
+  }
+  if (/ablations\[\d+\]\.ci_(low|high)$/.test(path)) {
+    return "Paired 95% CI of (breach without this part − full OpsLens) across seeds.";
+  }
+  if (/_p99_wait$/.test(path)) {
+    return "P99 wait under this stress: 99% of tickets wait less than this.";
+  }
+  if (/^details\.design_v2\.rows\[\d+\]\./.test(path)) {
+    return "Validation days only: how each candidate policy did, before we looked at the test days again.";
   }
   if (/^recommendations\.assignments\[\d+\]\.value$/.test(path)) {
     return DEFINITIONS.agent_value;

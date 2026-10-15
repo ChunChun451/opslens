@@ -45,19 +45,37 @@ export function backendMissing(endpoint, milestone, detail) {
 }
 
 // POST JSON to the server. Returns the parsed answer, or throws when the server is not
-// there or says no. Used by What-if (M10) and Plant-a-problem (M11).
+// there, says no, or takes longer than `timeoutMs`. Used by What-if and Plant-a-problem.
 // On the static preview server there is no API, so we do not even try (no console errors).
-export async function postJson(url, body) {
+export async function postJson(url, body, timeoutMs = 60000) {
   if (state.staticServer) {
     throw new Error("No API on the static preview server");
   }
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) {
-    throw new Error("HTTP " + response.status);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      let detail = "";
+      try {
+        detail = (await response.json()).error || ""; // the server explains a 400 in "error"
+      } catch (error) {
+        // not JSON: keep the status only
+      }
+      throw new Error("HTTP " + response.status + (detail ? ": " + detail : ""));
+    }
+    return await response.json();
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("No answer after " + Math.round(timeoutMs / 1000) + " s");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
-  return response.json();
 }
