@@ -1,0 +1,39 @@
+# LLM providers (CLAUDE.md section 3).
+# All use the OpenAI-compatible chat API, so one client works for all of them.
+# Free-tier limits change without notice. The numbers below are deliberately BELOW the
+# published free limits, so we never hit a 429 in the middle of a run.
+# Verified on: (fill in after `make ping`) — see PROGRESS.md for the ping output.
+
+main: gemini
+fallback: groq
+
+providers:
+  gemini:
+    kind: openai_compat
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    model: gemini-3.1-flash-lite
+    api_key_env: GEMINI_API_KEY
+    requests_per_minute: 10     # free tier reported at 15 RPM
+    requests_per_day: 400       # free tier reported at 500–1,000 RPD
+    timeout_s: 60
+    extra_params: {}
+
+  groq:
+    kind: openai_compat
+    base_url: https://api.groq.com/openai/v1
+    model: openai/gpt-oss-20b
+    api_key_env: GROQ_API_KEY
+    requests_per_minute: 20     # free tier reported at 30 RPM
+    requests_per_day: 800       # free tier reported at 1,000 RPD
+    timeout_s: 60
+    extra_params:
+      reasoning_effort: low     # gpt-oss is a reasoning model; low = faster, fewer tokens
+
+  mock:
+    kind: mock
+    model: mock-1
+    requests_per_minute: 100000
+    requests_per_day: 100000000
+
+# Where the cache and the usage counters live (SQLite, git-ignored).
+cache_db: cache/llm.sqlite

@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.pytest_tmp/
+
+# Secrets — never commit keys
+.env
+
+# Downloaded public datasets (re-create with: make data)
+data/public/*
+!data/public/.gitkeep
+
+# Generated data and caches (re-create with: make gen / make eval)
+data/generated/
+cache/
+*.sqlite
+*.sqlite-journal
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
