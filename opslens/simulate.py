@@ -483,6 +483,10 @@ def _collect(world, tickets, agent_states, snapshots, policy_name, seed_label,
             "mismatch_used": t.mismatch_used,
             "last_agent": t.last_agent,
             "breached": bool(breached),
+            "priority": world.priority[i],
+            "tier": world.tier[i],
+            "language": world.language[i],
+            "category": world.true_category[i],
         })
     tickets_df = pd.DataFrame(rows)
     snaps = pd.DataFrame(snapshots)

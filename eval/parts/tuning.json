@@ -1,0 +1,114 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "baseline_b": {
+  "breach_pct": 5.938631599008958,
+  "p99_wait_min": 735.3006570883832
+ },
+ "chosen": {
+  "aging_per_hour": 1.0,
+  "cross_skill_min_rescue": 0.5,
+  "mismatch_penalty": 2.0,
+  "scarcity_weight": 0.3,
+  "rescue_floor": 0.2
+ },
+ "history": [
+  {
+   "weight": "aging_per_hour",
+   "value": 0.25,
+   "breach_pct": 4.387268915570803,
+   "p99_wait_min": 464.8912263610487
+  },
+  {
+   "weight": "aging_per_hour",
+   "value": 0.5,
+   "breach_pct": 3.8460072422336573,
+   "p99_wait_min": 369.65019232928404
+  },
+  {
+   "weight": "aging_per_hour",
+   "value": 1.0,
+   "breach_pct": 3.773584905660378,
+   "p99_wait_min": 335.1340771892457
+  },
+  {
+   "weight": "aging_per_hour",
+   "value": 2.0,
+   "breach_pct": 4.044215742328951,
+   "p99_wait_min": 331.55847129442145
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.5,
+   "breach_pct": 3.773584905660378,
+   "p99_wait_min": 335.1340771892457
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.7,
+   "breach_pct": 4.250047646274061,
+   "p99_wait_min": 387.9464576898704
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 99.0,
+   "breach_pct": 6.479893272346103,
+   "p99_wait_min": 635.7191045041261
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 1.0,
+   "breach_pct": 4.078521059653135,
+   "p99_wait_min": 343.0103327725722
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 2.0,
+   "breach_pct": 3.773584905660378,
+   "p99_wait_min": 335.1340771892457
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 3.0,
+   "breach_pct": 3.8688774537831137,
+   "p99_wait_min": 355.606519919759
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 0.0,
+   "breach_pct": 3.834572136458929,
+   "p99_wait_min": 326.6174930331268
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 0.3,
+   "breach_pct": 3.773584905660378,
+   "p99_wait_min": 335.1340771892457
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 1.0,
+   "breach_pct": 3.823137030684201,
+   "p99_wait_min": 333.24592438442846
+  },
+  {
+   "weight": "rescue_floor",
+   "value": 0.05,
+   "breach_pct": 3.773584905660378,
+   "p99_wait_min": 335.1340771892457
+  },
+  {
+   "weight": "rescue_floor",
+   "value": 0.2,
+   "breach_pct": 3.7469029921860115,
+   "p99_wait_min": 331.024533799562
+  }
+ ]
+}

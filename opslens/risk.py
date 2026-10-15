@@ -50,8 +50,21 @@ class RiskModel:
             X[col] = pd.Categorical(X[col].astype(str), categories=self.categories[col])
         return X
 
+    def matrix(self, feats: pd.DataFrame) -> np.ndarray:
+        """Fast path: plain numbers, categories replaced by their training code (unknown → NaN).
+        LightGBM reads category codes from a numpy array the same way as from pandas, and this
+        is about 10× faster inside the simulator, where we score every few minutes."""
+        columns = []
+        for col in FEATURES:
+            if col in CATEGORICAL:
+                codes = {v: float(k) for k, v in enumerate(self.categories[col])}
+                columns.append([codes.get(str(v), np.nan) for v in feats[col]])
+            else:
+                columns.append(feats[col].to_numpy(dtype=float))
+        return np.column_stack(columns)
+
     def raw(self, feats: pd.DataFrame) -> np.ndarray:
-        return self.booster.predict(self.frame(feats))
+        return self.booster.predict(self.matrix(feats))
 
     def predict(self, feats: pd.DataFrame) -> np.ndarray:
         """Calibrated P(breach)."""

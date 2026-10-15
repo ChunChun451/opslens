@@ -1,7 +1,7 @@
 {
  "meta": {
   "fixture": true,
-  "generated_at": "2026-10-15T17:24:21",
+  "generated_at": "2026-10-15T23:09:25",
   "git_commit": "",
   "data_seed": 2026,
   "n_tickets": 71530,
@@ -673,21 +673,21 @@
      {
       "ticket_id": "T000001",
       "created_at": "2026-08-31 00:02",
-      "text": "refund ka status batao my order",
+      "text": "hello koi hai? reply karo",
       "wait_min": 417.6,
       "breached": true
      },
      {
       "ticket_id": "T000006",
       "created_at": "2026-08-31 00:14",
-      "text": "refund kab milega? Rs 456 abhi tak nahi aaye",
+      "text": "aapne bola tha 5 din mein refund, ek hafta ho gaya",
       "wait_min": 433.3,
       "breached": true
      },
      {
       "ticket_id": "T000014",
       "created_at": "2026-08-31 00:32",
-      "text": "order cancel kiya tha paisa wapas nahi aaya",
+      "text": "issue jaldi solve karo please",
       "wait_min": 423.2,
       "breached": true
      }
@@ -723,21 +723,21 @@
      {
       "ticket_id": "T000011",
       "created_at": "2026-08-31 00:28",
-      "text": "half my order is missing. paid for 3 items received 2",
+      "text": "missing momos. also extra chutney was cold",
       "wait_min": 391.8,
       "breached": true
      },
      {
       "ticket_id": "T000015",
       "created_at": "2026-08-31 00:33",
-      "text": "bag was sealed but extra chutney was not inside",
+      "text": "really? margherita pizza is missing from my Spice Route Kitchen order. i am confused why they forgot it. can you check the kitchen logs?",
       "wait_min": 395.0,
       "breached": true
      },
      {
       "ticket_id": "T000020",
       "created_at": "2026-08-31 00:45",
-      "text": "received incomplete order, garlic naan missing",
+      "text": "items missing in my order from Biryani Junction",
       "wait_min": 392.4,
       "breached": true
      }
@@ -764,21 +764,21 @@
      {
       "ticket_id": "T000003",
       "created_at": "2026-08-31 00:04",
-      "text": "do baar paise kat gaye ek hi order ke",
+      "text": "Refund karo. Biryani Junction se order cancel hua tha.",
       "wait_min": 419.4,
       "breached": true
      },
      {
       "ticket_id": "T000029",
       "created_at": "2026-08-31 00:59",
-      "text": "payment went through but app shows payment failed, the restaurant quality is also bad",
+      "text": "please call me back urgently",
       "wait_min": 407.2,
       "breached": true
      },
      {
       "ticket_id": "T000040",
       "created_at": "2026-08-31 01:27",
-      "text": "UPI payment stuck in pending, order not confirmed",
+      "text": "need help with my last order",
       "wait_min": 396.8,
       "breached": true
      }
@@ -804,21 +804,21 @@
      {
       "ticket_id": "T000185",
       "created_at": "2026-08-31 10:01",
-      "text": "rceeived non veg instead of veg! I am vegetarian, this is seirous",
+      "text": "and one item was missing too. completely different food delivered to me",
       "wait_min": 4.2,
       "breached": false
      },
      {
       "ticket_id": "T000417",
       "created_at": "2026-08-31 13:32",
-      "text": "got shawarma roll instead of what I ordered, my order",
+      "text": "ordered medium spicy, got extra spicy and wrong size. mail me at [EMAIL]",
       "wait_min": 32.6,
       "breached": false
      },
      {
       "ticket_id": "T000695",
       "created_at": "2026-08-31 17:59",
-      "text": "I got the wrong order, ordered butter chicken but received something else",
+      "text": "please refund my money for the wrong rajma chawal i received. the coke was cold and tasted weird too.",
       "wait_min": 0.0,
       "breached": false
      }
@@ -843,21 +843,21 @@
      {
       "ticket_id": "T000039",
       "created_at": "2026-08-31 01:22",
-      "text": "food quality from Pizza Point was terrible, stale and cold",
+      "text": "I have a problem with my order",
       "wait_min": 398.1,
       "breached": false
      },
      {
       "ticket_id": "T000137",
       "created_at": "2026-08-31 09:00",
-      "text": "galat order aa gaya, maine idli sambar manga tha",
+      "text": "veg manga tha non veg aa gaya, bahut galat hai",
       "wait_min": 3.0,
       "breached": true
      },
      {
       "ticket_id": "T000188",
       "created_at": "2026-08-31 10:03",
-      "text": "Spice Route Kitchen se order kiya tha, ab tak nahi pahuncha",
+      "text": "delivery boy ka phone anhi lag raha, order late hai",
       "wait_min": 288.3,
       "breached": true
      }
@@ -2544,7 +2544,7 @@
     "category": "payment_failure",
     "priority": "P1",
     "language": "hi",
-    "text": "do baar paise kat gaye ek hi order ke",
+    "text": "Refund karo. Biryani Junction se order cancel hua tha.",
     "probability": 0.92,
     "minutes_to_sla": 12.0,
     "reasons": [
@@ -2573,7 +2573,7 @@
     "category": "late_delivery",
     "priority": "P1",
     "language": "en",
-    "text": "showing me current status of purchase [NUMBER]",
+    "text": "i am so hungry. veg burger from Biryani Junction is 45 mins late. rider is not answering. i paid 668 and am waiting in vain.",
     "probability": 0.88,
     "minutes_to_sla": 16.0,
     "reasons": [
@@ -2602,7 +2602,7 @@
     "category": "late_delivery",
     "priority": "P1",
     "language": "hi",
-    "text": "order kab aayega? bahut late ho gaya hai",
+    "text": "Yeh kya service hai? 25 late aur rider unreachable. masala dosa ab khaane layak nahi. 247 refund karo turant.",
     "probability": 0.84,
     "minutes_to_sla": 20.0,
     "reasons": [
@@ -2631,7 +2631,7 @@
     "category": "late_delivery",
     "priority": "P1",
     "language": "en",
-    "text": "still no sign of my fried rice, very delayed",
+    "text": "help me checking how long it takes for the article to arrive",
     "probability": 0.8,
     "minutes_to_sla": 24.0,
     "reasons": [
@@ -2660,7 +2660,7 @@
     "category": "missing_item",
     "priority": "P1",
     "language": "en",
-    "text": "bag was sealed but extra chutney was not inside",
+    "text": "really? margherita pizza is missing from my Spice Route Kitchen order. i am confused why they forgot it. can you check the kitchen logs?",
     "probability": 0.76,
     "minutes_to_sla": 28.0,
     "reasons": [
@@ -2689,7 +2689,7 @@
     "category": "late_delivery",
     "priority": "P1",
     "language": "en",
-    "text": "help seeing the ETA of order [ORDER_ID]",
+    "text": "rider location not updating, 30",
     "probability": 0.72,
     "minutes_to_sla": 32.0,
     "reasons": [
@@ -2718,7 +2718,7 @@
     "category": "missing_item",
     "priority": "P1",
     "language": "en",
-    "text": "received incomplete order, garlic naan missing",
+    "text": "items missing in my order from Biryani Junction",
     "probability": 0.68,
     "minutes_to_sla": 36.0,
     "reasons": [
@@ -2747,7 +2747,7 @@
     "category": "wrong_item",
     "priority": "P1",
     "language": "en",
-    "text": "my masala dosa was replaced with some other dish without asking",
+    "text": "i paid 1088 for hakka noodles, got garlic naan",
     "probability": 0.64,
     "minutes_to_sla": 40.0,
     "reasons": [
@@ -2776,7 +2776,7 @@
     "category": "payment_failure",
     "priority": "P1",
     "language": "en",
-    "text": "payment went through but app shows payment failed, the restaurant quality is also bad",
+    "text": "please call me back urgently",
     "probability": 0.6,
     "minutes_to_sla": 44.0,
     "reasons": [
@@ -2805,7 +2805,7 @@
     "category": "restaurant_partner",
     "priority": "P1",
     "language": "en",
-    "text": "Thali Express refused to give the bill",
+    "text": "need help with my last order",
     "probability": 0.56,
     "minutes_to_sla": 48.0,
     "reasons": [

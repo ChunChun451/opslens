@@ -1,0 +1,19 @@
+# OpsLens optimiser weights (opslens/optimize.py).
+# Chosen on VALIDATION days 36-42 (seeds 1-3) by simulated breaches (eval/run_opslens.py --tune,
+# results in eval/parts/tuning.json): OpsLens 3.75% vs Baseline B 5.94%, P99 wait 331 vs 735 min;
+# never tuned on test days. Sensitivity of the main ones is reported in M8.
+
+urgency_weight: {P1: 3.0, P2: 1.5, P3: 1.0}   # how much a breach of each priority matters
+gold_weight: 1.5                               # gold customers count 1.5x (sensitivity: 1 / 1.5 / 2)
+order_value_weight: 0.1                        # + 0.1 x log(1 + value / 350)
+rescue_floor: 0.2                              # every ticket has at least this much value
+aging_per_hour: 1.0                            # value for time already waited (fairness; tuned 0.25-2.0)
+mismatch_penalty: 2.0                          # cost of a deliberate cross-skill job (1.6x slower)
+cross_skill_min_rescue: 0.5                     # ...and only to rescue a ticket in real danger
+scarcity_weight: 0.3                           # cost of using a rare skill pair on common work
+max_wait_min: 240                              # starvation guard: older than this = served next
+starvation_bonus: 50.0
+risk_refresh_min: 3                            # recompute risk scores every 3 simulated minutes
+new_ticket_rescue: 0.3                         # rescue value of a ticket that arrived since the last scoring
+top_k_per_agent: 30                            # only the 30 best tickets per agent enter the solver
+time_budget_s: 1.0                             # solver time limit, then greedy fallback (logged)

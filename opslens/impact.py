@@ -53,8 +53,16 @@ def summarize(result: SimResult) -> dict[str, float]:
         "quality.p99_wait_min": float(np.percentile(t["wait_min"].dropna(), 99)),
         "quality.mean_utilisation": float(utils.mean()) if len(utils) else 0.0,
         "quality.load_fairness_std": float(utils.std()) if len(utils) else 0.0,
+        "segment.p1_breach_pct": segment_rate(t, t["priority"] == "P1"),
+        "segment.gold_breach_pct": segment_rate(t, t["tier"] == "gold"),
+        "segment.hindi_breach_pct": segment_rate(t, t["language"] == "hi"),
         "tickets": float(len(t)),
     }
+
+
+def segment_rate(t, mask) -> float:
+    """Breach % inside one group of tickets (e.g. gold customers)."""
+    return 100.0 * float(t.loc[mask, "breached"].mean()) if mask.any() else 0.0
 
 
 def mean_std(values: list[float]) -> tuple[float, float]:

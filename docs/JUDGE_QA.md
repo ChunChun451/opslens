@@ -158,3 +158,33 @@ Saturday, because Team C is short by up to 5 agents on Saturday nights.
 It is the call-centre standard, judges from operations know it, and our simulator reproduces it
 (10.97 vs 10.79 minutes average wait). We use it with the upper 80% forecast so plans hold on
 busier-than-expected days, and we weight hours with real overload 3×.
+
+---
+
+## M7 — Optimiser and the OpsLens policy
+
+**Q26. What is the headline result?**
+On 14 held-out days, 5 seeds, same tickets and luck for every policy: SLA breaches 5.08% with
+OpsLens vs 6.82% priority-first and 13.11% FIFO. OpsLens − priority = −1.74 points, 95% CI
+[−2.35, −1.13]. P90 resolution 130 vs 198 minutes; the slowest 1% wait 474 vs 1,007 minutes.
+
+**Q27. (Attack) Does OpsLens cut breaches by abandoning tickets that are already late?**
+No: the slowest customers do much better. P99 wait falls from 1,007 to 474 minutes vs priority-
+first, because every ticket gains value for each hour it waits and a guard serves anything older
+than 240 minutes next. Breach % alone would hide starvation; we report P90 and P99 for that reason.
+
+**Q28. Why a min-cost flow and not a simple sorted queue?**
+When several agents are free, the best choice for one agent depends on the others: the only
+Hindi refund agent should take the Hindi refund, not the English one anyone can take. The flow
+optimises all free agents together. It takes 0.08 ms per decision (max 8.8 ms), 0.115 s for
+5,000 tickets × 500 agents.
+
+**Q29. (Attack) You tuned the weights until your policy won.**
+We tuned on validation days 36–42 only, one weight at a time, and froze the weights before
+touching the test days. On validation the result was 3.75% vs 5.94% for priority-first; on the
+unseen test days it held: 5.08% vs 6.82%. The tuning log is in eval/parts/tuning.json.
+
+**Q30. What does OpsLens do worse?**
+Reopens rise from 3.93% to 4.35%, because OpsLens sometimes asks an agent to rescue a ticket
+outside their training (1.6× slower, more reopens). It only does so when the ticket's rescue
+value is at least 0.5; without those jobs, breaches on validation rose to 6.48%.

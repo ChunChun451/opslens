@@ -18,7 +18,7 @@ Example (shortened):
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -168,8 +168,10 @@ class Bottleneck(Strict):
     team: str
     start: str
     end: str
-    peak_rho: float
     text: str
+    peak_rho: float | None = None
+    peak_gap_agents: float | None = None  # agents short at the worst hour
+    agent_hours_short: float | None = None
 
 
 class ForecastSection(Strict):
@@ -281,3 +283,7 @@ class Results(Strict):
     stress: list[dict[str, float | str]] = []
     speed: SpeedSection | None = None
     brief: Brief | None = None
+    # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
+    # classification and forecast details, real-data findings). Free-form so each milestone
+    # can add evidence without a schema change; the UI shows it under "How we tested".
+    details: dict[str, Any] = {}

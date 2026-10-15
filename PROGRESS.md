@@ -184,3 +184,29 @@ overrides (`world.apply_staffing_plan`).
 
 **Next step:** M7 — OpsLens policy (rescue value, scarcity, starvation guard, min-cost flow),
 weights chosen on validation days, OpsLens vs A/B on test days with paired CIs.
+
+---
+
+## M7 — 15 Oct 2026 — Optimiser and the OpsLens policy
+
+**Built**: `opslens/optimize.py` (ticket value, min-cost flow with OR-Tools, greedy fallback),
+`OpsLensPolicy` in `opslens/policies.py` (classifier routing, rescue value = P(breach if waiting) −
+P(breach if served now), fairness aging, starvation guard, cross-skill rescue jobs, scarcity
+preference that never causes idling, decision log with reasons, ablation switches),
+`config/optimizer.yaml`, `eval/run_opslens.py` (`--tune` on validation, parallel seeds,
+replay series), `tests/test_optimize.py`. Fast risk scoring path (numpy codes, ~10× faster).
+
+**First attempt failed and was fixed (on validation days only)**: untuned, OpsLens breached 25.9%
+on a trial run (cross-skill jobs everywhere, scarcity made rare agents idle). Fixes: cross-skill
+only for rescue ≥ 0.5 with penalty 2.0; scarcity floored so no agent idles; stronger aging.
+
+**Numbers printed**
+- Validation tuning (days 36-42, seeds 1-3): OpsLens 3.75% vs Baseline B 5.94%; chosen
+  aging 1.0/h, cross-skill rescue ≥ 0.5, mismatch penalty 2.0, scarcity 0.3, rescue floor 0.2.
+- **Test days 43-56, 5 seeds**: breach A 13.11%, B 6.82%, **OpsLens 5.08%**; OpsLens − B −1.74
+  [−2.35, −1.13], OpsLens − A −8.02 [−9.01, −7.04]. P90 130 vs 185/198 min; P99 wait 474 vs 816/1,007;
+  transfers 0.97 vs 4.66/4.59 per 100; reopens 4.35% vs 3.93% (the cost of cross-skill rescues).
+- Replay, Saturday 17 Oct 18:00-24:00: breaches 7 (OpsLens) vs 83 (A) vs 26 (B); peak queue 79 vs 132/141.
+- Solver: median 0.08 ms, max 8.8 ms, 0 fallbacks; 5,000 × 500 scale test 0.115 s.
+
+**Next step:** M8 — ablations, sensitivity, stress, `make eval` → results.json + NUMBERS.md.
