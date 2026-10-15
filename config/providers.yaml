@@ -2,7 +2,10 @@
 # All use the OpenAI-compatible chat API, so one client works for all of them.
 # Free-tier limits change without notice. The numbers below are deliberately BELOW the
 # published free limits, so we never hit a 429 in the middle of a run.
-# Verified on: (fill in after `make ping`) — see PROGRESS.md for the ping output.
+# Verified on 15 Oct 2026 with `make ping`: gemini-3.1-flash-lite OK (1.3 s); on Groq,
+# llama-3.1-8b-instant no longer exists, gpt-oss-20b had used its 200k tokens/day (the
+# organisation's quota is shared with other projects), qwen/qwen3.8-27b OK (0.2 s) and
+# openai/gpt-oss-120b OK (0.8 s). Each Groq model has its own daily token budget.
 
 main: gemini
 fallback: groq
@@ -21,13 +24,12 @@ providers:
   groq:
     kind: openai_compat
     base_url: https://api.groq.com/openai/v1
-    model: openai/gpt-oss-20b
+    model: qwen/qwen3.8-27b       # alternative if its quota runs out: openai/gpt-oss-120b
     api_key_env: GROQ_API_KEY
     requests_per_minute: 20     # free tier reported at 30 RPM
     requests_per_day: 800       # free tier reported at 1,000 RPD
     timeout_s: 60
-    extra_params:
-      reasoning_effort: low     # gpt-oss is a reasoning model; low = faster, fewer tokens
+    extra_params: {}
 
   mock:
     kind: mock

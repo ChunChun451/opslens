@@ -90,7 +90,7 @@ one "attack" question per module (e.g. "isn't this data leakage?").
 - **No tuning on test days.** Train = days 1–35, validation = days 36–42 (all model,
   threshold and weight choices), test = days 43–56 (report only).
 - **Fair comparison.** Every policy gets the same tickets, the same luck (common random
-  numbers), the same decision cadence, the same headcount and the same total agent-hours.
+  numbers), the same decision moments, the same headcount and the same total agent-hours.
 - **The engine never reads `data/planted.json`.** Only `eval/` reads it, to score us.
 - **Privacy first.** Ticket text is PII-masked before it is sent to any external API.
 - **Ask before adding a dependency** that is not in section 3.
@@ -130,8 +130,8 @@ The PS asks for impact on **"turnaround time, productivity, and service quality"
 - Our own discrete-event simulator using `heapq` (no simulation library — the owner must
   be able to explain every line)
 - LLM via the `openai` SDK against OpenAI-compatible endpoints:
-  main = Gemini Flash-Lite free tier (expected `gemini-3.1-flash-lite`),
-  fallback = Groq free tier (expected `openai/gpt-oss-20b`; `llama-3.1-8b-instant` may be retired),
+  main = Gemini Flash-Lite free tier `gemini-3.1-flash-lite` (verified 15 Oct),
+  fallback = Groq free tier `qwen/qwen3.8-27b` (verified 15 Oct; `llama-3.1-8b-instant` is retired),
   tests = `mock` provider. Third-party reports of free limits disagree — **verify base URLs,
   model names and limits in our own accounts on day 1**; store them in `config/providers.yaml`.
 - Frontend: plain HTML + vanilla JS + CSS; Chart.js bundled in `web/vendor/`
@@ -195,21 +195,26 @@ The PS asks for impact on **"turnaround time, productivity, and service quality"
 ### 5.3 Operations generator (`data/generate_ops.py`, params in `config/generator.yaml`)
 Public datasets lack timestamps, agents, skills and SLAs, so we generate this layer —
 **and say so openly in the pitch.** Fixed seed.
-- ~1,000 tickets/day; food/quick-commerce pattern: lunch and dinner peaks, weekend lift,
-  sale-day surges (known events, days 25 and 50).
+- ~1,130 tickets per weekday (~71.5k in 56 days); food/quick-commerce pattern: lunch and
+  dinner peaks, weekend lift ×1.15, sale days ×1.35 (known events, days 25 and 50).
 - Ticket schema: `ticket_id, created_at, channel{chat,email,call}, category{late_delivery,
   missing_item, wrong_item, refund, payment_failure, app_bug, account, restaurant_partner},
   selected_category (what the customer picked — may be wrong), priority{P1,P2,P3},
   language{en,hi,other}, customer_tier{normal,gold}, order_value_inr, restaurant_cluster_id, text`.
-- Agents: 40 agents in 4 teams; each has `skills` (categories), `languages`, `shift`,
-  `max_concurrent` (chat > 1). Handle time lognormal by category; skill mismatch × 1.6 slower
-  and higher reopen chance; 5% absenteeism; breaks. All in config.
+- Agents: 40 agents in 4 teams, every one listed in `config/roster.yaml` (team skills + extra
+  skills, languages, shift start, days off; 9-hour shifts; `max_concurrent` = 1). Start hours
+  and days off come from a small search that keeps each team's load flat over the week, so the
+  status quo is reasonable, not a strawman. Handle time lognormal by category; skill mismatch
+  × 1.6 slower and higher reopen chance; 5% absenteeism. All in config.
 - **Calibration targets for Baseline A** (tune the generator until printed values hit them):
-  overall breach 12–18%, mean utilisation 70–80%, weekend dinner peak ρ 1.05–1.2.
+  overall breach 12–18%, mean utilisation 70–80%, Team C weekend-dinner ρ 1.2–1.5.
+  Reached on 15 Oct: 13.1%, 0.80, 1.40.
 - History is produced by running **Baseline A** in the simulator, so the historical
   data looks like a normal support floor.
 - **Planted problems** → `data/planted.json` (engine never reads it). One per cause type:
-  1. **Skill gap** — Hindi refunds wait long: only 2 agents have both skills.
+  1. **Skill gap** — Hindi refunds/payments wait long: only 3 agents (none at night) have
+     Hindi + refund skills. (With 2 the backlog never cleared — 15 h average waits — which is
+     not a realistic floor.)
   2. **Capacity** — Team C overloaded every weekend dinner peak.
   3. **Volume spike** — payment-failure spike on day 18 ("bad app release"). Plus an **unseen
      test-period spike**: app_bug surge on day 47 (not in any forecast) → measures live
@@ -301,15 +306,18 @@ shift starts ±1–2 h ("move 3 refund-skilled agents to Team C, Sat 19:00–23:
 measures each move's effect.
 
 **`policies.py`** — one interface: `decide(state, now) -> list[Assignment]`.
-Baseline A: each team takes its oldest ticket (routes by `selected_category`).
-Baseline B: highest priority, then oldest (routes by `selected_category`).
+Baseline A: each free agent takes the oldest ticket in their team's queue, then helps with
+extra skills if their own queue is empty (routes by `selected_category`).
+Baseline B: same, but highest priority first, then oldest.
 OpsLens: predicted category + risk + optimiser (+ staffing changes applied to the schedule).
 Ablation variants are flags on the OpsLens policy.
 
-**`simulate.py`** — discrete-event simulator. Events in a `heapq`: `ARRIVAL`, `FINISH`,
-`DECIDE` (every `decide_every_min` = 2 simulated minutes, same for **all** policies),
-`REPLAN` (every 15 min: refresh risk scores, staffing), `SHIFT_CHANGE`.
-The clock jumps event to event.
+**`simulate.py`** — discrete-event simulator. Events in a `heapq`: `FINISH`, `REOPEN`,
+`ARRIVAL`, `DECIDE`. The clock jumps event to event. **Decisions are event-driven and the same
+for all policies:** right after any arrival, finish or reopen, the policy decides (like a real
+floor where the next ticket is pulled at once), plus a 2-minute tick that catches shift starts.
+(A fixed 2-minute cadence was tried first: agents then idle ~1 min between tickets, which the
+Erlang-C test exposed.) OpsLens refreshes risk scores and staffing every 15 min inside its policy.
 **Common random numbers:** each ticket's randomness (handle time, reopen, absenteeism draws)
 comes from its own stream seeded by (seed, ticket_id), so all policies see identical tickets
 and identical luck, whatever order events happen in.
@@ -344,7 +352,7 @@ mechanism for cluster descriptions and "Explain this" text.
 5. Simulator, days 43–56, 5 seeds, mean ± std + paired 95% CI: Baseline A, Baseline B, OpsLens.
 6. **Ablations:** without staffing; without risk scores; without optimiser (risk-sorted greedy);
    without classifier (route by `selected_category`); without scarcity cost.
-7. Sensitivity: gold weight ×1 / ×1.5 / ×2; decision cadence 1 / 2 / 5 min.
+7. Sensitivity: gold weight ×1 / ×1.5 / ×2; scarcity-cost weight; starvation-guard `max_wait`.
 8. **Stress tests (conditions never seen in training):** +25% volume; 10% absenteeism;
    the day-47 surprise spike. Does OpsLens still beat both baselines?
 9. Live detection latency for the day-47 spike.

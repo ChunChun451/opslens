@@ -10,7 +10,7 @@ Outputs (data/generated/, git-ignored, fully reproducible from the seed):
 - ../planted.json    the planted problems and decoys. Only eval/ reads it.
 
 How volume is made, step by step:
-1. Each day gets a total: 1,000 on weekdays, ×1.15 at weekends, ×1.6 on the two sale days,
+1. Each day gets a total: 1,130 on weekdays, ×1.15 at weekends, ×1.35 on the two sale days,
    ×1.12 on the busy-but-normal decoy day, times a small random day-to-day factor.
 2. Each hour gets its share of the day (lunch and dinner peaks, `hourly_profile`).
 3. Each category gets its share of the hour, with lifts: late deliveries and missing items
@@ -18,8 +18,8 @@ How volume is made, step by step:
 4. The number of tickets is a Poisson draw around that expected value.
 
 Example: Saturday 20:00, missing_item.
-    day total 1,000 × 1.15 = 1,150; hour share 8.5/90.9 = 9.35% → 107.5 tickets;
-    missing_item share 0.14 × peak lift 1.2 × weekend-dinner lift 1.5 → 27.1 expected.
+    day total 1,130 × 1.15 = 1,299.5; hour share 7.3/92.9 = 7.86% → 102.1 tickets;
+    missing_item share 0.14 × peak lift 1.2 × weekend-dinner lift 1.35 → 23.2 expected.
 """
 
 from __future__ import annotations
