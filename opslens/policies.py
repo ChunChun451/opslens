@@ -254,7 +254,8 @@ class OpsLensPolicy:
                 rescue = self.rescue.get(t.idx, default) if self.settings.use_risk else default
                 if not skilled and rescue < self.w["cross_skill_min_rescue"]:
                     continue  # cross-skill work (1.6x slower) only to save a ticket that is in real danger
-                value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, self.w)
+                value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, self.w,
+                                     sla_min=t.sla_deadline_min - t.created_min)
                 if not skilled:
                     value -= self.w["mismatch_penalty"]
                 scarcity = 0.0

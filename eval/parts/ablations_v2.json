@@ -1,0 +1,156 @@
+{
+ "ablations": [
+  {
+   "key": "full",
+   "label": "OpsLens (full)",
+   "breach_pct": {
+    "mean": 2.3791038154392194,
+    "std": 0.5364296965922581
+   },
+   "p90_resolution_min": {
+    "mean": 140.785121634073,
+    "std": 31.153764751488712
+   },
+   "delta_breach_vs_full": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 0.0,
+   "transfers_per_100": 0.9693877551020409,
+   "reopen_rate_pct": 4.392191659272404
+  },
+  {
+   "key": "no_staffing",
+   "label": "without staffing plan",
+   "breach_pct": {
+    "mean": 2.4811446317657495,
+    "std": 0.5205663546822327
+   },
+   "p90_resolution_min": {
+    "mean": 150.916227093352,
+    "std": 34.0502584688903
+   },
+   "delta_breach_vs_full": 0.10204081632653068,
+   "ci_low": 0.04452089647544382,
+   "ci_high": 0.15956073617761754,
+   "transfers_per_100": 0.9627329192546583,
+   "reopen_rate_pct": 4.41659272404614
+  },
+  {
+   "key": "no_risk",
+   "label": "without risk scores",
+   "breach_pct": {
+    "mean": 5.158606921029281,
+    "std": 1.3265660838262658
+   },
+   "p90_resolution_min": {
+    "mean": 178.31327591424034,
+    "std": 48.006517402322935
+   },
+   "delta_breach_vs_full": 2.779503105590062,
+   "ci_low": 1.700155878001288,
+   "ci_high": 3.858850333178836,
+   "transfers_per_100": 1.0226264418811004,
+   "reopen_rate_pct": 3.9341171251109137
+  },
+  {
+   "key": "no_optimizer",
+   "label": "without optimiser (greedy per agent)",
+   "breach_pct": {
+    "mean": 2.404614019520852,
+    "std": 0.5594643136740339
+   },
+   "p90_resolution_min": {
+    "mean": 139.80332202414075,
+    "std": 30.211415976938138
+   },
+   "delta_breach_vs_full": 0.025510204081632803,
+   "ci_low": -0.024517148649665896,
+   "ci_high": 0.0755375568129315,
+   "transfers_per_100": 0.957187222715173,
+   "reopen_rate_pct": 4.409937888198757
+  },
+  {
+   "key": "no_classifier",
+   "label": "without classifier (menu choice routing)",
+   "breach_pct": {
+    "mean": 2.596495119787045,
+    "std": 0.6965249145074511
+   },
+   "p90_resolution_min": {
+    "mean": 154.95453407723886,
+    "std": 37.09161351957371
+   },
+   "delta_breach_vs_full": 0.21739130434782616,
+   "ci_low": 8.925124961561837e-05,
+   "ci_high": 0.4346933574460367,
+   "transfers_per_100": 4.249112688553683,
+   "reopen_rate_pct": 4.413265306122449
+  },
+  {
+   "key": "no_scarcity",
+   "label": "without scarcity cost",
+   "breach_pct": {
+    "mean": 2.4467613132209403,
+    "std": 0.5709428582138043
+   },
+   "p90_resolution_min": {
+    "mean": 141.47718007420562,
+    "std": 32.72321376255555
+   },
+   "delta_breach_vs_full": 0.06765749778172143,
+   "ci_low": 0.0242778706934244,
+   "ci_high": 0.11103712487001846,
+   "transfers_per_100": 0.9638420585625553,
+   "reopen_rate_pct": 4.42435669920142
+  }
+ ],
+ "sensitivity": [
+  {
+   "gold_weight": 1.0,
+   "breach_pct": 2.3691215616681456,
+   "gold_breach_pct": 2.2685693377241125
+  },
+  {
+   "gold_weight": 1.5,
+   "breach_pct": 2.3791038154392194,
+   "gold_breach_pct": 1.8075375045737285
+  },
+  {
+   "gold_weight": 2.0,
+   "breach_pct": 2.441215616681455,
+   "gold_breach_pct": 1.8002195389681668
+  }
+ ],
+ "stress": [
+  {
+   "scenario": "+25% volume",
+   "baseline_a": 53.545636242505,
+   "baseline_a_p99_wait": 1923.9963941363585,
+   "baseline_b": 29.057073062402843,
+   "baseline_b_p99_wait": 5542.813928891375,
+   "opslens": 40.53475460803909,
+   "opslens_p99_wait": 3333.728463773651,
+   "opslens_minus_b": 11.477681545636244,
+   "ci_low": 4.95779724730317,
+   "ci_high": 17.99756584396932
+  },
+  {
+   "scenario": "10% absenteeism",
+   "baseline_a": 20.324977817213842,
+   "baseline_a_p99_wait": 1074.4468267291852,
+   "baseline_b": 9.889086069210293,
+   "baseline_b_p99_wait": 1512.785803829313,
+   "opslens": 3.6845607808340732,
+   "opslens_p99_wait": 1019.0288384571368,
+   "opslens_minus_b": -6.20452528837622,
+   "ci_low": -7.016396213744679,
+   "ci_high": -5.392654363007761
+  }
+ ],
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ]
+}

@@ -64,7 +64,9 @@ class RiskModel:
         return np.column_stack(columns)
 
     def raw(self, feats: pd.DataFrame) -> np.ndarray:
-        return self.booster.predict(self.matrix(feats))
+        # One thread: we score small batches, and parallel simulations would otherwise fight
+        # over every CPU core.
+        return self.booster.predict(self.matrix(feats), num_threads=1)
 
     def predict(self, feats: pd.DataFrame) -> np.ndarray:
         """Calibrated P(breach)."""

@@ -17,3 +17,10 @@ risk_refresh_min: 3                            # recompute risk scores every 3 s
 new_ticket_rescue: 0.3                         # rescue value of a ticket that arrived since the last scoring
 top_k_per_agent: 30                            # only the 30 best tickets per agent enter the solver
 time_budget_s: 1.0                             # solver time limit, then greedy fallback (logged)
+# v2 aging (chosen in M8 on validation days 36-42, normal volume AND +25% volume; see
+# eval/parts/design_v2.json): v1 aged per hour and failed the +25% stress test on the test days.
+# v2 aging 3.0 per SLA: validation 2.22% breaches (B 5.94%), +25% volume 12.82% (B 16.55%).
+aging_in_sla_units: true
+aging_per_sla: 3.0
+aging_cap: 1.0
+max_late_min: 240

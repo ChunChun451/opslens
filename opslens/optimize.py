@@ -59,12 +59,26 @@ class SolveStats:
 
 
 def ticket_value(priority: str, tier: str, order_value: float, rescue: float, waited_min: float,
-                 w: dict) -> float:
-    """Value of serving this ticket now (before agent-specific costs)."""
+                 w: dict, sla_min: float | None = None) -> float:
+    """Value of serving this ticket now (before agent-specific costs).
+
+    Two ways to value time already waited (config `aging_in_sla_units`):
+    - v1 (False): +aging_per_hour per hour waited; guard after max_wait_min of waiting.
+    - v2 (True): +aging_per_sla per SLA-length waited, capped at aging_cap — a P1 (60-min SLA)
+      ages 24× faster than a P3 (24 h), and a ticket already past its SLA stops gaining, so lost
+      tickets cannot crowd out tickets that can still be saved. The guard starts when a ticket
+      is max_late_min past its SLA. v1 failed the +25% volume stress test (see PROGRESS.md, M8).
+    """
     impact = 1.0 + (w["gold_weight"] - 1.0 if tier == "gold" else 0.0)
     impact += w["order_value_weight"] * math.log1p(order_value / 350.0)
-    value = w["urgency_weight"][priority] * impact * (max(rescue, w["rescue_floor"]) + w["aging_per_hour"] * waited_min / 60.0)
-    if waited_min >= w["max_wait_min"]:
+    if w.get("aging_in_sla_units") and sla_min:
+        aging = w["aging_per_sla"] * min(waited_min / sla_min, w["aging_cap"])
+        guard = waited_min - sla_min >= w["max_late_min"]
+    else:
+        aging = w["aging_per_hour"] * waited_min / 60.0
+        guard = waited_min >= w["max_wait_min"]
+    value = w["urgency_weight"][priority] * impact * (max(rescue, w["rescue_floor"]) + aging)
+    if guard:
         value += w["starvation_bonus"]  # the guard: never leave a customer behind
     return value
 

@@ -1,0 +1,304 @@
+"""M8: one command reproduces every number → eval/results.json and docs/NUMBERS.md.
+
+Run:  mingw32-make eval            (or .venv/Scripts/python.exe eval/run_eval.py)
+      ... run_eval.py --assemble   (only rebuild results.json + NUMBERS.md from eval/parts/)
+      ... run_eval.py --blind      (also re-run the 35-minute blind recall test)
+
+Steps (each writes eval/parts/<name>.json):
+  classification → patterns → risk → forecast → opslens (test-day comparison) → ablations
+  [→ blind]. Then everything is mapped into the schema of opslens/results_schema.py
+  (validated by pydantic) and NUMBERS.md is generated from results.json — never typed by hand.
+The LLM calls in classification come from the SQLite cache, so a re-run needs no network.
+"""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from opslens.config import load_config  # noqa: E402
+from opslens.ingest import load_history  # noqa: E402
+from opslens.optimize import Candidate, SolveStats, solve  # noqa: E402
+from opslens.results_schema import Results  # noqa: E402
+
+PARTS = ROOT / "eval" / "parts"
+STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
+         ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
+         ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py")]
+
+
+def run_steps(with_blind: bool) -> dict[str, float]:
+    timings = {}
+    steps = STEPS + ([("blind", "eval/run_blind.py")] if with_blind else [])
+    for name, script in steps:
+        started = time.perf_counter()
+        print(f"== {name}", flush=True)
+        subprocess.run([sys.executable, script], cwd=ROOT, check=True)
+        timings[name] = round(time.perf_counter() - started, 1)
+    return timings
+
+
+def part(name: str) -> dict:
+    return json.loads((PARTS / f"{name}.json").read_text(encoding="utf-8"))
+
+
+def scale_test() -> dict:
+    """Optimiser on 5,000 waiting tickets × 500 free agents (top-30 tickets per agent)."""
+    rng = np.random.default_rng(0)
+    agents = [f"a{i}" for i in range(500)]
+    cands = [Candidate(int(t), a, float(rng.uniform(0.05, 3)), False, "x", "")
+             for a in agents for t in rng.choice(5000, 30, replace=False)]
+    started = time.perf_counter()
+    chosen = solve(cands, {a: 1 for a in agents}, 5.0, SolveStats())
+    return {"tickets": 5000, "agents": 500, "edges": len(cands), "assigned": len(chosen),
+            "seconds": round(time.perf_counter() - started, 3)}
+
+
+def delay_decomposition() -> dict:
+    """Where a ticket's time goes, per owning team (history days 1-42): waiting for the first
+    agent, being worked on, and everything after the first pickup (transfers, reopens, re-queues)."""
+    from opslens.classify import TEAM_OF
+    h = load_history()
+    h = h[h["day"] <= load_config("calendar")["splits"]["validation_last_day"]]
+    h = h.assign(team=h["final_category"].map(TEAM_OF))
+    out = {}
+    for team, g in h.groupby("team"):
+        wait, handle, total = g["wait_min"].mean(), g["handled_min"].mean(), g["resolution_min"].mean()
+        out[team] = {"waiting": round(float(wait), 1), "handling": round(float(handle), 1),
+                     "after_first_pickup": round(float(max(total - wait - handle, 0.0)), 1)}
+    return out
+
+
+def v1_record() -> dict:
+    """Results of the first OpsLens policy (v1), kept on purpose."""
+    if not (PARTS / "ablations_v1.json").exists():
+        return {}
+    abl, sim = part("ablations_v1"), part("sim_v1")
+    breach = {k: v["kpis"]["turnaround.breach_pct"]["mean"] for k, v in sim["policies"].items()}
+    return {"test_breach_pct": breach, "stress": abl["stress"], "ablations": abl["ablations"],
+            "note": "v1 aged tickets per hour; under +25% volume old lost tickets crowded out savable P1s."}
+
+
+def git_commit() -> str:
+    try:
+        return subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
+                              text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+
+
+def assemble(timings: dict[str, float]) -> dict:
+    cal = load_config("calendar")
+    sp = cal["splits"]
+    cls, pat, rsk, fc, sim, abl, blind = (part(n) for n in
+                                           ("classification", "patterns", "risk", "forecast", "sim", "ablations", "blind"))
+    tuning = part("tuning") if (PARTS / "tuning.json").exists() else {}
+    agents = pd.read_csv(ROOT / "data" / "generated" / "agents.csv")
+    names = dict(zip(agents["agent_id"], agents["name"]))
+    n_tickets = int(sum(1 for _ in open(ROOT / "data" / "generated" / "history.csv", encoding="utf-8")) - 1)
+
+    day0 = (sim["replay"]["day"] - 1) * 1440
+    replay = {**sim["replay"], "start_minute": day0 + 18 * 60}
+    solver_ms = [s["median_ms"] for s in sim["solver"]]
+    blind_s = blind["summary"]
+    results = {
+        "meta": {"fixture": False, "generated_at": datetime.now().isoformat(timespec="seconds"),
+                 "git_commit": git_commit(), "data_seed": int(load_config("generator")["seed"]), "n_tickets": n_tickets,
+                 "start_date": cal["start_date"], "days": cal["days"], "train_days": [1, sp["train_last_day"]],
+                 "validation_days": [sp["train_last_day"] + 1, sp["validation_last_day"]],
+                 "test_days": [sp["validation_last_day"] + 1, sp["test_last_day"]],
+                 "run_seconds": float(sum(timings.values()))},
+        "sim": {"seeds": sim["seeds"], "test_days": sim["test_days"], "policies": sim["policies"],
+                "comparisons": sim["comparisons"], "replay": replay},
+        "patterns": {"cards": pat["cards"], "recall": pat["recall"],
+                     "blind_recall": {"sets": blind_s["sets"], "planted": blind_s["planted"], "found": blind_s["found"],
+                                      "found_pct": blind_s["found_pct"], "diagnosed_pct": blind_s["diagnosed_pct"],
+                                      "unplanted_cards_per_set": blind_s["unplanted_cards_per_set"],
+                                      "clean_set_cards": blind_s["clean_set_cards"]},
+                     "live_detection_latency_min": pat["live_detection_latency_min"],
+                     "delay_decomposition": delay_decomposition()},
+        "classification": {"accuracy_local": cls["accuracy_local"], "accuracy_cascade": cls["accuracy_cascade"],
+                           "accuracy_llm_sample": cls.get("accuracy_llm_sample"), "pct_sent_to_llm": cls["pct_sent_to_llm"],
+                           "transfers_avoided_per_100": cls["transfers_avoided_per_100"], "confusion": cls["confusion"],
+                           "clusters": cls["clusters"]},
+        "forecast": {"wape_model": fc["metrics"]["wape_model"], "wape_naive": fc["metrics"]["wape_naive"],
+                     "coverage_80": fc["metrics"]["coverage_80"], "coverage_90": fc["metrics"]["coverage_90"],
+                     "horizon": fc["horizon"],
+                     "bottlenecks": [{"team": b["team"], "start": b["start"], "end": b["end"], "text": b["text"],
+                                      "peak_gap_agents": b["peak_gap_agents"], "agent_hours_short": b["agent_hours_short"]}
+                                     for b in sorted(fc["bottlenecks"], key=lambda b: -b["agent_hours_short"])[:12]]},
+        "risk": {"auc": rsk["test"]["auc"], "pr_auc": rsk["test"]["pr_auc"], "top10_precision": rsk["test"]["top10_precision"],
+                 "brier": rsk["test"]["brier"], "base_rate": rsk["test"]["base_rate"], "calibration": rsk["test"]["calibration"],
+                 "at_risk": rsk["at_risk"], "realdata_auc": rsk["realdata"]["auc"], "realdata_n": rsk["realdata"]["n"]},
+        "recommendations": {
+            "assignments": [{"ticket_id": d["ticket_id"], "agent_id": d["agent_id"], "agent_name": names.get(d["agent_id"], d["agent_id"]),
+                             "reason": d["reason"], "value": d["value"]} for d in sim["decisions"][:15]],
+            "staffing_moves": [{"text": f"{names.get(m['agent_id'], m['agent_id'])} ({m['agent_id']}, Team {m['team']}): {m['change']}, "
+                                        f"days {plan['first_day']}-{plan['last_day']}",
+                                "team_from": m["team"], "team_to": m["team"], "agents": [m["agent_id"]],
+                                "when": f"days {plan['first_day']}-{plan['last_day']}", "expected_effect": {}}
+                               for plan in fc["plans"] for m in plan["moves"]],
+        },
+        "ablations": [{k: a[k] for k in ("key", "label", "breach_pct", "p90_resolution_min", "delta_breach_vs_full")}
+                      for a in abl["ablations"]],
+        "sensitivity": abl["sensitivity"],
+        "stress": abl["stress"],
+        "speed": {"pipeline_seconds": float(sum(timings.values())), "optimizer_ms_median": float(np.median(solver_ms)),
+                  "optimizer_ms_max": float(max(s["max_ms"] for s in sim["solver"])), "scale_test": scale_test()},
+        "details": {
+            "step_seconds": timings,
+            "classification": cls["details"],
+            "patterns": {"diagnosed": pat["diagnosed"], "unplanted_findings": pat["unplanted_findings"],
+                         "explained_anomalies": pat["explained_anomalies"],
+                         "live_false_alerts_per_week": pat["live_false_alerts_per_week"]},
+            "blind": {"by_type": blind_s["by_type"], "clean_set_cards": blind["clean_set_cards"]},
+            "risk": {"at_arrival": rsk["at_arrival"], "rules": rsk["rules"], "realdata": rsk["realdata"],
+                     "feature_gain": rsk["feature_gain"]},
+            "forecast": {**fc["metrics"], "plans": fc["plans"]},
+            "ablations": abl["ablations"],
+            "tuning": tuning,
+            "weights": sim["weights"],
+            # The honest record: policy v1 failed the +25% volume stress test on the test days;
+            # v2 was then designed and chosen on validation days only (design_v2), and the test
+            # days were re-run once.
+            "v1_record": v1_record(),
+            "design_v2": part("design_v2") if (PARTS / "design_v2.json").exists() else {},
+        },
+    }
+    results["brief"] = make_brief(results)
+    Results.model_validate(results)  # fails loudly if anything drifted from the contract
+    return results
+
+
+def make_brief(r: dict) -> dict:
+    """LLM brief with number keys (opslens/brief.py); template if the LLM is unavailable."""
+    from opslens.brief import write_brief
+    from opslens.llm.client import build_client
+
+    try:
+        client = build_client()
+    except Exception:  # no keys / no network: the template is always available
+        client = None
+    return write_brief(r, client)
+
+
+def template_brief(r: dict) -> dict:
+    """Template brief (the LLM version with number keys comes in M10). Numbers are filled from
+    the results by key, so the text can never contain a number we did not compute."""
+    keys = {
+        "a": "sim.policies.baseline_a.kpis.turnaround.breach_pct.mean",
+        "b": "sim.policies.baseline_b.kpis.turnaround.breach_pct.mean",
+        "o": "sim.policies.opslens.kpis.turnaround.breach_pct.mean",
+    }
+    pol = r["sim"]["policies"]
+    vals = {"a": pol["baseline_a"]["kpis"]["turnaround.breach_pct"]["mean"],
+            "b": pol["baseline_b"]["kpis"]["turnaround.breach_pct"]["mean"],
+            "o": pol["opslens"]["kpis"]["turnaround.breach_pct"]["mean"]}
+    text = (f"On the 14 held-out test days, OpsLens breached {vals['o']:.1f}% of SLAs, against {vals['a']:.1f}% "
+            f"for first-in-first-out and {vals['b']:.1f}% for priority-first routing.")
+    return {"text": text, "source": "template", "numbers_used": list(keys.values())}
+
+
+def fmt(x: float, nd: int = 2) -> str:
+    return f"{x:,.{nd}f}"
+
+
+def numbers_md(r: dict) -> str:
+    """docs/NUMBERS.md — every headline number, generated from results.json."""
+    pol = r["sim"]["policies"]
+    k = lambda p, name: pol[p]["kpis"][name]  # noqa: E731
+    ci = {(c["baseline"], c["kpi"]): c for c in r["sim"]["comparisons"]}
+    lines = [
+        "# OpsLens — the numbers", "",
+        f"Generated from `eval/results.json` on {r['meta']['generated_at']} (commit {r['meta']['git_commit']}). "
+        "Do not edit by hand: run `mingw32-make eval`.", "",
+        f"Data: {r['meta']['n_tickets']:,} tickets over {r['meta']['days']} days; train days {r['meta']['train_days']}, "
+        f"validation {r['meta']['validation_days']}, test {r['meta']['test_days']}. Simulator seeds {r['sim']['seeds']}.", "",
+        "## Baseline vs OpsLens (test days, mean ± std over seeds)", "",
+        "| KPI | Baseline A (FIFO) | Baseline B (priority) | OpsLens | OpsLens − B (95% CI) |",
+        "|---|---|---|---|---|",
+    ]
+    for name, label in [("turnaround.breach_pct", "SLA breach %"), ("turnaround.p90_resolution_min", "P90 resolution (min)"),
+                        ("turnaround.mean_wait_min", "Mean wait (min)"), ("turnaround.max_backlog", "Max backlog (tickets)"),
+                        ("productivity.transfers_per_100", "Transfers per 100"), ("productivity.tickets_per_agent_hour", "Tickets per agent-hour"),
+                        ("quality.reopen_rate_pct", "Reopen rate %"), ("quality.p99_wait_min", "P99 wait (min)"),
+                        ("quality.load_fairness_std", "Load fairness (std of utilisation)"),
+                        ("segment.p1_breach_pct", "P1 breach %"), ("segment.hindi_breach_pct", "Hindi customers' breach %")]:
+        c = ci[("baseline_b", name)]
+        lines.append(f"| {label} | {fmt(k('baseline_a', name)['mean'])} ± {fmt(k('baseline_a', name)['std'])} | "
+                     f"{fmt(k('baseline_b', name)['mean'])} ± {fmt(k('baseline_b', name)['std'])} | "
+                     f"**{fmt(k('opslens', name)['mean'])}** ± {fmt(k('opslens', name)['std'])} | "
+                     f"{c['mean_diff']:+.2f} [{c['ci_low']:+.2f}, {c['ci_high']:+.2f}] |")
+    c_a = ci[("baseline_a", "turnaround.breach_pct")]
+    lines += ["", f"OpsLens − Baseline A, breach %: {c_a['mean_diff']:+.2f} [{c_a['ci_low']:+.2f}, {c_a['ci_high']:+.2f}].", "",
+              "## Which part creates the gain (ablations, test days)", "", "| Variant | Breach % | Δ vs full | P90 (min) |", "|---|---|---|---|"]
+    for a in r["details"]["ablations"]:
+        lines.append(f"| {a['label']} | {fmt(a['breach_pct']['mean'])} | {a['delta_breach_vs_full']:+.2f} "
+                     f"[{a['ci_low']:+.2f}, {a['ci_high']:+.2f}] | {fmt(a['p90_resolution_min']['mean'], 1)} |")
+    lines += ["", "## Stress tests (conditions never seen in training)", "", "| Scenario | Baseline A | Baseline B | OpsLens | OpsLens − B |", "|---|---|---|---|---|"]
+    for s in r["stress"]:
+        lines.append(f"| {s['scenario']} | {fmt(s['baseline_a'])}% | {fmt(s['baseline_b'])}% | **{fmt(s['opslens'])}%** | "
+                     f"{s['opslens_minus_b']:+.2f} [{s['ci_low']:+.2f}, {s['ci_high']:+.2f}] |")
+    lines += ["", "## Gold-customer weight sensitivity", "", "| Gold weight | Breach % (all) | Breach % (gold) |", "|---|---|---|"]
+    for s in r["sensitivity"]:
+        lines.append(f"| ×{s['gold_weight']} | {fmt(s['breach_pct'])} | {fmt(s['gold_breach_pct'])} |")
+    pat, blind = r["patterns"], r["patterns"]["blind_recall"]
+    cls, fc, rk = r["classification"], r["forecast"], r["risk"]
+    d = r["details"]
+    lines += [
+        "", "## Patterns", "",
+        f"- Planted problems (main data): found {pat['recall']['found']}/{pat['recall']['planted']}, "
+        f"diagnosed {d['patterns']['diagnosed']}/{pat['recall']['planted']}; false alarms {pat['recall']['false_alarms']}.",
+        f"- Blind test: {blind['found']}/{blind['planted']} random plants found ({fmt(blind['found_pct'], 1)}%) over "
+        f"{blind['sets']} datasets; diagnosed {fmt(blind['diagnosed_pct'], 1)}%.",
+        f"- Live detection of the unseen day-47 surge: {fmt(pat['live_detection_latency_min'], 0)} min; "
+        f"false alerts {fmt(d['patterns']['live_false_alerts_per_week'], 1)} per week.",
+        "", "## Classification (test days)", "",
+        f"- Menu choice {fmt(100 * d['classification']['menu_choice_accuracy'], 1)}% → local {fmt(100 * cls['accuracy_local'], 2)}% "
+        f"→ cascade {fmt(100 * cls['accuracy_cascade'], 2)}%; LLM alone {fmt(100 * cls['accuracy_llm_sample'], 1)}% (400 tickets).",
+        f"- Sent to the LLM: {fmt(cls['pct_sent_to_llm'], 2)}%. Wrong-team routing per 100: "
+        f"{fmt(d['classification']['misrouted_per_100_menu'])} → {fmt(d['classification']['misrouted_per_100_opslens'])}.",
+        "", "## Risk model (test days)", "",
+        f"- AUC {fmt(rk['auc'], 3)} (time-left rule {fmt(d['risk']['rules']['time_left_auc'], 3)}), PR-AUC {fmt(rk['pr_auc'], 3)}, "
+        f"top-10% precision {fmt(rk['top10_precision'], 3)}, Brier {fmt(rk['brier'], 4)}; at arrival AUC {fmt(d['risk']['at_arrival']['auc'], 3)}.",
+        f"- Real ServiceNow data (UCI, {rk['realdata_n']:,} test incidents): AUC {fmt(rk['realdata_auc'], 3)} "
+        f"vs priority rule {fmt(d['risk']['realdata']['priority_rule_auc'], 3)}.",
+        "", "## Forecast (test days)", "",
+        f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
+        f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
+        "", "## Speed", "",
+        f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
+        f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
+        f"{r['speed']['scale_test']['seconds']} s.",
+        f"- Full evaluation pipeline: {fmt(r['speed']['pipeline_seconds'] / 60, 1)} min.", "",
+    ]
+    return "\n".join(lines)
+
+
+def main() -> int:
+    timings: dict[str, float] = {}
+    if "--assemble" not in sys.argv:
+        timings = run_steps(with_blind="--blind" in sys.argv)
+    elif (PARTS / "timings.json").exists():
+        timings = json.loads((PARTS / "timings.json").read_text(encoding="utf-8"))
+    if timings:
+        (PARTS / "timings.json").write_text(json.dumps(timings, indent=1), encoding="utf-8")
+    results = assemble(timings)
+    (ROOT / "eval" / "results.json").write_text(json.dumps(results, indent=1, default=str), encoding="utf-8")
+    (ROOT / "docs" / "NUMBERS.md").write_text(numbers_md(results), encoding="utf-8")
+    print("wrote eval/results.json and docs/NUMBERS.md")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

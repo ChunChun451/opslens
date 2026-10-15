@@ -71,3 +71,14 @@ def test_rare_agent_is_never_idle_with_only_common_work() -> None:
     world = make_world([0, 0], [10, 10], [agent("kavita", {"refund"}, ("en", "hi"))], language=["en", "en"])
     out, _ = run_policy(world, OpsLensSettings(use_risk=False, use_scarcity=True))
     assert sorted(out["resolution_min"].tolist()) == [10, 20]  # she works through both, never idle
+
+
+def test_v2_aging_is_in_sla_units_and_capped() -> None:
+    w = {**WEIGHTS, "aging_in_sla_units": True, "aging_per_sla": 1.0, "aging_cap": 1.0, "max_late_min": 240}
+    fresh_p1 = ticket_value("P1", "normal", 350, 0.0, 30, w, sla_min=60)    # half its SLA waited
+    old_p3 = ticket_value("P3", "normal", 350, 0.0, 600, w, sla_min=1440)   # 10 h of a 24 h SLA
+    assert fresh_p1 > old_p3  # P1 time is 24x more precious
+    lost = ticket_value("P2", "normal", 350, 0.0, 400, w, sla_min=240)       # 160 min past SLA
+    more_lost = ticket_value("P2", "normal", 350, 0.0, 470, w, sla_min=240)  # 230 min past SLA
+    assert lost == more_lost  # stops gaining once past its SLA (cap)
+    assert ticket_value("P2", "normal", 350, 0.0, 481, w, sla_min=240) > lost + 40  # guard: 241 min late

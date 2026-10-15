@@ -1,0 +1,76 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "rows": [
+  {
+   "variant": "Baseline B",
+   "normal breach_pct": 5.938631599008958,
+   "normal p99_wait_min": 735.3006570883832,
+   "normal p1_breach_pct": 8.52384062704115,
+   "+25% volume breach_pct": 16.54619208832769,
+   "+25% volume p99_wait_min": 2114.039109320039,
+   "+25% volume p1_breach_pct": 12.288505145648003
+  },
+  {
+   "variant": "v1 (aging per hour)",
+   "normal breach_pct": 3.7469029921860115,
+   "normal p99_wait_min": 331.024533799562,
+   "normal p1_breach_pct": 6.9997822773786185,
+   "+25% volume breach_pct": 28.425900509348214,
+   "+25% volume p99_wait_min": 934.4894462850134,
+   "+25% volume p1_breach_pct": 42.56061398918542
+  },
+  {
+   "variant": "v2 aging 0.5 per SLA",
+   "normal breach_pct": 3.4152849247188874,
+   "normal p99_wait_min": 590.5725140646882,
+   "normal p1_breach_pct": 4.974961898541259,
+   "+25% volume breach_pct": 16.79629121298076,
+   "+25% volume p99_wait_min": 1686.338570652807,
+   "+25% volume p1_breach_pct": 14.730507587650445
+  },
+  {
+   "variant": "v2 aging 1.0 per SLA",
+   "normal breach_pct": 2.931198780255384,
+   "normal p99_wait_min": 570.0729338691258,
+   "normal p1_breach_pct": 4.768125408229916,
+   "+25% volume breach_pct": 14.722298471955348,
+   "+25% volume p99_wait_min": 1693.5385118874103,
+   "+25% volume p1_breach_pct": 10.893075178789465
+  },
+  {
+   "variant": "v2 aging 2.0 per SLA",
+   "normal breach_pct": 2.2717743472460454,
+   "normal p99_wait_min": 520.2177218240421,
+   "normal p1_breach_pct": 4.604833442194644,
+   "+25% volume breach_pct": 13.426053008814469,
+   "+25% volume p99_wait_min": 1699.281141803048,
+   "+25% volume p1_breach_pct": 9.427873713588
+  },
+  {
+   "variant": "v2 aging 3.0 per SLA",
+   "normal breach_pct": 2.2222222222222223,
+   "normal p99_wait_min": 521.4284339667383,
+   "normal p1_breach_pct": 4.713694752884826,
+   "+25% volume breach_pct": 12.816055143806997,
+   "+25% volume p99_wait_min": 1693.8404630564128,
+   "+25% volume p1_breach_pct": 8.669108669108669
+  },
+  {
+   "variant": "v2 aging 4.0 per SLA",
+   "normal breach_pct": 2.2222222222222228,
+   "normal p99_wait_min": 540.6918589618103,
+   "normal p1_breach_pct": 4.757239277160898,
+   "+25% volume breach_pct": 13.526702656540701,
+   "+25% volume p99_wait_min": 1698.3073899253393,
+   "+25% volume p1_breach_pct": 9.122623408337693
+  }
+ ]
+}
