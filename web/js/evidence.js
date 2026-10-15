@@ -114,8 +114,11 @@ function evidenceHtml(path, unit, value) {
   } else {
     valueText = String(value);
   }
+  // The unrounded value, cut to 6 significant digits when it is very long (2.3791…).
+  let rawText = String(value);
+  if (typeof value === "number" && rawText.length > 10) rawText = value.toPrecision(6) + "…";
   const raw = typeof value === "number" && String(value) !== valueText
-    ? `<span class="pop-raw">raw ${escapeHtml(String(value))}</span>`
+    ? `<span class="pop-raw" title="${escapeHtml(String(value))}">raw ${escapeHtml(rawText)}</span>`
     : "";
   const lines = spreadLines(path, unit).map((line) => `<li>${line}</li>`).join("");
   const fixtureTag = state.results.meta.fixture ? ' <strong class="pop-fixture">FIXTURE</strong>' : "";

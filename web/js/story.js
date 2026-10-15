@@ -93,14 +93,19 @@ function clearHighlight() {
 function renderCard() {
   const s = STEPS[step];
   const card = document.getElementById("story-card");
+  // Progress dashes: one per step, the ones done so far filled in.
+  const dots = STEPS.map((_, i) => `<span class="${i <= step ? "on" : ""}"></span>`).join("");
   card.innerHTML = `
-    <div class="story-step">Story mode · step ${step + 1} of ${STEPS.length}</div>
+    <div class="story-top">
+      <div class="story-dots" aria-hidden="true">${dots}</div>
+      <div class="story-step">Story mode · step ${step + 1} of ${STEPS.length}</div>
+    </div>
     <h3>${escapeHtml(s.title)}</h3>
     <p>${s.body()}</p>
     <div class="btn-row">
-      <button type="button" class="btn" id="story-back" ${step === 0 ? "disabled" : ""}>Back</button>
       <button type="button" class="btn btn-primary" id="story-next">${step === STEPS.length - 1 ? "Finish" : "Next"}</button>
-      <button type="button" class="btn" id="story-close">Close (Esc)</button>
+      <button type="button" class="btn" id="story-back" ${step === 0 ? "disabled" : ""}>Back</button>
+      <button type="button" class="btn" id="story-close" style="margin-left: auto">Close · Esc</button>
     </div>`;
   card.hidden = false;
   card.querySelector("#story-next").focus();

@@ -8,37 +8,34 @@
 // OpsLens − Baseline A = −10.7 pts, CI [−12.9, −8.5]. A CI that includes zero (P99 wait vs
 // Baseline A: −84 [−276, +107]) is shown in grey: no clear difference.
 
-import { state, policyKeys, policyLabel } from "../data.js";
+import { state, policyKeys } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle } from "../charts.js";
-import { policyName, missing } from "../ui.js";
+import { pageHeader, card, missing, policyName, shortLabel, deltaPill } from "../ui.js";
 import { replayHtml, initReplay } from "../replay.js";
 import { escapeHtml, kpiInfo, spreadUnit, unitSuffix, KPI_GROUPS } from "../format.js";
 
 export function render(section) {
   const sim = state.results.sim;
-  const head = `<div class="tab-head"><div>
-      <h2>Baseline vs OpsLens</h2>
-      <p>Held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}, seeds ${evText("sim.seeds")}.
-         Same tickets, same luck (common random numbers), same decision cadence, same agents and agent-hours.</p>
-    </div></div>`;
+  const head = pageHeader("Baseline vs OpsLens",
+    `Held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}, simulator seeds ${evText("sim.seeds")}.
+     Same tickets, same luck (common random numbers), same decision cadence, same agents and agent-hours.`);
   if (!sim) {
     section.innerHTML = head + missing("The simulator comparison", "M7");
     return;
   }
   section.innerHTML = `${head}
-    <div class="panel" id="kpi-table-panel">
-      <h3>Results table</h3>
-      ${kpiTable(sim)}
-      <p class="panel-note">Bold = best policy on that row. Cells are mean ± standard deviation over seeds.
-         The last columns are paired differences with their 95% CI (same seed = same luck); grey = the CI
-         includes zero (no clear difference); — means not computed.</p>
+    <div class="grid cols-2 stretch">
+      ${card({ title: "SLA breach rate", sub: "Mean over seeds, whiskers = ± one standard deviation", body: `<div class="chart sm"><canvas id="cmp-breach"></canvas></div>` })}
+      ${card({ title: "P90 resolution time", sub: "Minutes; 90% of tickets are resolved faster", body: `<div class="chart sm"><canvas id="cmp-p90"></canvas></div>` })}
     </div>
-    <div class="grid-2">
-      <div class="panel"><h3>SLA breach rate (%)</h3><div class="chart-box"><canvas id="cmp-breach"></canvas></div></div>
-      <div class="panel"><h3>P90 resolution time (min)</h3><div class="chart-box"><canvas id="cmp-p90"></canvas></div></div>
-    </div>
-    ${sim.replay ? replayHtml() : `<div class="panel muted">No replay in the results file yet.</div>`}`;
+    ${card({
+      id: "kpi-table-panel",
+      title: "Every KPI, under the problem statement's three headings",
+      sub: "Mean ± standard deviation over seeds. Differences are paired over seeds with their 95% CI: green = clearly better, red = clearly worse, grey = the CI includes zero.",
+      body: kpiTable(sim),
+    })}
+    ${sim.replay ? replayHtml() : card({ body: `<p class="muted">No replay in the results file yet.</p>` })}`;
 
   kpiBarChart("cmp-breach", "turnaround.breach_pct");
   kpiBarChart("cmp-p90", "turnaround.p90_resolution_min");
@@ -61,7 +58,7 @@ function kpiTable(sim) {
     }
     entry.kpis.push(kpi);
   });
-  // One CI column per (policy, baseline) pair found in the comparisons.
+  // One difference column per (policy, baseline) pair found in the comparisons.
   const pairs = [];
   sim.comparisons.forEach((c) => {
     if (!pairs.some((p) => p.policy === c.policy && p.baseline === c.baseline)) {
@@ -70,14 +67,14 @@ function kpiTable(sim) {
   });
 
   const header = `<tr><th>KPI</th>
-      ${keys.map((k) => `<th class="num">${policyName(k)}</th>`).join("")}
-      ${pairs.map((p) => `<th class="num">${escapeHtml(policyLabel(p.policy))} − ${escapeHtml(policyLabel(p.baseline))}<div class="small">paired 95% CI</div></th>`).join("")}
+      ${keys.map((k) => `<th class="num">${policyName(k, shortLabel(k))}</th>`).join("")}
+      ${pairs.map((p) => `<th class="num">${escapeHtml(shortLabel(p.policy))} vs ${escapeHtml(shortLabel(p.baseline))}</th>`).join("")}
     </tr>`;
   const body = groups.map((g) => {
     const title = KPI_GROUPS[g.name] || g.name;
     const span = 1 + keys.length + pairs.length;
     const rows = g.kpis.map((kpi) => kpiRow(sim, kpi, keys, pairs)).join("");
-    return `<tr class="group-row"><th colspan="${span}">${escapeHtml(title)}</th></tr>${rows}`;
+    return `<tr class="group"><th colspan="${span}">${escapeHtml(title)}</th></tr>${rows}`;
   }).join("");
   return `<div class="table-wrap"><table class="kpi-table"><thead>${header}</thead><tbody>${body}</tbody></table></div>`;
 }
@@ -91,25 +88,24 @@ function kpiRow(sim, kpi, keys, pairs) {
     return `<td class="num ${k === best ? "best" : ""}">${ev(path + ".mean", info.unit, { bare: true })}
         <span class="pm">± ${ev(path + ".std", spreadUnit(info.unit), { bare: true })}</span></td>`;
   }).join("");
-  const ciCells = pairs.map((p) => {
+  const diffCells = pairs.map((p) => {
     const i = sim.comparisons.findIndex((c) => c.policy === p.policy && c.baseline === p.baseline && c.kpi === kpi);
     if (i < 0) {
       return `<td class="num muted">—</td>`;
     }
     const base = `sim.comparisons[${i}]`;
     const unit = spreadUnit(info.unit);
-    // A CI that includes zero means "no clear difference": shown in grey, not hidden.
     const c = sim.comparisons[i];
+    // A CI that includes zero means "no clear difference": shown quietly, not hidden.
     const unclear = c.ci_low <= 0 && c.ci_high >= 0;
-    return `<td class="num ${unclear ? "ci-unclear" : ""}">${ev(base + ".mean_diff", unit, { signed: true, bare: true })}
-        <span class="pm">[${ev(base + ".ci_low", unit, { signed: true, bare: true })},
-        ${ev(base + ".ci_high", unit, { signed: true, bare: true })}]</span></td>`;
+    return `<td class="num ${unclear ? "ci-unclear" : ""}">${deltaPill(base, unit, info.better)}
+        <span class="pm">[${ev(base + ".ci_low", unit, { signed: true, bare: true })}, ${ev(base + ".ci_high", unit, { signed: true, bare: true })}]</span></td>`;
   }).join("");
-  const direction = info.better === "lower" ? "lower is better" : info.better === "higher" ? "higher is better" : "";
+  const arrow = info.better === "lower" ? `<span class="better" title="lower is better">↓</span>`
+    : info.better === "higher" ? `<span class="better" title="higher is better">↑</span>` : "";
   return `<tr>
-      <td>${escapeHtml(info.label)}${suffix ? ` <span class="muted">(${escapeHtml(suffix)})</span>` : ""}
-        ${direction ? `<div class="small muted">${direction}</div>` : ""}</td>
-      ${cells}${ciCells}
+      <td>${escapeHtml(info.label)}${suffix ? ` <span class="muted">(${escapeHtml(suffix)})</span>` : ""}${arrow}</td>
+      ${cells}${diffCells}
     </tr>`;
 }
 
@@ -133,21 +129,24 @@ function kpiBarChart(canvasId, kpi) {
   const sim = state.results.sim;
   const keys = policyKeys().filter((k) => sim.policies[k].kpis[kpi]);
   const unit = kpiInfo(kpi).unit;
+  // Leave room above the tallest whisker (mean + std) so it is not cut off.
+  let top = 0;
+  keys.forEach((k) => { top = Math.max(top, sim.policies[k].kpis[kpi].mean + sim.policies[k].kpis[kpi].std); });
   makeChart(document.getElementById(canvasId), {
     type: "bar",
     data: {
-      labels: keys.map((k) => policyLabel(k)),
+      labels: keys.map((k) => shortLabel(k)),
       datasets: [{
         label: kpiInfo(kpi).label,
         data: keys.map((k) => sim.policies[k].kpis[kpi].mean),
         errors: keys.map((k) => sim.policies[k].kpis[kpi].std),
         backgroundColor: keys.map((k) => policyStyle(k).color),
-        borderRadius: 4,
-        maxBarThickness: 110,
+        borderRadius: 6,
+        maxBarThickness: 72,
       }],
     },
     options: {
-      scales: { y: { beginAtZero: true }, x: { grid: { display: false } } },
+      scales: { y: { beginAtZero: true, suggestedMax: top * 1.08 }, x: { grid: { display: false } } },
       plugins: { legend: { display: false } },
     },
     plugins: [errorBarsPlugin],

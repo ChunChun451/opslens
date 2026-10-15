@@ -2,28 +2,23 @@
 //
 // Why: "predict bottlenecks" means showing WHEN a team will run out of capacity, with honest
 // uncertainty. The band is the split-conformal 80% interval. The engine's bottleneck windows
-// (Erlang C on the upper band) are shaded red and listed below; single hours where the top of
-// the band (hi80) is above capacity get a small red dot.
+// (Erlang C on the upper band) are shaded red and listed below.
 //
 // Example (real results, Team B, Sat 24 Oct 18:00-23:00): shaded "bottleneck", listed as
 // "Team B short by up to 5.2 agents", 19.9 agent-hours short in total.
 
 import { state, teamNames } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { makeChart, shadeRanges, INK, ALERT, POLICY_STYLE } from "../charts.js";
-import { missing } from "../ui.js";
+import { makeChart, shadeRanges, INK, POLICY_STYLE } from "../charts.js";
+import { pageHeader, card, stat, missing } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 let selectedTeam = null;
 
 export function render(section) {
   const f = state.results.forecast;
-  const head = `<div class="tab-head"><div>
-      <h2>Forecast</h2>
-      <p>Agent-hours of work arriving per hour over the forecast horizon, with the 80% conformal
-         band. Red band = bottleneck flagged by the engine (Erlang C on the upper band).
-         Red dots = hours where the top of the band is above capacity.</p>
-    </div></div>`;
+  const head = pageHeader("Forecast",
+    "Work arriving per hour for each team, with the 80% conformal band, against the agent-hours on the roster.");
   if (!f) {
     section.innerHTML = head + missing("The forecast", "M6");
     return;
@@ -33,34 +28,26 @@ export function render(section) {
   const flagged = f.bottlenecks.length ? f.bottlenecks[0].team : null;
   selectedTeam = teams.includes(flagged) ? flagged : teams[0];
 
+  const picker = `<div class="segmented" role="group" aria-label="Team">
+      ${teams.map((t) => `<button type="button" data-team="${escapeHtml(t)}">Team ${escapeHtml(t)}</button>`).join("")}
+    </div>`;
   section.innerHTML = `${head}
-    <div class="grid-4">
-      <div class="panel"><div class="tile-label">WAPE, our model (test days)</div>
-        <div class="tile-value">${ev("forecast.wape_model", "frac_pct")}</div>
-        <div class="tile-sub">${noiseFloor()}</div></div>
-      <div class="panel"><div class="tile-label">WAPE, seasonal-naive baseline</div>
-        <div class="tile-value">${ev("forecast.wape_naive", "frac_pct")}</div>
-        <div class="tile-sub">same hour last week</div></div>
-      <div class="panel"><div class="tile-label">80% interval coverage</div>
-        <div class="tile-value">${ev("forecast.coverage_80", "frac_pct")}</div>
-        <div class="tile-sub">should be close to 80%</div></div>
-      <div class="panel"><div class="tile-label">90% interval coverage</div>
-        <div class="tile-value">${ev("forecast.coverage_90", "frac_pct")}</div>
-        <div class="tile-sub">should be close to 90%</div></div>
+    <div class="grid cols-4 stretch">
+      ${card({ body: stat("Forecast error (WAPE)", ev("forecast.wape_model", "frac_pct"), noiseFloor()) })}
+      ${card({ body: stat("Seasonal-naive error", ev("forecast.wape_naive", "frac_pct"), "same hour last week (the baseline to beat)") })}
+      ${card({ body: stat("80% band coverage", ev("forecast.coverage_80", "frac_pct"), "should be close to 80%") })}
+      ${card({ body: stat("90% band coverage", ev("forecast.coverage_90", "frac_pct"), "should be close to 90%") })}
     </div>
-    <div class="panel" id="fc-panel">
-      <div class="tab-head">
-        <h3 id="fc-title"></h3>
-        <div class="btn-row" role="group" aria-label="Team">
-          ${teams.map((t) => `<button type="button" class="btn btn-small" data-team="${escapeHtml(t)}">Team ${escapeHtml(t)}</button>`).join("")}
-        </div>
-      </div>
-      <div class="chart-box tall"><canvas id="fc-chart" aria-label="Forecast demand and capacity"></canvas></div>
-      <p class="panel-note">Horizon ${evText("forecast.horizon[0].time")} to
-        ${evText(`forecast.horizon[${f.horizon.length - 1}].time`)}.
-        Click any point to see its numbers and its JSON path.</p>
-    </div>
-    ${bottleneckPanel(f)}`;
+    ${card({
+      id: "fc-panel",
+      title: "Demand vs capacity",
+      sub: `${evText("forecast.horizon[0].time", hourLabel(f.horizon[0].time))} to
+        ${evText(`forecast.horizon[${f.horizon.length - 1}].time`, hourLabel(f.horizon[f.horizon.length - 1].time))}
+        · shaded = bottleneck flagged by the engine (Erlang C on the upper band)`,
+      actions: picker,
+      body: `<div class="chart lg"><canvas id="fc-chart" aria-label="Forecast demand and capacity"></canvas></div>`,
+    })}
+    ${bottleneckCard(f)}`;
 
   section.querySelectorAll("[data-team]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -75,12 +62,12 @@ export function render(section) {
 function noiseFloor() {
   const d = state.results.details;
   if (d && d.forecast && typeof d.forecast.wape_noise_floor === "number") {
-    return `noise floor ${ev("details.forecast.wape_noise_floor", "frac_pct")} (no model can beat it)`;
+    return `noise floor ${ev("details.forecast.wape_noise_floor", "frac_pct")}: random arrivals, no model can beat it`;
   }
   return "lower is better";
 }
 
-// "2026-10-26T19:00" -> "Mon 19:00"
+// "2026-10-26T19:00" -> "Mon 19:00" (the look only; the popover keeps the raw time)
 function hourLabel(iso) {
   const weekday = new Date(iso).toLocaleDateString("en-GB", { weekday: "short" });
   return weekday + " " + iso.slice(11, 16);
@@ -88,11 +75,8 @@ function hourLabel(iso) {
 
 function drawChart(section) {
   const f = state.results.forecast;
-  section.querySelector("#fc-title").textContent = "Team " + selectedTeam + ": demand vs capacity";
   section.querySelectorAll("[data-team]").forEach((button) => {
-    const active = button.dataset.team === selectedTeam;
-    button.classList.toggle("btn-primary", active);
-    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute("aria-pressed", String(button.dataset.team === selectedTeam));
   });
 
   // Keep each point's index in the full horizon list, so clicks map to the right JSON path.
@@ -101,8 +85,7 @@ function drawChart(section) {
     if (p.team === selectedTeam) points.push({ p, i });
   });
   // Only the engine's bottleneck windows are shaded: they use Erlang C (waiting time), which is
-  // stricter and more meaningful than "band above capacity" for a single hour (shown as dots).
-  const over = points.map(({ p }) => p.hi80 > p.capacity_hours);
+  // stricter and more meaningful than "band above capacity" for a single hour.
   const ranges = bottleneckRanges(points);
 
   const datasets = [
@@ -111,25 +94,26 @@ function drawChart(section) {
       label: "80% interval",
       data: points.map(({ p }) => p.hi80),
       borderWidth: 0,
-      backgroundColor: "rgba(42, 120, 214, 0.18)",
+      backgroundColor: "rgba(42, 120, 214, 0.14)",
       fill: "-1", // fill down to the lo80 line = the band
-      pointRadius: over.map((isOver) => (isOver ? 4 : 0)),
-      pointBackgroundColor: ALERT,
+      pointRadius: 0,
     },
     {
       label: "Forecast demand",
       data: points.map(({ p }) => p.demand_hours),
       borderColor: POLICY_STYLE.opslens.color,
-      borderWidth: 2,
+      borderWidth: 2.5,
       pointRadius: 0,
+      tension: 0.3,
     },
     {
       label: "Capacity",
       data: points.map(({ p }) => p.capacity_hours),
       borderColor: INK,
-      borderWidth: 2,
-      borderDash: [8, 5],
+      borderWidth: 1.5,
+      borderDash: [6, 4],
       pointRadius: 0,
+      stepped: "middle", // capacity changes in whole hours: draw it as steps
     },
   ];
   const fields = ["lo80", "hi80", "demand_hours", "capacity_hours"];
@@ -138,7 +122,7 @@ function drawChart(section) {
       label: "Actual",
       data: points.map(({ p }) => p.actual_hours),
       borderColor: "#eb6834",
-      borderWidth: 2,
+      borderWidth: 1.5,
       pointRadius: 0,
     });
     fields.push("actual_hours");
@@ -150,7 +134,7 @@ function drawChart(section) {
     options: {
       interaction: { mode: "index", intersect: false },
       scales: {
-        x: { ticks: { maxTicksLimit: 12, maxRotation: 0 }, grid: { display: false } },
+        x: { ticks: { maxTicksLimit: 9, maxRotation: 0 }, grid: { display: false } },
         y: { beginAtZero: true, title: { display: true, text: "agent-hours per hour" } },
       },
       plugins: {
@@ -188,32 +172,45 @@ function bottleneckRanges(points) {
     if (b.team !== selectedTeam) return;
     const inside = points.map(({ p }) => p.time >= b.start && p.time < b.end);
     runsOf(inside, "bottleneck").forEach((r) => {
-      ranges.push({ ...r, color: "rgba(179, 18, 42, 0.18)" });
+      ranges.push({ ...r, color: "rgba(194, 43, 51, 0.12)" });
     });
   });
   return ranges;
 }
 
-function bottleneckPanel(f) {
+// Every bottleneck the engine flagged, biggest first, with the ones inside the chart marked.
+function bottleneckCard(f) {
   if (!f.bottlenecks.length) {
-    return `<div class="panel"><h3>Bottlenecks</h3><p class="muted">No bottleneck flagged in the forecast window.</p></div>`;
+    return card({ title: "Bottlenecks", body: `<p class="muted">No bottleneck flagged in the forecast window.</p>` });
   }
   const first = f.horizon.length ? f.horizon[0].time : "";
   const last = f.horizon.length ? f.horizon[f.horizon.length - 1].time : "";
-  const items = f.bottlenecks.map((b, i) => {
+  // Older results gave peak_rho; the real engine gives the agent gap instead. Show what exists.
+  const hasGap = f.bottlenecks.some((b) => typeof b.peak_gap_agents === "number");
+  const hasRho = f.bottlenecks.some((b) => typeof b.peak_rho === "number");
+  const rows = f.bottlenecks.map((b, i) => {
     const base = `forecast.bottlenecks[${i}]`;
-    const outside = b.end <= first || b.start > last;
-    // Older results gave peak_rho; the real engine gives the agent gap instead. Show what exists.
-    const size = [];
-    if (typeof b.peak_rho === "number") size.push(`peak ρ ${ev(base + ".peak_rho", "ratio")}`);
-    if (typeof b.peak_gap_agents === "number") size.push(`up to ${ev(base + ".peak_gap_agents", "num")} agents short`);
-    if (typeof b.agent_hours_short === "number") size.push(`${ev(base + ".agent_hours_short", "num")} agent-hours short in total`);
-    return `<li>
-        <strong>${evText(base + ".text")}</strong>
-        <div class="small muted">Team ${evText(base + ".team")} · ${evText(base + ".start")} to ${evText(base + ".end")}
-          ${size.length ? " · " + size.join(" · ") : ""}
-          ${outside ? " · outside the chart window" : ""}</div>
-      </li>`;
+    const inChart = !(b.end <= first || b.start > last);
+    return `<tr>
+        <td>${evText(base + ".text")}</td>
+        <td>${teamCell(base)}</td>
+        ${hasGap ? `<td class="num">${ev(base + ".peak_gap_agents", "num")}</td><td class="num">${ev(base + ".agent_hours_short", "num")}</td>` : ""}
+        ${hasRho ? `<td class="num">${ev(base + ".peak_rho", "ratio")}</td>` : ""}
+        <td>${inChart ? `<span class="pill">in chart</span>` : ""}</td>
+      </tr>`;
   }).join("");
-  return `<div class="panel" id="fc-bottlenecks"><h3>Bottlenecks flagged by the engine</h3><ul class="plain-list">${items}</ul></div>`;
+  return card({
+    id: "fc-bottlenecks",
+    title: "Bottlenecks flagged by the engine",
+    sub: "Hours where the forecast's upper band needs more agents than the roster has",
+    body: `<div class="table-wrap"><table>
+        <thead><tr><th>Where and when</th><th>Team</th>
+          ${hasGap ? `<th class="num">Peak gap (agents)</th><th class="num">Agent-hours short</th>` : ""}
+          ${hasRho ? `<th class="num">Peak ρ</th>` : ""}<th></th></tr></thead>
+        <tbody>${rows}</tbody></table></div>`,
+  });
+}
+
+function teamCell(base) {
+  return `Team ${evText(base + ".team")}`;
 }

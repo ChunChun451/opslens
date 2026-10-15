@@ -7,11 +7,11 @@
 // Every other file is in web/js/. Tabs live in web/js/tabs/, one file per tab.
 
 import { loadResults, state } from "./js/data.js";
-import { initEvidence, evText } from "./js/evidence.js";
+import { initEvidence, ev, evText } from "./js/evidence.js";
 import { setChartDefaults } from "./js/charts.js";
 import { initTabs } from "./js/router.js";
 import { initStory } from "./js/story.js";
-import { escapeHtml } from "./js/format.js";
+import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
   let loaded;
@@ -32,8 +32,14 @@ async function start() {
   document.getElementById("fixture-banner").hidden = !isFixture;
   document.body.classList.toggle("has-fixture", isFixture);
 
-  document.getElementById("data-source").innerHTML =
-    `Data: <code>${escapeHtml(state.source)}</code> · generated ${evText("meta.generated_at")}`;
+  // The status line: live or fixture, when the results were made, which days are held out.
+  const meta = state.results.meta;
+  document.getElementById("data-source").innerHTML = `
+    <span class="status-dot ${isFixture ? "fixture" : ""}"></span>
+    <strong>${isFixture ? "Fixture data" : "Live results"}</strong>
+    <span>· generated ${evText("meta.generated_at", fmtDateTime(meta.generated_at))}</span>
+    <span>· held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}</span>
+    <span title="${escapeHtml(state.source)}">· from <code>${escapeHtml(state.source)}</code></span>`;
 
   setChartDefaults();
   initEvidence(); // before story mode, so Esc closes the popover first
@@ -43,7 +49,7 @@ async function start() {
 
 function showLoadError(error) {
   document.getElementById("load-message").innerHTML = `
-    <h2>Could not load the results</h2>
+    <h2 class="card-title">Could not load the results</h2>
     <p>${escapeHtml(error.message)}</p>
     <p>Serve the repository root and open the dashboard from there:</p>
     <pre>.venv/Scripts/python.exe -m http.server 8765</pre>

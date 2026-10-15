@@ -9,7 +9,7 @@
 // ticket_id = number, created_at = opened_at, resolved_at = resolved_at, team = assignment_group.
 
 import { state } from "../data.js";
-import { backendMissing } from "../ui.js";
+import { pageHeader, card, backendMissing } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 // The fields OpsLens needs, and column names that usually mean the same thing.
@@ -39,24 +39,26 @@ let chosenFile = null;
 
 export function render(section) {
   section.innerHTML = `
-    <div class="tab-head"><div>
-      <h2>Upload data</h2>
-      <p>Run OpsLens on any helpdesk export. Pick a CSV, tell us which column is which, and run.</p>
-    </div></div>
-    <div class="panel" id="upload-panel">
-      <div class="btn-row">
-        <button type="button" class="btn" id="up-choose">Choose a CSV file</button>
-        <input type="file" id="up-file" accept=".csv,text/csv" hidden>
-        <button type="button" class="btn" id="up-uci">Use the UCI incident log example</button>
-        <span id="up-file-name" class="muted small"></span>
-      </div>
-      <div id="up-mapping" style="margin-top: 18px"></div>
-      <div id="up-result" style="margin-top: 16px"></div>
-    </div>
-    <div class="panel muted small">
-      The UCI ServiceNow incident log (CC BY 4.0) has a real SLA flag (<code>made_sla</code>),
-      priority, assignment group and reassignment count, so it shows the engine on data we did not generate.
-    </div>`;
+    ${pageHeader("Upload data", "Run OpsLens on any helpdesk export: pick a CSV, tell us which column is which, and run.")}
+    ${card({
+      id: "upload-panel",
+      body: `<div class="dropzone">
+          <div>
+            <div class="card-title">Your helpdesk export</div>
+            <div class="card-sub" id="up-file-name">A CSV with one row per ticket (or per ticket event)</div>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn" id="up-uci">Use the UCI example</button>
+            <button type="button" class="btn btn-primary" id="up-choose">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4.5M7.5 9L12 4.5 16.5 9"/><path d="M4.5 15v3.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V15"/></svg>Choose a CSV file</button>
+            <input type="file" id="up-file" accept=".csv,text/csv" hidden>
+          </div>
+        </div>
+        <div id="up-mapping"></div>
+        <div id="up-result" style="margin-top: 16px"></div>`,
+    })}
+    <p class="card-foot">The UCI ServiceNow incident log (CC BY 4.0) has a real SLA flag (<code>made_sla</code>),
+      priority, assignment group and reassignment count, so it shows the engine on data we did not generate.</p>`;
 
   // A real button (keyboard-friendly) that opens the hidden file picker.
   section.querySelector("#up-choose").addEventListener("click", () => section.querySelector("#up-file").click());
@@ -108,14 +110,14 @@ function showMapping(section, columns) {
     const guess = guessColumn(field, columns);
     const options = [`<option value="">${field.required ? "— choose —" : "— not in file —"}</option>`]
       .concat(columns.map((c) => `<option value="${escapeHtml(c)}" ${c === guess ? "selected" : ""}>${escapeHtml(c)}</option>`));
-    return `<label>${escapeHtml(field.label)}${field.required ? " *" : ""}
+    return `<label class="field"><span class="field-label">${escapeHtml(field.label)}${field.required ? " *" : ""}</span>
         <select data-field="${field.key}">${options.join("")}</select></label>`;
   }).join("");
   section.querySelector("#up-mapping").innerHTML = `
-    <h3>Column mapping</h3>
-    <p class="muted small">We guessed from the column names; fix any that are wrong. * = required.</p>
+    <div class="section-label" style="margin-top: 24px">Column mapping</div>
+    <p class="small muted" style="margin-bottom: 14px">We guessed from the column names; fix any that are wrong. * = required.</p>
     <div class="form-grid">${selects}</div>
-    <div class="btn-row" style="margin-top: 16px">
+    <div class="btn-row" style="margin-top: 20px">
       <button type="button" class="btn btn-primary" id="up-run">Run OpsLens on this data</button>
     </div>`;
   section.querySelector("#up-result").innerHTML = "";
@@ -130,7 +132,7 @@ async function run(section) {
   });
   const missingFields = FIELDS.filter((f) => f.required && !mapping[f.key]).map((f) => f.label);
   if (missingFields.length) {
-    result.innerHTML = `<div class="notice warn">Please choose a column for: ${escapeHtml(missingFields.join(", "))}.</div>`;
+    result.innerHTML = `<div class="callout warn">Please choose a column for: ${escapeHtml(missingFields.join(", "))}.</div>`;
     return;
   }
   const form = new FormData();
@@ -147,7 +149,7 @@ async function run(section) {
     }
     const response = await fetch("/api/upload", { method: "POST", body: form });
     if (!response.ok) throw new Error("HTTP " + response.status);
-    result.innerHTML = `<div class="notice ok">Uploaded. The engine is running on your data.</div>`;
+    result.innerHTML = `<div class="callout good">Uploaded. The engine is running on your data.</div>`;
   } catch (error) {
     result.innerHTML = backendMissing("POST /api/upload", "M10",
       "Your column mapping is ready; the server will run the engine on it.");

@@ -79,6 +79,13 @@ export function spreadUnit(unit) {
   return unit === "pct" ? "pts" : unit;
 }
 
+// "2026-10-16T00:22:40" -> "16 Oct 2026, 00:22" (only the look changes; the popover keeps the raw value).
+export function fmtDateTime(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return String(iso);
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + ", " + String(iso).slice(11, 16);
+}
+
 // Indian digit grouping (1,00,000) because the judges are in India.
 function num(value, minDigits, maxDigits) {
   return value.toLocaleString("en-IN", {
@@ -132,7 +139,7 @@ export const KPIS = {
   "turnaround.max_backlog": { label: "Max backlog (tickets)", unit: "int", better: "lower" },
   "productivity.tickets_per_agent_hour": { label: "Tickets per agent-hour", unit: "num", better: "higher" },
   "productivity.transfers_per_100": { label: "Transfers per 100 tickets", unit: "num", better: "lower" },
-  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: "lower" },
+  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: null }, // more or less is not clearly better
   "quality.reopen_rate_pct": { label: "Reopen rate", unit: "pct", better: "lower" },
   "quality.p99_wait_min": { label: "P99 wait", unit: "min", better: "lower" },
   "quality.max_wait_min": { label: "Max wait", unit: "min", better: "lower" },
