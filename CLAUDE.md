@@ -344,6 +344,17 @@ configurable cost-per-breach assumption (`config/impact.yaml`, always labelled a
 results and fills in the value. Any raw digit or unknown key → template fallback. Same
 mechanism for cluster descriptions and "Explain this" text.
 
+**`playbooks.py`** *(added 16 Oct, owner decision — see `docs/PLAN.md` section 9)* — **fix at
+the source**, not only on the floor. Each evidence card's cause type maps to an upstream action
+with an owner outside support (partner ops, IVR/product, training, customer comms) and a
+**scenario spec** derived from the card's own segment (e.g. "wrong_item tickets of cluster 7 back
+to the normal rate"). `eval/` applies each spec to the test days and replays them in the simulator
+(5 seeds, Baseline B and OpsLens) → tickets prevented, breaches avoided, agent-hours freed, paired
+CI. Any effect size that is a business guess (e.g. how many app-bug tickets a status banner
+deflects) lives in `config/playbooks.yaml`, is labelled an assumption and gets a sensitivity
+range. The LLM drafts the action text (partner notice, IVR wording, banner) under the same
+no-digit rule as `brief.py`.
+
 ---
 
 ## 7. Evaluation (`eval/`) — the source of every claim
@@ -440,6 +451,7 @@ opslens/                     (C:\dev\opslens)
 | M6 | 20 Oct | Forecast + conformal + bottlenecks + Erlang-C staffing | WAPE vs naive, coverage printed; staffing moves listed |
 | M7 | 21 Oct | Optimiser (scarcity, starvation guard) + OpsLens policy + weight choice on validation days | OpsLens vs A/B on test days, 5 seeds, paired CI printed |
 | M8 | 22 Oct | `make eval`: ablations, sensitivity, stress, speed/scale, (challengers); `NUMBERS.md` | One command reproduces every number |
+| P1 | 16–18 Oct | *(added 16 Oct)* Fix-at-source playbooks (`playbooks.py`), measured on test days; challenger arena | Each playbook's tickets prevented / breaches avoided with CI in `results.json`; arena rule applied |
 | — | 22 Oct | **Model + weight freeze** | No model changes after this |
 | U1 | 18–22 Oct | *(parallel session)* UI shell on fixture results: layout, all tabs, charts, replay player, story-mode skeleton | Every tab renders from `fixture_results.json` with the FIXTURE banner |
 | M9 | 23–24 Oct | Server + wire every tab to real results; click-to-evidence; Accept/Override log | Full flow works on generated data |

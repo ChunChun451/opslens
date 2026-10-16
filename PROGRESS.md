@@ -267,3 +267,37 @@ gaps found; a regional-language gap in a small team can be missed (as in the bli
 - UI polish (What-failed timeline v1→v2→v3, story mode on real numbers, loading states) is with
   the parallel UI session (branch m10-polish), not merged yet.
 - DEMO_SCRIPT.md and rehearsal (M12).
+
+---
+
+## P1 — Fix-at-source playbooks + challenger arena (16 Oct 2026)
+
+**Why:** an outside AI review (16 Oct) said OpsLens treats symptoms (routing) and not causes.
+Owner decision (docs/PLAN.md section 9): build playbooks, measured in the simulator; keep the
+other review points as Q&A answers. The UI session's redesign + M10 polish (branch m10-polish)
+was reviewed (only web/ and docs/explain/web.md, no hard-coded numbers) and merged.
+
+**Built**
+- `opslens/playbooks.py`: one upstream action per evidence card (process → phone-menu fix,
+  partner → kitchen order-check, skill gap → cross-train named agents, spike → status banner on
+  live alerts, capacity → self-serve instant refund in the overloaded window). `apply_scenario()`
+  changes tickets or roster; assumptions in `config/playbooks.yaml`, labelled.
+- `eval/run_playbooks.py` (122 runs, 18 min; `--messages` re-drafts only the LLM text);
+  scenario hook in `eval/run_opslens.py::run_one`; `playbooks` section in results.json and
+  NUMBERS.md; "Fix at the source" card on the Recommendations tab; 7 new tests; all 111 tests pass.
+- Challenger arena: `.venv-challengers` (torch CPU, chronos-forecasting, tabpfn),
+  `eval/challengers/run_forecast_arena.py`, `run_risk_arena.py`, rules written before running.
+
+**Key numbers (test days 43-56, 5 seeds)**
+- All six playbooks: breaches −179 [−219, −139] under priority-first, −57 [−73, −40] under
+  OpsLens; OpsLens + playbooks vs priority-first today −889 [−1,127, −652] of 1,230.
+- Cross-train A09 + D11 (Hindi, nights): −83 [−131, −35] / −51 [−71, −30]. Phone-menu fix:
+  −46 / −3 (OpsLens already fixes routing). Others within noise under OpsLens.
+- Chronos-2 zero-shot WAPE 0.304 vs LightGBM 0.305 (+0.4% < 2%), coverage 76.2% vs 79.2%,
+  1.7 s per refresh → keep LightGBM.
+
+**Open issues**
+- TabPFN-3 arena needs the owner's licence key (TABPFN_TOKEN in .env), then
+  `.venv-challengers/Scripts/python.exe eval/challengers/run_risk_arena.py` and
+  `.venv/Scripts/python.exe eval/run_eval.py --assemble`.
+- DEMO_SCRIPT: decide where the playbooks appear in the 7 minutes. M12 rehearsal.

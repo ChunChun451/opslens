@@ -1,0 +1,35 @@
+{
+ "challenger": "Chronos-2 (amazon/chronos-2, zero-shot, CPU)",
+ "incumbent": "LightGBM Poisson (opslens/forecast.py)",
+ "main_metric": "hourly per-category WAPE, lead 1-24 h, test days 43-56",
+ "rule_margin": 0.02,
+ "latency_budget_s": 10.0,
+ "scores": {
+  "lead_1_24h": {
+   "hours_scored": 2688,
+   "wape_chronos2": 0.304262555897659,
+   "wape_lightgbm": 0.30534240993563433,
+   "wape_seasonal_naive": 0.41531721384205855,
+   "wape_chronos2_without_surge": 0.30126850459965465,
+   "wape_lightgbm_without_surge": 0.3025127524368965,
+   "coverage80_chronos2": 0.7619047619047619,
+   "coverage80_lightgbm_conformal": 0.7924107142857143
+  },
+  "lead_25_48h": {
+   "hours_scored": 2688,
+   "wape_chronos2": 0.3050534093773989,
+   "wape_lightgbm": 0.30534240993563433,
+   "wape_seasonal_naive": 0.41531721384205855,
+   "wape_chronos2_without_surge": 0.302109619643805,
+   "wape_lightgbm_without_surge": 0.3025127524368965,
+   "coverage80_chronos2": 0.7581845238095238,
+   "coverage80_lightgbm_conformal": 0.7924107142857143
+  }
+ },
+ "one_refresh_s": 1.6557341999996424,
+ "all_origins_batch_s": 25.149266299999,
+ "relative_gain_pct": 0.35365347322796326,
+ "accuracy_ok": false,
+ "latency_ok": true,
+ "verdict": "keep LightGBM"
+}

@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-16T03:02:38 (commit 9ab294c). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-16T10:54:19 (commit 3844c6a). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -69,8 +69,28 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 - WAPE 0.305 vs same-hour-last-week 0.415 (Poisson floor 0.280).
 - Conformal coverage: 80% range 79.2%, 90% range 90.0%.
 
+## Fix-at-source playbooks (test days, change vs the same policy without it)
+
+| Playbook | Owner | Tickets prevented | Breaches: priority-first | Breaches: OpsLens | Agent-hours (OpsLens) |
+|---|---|---|---|---|---|
+| Fix the phone menu (IVR) | Product / IVR team | 0 | -46.4 [-75.3, -17.5] | -3.0 [-18.3, +12.3] | -2.7 |
+| Cross-train 2 Hindi-speaking agents on payment failure and refund | Training / workforce | 0 | -83.2 [-131.4, -35.0] | -50.6 [-71.4, -29.8] | -19.4 |
+| Self-serve instant refund on weekend dinner (Team C) | Product | 83 | -16.8 [-26.6, -7.0] | -1.0 [-15.3, +13.3] | -11.4 |
+| Status banner the moment a spike alert fires | Product / customer comms | 30 | -10.6 [-16.1, -5.1] | -8.2 [-16.3, -0.1] | -8.7 |
+| Kitchen order-check for restaurant cluster 17 | Partner operations | 67 | -13.6 [-23.9, -3.3] | -4.2 [-20.7, +12.3] | -10.8 |
+| Self-serve instant refund on weekday night (Team B) | Product | 23 | -12.8 [-20.3, -5.3] | +0.2 [-19.8, +20.2] | -4.8 |
+| **All together** | | 206 | -179.0 [-218.9, -139.1] | -56.6 [-73.3, -39.9] | -56.7 |
+
+- OpsLens with every playbook vs priority-first today: breaches -889.4 [-1126.6, -652.2] (of 1230), breach % -4.9 [-6.2, -3.6] points.
+- Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; see `playbooks[].sensitivity` in results.json.
+
+## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
+
+- Forecast: Chronos-2 (zero-shot) WAPE 0.304 vs LightGBM 0.305 (+0.4%), 80% coverage 76.2% vs 79.2%; one 48 h refresh 1.7 s → **keep LightGBM**.
+- Risk: TabPFN-3 not run yet (needs the owner's TabPFN licence key).
+
 ## Speed
 
 - Optimiser per decision: median 0.08 ms, max 5.9 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.051 s.
-- Full evaluation pipeline: 19.6 min.
+- Scale test: 5,000 tickets × 500 agents solved in 0.049 s.
+- Full evaluation pipeline: 38.0 min.

@@ -1,0 +1,5 @@
+# Eval-only challenger arena (CLAUDE.md 7.11). Never needed by the product or the demo.
+# Installed into .venv-challengers:  --index-url https://download.pytorch.org/whl/cpu for torch
+torch
+chronos-forecasting>=2.0
+tabpfn

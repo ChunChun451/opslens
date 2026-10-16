@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-16T03:02:38",
-  "git_commit": "9ab294c",
+  "generated_at": "2026-10-16T10:54:19",
+  "git_commit": "3844c6a",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -19,7 +19,7 @@
    43,
    56
   ],
-  "run_seconds": 1177.8
+  "run_seconds": 2279.8
  },
  "sim": {
   "seeds": [
@@ -4503,7 +4503,7 @@
   }
  ],
  "speed": {
-  "pipeline_seconds": 1177.8,
+  "pipeline_seconds": 2279.8,
   "optimizer_ms_median": 0.07789989467710257,
   "optimizer_ms_max": 5.858499906025827,
   "scale_test": {
@@ -4511,7 +4511,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.051
+   "seconds": 0.049
   }
  },
  "details": {
@@ -4521,7 +4521,8 @@
    "risk": 92.2,
    "forecast": 10.0,
    "opslens": 132.2,
-   "ablations": 796.3
+   "ablations": 796.3,
+   "playbooks": 1102.0
   },
   "classification": {
    "menu_choice_accuracy": 0.9091614906832298,
@@ -5519,7 +5520,2343 @@
     }
    ]
   },
-  "test_runs_note": "The test days were run three times in total: v1, v2 and v3 (current). Each new version was designed and chosen on validation days only; all three test results are kept here."
+  "test_runs_note": "The test days were run three times in total: v1, v2 and v3 (current). Each new version was designed and chosen on validation days only; all three test results are kept here.",
+  "challengers": {
+   "forecast": {
+    "challenger": "Chronos-2 (amazon/chronos-2, zero-shot, CPU)",
+    "incumbent": "LightGBM Poisson (opslens/forecast.py)",
+    "main_metric": "hourly per-category WAPE, lead 1-24 h, test days 43-56",
+    "rule_margin": 0.02,
+    "latency_budget_s": 10.0,
+    "scores": {
+     "lead_1_24h": {
+      "hours_scored": 2688,
+      "wape_chronos2": 0.304262555897659,
+      "wape_lightgbm": 0.30534240993563433,
+      "wape_seasonal_naive": 0.41531721384205855,
+      "wape_chronos2_without_surge": 0.30126850459965465,
+      "wape_lightgbm_without_surge": 0.3025127524368965,
+      "coverage80_chronos2": 0.7619047619047619,
+      "coverage80_lightgbm_conformal": 0.7924107142857143
+     },
+     "lead_25_48h": {
+      "hours_scored": 2688,
+      "wape_chronos2": 0.3050534093773989,
+      "wape_lightgbm": 0.30534240993563433,
+      "wape_seasonal_naive": 0.41531721384205855,
+      "wape_chronos2_without_surge": 0.302109619643805,
+      "wape_lightgbm_without_surge": 0.3025127524368965,
+      "coverage80_chronos2": 0.7581845238095238,
+      "coverage80_lightgbm_conformal": 0.7924107142857143
+     }
+    },
+    "one_refresh_s": 1.6557341999996424,
+    "all_origins_batch_s": 25.149266299999,
+    "relative_gain_pct": 0.35365347322796326,
+    "accuracy_ok": false,
+    "latency_ok": true,
+    "verdict": "keep LightGBM"
+   }
+  }
+ },
+ "playbooks": {
+  "test_days": [
+   43,
+   56
+  ],
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "playbooks": [
+   {
+    "id": "pb_F1",
+    "card_id": "F1",
+    "cause_type": "process",
+    "title": "Fix the phone menu (IVR)",
+    "owner": "Product / IVR team",
+    "action": "Call tickets are transferred 13.0 times per 100 vs 2.6 for other channels: rewrite the menu choices and confirm the issue with one spoken question before routing.",
+    "scenario": {
+     "kind": "fix_menu",
+     "channel": "call",
+     "keep_error_share": 0.197
+    },
+    "assumptions": [
+     "the new menu is as accurate as the other channels' (20% of today's wrong choices remain)"
+    ],
+    "message": {
+     "text": "Our team has observed that 13.0 per 100 tickets significantly exceeds 2.6 per 100 tickets for the 10,788 tickets group. Please investigate and fix the phone menu to reduce these unnecessary ticket transfers.",
+     "source": "llm"
+    },
+    "effect": {
+     "baseline_b": {
+      "totals": {
+       "tickets": {
+        "mean": 18032.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 1183.2,
+        "std": 223.87541178074915
+       },
+       "transfers": {
+        "mean": 484.4,
+        "std": 6.387487769068525
+       },
+       "agent_hours": {
+        "mean": 2938.5929264786614,
+        "std": 10.430102055603907
+       },
+       "breach_pct": {
+        "mean": 6.561668145519077,
+        "std": 1.2415450963883605
+       },
+       "p90_resolution_min": {
+        "mean": 184.20666505339608,
+        "std": 34.47858559161374
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -46.40000000000002,
+        "ci_low": -75.25705075990969,
+        "ci_high": -17.542949240090355,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -344.0,
+        "ci_low": -349.33974261552,
+        "ci_high": -338.66025738448,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -22.131734472769857,
+        "ci_low": -24.425857887018633,
+        "ci_high": -19.83761105852108,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.2573203194321209,
+        "ci_low": -0.41735276597110504,
+        "ci_high": -0.09728787289313678,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -14.24029861601079,
+        "ci_low": -26.45399708497438,
+        "ci_high": -2.0266001470472013,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     "opslens": {
+      "totals": {
+       "tickets": {
+        "mean": 18032.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 393.8,
+        "std": 67.04625269170529
+       },
+       "transfers": {
+        "mean": 122.4,
+        "std": 5.079370039680118
+       },
+       "agent_hours": {
+        "mean": 2990.861794411982,
+        "std": 16.928705599181395
+       },
+       "breach_pct": {
+        "mean": 2.1838952972493346,
+        "std": 0.371818171537851
+       },
+       "p90_resolution_min": {
+        "mean": 138.65329899721326,
+        "std": 31.132335572055606
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -3.0000000000000226,
+        "ci_low": -18.330961091855926,
+        "ci_high": 12.330961091855881,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -52.4,
+        "ci_low": -55.63734449201811,
+        "ci_high": -49.16265550798189,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -2.65659102090076,
+        "ci_low": -5.400174310733172,
+        "ci_high": 0.08699226893165202,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.016637089618456134,
+        "ci_low": -0.10165794749254597,
+        "ci_high": 0.06838376825563372,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -1.8543281179494784,
+        "ci_low": -4.2489534579743715,
+        "ci_high": 0.5402972220754152,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "sensitivity": {}
+   },
+   {
+    "id": "pb_F2",
+    "card_id": "F2",
+    "cause_type": "skill_gap",
+    "title": "Cross-train 2 Hindi-speaking agents on payment failure and refund",
+    "owner": "Training / workforce",
+    "action": "Hindi payment failure and refund tickets wait 336 min vs 66 min. Train A09, D11 on payment failure and refund: they already speak Hindi and their shifts cover the hours no trained Hindi speaker works today.",
+    "scenario": {
+     "kind": "cross_train",
+     "agents": [
+      "A09",
+      "D11"
+     ],
+     "skills": [
+      "payment_failure",
+      "refund"
+     ]
+    },
+    "assumptions": [
+     "training is finished before the period and trained agents work at full speed"
+    ],
+    "message": {
+     "text": "We have identified a skill gap where the 336 min is significantly higher than the 65.5 min for the 2,871 tickets group. Please cross-train our Hindi-speaking agents on payment failure and refund processes to address this discrepancy.",
+     "source": "llm"
+    },
+    "effect": {
+     "baseline_b": {
+      "totals": {
+       "tickets": {
+        "mean": 18032.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 1146.4,
+        "std": 265.5123349300367
+       },
+       "transfers": {
+        "mean": 815.6,
+        "std": 8.414273587185011
+       },
+       "agent_hours": {
+        "mean": 2960.138653634891,
+        "std": 9.23800679865991
+       },
+       "breach_pct": {
+        "mean": 6.357586512866016,
+        "std": 1.472450837012182
+       },
+       "p90_resolution_min": {
+        "mean": 187.61980731103418,
+        "std": 40.83677512893267
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -83.20000000000009,
+        "ci_low": -131.3569995477293,
+        "ci_high": -35.04300045227088,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -12.800000000000022,
+        "ci_low": -19.333927994705764,
+        "ci_high": -6.266072005294281,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -0.5860073165403265,
+        "ci_low": -2.036987398713297,
+        "ci_high": 0.8649727656326441,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.4614019520851823,
+        "ci_low": -0.7284660578290221,
+        "ci_high": -0.19433784634134255,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -10.8271563583727,
+        "ci_low": -17.606628452846316,
+        "ci_high": -4.047684263899085,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     "opslens": {
+      "totals": {
+       "tickets": {
+        "mean": 18032.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 346.2,
+        "std": 71.48566289823438
+       },
+       "transfers": {
+        "mean": 167.2,
+        "std": 1.3038404810405297
+       },
+       "agent_hours": {
+        "mean": 2974.124059120637,
+        "std": 17.428300281495652
+       },
+       "breach_pct": {
+        "mean": 1.9199201419698313,
+        "std": 0.3964377933575552
+       },
+       "p90_resolution_min": {
+        "mean": 134.68508686703,
+        "std": 30.347145032005102
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -50.600000000000044,
+        "ci_low": -71.38480759016068,
+        "ci_high": -29.815192409839405,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -7.6,
+        "ci_low": -11.06722288871079,
+        "ci_high": -4.13277711128921,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -19.394326312245447,
+        "ci_low": -24.91517231091538,
+        "ci_high": -13.873480313575515,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.2806122448979592,
+        "ci_low": -0.39587848042458196,
+        "ci_high": -0.1653460093713365,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -5.822540248132711,
+        "ci_low": -11.157900345585526,
+        "ci_high": -0.4871801506798956,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "sensitivity": {}
+   },
+   {
+    "id": "pb_F3",
+    "card_id": "F3",
+    "cause_type": "capacity",
+    "title": "Self-serve instant refund on weekend dinner (Team C)",
+    "owner": "Product",
+    "action": "Team C is overloaded on weekend dinner. Offer an in-app instant refund for missing item claims on orders up to \u20b9300 in that window, so these customers need no agent.",
+    "scenario": {
+     "kind": "self_serve",
+     "when": "weekend dinner",
+     "categories": [
+      "missing_item"
+     ],
+     "max_order_inr": 300,
+     "uptake": 0.6
+    },
+    "assumptions": [
+     "ASSUMPTION: 60% of eligible customers use self-serve",
+     "policy choice: only orders up to \u20b9300"
+    ],
+    "message": {
+     "text": "Our Team C is currently overloaded with 1.4\u00d7 the agent-time on shift compared to the 1.0\u00d7 the agent-time on shift for similar tickets. Please implement a self-serve instant refund for weekend dinner to reduce the 1,887 tickets.",
+     "source": "llm"
+    },
+    "effect": {
+     "baseline_b": {
+      "totals": {
+       "tickets": {
+        "mean": 17949.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 1212.8,
+        "std": 240.65680958576675
+       },
+       "transfers": {
+        "mean": 822.8,
+        "std": 7.9498427657407165
+       },
+       "agent_hours": {
+        "mean": 2949.5151035829467,
+        "std": 10.35552190160833
+       },
+       "breach_pct": {
+        "mean": 6.756922391219566,
+        "std": 1.3407811554168296
+       },
+       "p90_resolution_min": {
+        "mean": 194.04662968391455,
+        "std": 44.058819370703475
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -83.0,
+        "ci_low": -83.0,
+        "ci_high": -83.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -16.800000000000068,
+        "ci_low": -26.551626112602957,
+        "ci_high": -7.0483738873971795,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -5.600000000000023,
+        "ci_low": -9.773243074636346,
+        "ci_high": -1.4267569253636996,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -11.209557368484365,
+        "ci_low": -11.65822383680516,
+        "ci_high": -10.76089090016357,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.062066073731631734,
+        "ci_low": -0.11614545972115048,
+        "ci_high": -0.007986687742112995,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -4.400333985492341,
+        "ci_low": -7.036738705537006,
+        "ci_high": -1.763929265447676,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     "opslens": {
+      "totals": {
+       "tickets": {
+        "mean": 17949.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 395.8,
+        "std": 63.334035083831495
+       },
+       "transfers": {
+        "mean": 172.6,
+        "std": 5.2249401910452535
+       },
+       "agent_hours": {
+        "mean": 2982.0965150798115,
+        "std": 16.645377904620755
+       },
+       "breach_pct": {
+        "mean": 2.2051367764220844,
+        "std": 0.35285550773765384
+       },
+       "p90_resolution_min": {
+        "mean": 137.03688009895126,
+        "std": 30.623301699282813
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -83.0,
+        "ci_low": -83.0,
+        "ci_high": -83.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -1.0000000000000113,
+        "ci_low": -15.290334635689952,
+        "ci_high": 13.29033463568993,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -2.2,
+        "ci_low": -5.291222774243227,
+        "ci_high": 0.8912227742432273,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -11.421870353070881,
+        "ci_low": -12.817794744455105,
+        "ci_high": -10.025945961686658,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": 0.004604389554294164,
+        "ci_low": -0.07573810105565311,
+        "ci_high": 0.08494688016424144,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -3.470747016211459,
+        "ci_low": -5.210515943460291,
+        "ci_high": -1.7309780889626272,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "sensitivity": {
+     "0.3": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 17991.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1138.6666666666667,
+         "std": 160.2664448140449
+        },
+        "transfers": {
+         "mean": 826.3333333333334,
+         "std": 9.451631252505237
+        },
+        "agent_hours": {
+         "mean": 2960.9383063230102,
+         "std": 2.773524343743906
+        },
+        "breach_pct": {
+         "mean": 6.329090471161507,
+         "std": 0.8908145451283696
+        },
+        "p90_resolution_min": {
+         "mean": 186.11299550453745,
+         "std": 28.60680356270666
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -41.0,
+         "ci_low": -41.0,
+         "ci_high": -41.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -13.000000000000114,
+         "ci_low": -33.33518463976481,
+         "ci_high": 7.335184639764584,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": -2.6666666666667425,
+         "ci_low": -12.072219323357308,
+         "ci_high": 6.738885990023823,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -5.174597614144659,
+         "ci_low": -5.499826142402387,
+         "ci_high": -4.849369085886931,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.05770337681246603,
+         "ci_low": -0.17238279230973777,
+         "ci_high": 0.05697603868480571,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -2.6677892223664137,
+         "ci_low": -8.61296212907278,
+         "ci_high": 3.2773836843399535,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 17991.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 378.0,
+         "std": 27.784887978899643
+        },
+        "transfers": {
+         "mean": 170.33333333333334,
+         "std": 4.041451884327381
+        },
+        "agent_hours": {
+         "mean": 2992.336108659319,
+         "std": 9.464513338785178
+        },
+        "breach_pct": {
+         "mean": 2.1010505252626315,
+         "std": 0.1544377076254773
+        },
+        "p90_resolution_min": {
+         "mean": 132.82231010432102,
+         "std": 19.905490406644972
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -41.0,
+         "ci_low": -41.0,
+         "ci_high": -41.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -8.333333333333334,
+         "ci_low": -33.218086606059146,
+         "ci_high": 16.551419939392474,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": -3.0,
+         "ci_low": -7.303,
+         "ci_high": 1.303,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -5.498596223137156,
+         "ci_low": -10.471249050237304,
+         "ci_high": -0.5259433960370083,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.041436904491879055,
+         "ci_low": -0.1789122059492964,
+         "ci_high": 0.09603839696553829,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -2.8011515179898603,
+         "ci_low": -5.421606015280659,
+         "ci_high": -0.18069702069906146,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     },
+     "0.8": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 17922.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1130.6666666666667,
+         "std": 163.92782964870034
+        },
+        "transfers": {
+         "mean": 822.0,
+         "std": 10.39230484541333
+        },
+        "agent_hours": {
+         "mean": 2951.240061845893,
+         "std": 3.058125997392554
+        },
+        "breach_pct": {
+         "mean": 6.308819700182272,
+         "std": 0.9146737509692017
+        },
+        "p90_resolution_min": {
+         "mean": 184.334881529738,
+         "std": 30.085693831261384
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -110.0,
+         "ci_low": -110.0,
+         "ci_high": -110.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -21.000000000000075,
+         "ci_low": -50.812058499875874,
+         "ci_high": 8.812058499875725,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": -7.0,
+         "ci_low": -22.11163936617509,
+         "ci_high": 8.111639366175089,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -14.872842091261646,
+         "ci_low": -15.273784090238353,
+         "ci_high": -14.471900092284939,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.07797414779170116,
+         "ci_low": -0.25146222566731274,
+         "ci_high": 0.09551393008391044,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -4.445903197165857,
+         "ci_low": -12.128748526505102,
+         "ci_high": 3.2369421321733887,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 17922.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 376.3333333333333,
+         "std": 30.98924544633724
+        },
+        "transfers": {
+         "mean": 172.66666666666666,
+         "std": 6.6583281184793925
+        },
+        "agent_hours": {
+         "mean": 2982.768898057675,
+         "std": 8.774292094512022
+        },
+        "breach_pct": {
+         "mean": 2.0998400476137333,
+         "std": 0.1729117589908338
+        },
+        "p90_resolution_min": {
+         "mean": 131.00039120723204,
+         "std": 19.748495632584792
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -110.0,
+         "ci_low": -110.0,
+         "ci_high": -110.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -10.00000000000002,
+         "ci_low": -21.384667891510876,
+         "ci_high": 1.384667891510837,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": -0.6666666666666666,
+         "ci_low": -10.072219323357169,
+         "ci_high": 8.738885990023837,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -15.065806824780944,
+         "ci_low": -19.58256339347668,
+         "ci_high": -10.54905025608521,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.04264738214077705,
+         "ci_low": -0.10369012956181017,
+         "ci_high": 0.01839536528025608,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -4.623070415078828,
+         "ci_low": -7.1317302690219755,
+         "ci_high": -2.1144105611356814,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "pb_F4",
+    "card_id": "F4",
+    "cause_type": "volume_spike",
+    "title": "Status banner the moment a spike alert fires",
+    "owner": "Product / customer comms",
+    "action": "Spikes like payment failure on day 18 come from one cause. When OpsLens raises a live spike alert, show an in-app status banner on that issue for 4 hours, so customers know it is being fixed.",
+    "scenario": {
+     "kind": "status_banner",
+     "hours": 4,
+     "deflect_share": 0.3
+    },
+    "assumptions": [
+     "ASSUMPTION: 30% of customers who see the banner do not open a ticket"
+    ],
+    "message": {
+     "text": "We are seeing a volume spike where the current 254 significantly exceeds the 117 for this category. Please ensure a status banner is triggered the moment an alert fires for the 254 tickets group to help manage customer expectations.",
+     "source": "llm"
+    },
+    "effect": {
+     "baseline_b": {
+      "totals": {
+       "tickets": {
+        "mean": 18002.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 1219.0,
+        "std": 240.7934799781755
+       },
+       "transfers": {
+        "mean": 829.2,
+        "std": 8.438009243891608
+       },
+       "agent_hours": {
+        "mean": 2954.0927525854763,
+        "std": 10.332816983517391
+       },
+       "breach_pct": {
+        "mean": 6.771469836684813,
+        "std": 1.3375929339971977
+       },
+       "p90_resolution_min": {
+        "mean": 186.7002502452883,
+        "std": 39.78371161593705
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -30.0,
+        "ci_low": -30.0,
+        "ci_high": -30.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -10.600000000000023,
+        "ci_low": -16.053974638738257,
+        "ci_high": -5.146025361261788,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": 0.7999999999999773,
+        "ci_low": -9.339052610574498,
+        "ci_high": 10.939052610574453,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -6.631908365954951,
+        "ci_low": -8.161066863265429,
+        "ci_high": -5.102749868644472,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.04751862826638522,
+        "ci_low": -0.0775709985896127,
+        "ci_high": -0.017466257943157752,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -11.746713424118605,
+        "ci_low": -18.425303205907333,
+        "ci_high": -5.068123642329877,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     "opslens": {
+      "totals": {
+       "tickets": {
+        "mean": 18002.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 388.6,
+        "std": 62.03466772700568
+       },
+       "transfers": {
+        "mean": 176.4,
+        "std": 1.949358868961805
+       },
+       "agent_hours": {
+        "mean": 2984.809724518908,
+        "std": 15.578184289098985
+       },
+       "breach_pct": {
+        "mean": 2.1586490389956667,
+        "std": 0.3445987541773452
+       },
+       "p90_resolution_min": {
+        "mean": 136.46000881458104,
+        "std": 30.46932222774807
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -30.0,
+        "ci_low": -30.0,
+        "ci_high": -30.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -8.200000000000022,
+        "ci_low": -16.264745838524618,
+        "ci_high": -0.1352541614754248,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": 1.5999999999999943,
+        "ci_low": -0.47736818113689017,
+        "ci_high": 3.677368181136879,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -8.708660913974473,
+        "ci_low": -9.792002606704871,
+        "ci_high": -7.625319221244075,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.041883347872123444,
+        "ci_low": -0.08707378110726402,
+        "ci_high": 0.0033070853630171315,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -4.0476183005816635,
+        "ci_low": -6.57891043230851,
+        "ci_high": -1.5163261688548166,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "sensitivity": {
+     "0.15": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 18017.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1150.3333333333333,
+         "std": 161.00414073350206
+        },
+        "transfers": {
+         "mean": 830.6666666666666,
+         "std": 10.263202878893768
+        },
+        "agent_hours": {
+         "mean": 2962.6950867183473,
+         "std": 2.2410036966242486
+        },
+        "breach_pct": {
+         "mean": 6.384710736156593,
+         "std": 0.8936234707970361
+        },
+        "p90_resolution_min": {
+         "mean": 181.49203430457123,
+         "std": 21.12414900851263
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -15.0,
+         "ci_low": -15.0,
+         "ci_high": -15.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -1.3333333333332955,
+         "ci_low": -10.058042389291215,
+         "ci_high": 7.391375722624624,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 1.6666666666666288,
+         "ci_low": -6.3193633510858405,
+         "ci_high": 9.652696684419098,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -3.417817218807462,
+         "ci_low": -5.345959288960508,
+         "ci_high": -1.4896751486544164,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.002083111817379487,
+         "ci_low": -0.05230735525917535,
+         "ci_high": 0.04814113162441637,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -7.288750422332612,
+         "ci_low": -22.084621747297497,
+         "ci_high": 7.507120902632275,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 18017.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 376.3333333333333,
+         "std": 32.80751946327752
+        },
+        "transfers": {
+         "mean": 175.0,
+         "std": 4.358898943540664
+        },
+        "agent_hours": {
+         "mean": 2993.2564840895193,
+         "std": 7.544135837816033
+        },
+        "breach_pct": {
+         "mean": 2.0887680153928696,
+         "std": 0.18209202122038912
+        },
+        "p90_resolution_min": {
+         "mean": 132.08816895631512,
+         "std": 16.80776771116435
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -15.0,
+         "ci_low": -15.0,
+         "ci_high": -15.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -10.00000000000002,
+         "ci_low": -16.572941071798265,
+         "ci_high": -3.427058928201773,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 1.6666666666666572,
+         "ci_low": -2.1282226305036236,
+         "ci_high": 5.461555963836938,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -4.578220792936463,
+         "ci_low": -5.964208402942964,
+         "ci_high": -3.1922331829299626,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.053719414361640926,
+         "ci_low": -0.08989656440853278,
+         "ci_high": -0.01754226431474907,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -3.5352926659957973,
+         "ci_low": -9.01340482826673,
+         "ci_high": 1.9428194962751357,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     },
+     "0.5": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 17982.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1136.0,
+         "std": 157.5595125658873
+        },
+        "transfers": {
+         "mean": 829.3333333333334,
+         "std": 13.051181300301263
+        },
+        "agent_hours": {
+         "mean": 2955.5892416605657,
+         "std": 1.9676813668534554
+        },
+        "breach_pct": {
+         "mean": 6.317428539650763,
+         "std": 0.8762068321982389
+        },
+        "p90_resolution_min": {
+         "mean": 171.68187543483631,
+         "std": 19.840079472157008
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -50.0,
+         "ci_low": -50.0,
+         "ci_high": -50.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -15.666666666666705,
+         "ci_low": -22.83833333333329,
+         "ci_high": -8.49500000000012,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 0.33333333333329546,
+         "ci_low": -13.349334612323771,
+         "ci_high": 14.01600127899036,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -10.523662276588917,
+         "ci_low": -13.648363208579772,
+         "ci_high": -7.398961344598062,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.06936530832321057,
+         "ci_low": -0.10975627527099682,
+         "ci_high": -0.02897434137542431,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -17.09890929206757,
+         "ci_low": -35.2980587365426,
+         "ci_high": 1.1002401524074585,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 17982.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 374.0,
+         "std": 33.95585369269932
+        },
+        "transfers": {
+         "mean": 175.33333333333334,
+         "std": 2.886751345948129
+        },
+        "agent_hours": {
+         "mean": 2985.055838361184,
+         "std": 7.041611288867104
+        },
+        "breach_pct": {
+         "mean": 2.079857635413191,
+         "std": 0.1888324640901975
+        },
+        "p90_resolution_min": {
+         "mean": 127.53816735990692,
+         "std": 16.989874352654095
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -50.0,
+         "ci_low": -50.0,
+         "ci_high": -50.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -12.333333333333334,
+         "ci_low": -17.50489571277375,
+         "ci_high": -7.16177095389292,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 2.0,
+         "ci_low": 2.0,
+         "ci_high": 2.0,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -12.778866521271842,
+         "ci_low": -14.354053618347118,
+         "ci_high": -11.203679424196567,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.06262979434131943,
+         "ci_low": -0.09084781168079782,
+         "ci_high": -0.034411777001841046,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -8.085294262403972,
+         "ci_low": -13.08896720829134,
+         "ci_high": -3.0816213165166024,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "pb_F5",
+    "card_id": "F5",
+    "cause_type": "partner_issue",
+    "title": "Kitchen order-check for restaurant cluster 17",
+    "owner": "Partner operations",
+    "action": "Cluster 17: 24.5% of its tickets are wrong item vs 9.6% elsewhere. Send the partners a quality alert and switch on order-check (packing photo before pickup) for this cluster.",
+    "scenario": {
+     "kind": "partner_fix",
+     "restaurant_cluster_id": 17,
+     "category": "wrong_item",
+     "normal_share": 0.09609999999999999,
+     "fix_share": 1.0
+    },
+    "assumptions": [
+     "ASSUMPTION: 100% of the cluster's extra wrong item tickets go away"
+    ],
+    "message": {
+     "text": "We have identified a partner issue within cluster 17 where the share of wrong item tickets is 24.5%, compared to the 9.6% seen in similar cases. Please perform a kitchen order-check for the 264 tickets affected tickets to help us resolve this discrepancy.",
+     "source": "llm"
+    },
+    "effect": {
+     "baseline_b": {
+      "totals": {
+       "tickets": {
+        "mean": 17965.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 1216.0,
+        "std": 235.0744562899168
+       },
+       "transfers": {
+        "mean": 827.4,
+        "std": 7.829431652425264
+       },
+       "agent_hours": {
+        "mean": 2950.7324174054484,
+        "std": 9.887012786161455
+       },
+       "breach_pct": {
+        "mean": 6.7687169496242685,
+        "std": 1.3085135334813072
+       },
+       "p90_resolution_min": {
+        "mean": 195.73393284879904,
+        "std": 40.88906508735837
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -67.0,
+        "ci_low": -67.0,
+        "ci_high": -67.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -13.600000000000069,
+        "ci_low": -23.93477621238126,
+        "ci_high": -3.265223787618879,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -1.0000000000000455,
+        "ci_low": -11.715503833231462,
+        "ci_high": 9.71550383323137,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -9.99224354598282,
+        "ci_low": -10.777933891341503,
+        "ci_high": -9.206553200624137,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.05027151532692873,
+        "ci_low": -0.10324120619220659,
+        "ci_high": 0.0026981755383491263,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -2.7130308206078437,
+        "ci_low": -7.223146589498192,
+        "ci_high": 1.7970849482825049,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     "opslens": {
+      "totals": {
+       "tickets": {
+        "mean": 17965.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 392.6,
+        "std": 64.77113554663065
+       },
+       "transfers": {
+        "mean": 174.8,
+        "std": 3.114482300479494
+       },
+       "agent_hours": {
+        "mean": 2982.704929620418,
+        "std": 17.741753435843744
+       },
+       "breach_pct": {
+        "mean": 2.185360423044809,
+        "std": 0.36054069327375815
+       },
+       "p90_resolution_min": {
+        "mean": 138.19493556986507,
+        "std": 32.02468706375258
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -67.0,
+        "ci_low": -67.0,
+        "ci_high": -67.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -4.200000000000022,
+        "ci_low": -20.702613727528124,
+        "ci_high": 12.302613727528078,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": -5.684341886080802e-15,
+        "ci_low": -4.2100124465374416,
+        "ci_high": 4.210012446537431,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -10.813455812464145,
+        "ci_low": -14.428725320572497,
+        "ci_high": -7.1981863043557945,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.015171963822981338,
+        "ci_low": -0.10767123223844069,
+        "ci_high": 0.07732730459247802,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -2.312691545297659,
+        "ci_low": -6.059603208448502,
+        "ci_high": 1.4342201178531835,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "sensitivity": {
+     "0.5": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 17999.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1142.6666666666667,
+         "std": 155.82789651834904
+        },
+        "transfers": {
+         "mean": 825.6666666666666,
+         "std": 14.011899704655802
+        },
+        "agent_hours": {
+         "mean": 2960.9746193438573,
+         "std": 3.1206157116388544
+        },
+        "breach_pct": {
+         "mean": 6.348500842639406,
+         "std": 0.8657586339149346
+        },
+        "p90_resolution_min": {
+         "mean": 187.95101830132057,
+         "std": 26.21770782354255
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -33.0,
+         "ci_low": -33.0,
+         "ci_high": -33.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -9.000000000000114,
+         "ci_low": -31.08128099393985,
+         "ci_high": 13.081280993939622,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": -3.3333333333333712,
+         "ci_low": -15.073857659122533,
+         "ci_high": 8.40719099245579,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -5.13828459329731,
+         "ci_low": -6.138620923104437,
+         "ci_high": -4.137948263490182,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.03829300533456692,
+         "ci_low": -0.16017583005514321,
+         "ci_high": 0.08358981938600937,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -0.8297664255833013,
+         "ci_low": -4.035106106092103,
+         "ci_high": 2.3755732549255004,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 17999.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 377.0,
+         "std": 28.61817604250837
+        },
+        "transfers": {
+         "mean": 175.33333333333334,
+         "std": 1.154700538379268
+        },
+        "agent_hours": {
+         "mean": 2990.726581356588,
+         "std": 8.098247841179228
+        },
+        "breach_pct": {
+         "mean": 2.0945608089338297,
+         "std": 0.1589987001639445
+        },
+        "p90_resolution_min": {
+         "mean": 134.65302935378133,
+         "std": 20.47537420988185
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -33.0,
+         "ci_low": -33.0,
+         "ci_high": -33.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -9.333333333333352,
+         "ci_low": -26.78275144524877,
+         "ci_high": 8.116084778582065,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 1.9999999999999905,
+         "ci_low": -2.3029999999999697,
+         "ci_high": 6.30299999999995,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -7.108123525867541,
+         "ci_low": -9.540084175470597,
+         "ci_high": -4.676162876264485,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.04792662082068092,
+         "ci_low": -0.1440815730917264,
+         "ci_high": 0.04822833145036456,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -0.9704322685295494,
+         "ci_low": -6.068674518038006,
+         "ci_high": 4.127809980978907,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "pb_F6",
+    "card_id": "F6",
+    "cause_type": "capacity",
+    "title": "Self-serve instant refund on weekday night (Team B)",
+    "owner": "Product",
+    "action": "Team B is overloaded on weekday night. Offer an in-app instant refund for refund claims on orders up to \u20b9300 in that window, so these customers need no agent.",
+    "scenario": {
+     "kind": "self_serve",
+     "when": "weekday night",
+     "categories": [
+      "refund"
+     ],
+     "max_order_inr": 300,
+     "uptake": 0.6
+    },
+    "assumptions": [
+     "ASSUMPTION: 60% of eligible customers use self-serve",
+     "policy choice: only orders up to \u20b9300"
+    ],
+    "message": {
+     "text": "Our team is seeing a significant spike in wait times for Team B during weekday nights, where the 228 min is currently exceeding the 109 min. Please implement a self-serve instant refund feature for the 744 tickets to help us manage this capacity issue.",
+     "source": "llm"
+    },
+    "effect": {
+     "baseline_b": {
+      "totals": {
+       "tickets": {
+        "mean": 18009.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 1216.8,
+        "std": 237.11537276186883
+       },
+       "transfers": {
+        "mean": 831.2,
+        "std": 5.310367218940659
+       },
+       "agent_hours": {
+        "mean": 2957.1152026420796,
+        "std": 9.89184051091324
+       },
+       "breach_pct": {
+        "mean": 6.756621689155422,
+        "std": 1.3166493018039247
+       },
+       "p90_resolution_min": {
+        "mean": 195.81566439010356,
+        "std": 40.739508944322964
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -23.0,
+        "ci_low": -23.0,
+        "ci_high": -23.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": -12.799999999999978,
+        "ci_low": -20.320859780636773,
+        "ci_high": -5.279140219363183,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": 2.799999999999977,
+        "ci_low": -2.710202667779081,
+        "ci_high": 8.310202667779036,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -3.609458309351976,
+        "ci_low": -5.22024946896834,
+        "ci_high": -1.9986671497356123,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": -0.062366775795775806,
+        "ci_low": -0.10266291138198375,
+        "ci_high": -0.022070640209567866,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -2.6312992793033003,
+        "ci_low": -7.350633992470094,
+        "ci_high": 2.0880354338634928,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     "opslens": {
+      "totals": {
+       "tickets": {
+        "mean": 18009.0,
+        "std": 0.0
+       },
+       "breaches": {
+        "mean": 397.0,
+        "std": 70.99647878592295
+       },
+       "transfers": {
+        "mean": 175.0,
+        "std": 1.0
+       },
+       "agent_hours": {
+        "mean": 2988.761778049621,
+        "std": 17.154811386970863
+       },
+       "breach_pct": {
+        "mean": 2.20445332889111,
+        "std": 0.3942277682598862
+       },
+       "p90_resolution_min": {
+        "mean": 138.5011312768883,
+        "std": 32.580318356301326
+       }
+      },
+      "vs_without": {
+       "tickets": {
+        "mean_diff": -23.0,
+        "ci_low": -23.0,
+        "ci_high": -23.0,
+        "n": 5
+       },
+       "breaches": {
+        "mean_diff": 0.2,
+        "ci_low": -19.82571844004607,
+        "ci_high": 20.22571844004607,
+        "n": 5
+       },
+       "transfers": {
+        "mean_diff": 0.20000000000000567,
+        "ci_low": -2.763956922763882,
+        "ci_high": 3.163956922763893,
+        "n": 5
+       },
+       "agent_hours": {
+        "mean_diff": -4.756607383261235,
+        "ci_low": -7.413830185746953,
+        "ci_high": -2.099384580775517,
+        "n": 5
+       },
+       "breach_pct": {
+        "mean_diff": 0.003920942023319452,
+        "ci_low": -0.1076632270971334,
+        "ci_high": 0.11550511114377231,
+        "n": 5
+       },
+       "p90_resolution_min": {
+        "mean_diff": -2.006495838274455,
+        "ci_low": -5.622061618452468,
+        "ci_high": 1.6090699419035581,
+        "n": 5
+       }
+      },
+      "seeds": [
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "sensitivity": {
+     "0.3": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 18020.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1146.0,
+         "std": 158.00949338568236
+        },
+        "transfers": {
+         "mean": 832.0,
+         "std": 7.937253933193729
+        },
+        "agent_hours": {
+         "mean": 2964.3483366981072,
+         "std": 3.2963367365205825
+        },
+        "breach_pct": {
+         "mean": 6.359600443951166,
+         "std": 0.8768562341047855
+        },
+        "p90_resolution_min": {
+         "mean": 187.31914295457685,
+         "std": 28.306644112996565
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -12.0,
+         "ci_low": -12.0,
+         "ci_high": -12.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -5.666666666666629,
+         "ci_low": -7.100999999999881,
+         "ci_high": -4.232333333333377,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 3.0,
+         "ci_low": -6.93735283329184,
+         "ci_high": 12.93735283329184,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -1.7645672390473617,
+         "ci_low": -3.2236568224890654,
+         "ci_high": -0.30547765560565776,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.02719340402280679,
+         "ci_low": -0.036438507402205854,
+         "ci_high": -0.017948300643407723,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -1.4616417723270085,
+         "ci_low": -6.720771559179857,
+         "ci_high": 3.7974880145258396,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 18020.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 380.6666666666667,
+         "std": 30.550504633038937
+        },
+        "transfers": {
+         "mean": 173.66666666666666,
+         "std": 3.0550504633038935
+        },
+        "agent_hours": {
+         "mean": 2994.8256595295766,
+         "std": 6.354287580522526
+        },
+        "breach_pct": {
+         "mean": 2.112467628560858,
+         "std": 0.169536651681681
+        },
+        "p90_resolution_min": {
+         "mean": 134.4947635987558,
+         "std": 17.869818805283494
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -12.0,
+         "ci_low": -12.0,
+         "ci_high": -12.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -5.666666666666686,
+         "ci_low": -23.29204974839794,
+         "ci_high": 11.958716415064568,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 0.3333333333333333,
+         "ci_low": -4.838229046107183,
+         "ci_high": 5.504895712773849,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -3.0090453528794874,
+         "ci_low": -6.803962494808097,
+         "ci_high": 0.7858717890491227,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.030019801193652256,
+         "ci_low": -0.12761855701857347,
+         "ci_high": 0.06757895463126896,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -1.1286980235550839,
+         "ci_low": -3.778956390379699,
+         "ci_high": 1.5215603432695313,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     },
+     "0.8": {
+      "baseline_b": {
+       "totals": {
+        "tickets": {
+         "mean": 18001.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 1134.6666666666667,
+         "std": 158.594871711961
+        },
+        "transfers": {
+         "mean": 831.0,
+         "std": 7.937253933193772
+        },
+        "agent_hours": {
+         "mean": 2961.5398666976175,
+         "std": 3.3384283887532424
+        },
+        "breach_pct": {
+         "mean": 6.3033535173971815,
+         "std": 0.881033674306766
+        },
+        "p90_resolution_min": {
+         "mean": 186.11497495156073,
+         "std": 25.934980218358756
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -31.0,
+         "ci_low": -31.0,
+         "ci_high": -31.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -16.99999999999996,
+         "ci_low": -34.390367458260656,
+         "ci_high": 0.39036745826073727,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": 1.999999999999962,
+         "ci_low": -7.937352833291736,
+         "ci_high": 11.93735283329166,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -4.573037239537219,
+         "ci_low": -5.8840632384876805,
+         "ci_high": -3.262011240586757,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.08344033057679064,
+         "ci_low": -0.18061866063009502,
+         "ci_high": 0.013737999476513746,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -2.66580977534313,
+         "ci_low": -6.60144179883137,
+         "ci_high": 1.2698222481451098,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      },
+      "opslens": {
+       "totals": {
+        "tickets": {
+         "mean": 18001.0,
+         "std": 0.0
+        },
+        "breaches": {
+         "mean": 377.6666666666667,
+         "std": 31.942656954820357
+        },
+        "transfers": {
+         "mean": 173.0,
+         "std": 4.358898943540674
+        },
+        "agent_hours": {
+         "mean": 2991.1271406665146,
+         "std": 6.783762892994693
+        },
+        "breach_pct": {
+         "mean": 2.098031590837546,
+         "std": 0.1774493470075016
+        },
+        "p90_resolution_min": {
+         "mean": 132.2519140660394,
+         "std": 18.43071037244646
+        }
+       },
+       "vs_without": {
+        "tickets": {
+         "mean_diff": -31.0,
+         "ci_low": -31.0,
+         "ci_high": -31.0,
+         "n": 3
+        },
+        "breaches": {
+         "mean_diff": -8.666666666666686,
+         "ci_low": -15.838333333333313,
+         "ci_high": -1.4950000000000587,
+         "n": 3
+        },
+        "transfers": {
+         "mean_diff": -0.3333333333333333,
+         "ci_low": -4.128222630503645,
+         "ci_high": 3.461555963836978,
+         "n": 3
+        },
+        "agent_hours": {
+         "mean_diff": -6.70756421594145,
+         "ci_low": -11.519736700880719,
+         "ci_high": -1.8953917310021815,
+         "n": 3
+        },
+        "breach_pct": {
+         "mean_diff": -0.044455838916964474,
+         "ci_low": -0.08348137888547368,
+         "ci_high": -0.005430298948455273,
+         "n": 3
+        },
+        "p90_resolution_min": {
+         "mean_diff": -3.371547556271475,
+         "ci_low": -5.015858128104635,
+         "ci_high": -1.7272369844383153,
+         "n": 3
+        }
+       },
+       "seeds": [
+        1,
+        2,
+        3
+       ]
+      }
+     }
+    }
+   }
+  ],
+  "all": {
+   "baseline_b": {
+    "totals": {
+     "tickets": {
+      "mean": 17826.0,
+      "std": 0.0
+     },
+     "breaches": {
+      "mean": 1050.6,
+      "std": 230.6573215833393
+     },
+     "transfers": {
+      "mean": 474.4,
+      "std": 6.107372593841013
+     },
+     "agent_hours": {
+      "mean": 2906.086350686299,
+      "std": 10.445351008737475
+     },
+     "breach_pct": {
+      "mean": 5.893638505553684,
+      "std": 1.2939376280900892
+     },
+     "p90_resolution_min": {
+      "mean": 162.09086852046894,
+      "std": 38.32803426933055
+     }
+    },
+    "vs_without": {
+     "tickets": {
+      "mean_diff": -206.0,
+      "ci_low": -206.0,
+      "ci_high": -206.0,
+      "n": 5
+     },
+     "breaches": {
+      "mean_diff": -179.00000000000003,
+      "ci_low": -218.93968492614837,
+      "ci_high": -139.06031507385168,
+      "n": 5
+     },
+     "transfers": {
+      "mean_diff": -354.0,
+      "ci_low": -360.79978352596606,
+      "ci_high": -347.20021647403394,
+      "n": 5
+     },
+     "agent_hours": {
+      "mean_diff": -54.63831026513217,
+      "ci_low": -56.973716692571934,
+      "ci_high": -52.302903837692405,
+      "n": 5
+     },
+     "breach_pct": {
+      "mean_diff": -0.9253499593975125,
+      "ci_low": -1.142607690828117,
+      "ci_high": -0.708092227966908,
+      "n": 5
+     },
+     "p90_resolution_min": {
+      "mean_diff": -36.356095148937946,
+      "ci_low": -45.994907161115506,
+      "ci_high": -26.71728313676039,
+      "n": 5
+     }
+    },
+    "seeds": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   },
+   "opslens": {
+    "totals": {
+     "tickets": {
+      "mean": 17826.0,
+      "std": 0.0
+     },
+     "breaches": {
+      "mean": 340.2,
+      "std": 69.88347444138707
+     },
+     "transfers": {
+      "mean": 117.4,
+      "std": 2.4083189157584615
+     },
+     "agent_hours": {
+      "mean": 2936.7894461777046,
+      "std": 17.72575445486367
+     },
+     "breach_pct": {
+      "mean": 1.9084483338943117,
+      "std": 0.3920311592134358
+     },
+     "p90_resolution_min": {
+      "mean": 126.35660748758819,
+      "std": 30.17293496303298
+     }
+    },
+    "vs_without": {
+     "tickets": {
+      "mean_diff": -206.0,
+      "ci_low": -206.0,
+      "ci_high": -206.0,
+      "n": 5
+     },
+     "breaches": {
+      "mean_diff": -56.6,
+      "ci_low": -73.33907283453891,
+      "ci_high": -39.86092716546109,
+      "n": 5
+     },
+     "transfers": {
+      "mean_diff": -57.4,
+      "ci_low": -60.63734449201811,
+      "ci_high": -54.16265550798189,
+      "n": 5
+     },
+     "agent_hours": {
+      "mean_diff": -56.728939255178105,
+      "ci_low": -61.748545186197696,
+      "ci_high": -51.709333324158514,
+      "n": 5
+     },
+     "breach_pct": {
+      "mean_diff": -0.29208405297347884,
+      "ci_low": -0.38995556466172254,
+      "ci_high": -0.19421254128523513,
+      "n": 5
+     },
+     "p90_resolution_min": {
+      "mean_diff": -14.151019627574538,
+      "ci_low": -18.354309972153565,
+      "ci_high": -9.947729282995512,
+      "n": 5
+     }
+    },
+    "seeds": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  "opslens_all_vs_baseline_b": {
+   "tickets": {
+    "mean_diff": -206.0,
+    "ci_low": -206.0,
+    "ci_high": -206.0,
+    "n": 5
+   },
+   "breaches": {
+    "mean_diff": -889.4,
+    "ci_low": -1126.628001010336,
+    "ci_high": -652.171998989664,
+    "n": 5
+   },
+   "transfers": {
+    "mean_diff": -711.0,
+    "ci_low": -720.7358083793797,
+    "ci_high": -701.2641916206203,
+    "n": 5
+   },
+   "agent_hours": {
+    "mean_diff": -23.935214773726877,
+    "ci_low": -37.32473063399469,
+    "ci_high": -10.54569891345906,
+    "n": 5
+   },
+   "breach_pct": {
+    "mean_diff": -4.910540131056886,
+    "ci_low": -6.22263442990767,
+    "ci_high": -3.598445832206103,
+    "n": 5
+   },
+   "p90_resolution_min": {
+    "mean_diff": -72.09035618181869,
+    "ci_low": -90.27620268016666,
+    "ci_high": -53.90450968347072,
+    "n": 5
+   }
+  },
+  "base": {
+   "baseline_b": {
+    "tickets": {
+     "mean": 18032.0,
+     "std": 0.0
+    },
+    "breaches": {
+     "mean": 1229.6,
+     "std": 241.3406306447383
+    },
+    "transfers": {
+     "mean": 828.4,
+     "std": 6.877499545619708
+    },
+    "agent_hours": {
+     "mean": 2960.724660951431,
+     "std": 10.057342174230572
+    },
+    "breach_pct": {
+     "mean": 6.8189884649511985,
+     "std": 1.3384019002037393
+    },
+    "p90_resolution_min": {
+     "mean": 198.4469636694069,
+     "std": 44.15131428765304
+    }
+   },
+   "opslens": {
+    "tickets": {
+     "mean": 18032.0,
+     "std": 0.0
+    },
+    "breaches": {
+     "mean": 396.8,
+     "std": 58.02327119354786
+    },
+    "transfers": {
+     "mean": 174.8,
+     "std": 2.949576240750525
+    },
+    "agent_hours": {
+     "mean": 2993.5183854328825,
+     "std": 15.931688630895504
+    },
+    "breach_pct": {
+     "mean": 2.2005323868677906,
+     "std": 0.32177945426767895
+    },
+    "p90_resolution_min": {
+     "mean": 140.50762711516273,
+     "std": 30.64544248103611
+    }
+   }
+  }
  },
  "brief": {
   "text": "Our test days show that OpsLens resulted in 2.2% while priority-first routing led to 6.8% and first-in-first-out routing caused 13.1%. The resolution speed for these methods reached 141 min and 198 min respectively. We also noted that 10,788 tickets fall under the top issue group, which sees 13.01 transfers compared to 2.56 for similar cases.",

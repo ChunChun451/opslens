@@ -29,11 +29,55 @@ export function render(section) {
     return;
   }
   section.innerHTML = `${head}
+    ${playbooksCard()}
     ${assignmentsCard(rec)}
     ${staffingCard(rec)}`;
 
   section.querySelectorAll("[data-decision]").forEach((button) => {
     button.addEventListener("click", () => logDecision(button));
+  });
+}
+
+// Fix-at-source playbooks (added 16 Oct): an upstream action per evidence card, each replayed
+// on the test days in the simulator. Every number is a paired difference from results.json.
+function playbooksCard() {
+  const pbs = state.results.playbooks;
+  if (!pbs || !pbs.playbooks.length) return "";
+  const diff = (path, unit) => `${ev(path + ".mean_diff", unit, { signed: true })}
+    <span class="small muted">[${ev(path + ".ci_low", unit, { signed: true })}, ${ev(path + ".ci_high", unit, { signed: true })}]</span>`;
+  const item = (pb, i) => {
+    const base = `playbooks.playbooks[${i}]`;
+    const fx = (policy, kpi) => `${base}.effect.${policy}.vs_without.${kpi}`;
+    const assumptions = pb.assumptions.map((a, k) =>
+      `<li class="${a.startsWith("ASSUMPTION") ? "assumption" : ""}">${evText(`${base}.assumptions[${k}]`)}</li>`).join("");
+    return `<div class="playbook" id="playbook-${i}">
+        <div class="week-head">
+          <h4>${evText(base + ".title")}</h4>
+          <span class="pill">${evText(base + ".owner")}</span>
+        </div>
+        <p>${evText(base + ".message.text")}
+          <span class="small muted">(${pb.message.source === "llm" ? "drafted by the LLM, numbers filled in by code" : "template"})</span></p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Measured on test days</th><th class="num">Priority-first</th><th class="num">OpsLens</th></tr></thead>
+          <tbody>
+            <tr><td>Tickets</td><td class="num">${diff(fx("baseline_b", "tickets"), "int")}</td><td class="num">${diff(fx("opslens", "tickets"), "int")}</td></tr>
+            <tr><td>Customers who missed the SLA</td><td class="num">${diff(fx("baseline_b", "breaches"), "int")}</td><td class="num">${diff(fx("opslens", "breaches"), "int")}</td></tr>
+            <tr><td>Transfers</td><td class="num">${diff(fx("baseline_b", "transfers"), "int")}</td><td class="num">${diff(fx("opslens", "transfers"), "int")}</td></tr>
+            <tr><td>Agent-hours of work</td><td class="num">${diff(fx("baseline_b", "agent_hours"), "hours")}</td><td class="num">${diff(fx("opslens", "agent_hours"), "hours")}</td></tr>
+          </tbody></table></div>
+        <ul class="small muted">${assumptions}</ul>
+        <div class="decision">${decisionButtons("playbook", i)}</div>
+      </div>`;
+  };
+  const all = (policy) => `playbooks.all.${policy}.vs_without.breaches`;
+  return card({
+    id: "rec-playbooks",
+    title: "Fix at the source",
+    sub: "Each problem OpsLens found gets an action for the team that can remove it, not just route it faster. Each action was replayed on the 14 held-out days (5 seeds, same tickets and luck); numbers are the change against the same floor without it, with a 95% interval.",
+    body: `<div class="grid cols-2">${pbs.playbooks.map(item).join("")}</div>
+      <p><strong>All together:</strong> customers who missed the SLA change by ${diff(all("baseline_b"), "int")} under priority-first
+        and ${diff(all("opslens"), "int")} under OpsLens. OpsLens with every playbook vs priority-first today:
+        ${diff("playbooks.opslens_all_vs_baseline_b.breaches", "int")}.</p>`,
   });
 }
 
@@ -142,7 +186,9 @@ function logDecision(button) {
   const kind = button.dataset.kind;
   const index = Number(button.dataset.index);
   const rec = state.results.recommendations;
-  const item = kind === "assignment" ? rec.assignments[index] : rec.staffing_moves[index];
+  const lists = { assignment: rec.assignments, staffing_move: rec.staffing_moves,
+                  playbook: (state.results.playbooks || { playbooks: [] }).playbooks };
+  const item = lists[kind][index];
   const entry = {
     kind,
     index,

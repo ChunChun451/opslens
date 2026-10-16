@@ -204,6 +204,12 @@ The risk model. Switching it off raises breaches from 2.20% to 4.21% (+2.01, 95%
 +2.47]). The classifier adds +0.14 [+0.01, +0.27]. Staffing, scarcity and the min-cost flow are
 within noise on these days — we report that rather than hide it.
 
+**Q32b. (Attack) Greedy matches your OR-Tools solver (2.18% vs 2.20%). Why keep min-cost flow?**
+Because the gain was never the solver: it is the value each pair gets (risk-based rescue +
+aging), which greedy also uses. Decisions happen the moment an agent frees up, so usually one
+agent is free and there is nothing to coordinate. The flow costs 0.08 ms and guarantees the best
+joint choice at shift starts and at scale (5,000 × 500 in 0.05 s).
+
 **Q33. What happens on a really bad day?**
 With 25% more tickets (on top of a sale day and an unseen surge), FIFO breaches 53.6%,
 priority-first 29.1%, OpsLens 10.7%. With 10% of agents absent: 20.3%, 9.9% and 3.1%. In a
@@ -236,3 +242,41 @@ on the same data scores AUC 0.857 against 0.552 for the priority rule.
 **Q38. Does the demo need the internet?**
 No. Results, LLM answers (cached), data and Chart.js are local; What-if, Plant and Upload run
 on the laptop. `make demo` checks that real results exist before it starts.
+
+---
+
+## Challenger arena (16 Oct)
+
+**Q39. Did you try a 2025 foundation model for the forecast?**
+Yes, Chronos-2, zero-shot, same test hours and origins. Hourly WAPE 0.304 vs our LightGBM 0.305:
+0.4% better, below the 2% bar we wrote down before running it, so LightGBM stays. Its 80% range
+covered 76% of hours, ours 79%. Both sit near the Poisson floor (0.280): there is little left to win.
+
+---
+
+## Fix-at-source playbooks (16 Oct)
+
+**Q40. You find that cluster 17 sends 2.5× the wrong items. Do you just route those tickets faster?**
+No. Each cause gets an action for the team that can remove it: partner ops gets a kitchen
+order-check, product gets a phone-menu fix, a status banner and self-serve refunds, training gets
+two named agents to cross-train. Each one was replayed on the 14 held-out days.
+
+**Q41. What do those actions actually save?**
+On today's priority-first floor, all six together: 179 fewer breaches in two weeks (95% CI 139 to
+219). With OpsLens: 57 fewer (CI 40 to 73). Together, 889 fewer than priority-first today, out of
+1,230. The biggest single one: cross-training two Hindi speakers, −83 and −51.
+
+**Q42. (Attack) "Saves 30% of tickets" — you made that number up.**
+Some inputs are guesses, and we label them: 30% of customers skip a ticket after a status banner,
+60% use self-serve. Each guess is re-run at a low and high value (banner 15% → 50%: 1 to 16
+breaches saved). Everything else is measured: which tickets, which agents, which hours.
+
+**Q43. Why do most playbooks barely help under OpsLens?**
+Because OpsLens already absorbs those symptoms: its classifier fixes the phone-menu routing, so
+the menu fix saves 46 breaches under priority-first but only 3 under OpsLens. Cross-training still
+helps (−51) because it adds capacity where no routing can help. We show both columns on purpose.
+
+**Q44. Is the LLM finally doing something?**
+It drafts the request to each owner team, from facts it can only cite by key, like the brief. It
+never writes a digit; one draft that copied "cluster 17" was rejected and the template was used
+until we passed the cluster number as a key too.

@@ -33,6 +33,7 @@ sys.path.insert(0, str(ROOT))
 from opslens import risk  # noqa: E402
 from opslens.config import load_config  # noqa: E402
 from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
+from opslens.playbooks import apply_scenario  # noqa: E402
 from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b  # noqa: E402
 from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
 from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
@@ -65,6 +66,10 @@ def run_one(job: dict) -> dict:
     agents = load_agents()
     if job.get("staffing"):
         agents = apply_staffing_plan(agents, json.loads((GENERATED / "staffing_plan.json").read_text(encoding="utf-8")))
+    weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
+    for spec in job.get("scenarios", []):  # fix-at-source playbooks (eval/run_playbooks.py)
+        tickets, preds, agents, _ = apply_scenario(tickets, preds, agents, spec, job["first_day"], job["last_day"],
+                                                   weekday, alerts=job.get("alerts"))
     gen_cfg = load_config("generator")
     if job.get("absent_prob") is not None:
         gen_cfg = {**gen_cfg, "absent_prob": job["absent_prob"]}

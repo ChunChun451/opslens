@@ -19,8 +19,10 @@
    − 2.0 if the agent is not trained for the category − a small scarcity cost.
    - **Aging is counted in SLA lengths** (3.0 per SLA waited, capped at one SLA): a P1 (60-min
      SLA) gains value 24× faster than a P3 (24-hour SLA), and a ticket already past its SLA stops
-     gaining, so lost tickets cannot crowd out tickets that can still be saved.
-   - **Guard:** a ticket 240 minutes past its SLA gets +50 and is served next.
+     gaining: past its SLA it is worth a small fixed value (0.2, policy v3), so lost tickets cannot
+     crowd out tickets that can still be saved.
+   - **Guard:** a ticket 480 minutes past its SLA gets +50 and is served next — except while more
+     than 150 tickets wait ("crisis mode": protect what can still be saved).
    - Language must match, always. A cross-skill job (1.6× slower) only to rescue a ticket with
      rescue ≥ 0.5.
    - Scarcity: a rare agent (e.g. one of 3 Hindi + refund agents) prefers rare work but never
@@ -46,20 +48,20 @@ in turn; rare-skill agent, no rare work is more urgent".
 ## Results on the held-out test days (43–56, 5 seeds, same tickets and luck)
 | | Baseline A (FIFO) | Baseline B (priority) | **OpsLens** |
 |---|---|---|---|
-| SLA breach % | 13.11 | 6.82 | **2.38** |
-| P1 breach % | 27.34 | 9.13 | **4.86** |
-| Hindi customers' breach % | 22.11 | 16.18 | **3.84** |
+| SLA breach % | 13.11 | 6.82 | **2.20** |
+| P1 breach % | 27.34 | 9.13 | **4.89** |
+| Hindi customers' breach % | 22.11 | 16.18 | **3.46** |
 | P90 resolution (min) | 185 | 198 | **141** |
-| P99 wait (min) | 816 | 1,007 | **732** |
+| P99 wait (min) | 816 | 1,007 | **728** |
 | Transfers per 100 | 4.66 | 4.59 | **0.97** |
-| Reopen rate % | 3.93 | 3.93 | 4.39 |
-OpsLens − Baseline B: breach **−4.44 points, 95% CI [−5.58, −3.30]**; P90 −58 min; P99 −275 min.
-OpsLens − Baseline A: breach **−10.73 [−12.94, −8.52]**.
-Solver: median 0.07 ms per decision, max 2.3 ms, no fallbacks. 5,000 tickets × 500 agents: 0.115 s.
+| Reopen rate % | 3.93 | 3.93 | 4.40 |
+OpsLens − Baseline B: breach **−4.62 points, 95% CI [−6.01, −3.23]**; P90 −58 min; P99 −280 min.
+OpsLens − Baseline A: breach **−10.91 [−13.38, −8.43]**.
+Solver: median 0.08 ms per decision, no fallbacks. 5,000 tickets × 500 agents: 0.047 s (numbers: `docs/NUMBERS.md`).
 Ablations and stress tests: `docs/NUMBERS.md`.
 
 ## Weaknesses
-- Reopens rise a little (4.39% vs 3.93%): the price of cross-skill rescue jobs.
+- Reopens rise a little (4.40% vs 3.93%): the price of cross-skill rescue jobs.
 - The value formula is hand-built (with tuned weights), not learned end to end.
 - With instant decisions, usually one agent is free at a time, so the joint solve rarely beats a
   per-agent greedy pick (see the ablations). It matters at shift starts and at scale.

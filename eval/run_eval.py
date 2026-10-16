@@ -34,7 +34,8 @@ from opslens.results_schema import Results  # noqa: E402
 PARTS = ROOT / "eval" / "parts"
 STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
-         ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py")]
+         ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
+         ("playbooks", "eval/run_playbooks.py")]
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -179,6 +180,12 @@ def assemble(timings: dict[str, float]) -> dict:
                                "was designed and chosen on validation days only; all three test results are kept here."),
         },
     }
+    if (PARTS / "playbooks.json").exists():
+        pb = part("playbooks")
+        results["playbooks"] = {k: pb[k] for k in ("test_days", "seeds", "playbooks", "all", "opslens_all_vs_baseline_b", "base")}
+    # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
+    results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
+                                         if (PARTS / f"challenger_{name}.json").exists()}
     results["brief"] = make_brief(results)
     Results.model_validate(results)  # fails loudly if anything drifted from the contract
     return results
@@ -280,6 +287,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
+    ] + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -287,6 +295,51 @@ def numbers_md(r: dict) -> str:
         f"- Full evaluation pipeline: {fmt(r['speed']['pipeline_seconds'] / 60, 1)} min.", "",
     ]
     return "\n".join(lines)
+
+
+def playbooks_md(r: dict) -> list[str]:
+    pbs = r.get("playbooks")
+    if not pbs:
+        return []
+    lines = ["", "## Fix-at-source playbooks (test days, change vs the same policy without it)", "",
+             "| Playbook | Owner | Tickets prevented | Breaches: priority-first | Breaches: OpsLens | Agent-hours (OpsLens) |",
+             "|---|---|---|---|---|---|"]
+
+    def cell(d: dict) -> str:
+        return f"{d['mean_diff']:+.1f} [{d['ci_low']:+.1f}, {d['ci_high']:+.1f}]"
+
+    for pb in pbs["playbooks"]:
+        b, o = pb["effect"]["baseline_b"]["vs_without"], pb["effect"]["opslens"]["vs_without"]
+        lines.append(f"| {pb['title']} | {pb['owner']} | {0.0 - o['tickets']['mean_diff'] + 0.0:.0f} | {cell(b['breaches'])} | "
+                     f"{cell(o['breaches'])} | {o['agent_hours']['mean_diff']:+.1f} |")
+    b, o = pbs["all"]["baseline_b"]["vs_without"], pbs["all"]["opslens"]["vs_without"]
+    lines.append(f"| **All together** | | {0.0 - o['tickets']['mean_diff'] + 0.0:.0f} | {cell(b['breaches'])} | {cell(o['breaches'])} | "
+                 f"{o['agent_hours']['mean_diff']:+.1f} |")
+    h = pbs["opslens_all_vs_baseline_b"]
+    base_b = pbs["base"]["baseline_b"]["breaches"]["mean"]
+    lines += ["", f"- OpsLens with every playbook vs priority-first today: breaches {cell(h['breaches'])} "
+              f"(of {base_b:.0f}), breach % {cell(h['breach_pct'])} points.",
+              "- Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; "
+              "see `playbooks[].sensitivity` in results.json."]
+    return lines
+
+
+def challengers_md(r: dict) -> list[str]:
+    ch = r["details"].get("challengers") or {}
+    lines = ["", "## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)", ""]
+    if "forecast" in ch:
+        f = ch["forecast"]
+        s = f["scores"]["lead_1_24h"]
+        lines.append(f"- Forecast: Chronos-2 (zero-shot) WAPE {fmt(s['wape_chronos2'], 3)} vs LightGBM {fmt(s['wape_lightgbm'], 3)} "
+                     f"({f['relative_gain_pct']:+.1f}%), 80% coverage {fmt(100 * s['coverage80_chronos2'], 1)}% vs "
+                     f"{fmt(100 * s['coverage80_lightgbm_conformal'], 1)}%; one 48 h refresh {fmt(f['one_refresh_s'], 1)} s → **{f['verdict']}**.")
+    if "risk" in ch:
+        k = ch["risk"]
+        lines.append(f"- Risk: TabPFN-3 AUC {fmt(k['scores']['tabpfn3']['auc'], 4)} vs LightGBM {fmt(k['scores']['lightgbm_shipped']['auc'], 4)} "
+                     f"({k['relative_gain_pct']:+.2f}%), 300-ticket refresh {fmt(k['refresh_300_s']['tabpfn3'], 2)} s → **{k['verdict']}**.")
+    else:
+        lines.append("- Risk: TabPFN-3 not run yet (needs the owner's TabPFN licence key).")
+    return lines if ch else []
 
 
 def main() -> int:

@@ -270,6 +270,18 @@ class Brief(Strict):
     numbers_used: list[str]
 
 
+class PlaybooksSection(Strict):
+    """Fix-at-source playbooks (opslens/playbooks.py), each measured on the test days
+    (eval/run_playbooks.py). Effects are paired differences vs the same policy without it."""
+
+    test_days: list[int]
+    seeds: list[int]
+    playbooks: list[dict[str, Any]]
+    all: dict[str, Any]
+    opslens_all_vs_baseline_b: dict[str, Any]
+    base: dict[str, Any]
+
+
 class Results(Strict):
     meta: Meta
     sim: SimSection | None = None
@@ -283,6 +295,7 @@ class Results(Strict):
     stress: list[dict[str, float | str]] = []
     speed: SpeedSection | None = None
     brief: Brief | None = None
+    playbooks: PlaybooksSection | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

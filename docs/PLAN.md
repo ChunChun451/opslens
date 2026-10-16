@@ -209,3 +209,20 @@ the engine, not the CSS.
 - [ ] Groq API key → `.env`. Check which free models exist today.
 - [ ] Download Bitext + UCI into `data/public/`; fill `data/SOURCES.md`.
 - [ ] Owner: decide on the challenger arena (adds torch, eval-only) — can wait until M8.
+
+---
+
+## 9. Decisions of 16 Oct (after an outside review of M1–M11)
+
+An outside AI review attacked five things. The owner's decisions:
+
+| Review point | Our reading | Decision |
+|---|---|---|
+| Optimiser ablation: greedy ties min-cost flow (2.18% vs 2.20%) | True. The gain is the risk-based value (+2.01 points without it); with instant decisions one agent is usually free at a time | Not built now. Say it plainly in Q&A: "the value function is the engine; the solver is a 0.07 ms guarantee for many-free-agent moments" |
+| "Where is the AI?" — LLM boxed in | The no-digit rule is a strength; the LLM is just not visible | Partly: the LLM drafts the playbook text. A grounded "Ask OpsLens" chat stays a non-goal (section 9 of CLAUDE.md) |
+| Treats symptoms (routing), not causes | **Best point** | **Build `playbooks.py`: fix-at-source actions, each measured by the simulator** |
+| Synthetic food data + old ServiceNow data | True; no public food-delivery support log with agents/SLAs exists | Say it openly; Upload CSV invites their own export |
+| Visual punch | Fair | Floor map in the replay, later, UI side |
+
+Rejected from the review: its win-odds estimate and every ₹ / ticket figure it invented
+(nothing it computed). Sneha's Claude Pro: shared GitHub repo deferred by the owner.
