@@ -11,6 +11,7 @@ import { initEvidence, ev, evText } from "./js/evidence.js";
 import { setChartDefaults } from "./js/charts.js";
 import { initTabs } from "./js/router.js";
 import { initStory } from "./js/story.js";
+import { initAsk } from "./js/ask.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -45,6 +46,7 @@ async function start() {
   initEvidence(); // before story mode, so Esc closes the popover first
   initTabs();
   initStory();
+  initAsk();
 }
 
 function showLoadError(error) {

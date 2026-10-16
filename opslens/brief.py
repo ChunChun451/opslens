@@ -32,7 +32,8 @@ SYSTEM = (
     "You write a short daily brief for the head of a food-delivery support floor. "
     "Use ONLY the facts given. Never write a number yourself, in digits or in words: refer to every "
     "number as {{key}} exactly as listed, and use each key only with the meaning described next to it. "
-    "3 to 4 sentences, plain words, no bullet points. "
+    "3 to 4 sentences, plain words, no bullet points. Each value already carries its unit; do not add "
+    "units or words like 'respectively', and name the method or group next to every value. "
     'Reply with JSON only: {"brief": "..."}'
 )
 
@@ -64,9 +65,12 @@ def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
         facts["top_issue_tickets"] = (f"{top['affected_tickets']:,}",
                                       f"how many tickets belong to the top issue group ({issue})",
                                       "patterns.cards[0].affected_tickets")
-        facts["top_issue_value"] = (f"{top['value']:g}", f"the top issue's {top['metric']}", "patterns.cards[0].value")
-        facts["top_issue_normal"] = (f"{top['comparison_value']:g}", f"the same measure for comparable tickets",
-                                     "patterns.cards[0].comparison_value")
+        # The unit travels with the value ("13.0 transfers per 100 tickets"), so the LLM cannot
+        # drop it (it once wrote "13.01 transfers").
+        facts["top_issue_value"] = (f"{top['value']:.1f} {top['metric']}", f"the top issue's {top['metric']}",
+                                    "patterns.cards[0].value")
+        facts["top_issue_normal"] = (f"{top['comparison_value']:.1f} {top['metric']}",
+                                     "the same measure for comparable tickets", "patterns.cards[0].comparison_value")
     return facts
 
 
@@ -92,8 +96,8 @@ def template_brief(facts: dict[str, tuple[str, str, str]]) -> str:
             f"{v['priority_breach']} for priority-first and {v['fifo_breach']} for first-in-first-out routing. "
             f"90% of tickets were resolved within {v['opslens_p90']} (priority-first: {v['priority_p90']}).")
     if "top_issue_tickets" in facts:
-        text += (f" The top issue to fix covers {v['top_issue_tickets']} tickets: its {facts['top_issue_value'][1].split(chr(39) + 's ', 1)[-1]} "
-                 f"is {v['top_issue_value']} against {v['top_issue_normal']} for comparable tickets.")
+        text += (f" The top issue to fix covers {v['top_issue_tickets']} tickets: "
+                 f"{v['top_issue_value']} against {v['top_issue_normal']} for comparable tickets.")
     return text
 
 

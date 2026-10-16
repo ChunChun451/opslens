@@ -31,7 +31,7 @@ from opslens.world import build_world, day_bounds
 
 SHOW = ["turnaround.breach_pct", "turnaround.p90_resolution_min", "turnaround.mean_wait_min",
         "turnaround.max_backlog", "productivity.transfers_per_100", "quality.p99_wait_min",
-        "quality.mean_utilisation", "tickets"]
+        "quality.mean_utilisation", "quality.late_minutes_per_100", "tickets"]
 MAX_VOLUME, MIN_VOLUME, MAX_DELTA = 2.0, 0.5, 5
 
 

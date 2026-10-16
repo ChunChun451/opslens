@@ -116,5 +116,38 @@ def plant(request: dict) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
+@app.post("/api/ask")
+def ask(request: dict) -> JSONResponse:
+    """Ask OpsLens: a plain-words question → one engine tool → an answer (opslens/ask.py)."""
+    import pandas as pd
+
+    from opslens.ask import answer
+    from opslens.config import load_config
+    from opslens.llm.base import LLMUnavailable
+    from opslens.llm.client import build_client
+    from opslens.whatif import run_whatif
+    from server.plant_demo import run_plant
+
+    question = str(request.get("question", "")).strip()[:300]
+    if not question:
+        return JSONResponse({"error": "empty question"}, status_code=400)
+    try:
+        client = build_client(["groq_route", "gemini"])
+    except LLMUnavailable:
+        client = None  # offline: keyword rules still answer the common questions
+    inputs = engine_inputs()
+    tools = {
+        "whatif": lambda req: run_whatif(req, inputs["tickets"], inputs["agents"], inputs["preds"], inputs["model"],
+                                         inputs["weights"], inputs["test_days"]),
+        "plant": run_plant,
+    }
+    results = json.loads(results_path().read_text(encoding="utf-8"))
+    first_weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
+    try:
+        return JSONResponse(answer(question, client, tools, results, inputs["test_days"], first_weekday))
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
 app.mount("/web", StaticFiles(directory=ROOT / "web", html=True), name="web")
 app.mount("/eval", StaticFiles(directory=ROOT / "eval"), name="eval")

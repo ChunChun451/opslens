@@ -34,6 +34,21 @@ providers:
     extra_params:
       max_tokens: 900           # a request expecting > 1,000 output tokens is refused outright
 
+  # Ask OpsLens (opslens/ask.py) routes ONE question per request with a ~60-token reply, so
+  # it can ask more often than the batch classifier above without nearing 1,000 output
+  # tokens/minute. Separate entry = separate pacing counter. Groq answered in 0.2 s on
+  # 17 Oct; Gemini took 16 s, too slow for a live demo, so Groq goes first for routing.
+  groq_route:
+    kind: openai_compat
+    base_url: https://api.groq.com/openai/v1
+    model: qwen/qwen3.8-27b
+    api_key_env: GROQ_API_KEY
+    requests_per_minute: 10
+    requests_per_day: 300
+    timeout_s: 20
+    extra_params:
+      max_tokens: 200
+
   mock:
     kind: mock
     model: mock-1
