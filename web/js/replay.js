@@ -11,6 +11,7 @@ import { state, policyKeys } from "./data.js";
 import { ev, evText } from "./evidence.js";
 import { makeChart, policyStyle } from "./charts.js";
 import { policyName } from "./ui.js";
+import { hasFloor, floorHtml, floorLegend, drawFloor } from "./floormap.js";
 
 let index = 0; // the replay step on screen
 let timer = null; // setInterval handle while playing
@@ -41,6 +42,7 @@ export function replayHtml() {
         </div>
       </div>
       <div class="grid cols-3" id="rp-lanes"></div>
+      <div id="rp-legend"></div>
       <div class="grid cols-2" style="margin-top: 20px">
         <div><div class="section-label">Tickets waiting</div><div class="chart sm"><canvas id="rp-wait-chart"></canvas></div></div>
         <div><div class="section-label">Breaches so far</div><div class="chart sm"><canvas id="rp-breach-chart"></canvas></div></div>
@@ -64,7 +66,9 @@ export function initReplay() {
           <div><div class="stat-label">Breaches so far</div><div class="stat-value md" id="rp-b-${k}"></div></div>
         </div>
         <div class="queue-track"><div class="queue-fill" id="rp-q-${k}" style="background: ${policyStyle(k).color}"></div></div>
+        ${hasFloor() ? floorHtml(k) : ""}
       </div>`).join("");
+  document.getElementById("rp-legend").innerHTML = hasFloor() ? floorLegend() : "";
 
   const scrub = document.getElementById("rp-scrub");
   scrub.max = String(replay.times.length - 1);
@@ -139,6 +143,7 @@ function showStep(i) {
   });
   charts.waiting.update("none");
   charts.breached.update("none");
+  if (hasFloor()) drawFloor(keys, replay.times[i]);
 }
 
 export function startReplay() {

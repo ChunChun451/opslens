@@ -38,3 +38,12 @@ def test_lateness_matches_the_docstring_example() -> None:
     out = lateness(t)
     assert out["quality.mean_minutes_late"] == 60.0
     assert out["quality.late_minutes_per_100"] == 4000.0
+
+
+def test_floor_recorder_does_not_change_the_run() -> None:
+    world = make_world([0, 1, 2, 3], [30, 30, 30, 30], [agent("X", "B", {"refund"}), agent("Y", "C", {"missing_item"})])
+    plain = simulate(world, baseline_a(), 0, 200, decide_every_min=1)
+    recorded = simulate(world, baseline_a(), 0, 200, decide_every_min=1, floor_window=(0, 60))
+    assert plain.tickets["resolved_min"].tolist() == recorded.tickets["resolved_min"].tolist()
+    # At minute 5: X works on T0 (refund, Team B), Y has nothing it can do; 3 refunds wait.
+    assert recorded.floor[1] == {"minute": 5, "agents": {"X": "busy", "Y": "idle"}, "queues": {"B": [3, 0]}}

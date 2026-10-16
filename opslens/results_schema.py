@@ -79,6 +79,10 @@ class Replay(Strict):
     step_min: float
     times: list[str]  # "18:00", "18:15", ...
     series: dict[str, ReplaySeries]  # policy key -> series
+    # Floor map (eval/run_opslens.py::floor_frames): agents, 5-min times, a status letter per
+    # agent per frame, and each team's queue [can still make SLA, already late]. Optional so
+    # older results still validate.
+    floor: dict[str, dict[str, Any]] | None = None
 
 
 class SimSection(Strict):

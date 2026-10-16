@@ -47,7 +47,8 @@ def compare(first: int, last: int, seeds: list[int]) -> dict:
 
 
 if __name__ == "__main__":
-    out = {"validation": compare(36, 42, [1, 2, 3])}
+    # --test-only: the sealed second world (eval/run_sealed_world.py) needs no validation run.
+    out = {} if "--test-only" in sys.argv else {"validation": compare(36, 42, [1, 2, 3])}
     if "--validation-only" not in sys.argv:
         out["test"] = compare(43, 56, [1, 2, 3, 4, 5])
     PARTS.mkdir(parents=True, exist_ok=True)

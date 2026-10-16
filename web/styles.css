@@ -1968,3 +1968,95 @@ body.has-fixture .ask-panel {
     display: none;
   }
 }
+
+/* ---- Floor map in the replay (web/js/floormap.js) ----------------------------------------
+   One row per team: agent tiles, then the queue as dots. Colours always have a legend. */
+
+.floor {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.floor-team {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.floor-name {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.floor-name b {
+  color: var(--ink);
+}
+
+.floor-agents,
+.floor-queue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  min-height: 14px;
+  align-items: center;
+}
+
+.floor-queue {
+  margin-top: 5px;
+}
+
+.floor .muted {
+  font-size: 0.7rem;
+}
+
+.tile {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.tile.busy { background: var(--blue); }
+.tile.cross { background: #e09a2b; }
+.tile.wrong { background: var(--bad); }
+.tile.idle { background: var(--surface); border: 1.5px solid var(--good); }
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa7b8;
+}
+
+.dot.late {
+  background: var(--bad);
+}
+
+.floor-queue .more {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.floor-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.floor-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

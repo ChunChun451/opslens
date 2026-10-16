@@ -91,10 +91,14 @@ def run_one(job: dict) -> dict:
         policy = OpsLensPolicy(world, dict(zip(preds.ticket_id, preds.pred_final)), risk.load(GENERATED / "models"),
                                weights, OpsLensSettings(**job.get("settings", {})), log_window=log_window)
     started = time.perf_counter()
-    result = simulate(world, policy, warm, end, metric_start_min=start, seed_label=str(job["seed"]))
+    day0 = (REPLAY_DAY - 1) * MINUTES_PER_DAY
+    floor_window = (day0 + REPLAY_FROM_H * 60, day0 + REPLAY_TO_H * 60) if job.get("log") else None
+    result = simulate(world, policy, warm, end, metric_start_min=start, seed_label=str(job["seed"]),
+                      floor_window=floor_window)
     out = {"job": job, "kpis": summarize(result), "seconds": time.perf_counter() - started}
     if job.get("log"):
         out["replay"] = replay_series(result, world)
+        out["floor"] = floor_frames(result.floor, world, day0=(REPLAY_DAY - 1) * MINUTES_PER_DAY)
         out["decisions"] = [{**d, "ticket_id": world.ticket_ids[d["ticket_idx"]]} for d in getattr(policy, "decision_log", [])]
     if hasattr(policy, "stats"):
         ms = policy.stats.solve_ms or [0.0]
@@ -133,6 +137,20 @@ def replay_series(result, world) -> dict:
         "times": [f"{int((m - day0) // 60) % 24:02d}:{int(m % 60):02d}" for m in times],
         "waiting": [int(snaps.get(m, 0)) for m in times],
         "breached_cum": [int(((breach_at >= since) & (breach_at <= m)).sum()) for m in times],
+    }
+
+
+def floor_frames(frames: list[dict], world, day0: float) -> dict:
+    """Floor map for the replay, compact for the dashboard: agents once, then per 5-min frame a
+    status letter per agent (o off, i idle, b busy, x cross-skill, w wrong queue) and each
+    team's queue as [can still make SLA, already late]."""
+    letter = {"off": "o", "idle": "i", "busy": "b", "cross": "x", "wrong": "w"}
+    agents = [{"id": a.agent_id, "team": a.team, "languages": sorted(a.languages)} for a in world.agents]
+    return {
+        "agents": agents,
+        "times": [f"{int((f['minute'] - day0) // 60) % 24:02d}:{int(f['minute'] % 60):02d}" for f in frames],
+        "status": ["".join(letter[f["agents"][a["id"]]] for a in agents) for f in frames],
+        "queues": [f["queues"] for f in frames],
     }
 
 
@@ -211,7 +229,9 @@ def compare(seeds: list[int]) -> int:
     replay = {"title": "Saturday 17 Oct, 18:00-24:00", "day": REPLAY_DAY, "step_min": 15.0,
               "times": logged["opslens"]["replay"]["times"],
               "series": {k: {"waiting": logged[k]["replay"]["waiting"], "breached_cum": logged[k]["replay"]["breached_cum"]}
-                         for k in labels}}
+                         for k in labels},
+              # Floor map (5-min frames): same seed-1 runs as the series above, so they agree.
+              "floor": {k: logged[k]["floor"] for k in labels}}
     PARTS.mkdir(parents=True, exist_ok=True)
     (PARTS / "sim.json").write_text(json.dumps({
         "seeds": seeds, "test_days": [first, last], "policies": policies, "comparisons": comparisons,
