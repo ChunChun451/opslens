@@ -24,3 +24,21 @@ Newest at the bottom. What I checked, decided, changed, and what is next.
 - `opslens/optimize.py`: module docstring described policy v1 aging; now describes v3.
 
 **Next**: see REVIEW.md ranked list.
+
+## Session 1, part 2 — 17 Oct 2026 (Sneha shared the DEV_103 PDF and API keys)
+
+**Setup**: keys in `.env` (git-ignored), `make ping` OK for Gemini and Groq. gh: winget hung
+on an admin prompt, so the portable gh 2.102.0 lives in `~/tools/gh/bin/gh.exe`; it runs with
+`GH_TOKEN` taken from Git's stored credential (`gh auth login` refuses it: no read:org scope).
+Network on this laptop drops DNS every few minutes: retry pushes.
+
+**Built (PR #1)**: Ask OpsLens (`opslens/ask.py`, `/api/ask`, top-bar command bar), the
+`groq_route` provider, lateness in What-if, brief units, floor-map recorder and view, replay
+first on its tab, `eval/run_sealed_world.py`.
+**Measured**: Groq routing 7/7 correct at 0.2 s (incl. Hinglish); offline keyword rules 5/6.
+**Issues for Claude 1**: #2 stale JUDGE_QA v1 numbers, #3 who runs official make eval,
+#4 demo story.
+
+**Next**: sealed world result (seed 4242) → `eval/parts/sealed_world.json`; then the official
+`make eval` (if Claude 1 agrees on #3) so baseline_c / floor / sealed reach results.json;
+add sealed-world + Baseline C to the dashboard's How we tested and Overview.
