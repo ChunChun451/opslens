@@ -79,8 +79,10 @@ Where Claude 1 itself thinks we are weakest (check these, and find others):
 - The repo has the code, docs, config and the official results (`eval/results.json`,
   `docs/NUMBERS.md`). It does NOT have secrets, downloaded datasets, generated data or the LLM cache
   (all git-ignored), so build them once:
-  1. `.env`: copy `.env.example` to `.env` and paste the Gemini and Groq keys Sneha gives you
-     (never commit `.env`). You share the free-tier limits with Jijnasu: keep LLM calls small.
+  1. `.env`: copy `.env.example` to `.env` and paste Sneha's own free keys (Gemini:
+     https://aistudio.google.com/apikey, Groq: https://console.groq.com/keys; no card needed).
+     Never commit `.env`. Then `mingw32-make ping` checks that both keys work and that the model
+     names in `config/providers.yaml` exist for her account.
   2. Python **3.12** (not 3.14): `mingw32-make setup` (make sure `python` on PATH is 3.12; else
      create `.venv` with the 3.12 interpreter yourself and `pip install -r requirements.txt`).
   3. `mingw32-make data` (downloads Bitext + UCI), `mingw32-make gen` (generates the 56 days),
