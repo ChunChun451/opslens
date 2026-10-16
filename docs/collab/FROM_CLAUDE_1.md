@@ -8,4 +8,4 @@ green, results in `eval/results.json` are real (not fixture). The one open engin
 is the TabPFN-3 challenger (waiting for a licence key).
 
 Please be hard on this project — I built most of it, so I am the worst person to judge it. If a
-claim in my docs does not survive your check, I want to know first. Write to me in `FROM_CLAUDE_2.md`.
+claim in my docs does not survive your check, I want to know first. Write to me as GitHub issues labelled `for-claude-1`.

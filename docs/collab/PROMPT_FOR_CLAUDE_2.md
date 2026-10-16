@@ -1,6 +1,7 @@
 # Prompt for Claude 2 (Sneha's Claude Code) — from Claude 1 (Jijnasu's Claude Code)
 
-Paste everything below the line into Claude Code, opened in the unzipped `opslens` folder.
+Sneha: clone the repo (`gh repo clone <owner>/opslens C:\dev\opslens` or GitHub Desktop), open that
+folder in Claude Code, and paste everything below the line.
 
 ---
 
@@ -75,23 +76,36 @@ Where Claude 1 itself thinks we are weakest (check these, and find others):
 - If you believe a rule is wrong, write the argument down in your review instead of breaking it.
 
 ## Setup (Windows)
-- `.env` with the Gemini and Groq keys is included. You share the free-tier limits with
-  Jijnasu, so keep LLM calls small (the SQLite cache in `cache/` already holds most answers).
-- Python **3.12** venv in `.venv` (not 3.14). If the shipped `.venv` does not work on this machine,
-  delete it and run `mingw32-make setup`. Then: `mingw32-make test` (111 tests), `mingw32-make demo`
-  → http://localhost:8000. Full re-evaluation: `mingw32-make eval` (~40 min, uses all CPU cores).
-- `.venv-challengers` is optional and eval-only (PyTorch). Ignore it unless you work on the challenger arena.
+- The repo has the code, docs, config and the official results (`eval/results.json`,
+  `docs/NUMBERS.md`). It does NOT have secrets, downloaded datasets, generated data or the LLM cache
+  (all git-ignored), so build them once:
+  1. `.env`: copy `.env.example` to `.env` and paste the Gemini and Groq keys Sneha gives you
+     (never commit `.env`). You share the free-tier limits with Jijnasu: keep LLM calls small.
+  2. Python **3.12** (not 3.14): `mingw32-make setup` (make sure `python` on PATH is 3.12; else
+     create `.venv` with the 3.12 interpreter yourself and `pip install -r requirements.txt`).
+  3. `mingw32-make data` (downloads Bitext + UCI), `mingw32-make gen` (generates the 56 days),
+     `mingw32-make test` (111 tests), then `mingw32-make eval` (~40 min, uses all CPU cores).
+  4. `mingw32-make demo` → http://localhost:8000.
+- Your re-run of `make eval` may differ slightly from the committed results (the LLM answers are
+  not cached on your machine). The committed `eval/results.json` is the official one: do not
+  commit a re-generated results file unless your change needs it, and then list what moved.
+- The challenger arena (`eval/challengers/`, PyTorch in a separate `.venv-challengers`) is
+  optional and eval-only. Ignore it unless you work on it.
 
 ## How we work together
-- **Use git.** The zip contains the repo with its history. Create a branch first:
-  `git checkout -b claude2/review`. Make small commits with clear messages, never rewrite
-  history, never commit to `main`. Jijnasu will merge your branch.
+- **GitHub is our shared space** (private repo `opslens`). Work on branches named
+  `claude2/<topic>` (start with `claude2/review`), small commits with clear messages, push them,
+  and open a **pull request into `main`** with `gh pr create` for each coherent change. Never push
+  to `main`, never force-push or rewrite history. Claude 1 reviews your PRs (and you review
+  Claude 1's: `gh pr list`, `gh pr diff <n>`, `gh pr review <n> --comment`); a human merges.
+- Pull often (`git fetch`, then rebase or merge `origin/main` into your branch) so we do not drift.
 - **Claude 1 is also working in parallel** on: the TabPFN challenger (`eval/challengers/`),
   the rehearsal docs, and appends to `PROGRESS.md`. Avoid editing those files. If you must, say so
-  in your messages file. Everything else is open to you.
-- **Talk to Claude 1 through files** in `docs/collab/`:
-  - `FROM_CLAUDE_2.md`: your messages, findings and questions to Claude 1 (newest at the top, dated).
-  - `FROM_CLAUDE_1.md`: Claude 1's replies arrive there with the next exchange.
+  in the PR. Everything else is open to you.
+- **Talk to Claude 1 through GitHub Issues**: label `for-claude-1` for your messages, findings
+  and questions; Claude 1 writes to you with label `for-claude-2`. At the start of every session
+  run `gh issue list --label for-claude-2` and answer what is open. One issue per topic; close it
+  when settled. (`docs/collab/FROM_CLAUDE_1.md` holds Claude 1's first hello.)
 - **Your usage window is limited** (Claude Pro). Keep a running log in
   `docs/collab/CLAUDE_2_LOG.md` (what you checked, decided, changed, what is next), so a fresh
   session can continue where you stopped.
@@ -104,7 +118,8 @@ Where Claude 1 itself thinks we are weakest (check these, and find others):
 2. **Then make the changes** you believe in most, highest impact first. After any change that
    touches results, re-run `mingw32-make eval` and state which numbers moved and why.
    Keep `mingw32-make test` green and add tests for new logic.
-3. **At the end of each session:** update your log and `FROM_CLAUDE_2.md`, commit, and tell Sneha
+3. **At the end of each session:** update your log, push, open or update the PR, post open
+   questions as `for-claude-1` issues, and tell Sneha
    in plain words what changed, what is unverified, and what you recommend next.
 
 ## Dates
