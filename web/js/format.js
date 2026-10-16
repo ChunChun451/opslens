@@ -17,6 +17,7 @@ const MINUS = "−"; // a real minus sign reads better on a projector than "-"
 //   frac_pct a fraction shown as a percent (0.92 -> "92%")
 //   min      minutes; int count; num plain number; ratio two decimals (rho, AUC)
 //   hours    agent-hours; sec seconds; ms milliseconds; text a string
+//   dur      minutes, shown as min, h or days depending on size (long IT incidents)
 // scale multiplies the value; minDigits/maxDigits are decimal places; suffix is the unit text.
 const UNIT_RULES = {
   pct: { scale: 1, minDigits: 1, maxDigits: 1, suffix: "%" },
@@ -38,6 +39,12 @@ export function fmt(value, unit = "num", bare = false) {
   }
   if (typeof value !== "number") {
     return String(value);
+  }
+  // "dur": minutes shown in the most readable unit (95 min, 6.4 h, 7.4 days).
+  if (unit === "dur") {
+    if (Math.abs(value) < 120) return fmt(value, "min", bare);
+    if (Math.abs(value) < 2880) return num(value / 60, 0, 1) + (bare ? "" : " h");
+    return num(value / 1440, 0, 1) + (bare ? "" : " days");
   }
   const rule = UNIT_RULES[unit] || UNIT_RULES.num;
   const scaled = value * rule.scale;
@@ -77,6 +84,13 @@ export function unitForPath(path) {
 // The unit for a spread or difference of a value in `unit` (a spread of 13.0% is "1.0 pts").
 export function spreadUnit(unit) {
   return unit === "pct" ? "pts" : unit;
+}
+
+// "2026-10-16T00:22:40" -> "16 Oct 2026, 00:22" (only the look changes; the popover keeps the raw value).
+export function fmtDateTime(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return String(iso);
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + ", " + String(iso).slice(11, 16);
 }
 
 // Indian digit grouping (1,00,000) because the judges are in India.
@@ -132,7 +146,7 @@ export const KPIS = {
   "turnaround.max_backlog": { label: "Max backlog (tickets)", unit: "int", better: "lower" },
   "productivity.tickets_per_agent_hour": { label: "Tickets per agent-hour", unit: "num", better: "higher" },
   "productivity.transfers_per_100": { label: "Transfers per 100 tickets", unit: "num", better: "lower" },
-  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: "lower" },
+  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: null }, // more or less is not clearly better
   "quality.reopen_rate_pct": { label: "Reopen rate", unit: "pct", better: "lower" },
   "quality.p99_wait_min": { label: "P99 wait", unit: "min", better: "lower" },
   "quality.max_wait_min": { label: "Max wait", unit: "min", better: "lower" },
@@ -183,9 +197,14 @@ export const DEFINITIONS = {
   priority_auc: "AUC of a simple rule: rank tickets by priority.",
   priority_rule_auc: "AUC of the 'rank by priority' rule on the real UCI data.",
   agents_on_roster: "Agents on the roster for this simulated day, after your changes.",
+  fresh_days: "Days of fresh data generated with the planted problem hidden in them.",
+  rows: "Tickets (rows) in the uploaded data.",
+  mean_resolution_min: "Resolution (turnaround) time = resolved_at − created_at, averaged over tickets.",
+  tickets: "Number of tickets.",
+  aging_lost: "Policy v3: a ticket that is already lost keeps only this share of its waiting-time value, so it stops crowding out tickets that can still be saved.",
+  guard_queue_limit: "Policy v3: above this many waiting tickets the fairness guard pauses (crisis mode) and the optimiser protects what can still be saved.",
   test_breach_pct: "Breach rate on the test days.",
   aging_per_sla: "How fast a waiting ticket gains priority, in SLA lengths (policy v2).",
-  mean_resolution_min: "Resolution (turnaround) time = resolved_at − created_at, averaged over tickets.",
   p90_resolution_min: "P90 resolution time: 90% of tickets resolve faster than this.",
   mean_wait_min: "Wait time = first agent pickup − created_at, averaged over tickets.",
   wait_min: "Wait time = first agent pickup − created_at.",
@@ -254,7 +273,6 @@ export const DEFINITIONS = {
   pipeline_seconds: "Wall-clock time for the full pipeline.",
   optimizer_ms_median: "Median time the optimiser needs for one decision step.",
   optimizer_ms_max: "Slowest optimiser decision step.",
-  tickets: "Waiting tickets in the scale test.",
   agents: "Agents in the scale test.",
   seconds: "Seconds the optimiser took in the scale test.",
   n_tickets: "Tickets in the generated dataset.",
@@ -272,6 +290,10 @@ export const DEFINITIONS = {
 export function definitionFor(path) {
   if (path.startsWith("whatif.")) {
     return "Simulated live for your settings. " + definitionFor(path.slice("whatif.".length));
+  }
+  if (path.startsWith("plant.") || path.startsWith("upload.")) {
+    const rest = path.slice(path.indexOf(".") + 1);
+    return "Computed live by the server for this request (not part of the results file). " + definitionFor(rest);
   }
   if (/^patterns\.delay_decomposition\./.test(path)) {
     return /after_first_pickup$/.test(path) ? DEFINITIONS.after_first_pickup : DEFINITIONS.waiting_decomp;

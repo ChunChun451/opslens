@@ -10,37 +10,60 @@
 // Example (real results, 16 Oct): removing the risk scores raises breaches by +2.8 pts
 // (paired 95% CI +1.7 to +3.9) versus full OpsLens.
 
-import { state, policyLabel } from "../data.js";
+import { state, policyLabel, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS } from "../charts.js";
-import { missing } from "../ui.js";
+import { pageHeader, missing } from "../ui.js";
 import { escapeHtml, prettyKey, unitForKey } from "../format.js";
+
+// The sections of this tab, for the jump bar at the top (id, label).
+const SECTIONS = [
+  ["what-failed", "What failed"],
+  ["t-sim", "Simulator"],
+  ["t-recall", "Recall"],
+  ["t-class", "Classifier"],
+  ["t-forecast", "Forecast"],
+  ["t-risk", "Risk"],
+  ["t-ablations", "Ablations"],
+  ["t-stress", "Stress"],
+  ["t-sens", "Speed"],
+  ["tuning-panel", "Weights"],
+  ["limitations", "Limits"],
+];
 
 export function render(section) {
   const r = state.results;
   section.innerHTML = `
-    <div class="tab-head"><div>
-      <h2>How we tested</h2>
-      <p>Every claim on this dashboard, how it was measured, what failed, and our limits.</p>
+    ${pageHeader("How we tested", "Every claim on this dashboard, how it was measured, what failed, and our limits.")}
+    <div class="subnav"><div class="segmented" role="navigation" aria-label="Sections">
+      ${SECTIONS.map(([id, label]) => `<button type="button" data-jump="${id}" aria-pressed="false">${label}</button>`).join("")}
     </div></div>
     ${r.stress.length || details().v1_record ? honestPanel() : ""}
-    <div class="grid-2">
+    <div class="grid cols-2">
       ${setupPanel()}
       ${r.patterns ? recallPanel() : missing("Pattern recall", "M4")}
     </div>
-    <div class="grid-2">
+    <div class="grid cols-2">
       ${r.classification ? classificationPanel() : missing("Classification", "M3")}
       ${r.forecast ? forecastPanel() : missing("Forecast evaluation", "M6")}
     </div>
     ${r.risk ? riskPanel() : missing("Risk model evaluation", "M5")}
     ${ablationRows().length ? ablationsPanel() : missing("Ablations", "M8")}
     ${r.stress.length ? stressPanel() : missing("Stress tests", "M8")}
-    <div class="grid-2">
+    <div class="grid cols-2" id="t-sens">
       ${r.sensitivity.length ? genericPanel("Sensitivity", "How results move when one setting changes.", "sensitivity") : missing("Sensitivity", "M8")}
       ${r.speed ? speedPanel() : missing("Speed and scale", "M8")}
     </div>
     ${details().tuning && details().tuning.history ? tuningPanel() : ""}
     ${limitationsPanel()}`;
+
+  // The jump bar scrolls to a section (buttons, not links: the address bar holds the tab).
+  section.querySelectorAll("[data-jump]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = document.getElementById(button.dataset.jump);
+      if (target) target.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  });
 
   if (r.risk && r.risk.calibration.length) drawCalibration();
   if (details().risk && details().risk.feature_gain) drawFeatureGain();
@@ -70,7 +93,7 @@ function metricTable(rows) {
     }
     return `<tr><td>${escapeHtml(label)}</td><td class="num">${value}</td></tr>`;
   }).join("");
-  return `<table class="metric-table"><tbody>${body}</tbody></table>`;
+  return `<table class="kv"><tbody>${body}</tbody></table>`;
 }
 
 function hasValue(path) {
@@ -92,45 +115,105 @@ function verdict(ciLow, ciHigh) {
 
 // ---- What failed, and what we changed ----------------------------------------------------
 
-function honestPanel() {
+// The policy versions, oldest first. Each was designed and chosen on validation days only; the
+// test days were run once per version and every result is kept (details.test_runs_note).
+// A kept version has a record: { test_breach_pct, stress, ablations, note }. The current
+// version reads the main results (sim + stress). Names and short titles are our words;
+// every number is read by path.
+function versions() {
   const d = details();
-  const v1 = d.v1_record && Object.keys(d.v1_record).length ? d.v1_record : null;
-  const v2 = d.design_v2 && Array.isArray(d.design_v2.rows) ? d.design_v2 : null;
-  const steps = [];
-
-  if (v1) {
-    const b = "details.v1_record.test_breach_pct";
-    steps.push(`<li><strong>Our first policy (v1), on the test days.</strong>
-        Breach rate ${ev(b + ".opslens", "pct")} against ${ev(b + ".baseline_a", "pct")} for
-        ${escapeHtml(policyLabel("baseline_a"))} and ${ev(b + ".baseline_b", "pct")} for
-        ${escapeHtml(policyLabel("baseline_b"))}. Then the stress tests:
-        ${stressVerdicts("details.v1_record.stress", v1.stress)}
-        ${v1.note ? `<div class="small muted">Why: ${evText("details.v1_record.note")}</div>` : ""}</li>`);
+  const kept = [];
+  if (d.v1_record && d.v1_record.stress) {
+    kept.push({ base: "details.v1_record", title: "Ages tickets per hour", design: null });
   }
-
-  if (v2) {
-    steps.push(`<li><strong>What we changed, on validation days only</strong>
-        (days ${ev("details.design_v2.validation_days[0]", "int")}–${ev("details.design_v2.validation_days[1]", "int")},
-        seeds ${evText("details.design_v2.seeds")}). We tried these designs; the test days were not used to choose.
-        ${designTable(v2)}
-        ${hasValue("details.weights.aging_per_sla")
-          ? `<div class="small">Chosen setting: aging per SLA = ${ev("details.weights.aging_per_sla", "num")}.</div>`
-          : ""}</li>`);
+  if (d.v2_record && d.v2_record.stress) {
+    kept.push({ base: "details.v2_record", title: "Ages tickets in SLA units", design: d.design_v2 ? "details.design_v2" : null });
   }
+  const crisis = hasValue("details.weights.aging_lost") && hasValue("details.weights.guard_queue_limit");
+  const designKey = `design_v${kept.length + 1}`;
+  const current = {
+    base: null,
+    title: crisis ? "Crisis mode" : "Current policy",
+    design: d[designKey] ? `details.${designKey}` : (kept.length === 0 && d.design_v2 ? "details.design_v2" : null),
+    current: true,
+  };
+  return kept.concat([current]).map((v, i) => ({ ...v, name: "v" + (i + 1) }));
+}
 
-  steps.push(`<li><strong>${v1 ? "v2 on the test days, run once after the choice." : "The current policy on the test days."}</strong>
-      Breach rate ${ev("sim.policies.opslens.kpis.turnaround.breach_pct.mean", "pct")} on normal days. Stress tests:
-      ${stressVerdicts("stress", state.results.stress)}</li>`);
+// Paths for one version: its normal-day breach rates and its stress rows.
+function versionPaths(v) {
+  if (v.current) {
+    return {
+      ours: "sim.policies.opslens.kpis.turnaround.breach_pct.mean",
+      baseB: "sim.policies.baseline_b.kpis.turnaround.breach_pct.mean",
+      stress: "stress",
+    };
+  }
+  return { ours: `${v.base}.test_breach_pct.opslens`, baseB: `${v.base}.test_breach_pct.baseline_b`, stress: `${v.base}.stress` };
+}
 
-  const pending = !v1 || !v2
-    ? `<p class="small muted">The v1 record and the validation-day design table appear here after the next
-         <code>make eval</code> (they are in <code>details.v1_record</code> and <code>details.design_v2</code>).</p>`
-    : "";
-  return `<div class="panel honest" id="what-failed">
-      <h3>What failed, and what we changed</h3>
-      <ol class="honest-steps">${steps.join("")}</ol>
-      ${pending}
-    </div>`;
+// Index of the "+25% volume" stress row (the test that decided v1 -> v2 -> v3), else the first.
+function volumeRow(rows) {
+  const i = rows.findIndex((row) => /^\+\s*25/.test(String(row.scenario)));
+  return i >= 0 ? i : 0;
+}
+
+function honestPanel() {
+  const list = versions();
+  // The strip: one tile per version with its +25% volume result and verdict.
+  const tiles = list.map((v) => {
+    const paths = versionPaths(v);
+    const rows = lookup(paths.stress) || [];
+    if (!rows.length) return "";
+    const i = volumeRow(rows);
+    const row = `${paths.stress}[${i}]`;
+    return `<div class="version ${v.current ? "is-current" : ""}">
+        <div class="stat-label">${v.name} · ${escapeHtml(v.title)}</div>
+        <div class="stat-value">${ev(row + ".opslens", "pct")}</div>
+        <div class="stat-sub">breaches at ${evText(row + ".scenario")} vs ${ev(row + ".baseline_b", "pct")} for ${escapeHtml(policyLabel("baseline_b"))}</div>
+        <div style="margin-top: 8px">${typeof rows[i].ci_low === "number" ? verdict(rows[i].ci_low, rows[i].ci_high) : ""}</div>
+      </div>`;
+  }).join("");
+
+  // The steps: what each version did on the test days, why it changed, and the designs tried.
+  const steps = list.map((v) => {
+    const paths = versionPaths(v);
+    const rows = lookup(paths.stress) || [];
+    let why = "";
+    if (v.current && hasValue("details.weights.aging_lost")) {
+      why = `<p class="small" style="margin-top: 6px">What changed: a ticket that is already lost keeps only
+        ${ev("details.weights.aging_lost", "num")} of its waiting value, so it stops crowding out tickets that can
+        still be saved; and the fairness guard pauses while more than ${ev("details.weights.guard_queue_limit", "int")}
+        tickets wait.</p>`;
+    } else if (!v.current && lookup(v.base + ".note")) {
+      why = `<p class="small muted" style="margin-top: 6px">Why it changed: ${evText(v.base + ".note")}</p>`;
+    }
+    const design = v.design
+      ? `<details class="disclosure"><summary>Show the designs tried on validation days
+          (days ${ev(v.design + ".validation_days[0]", "int")}–${ev(v.design + ".validation_days[1]", "int")})</summary>
+          ${designTable(v.design)}</details>`
+      : "";
+    return `<li>
+        <h4>${v.name} · ${escapeHtml(v.title)}${v.current ? ` <span class="pill">current</span>` : ""}</h4>
+        <p>Normal test days: OpsLens ${ev(paths.ours, "pct")} vs ${ev(paths.baseB, "pct")} for
+          ${escapeHtml(policyLabel("baseline_b"))}. Stress tests:</p>
+        ${stressVerdicts(paths.stress, rows)}
+        ${why}${design}
+      </li>`;
+  }).join("");
+
+  const note = hasValue("details.test_runs_note")
+    ? `<div class="callout info" style="margin-top: 16px">${evText("details.test_runs_note")}</div>`
+    : `<p class="card-foot">Earlier versions appear here once <code>make eval</code> keeps their records
+        (<code>details.v1_record</code>, <code>details.v2_record</code>).</p>`;
+  return `<section class="card honest" id="what-failed">
+      <div class="card-head"><div><h3 class="card-title">What failed, and what we changed</h3>
+        <div class="card-sub">Verdicts come from the sign of each 95% CI of (OpsLens − ${escapeHtml(policyLabel("baseline_b"))}),
+          so the words stay honest when numbers change</div></div></div>
+      ${list.length > 1 ? `<div class="versions">${tiles}</div>` : ""}
+      <ol class="steps" style="margin-top: 22px">${steps}</ol>
+      ${note}
+    </section>`;
 }
 
 // One line per stress scenario: OpsLens − Baseline B with its CI and a plain verdict.
@@ -139,25 +222,26 @@ function stressVerdicts(base, rows) {
   const items = rows.map((row, i) => {
     const path = `${base}[${i}]`;
     if (typeof row.opslens_minus_b !== "number") {
-      return `<li>${evText(path + ".scenario")}: OpsLens ${ev(path + ".opslens", "pct")}</li>`;
+      return `<li><strong>${evText(path + ".scenario")}</strong> OpsLens ${ev(path + ".opslens", "pct")}</li>`;
     }
-    return `<li>${evText(path + ".scenario")}: OpsLens − ${escapeHtml(policyLabel("baseline_b"))}
-        ${ev(path + ".opslens_minus_b", "pts", { signed: true })}
-        <span class="muted">(95% CI ${ev(path + ".ci_low", "pts", { signed: true })} to
-        ${ev(path + ".ci_high", "pts", { signed: true })})</span> ${verdict(row.ci_low, row.ci_high)}</li>`;
+    return `<li>${verdict(row.ci_low, row.ci_high)} <strong>${evText(path + ".scenario")}</strong>
+        <span>OpsLens ${ev(path + ".opslens", "pct")} vs ${ev(path + ".baseline_b", "pct")}:
+          ${ev(path + ".opslens_minus_b", "pts", { signed: true })}</span>
+        <span class="muted">95% CI ${ev(path + ".ci_low", "pts", { signed: true })} to ${ev(path + ".ci_high", "pts", { signed: true })}</span></li>`;
   }).join("");
-  return `<ul class="verdict-list">${items}</ul>`;
+  return `<ul class="verdicts">${items}</ul>`;
 }
 
-// The validation-day design table: one row per candidate, breach columns only (to fit).
-function designTable(v2) {
-  const columns = Object.keys(v2.rows[0]).filter((k) => k !== "variant" && /breach_pct$/.test(k));
+// A validation-day design table: one row per candidate, breach columns only (to fit).
+function designTable(base) {
+  const design = lookup(base);
+  const columns = Object.keys(design.rows[0]).filter((k) => k !== "variant" && /breach_pct$/.test(k));
   const header = columns.map((c) => `<th class="num">${escapeHtml(designHeader(c))}</th>`).join("");
-  const body = v2.rows.map((row, i) => `<tr>
-      <td>${evText(`details.design_v2.rows[${i}].variant`)}</td>
-      ${columns.map((c) => `<td class="num">${ev(`details.design_v2.rows[${i}].${c}`, "pct", { bare: true })}</td>`).join("")}
+  const body = design.rows.map((row, i) => `<tr>
+      <td>${evText(`${base}.rows[${i}].variant`)}</td>
+      ${columns.map((c) => `<td class="num">${ev(`${base}.rows[${i}].${c}`, "pct", { bare: true })}</td>`).join("")}
     </tr>`).join("");
-  return `<div class="table-wrap"><table class="design-table">
+  return `<div class="table-wrap"><table>
       <thead><tr><th>Design</th>${header}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
@@ -183,8 +267,8 @@ function setupPanel() {
     ["Git commit", "meta.git_commit", "text"],
     ["Evaluation run time", "meta.run_seconds", "sec"],
   ];
-  return `<div class="panel"><h3>Data and fair simulator</h3>${metricTable(rows)}
-      <p class="panel-note">All model, threshold and weight choices use validation days only.</p></div>`;
+  return `<section class="card" id="t-sim"><div class="card-head"><div><h3 class="card-title">Data and fair simulator</h3>
+      <div class="card-sub">All model, threshold and weight choices use validation days only</div></div></div>${metricTable(rows)}</section>`;
 }
 
 function recallPanel() {
@@ -197,10 +281,11 @@ function recallPanel() {
   }
   rows.push(["Live spike detected after", "patterns.live_detection_latency_min", "min"]);
   rows.push(["Live false alerts per week", "details.patterns.live_false_alerts_per_week", "num"]);
-  return `<div class="panel"><h3>Finding planted problems</h3>${metricTable(rows)}
-      ${p.recall ? recallDetails(p.recall) : ""}
+  return `<section class="card" id="t-recall"><div class="card-head"><div><h3 class="card-title">Finding planted problems</h3>
+      <div class="card-sub">The engine never reads the plant list; only the evaluation does</div></div></div>${metricTable(rows)}
       ${p.blind_recall ? blindTable() : ""}
-      <p class="panel-note">The engine never reads the plant list; only the evaluation does.</p></div>`;
+      ${p.recall ? `<details class="disclosure"><summary>Show each planted problem</summary>${recallDetails(p.recall)}</details>` : ""}
+    </section>`;
 }
 
 // Each planted problem: found? right cause? which evidence card?
@@ -214,7 +299,7 @@ function recallDetails(recall) {
         <td>${item.card ? evText(base + ".card") : "—"}</td>
       </tr>`;
   }).join("");
-  return `<div class="table-wrap"><table class="small">
+  return `<div class="table-wrap"><table>
       <thead><tr><th>Planted problem</th><th>Found</th><th>Right cause</th><th>Card</th></tr></thead>
       <tbody>${rows}</tbody></table></div>`;
 }
@@ -245,15 +330,16 @@ function blindTable() {
           <td class="num">${ev(base + ".found", "int")}</td>
           <td class="num">${ev(base + ".diagnosed", "int")}</td></tr>`;
     }).join("");
-    typeTable = `<div class="table-wrap"><table class="small">
+    typeTable = `<details class="disclosure"><summary>Show blind recall by cause type</summary><div class="table-wrap"><table>
         <thead><tr><th>Blind recall by cause type</th><th class="num">Planted</th><th class="num">Found</th>
-        <th class="num">Right cause</th></tr></thead><tbody>${body}</tbody></table></div>`;
+        <th class="num">Right cause</th></tr></thead><tbody>${body}</tbody></table></div></details>`;
   }
   return metricTable(rows) + typeTable;
 }
 
 function classificationPanel() {
-  return `<div class="panel"><h3>Ticket classification</h3>${metricTable([
+  return `<section class="card" id="t-class"><div class="card-head"><div><h3 class="card-title">Ticket classification</h3>
+      <div class="card-sub">Local model first, the LLM only for tickets it is unsure about</div></div></div>${metricTable([
     ["Customer's own menu choice was right", "details.classification.menu_choice_accuracy", "frac_pct"],
     ["Local model accuracy", "classification.accuracy_local", "frac_pct"],
     ["Cascade accuracy (local, then LLM)", "classification.accuracy_cascade", "frac_pct"],
@@ -265,11 +351,12 @@ function classificationPanel() {
     ["Wrong team per 100, routing by menu choice", "details.classification.misrouted_per_100_menu", "num"],
     ["Wrong team per 100, routing by OpsLens", "details.classification.misrouted_per_100_opslens", "num"],
     ["Transfers avoided per 100 tickets", "classification.transfers_avoided_per_100", "num"],
-  ])}</div>`;
+  ])}</section>`;
 }
 
 function forecastPanel() {
-  return `<div class="panel"><h3>Forecast (test days)</h3>${metricTable([
+  return `<section class="card" id="t-forecast"><div class="card-head"><div><h3 class="card-title">Forecast</h3>
+      <div class="card-sub">Test days; WAPE = total absolute error ÷ total actual</div></div></div>${metricTable([
     ["WAPE, our LightGBM model", "forecast.wape_model", "frac_pct"],
     ["WAPE, seasonal-naive baseline", "forecast.wape_naive", "frac_pct"],
     ["WAPE noise floor (no model can beat it)", "details.forecast.wape_noise_floor", "frac_pct"],
@@ -278,12 +365,13 @@ function forecastPanel() {
     ["Error on the known sale day", "details.forecast.sale_day_error_pct", "pct", { signed: true }],
     ["80% interval coverage", "forecast.coverage_80", "frac_pct"],
     ["90% interval coverage", "forecast.coverage_90", "frac_pct"],
-  ])}</div>`;
+  ])}</section>`;
 }
 
 function riskPanel() {
-  return `<div class="panel"><h3>Breach-risk model (test days)</h3>
-      <div class="grid-2">
+  return `<section class="card" id="t-risk"><div class="card-head"><div><h3 class="card-title">Breach-risk model</h3>
+      <div class="card-sub">Test days, and the same code on real UCI ServiceNow incidents</div></div></div>
+      <div class="grid cols-2">
         <div>
           ${metricTable([
             ["AUC (open tickets, every snapshot)", "risk.auc", "ratio"],
@@ -295,7 +383,7 @@ function riskPanel() {
             ["Brier score", "risk.brier", "ratio"],
             ["Base rate (share that breached)", "risk.base_rate", "frac_pct"],
           ])}
-          <h4>Real data: UCI ServiceNow incidents</h4>
+          <div class="section-label">Real data: UCI ServiceNow incidents</div>
           ${metricTable([
             ["AUC on real incidents (made_sla)", "risk.realdata_auc", "ratio"],
             ["Rule to beat: rank by priority", "details.risk.realdata.priority_rule_auc", "ratio"],
@@ -304,12 +392,12 @@ function riskPanel() {
           ])}
         </div>
         <div>
-          <div class="tile-label">Calibration: predicted vs observed</div>
-          <div class="chart-box short"><canvas id="calibration-chart"></canvas></div>
-          ${details().risk && details().risk.feature_gain ? `<div class="tile-label" style="margin-top: 12px">What the model looks at (share of gain, top 8)</div>
-          <div class="chart-box short"><canvas id="gain-chart"></canvas></div>` : ""}
+          <div class="section-label">Calibration: predicted vs observed</div>
+          <div class="chart sm"><canvas id="calibration-chart"></canvas></div>
+          ${details().risk && details().risk.feature_gain ? `<div class="section-label" style="margin-top: 18px">What the model looks at (share of gain, top 8)</div>
+          <div class="chart sm"><canvas id="gain-chart"></canvas></div>` : ""}
         </div>
-      </div></div>`;
+      </div></section>`;
 }
 
 function drawCalibration() {
@@ -358,7 +446,7 @@ function drawFeatureGain() {
     },
     options: {
       indexAxis: "y",
-      scales: { x: { beginAtZero: true }, y: { grid: { display: false } } },
+      scales: { x: { beginAtZero: true }, y: { grid: { display: false }, ticks: { autoSkip: false } } },
       plugins: { legend: { display: false } },
     },
   }, (datasetIndex, index) => ({ path: `details.risk.feature_gain.${top[index]}`, unit: "frac_pct" }));
@@ -389,16 +477,17 @@ function ablationsPanel() {
         <td class="num">${ev(path + ".delta_breach_vs_full", "pts", { signed: true, bare: true })}${ci}</td>
       </tr>`;
   }).join("");
-  return `<div class="panel"><h3>Ablations: take one part away at a time (test days)</h3>
-      <div class="split-wide">
+  return `<section class="card" id="t-ablations"><div class="card-head"><div><h3 class="card-title">Ablations: take one part away at a time</h3>
+      <div class="card-sub">Test days; how many more breaches without each part, with a paired 95% CI</div></div></div>
+      <div class="grid cols-3-2">
         <div class="table-wrap"><table>
           <thead><tr><th>Variant</th><th class="num">Breach (%)</th><th class="num">P90 resolution (min)</th>
             <th class="num">Breach vs full (pts)${hasCi ? "<div class=\"small\">paired 95% CI</div>" : ""}</th></tr></thead>
           <tbody>${body}</tbody>
         </table></div>
-        <div><div class="tile-label">Extra breaches without each part (pts)${hasCi ? ", whiskers = 95% CI" : ""}</div>
-          <div class="chart-box short"><canvas id="ablation-chart"></canvas></div></div>
-      </div></div>`;
+        <div><div class="section-label">Extra breaches without each part (pts)${hasCi ? ", whiskers = 95% CI" : ""}</div>
+          <div class="chart sm"><canvas id="ablation-chart"></canvas></div></div>
+      </div></section>`;
 }
 
 function drawAblations() {
@@ -420,7 +509,7 @@ function drawAblations() {
     },
     options: {
       indexAxis: "y",
-      scales: { x: { beginAtZero: true }, y: { grid: { display: false } } },
+      scales: { x: { beginAtZero: true }, y: { grid: { display: false }, ticks: { autoSkip: false } } },
       plugins: { legend: { display: false } },
     },
     plugins: [errorBarsPlugin],
@@ -454,9 +543,10 @@ function stressPanel() {
           <td>${verdict(row.ci_low, row.ci_high)}</td>` : ""}
       </tr>`;
   }).join("");
-  return `<div class="panel"><h3>Stress tests (conditions never seen in training)</h3>
-      <div class="table-wrap"><table class="stress-table"><thead>${groupHeader}${header}</thead><tbody>${body}</tbody></table></div>
-      <div class="chart-box short" style="margin-top: 12px"><canvas id="stress-chart"></canvas></div></div>`;
+  return `<section class="card" id="t-stress"><div class="card-head"><div><h3 class="card-title">Stress tests</h3>
+      <div class="card-sub">Conditions never seen in training, on the test days</div></div></div>
+      <div class="table-wrap"><table><thead>${groupHeader}${header}</thead><tbody>${body}</tbody></table></div>
+      <div class="chart sm" style="margin-top: 16px"><canvas id="stress-chart"></canvas></div></section>`;
 }
 
 function drawStress() {
@@ -502,7 +592,8 @@ function genericTable(listName) {
 }
 
 function genericPanel(title, note, listName) {
-  return `<div class="panel"><h3>${escapeHtml(title)}</h3><p class="muted small">${escapeHtml(note)}</p>${genericTable(listName)}</div>`;
+  return `<section class="card"><div class="card-head"><div><h3 class="card-title">${escapeHtml(title)}</h3>
+      <div class="card-sub">${escapeHtml(note)}</div></div></div>${genericTable(listName)}</section>`;
 }
 
 function speedPanel() {
@@ -515,7 +606,8 @@ function speedPanel() {
   Object.keys(s.scale_test).forEach((key) => {
     rows.push([`Scale test: ${prettyKey(key)}`, `speed.scale_test.${key}`, key === "seconds" ? "sec" : "int"]);
   });
-  return `<div class="panel"><h3>Speed and scale</h3>${metricTable(rows)}</div>`;
+  return `<section class="card"><div class="card-head"><div><h3 class="card-title">Speed and scale</h3>
+      <div class="card-sub">Optimiser time per decision, and one big scale test</div></div></div>${metricTable(rows)}</section>`;
 }
 
 // How the optimiser weights were chosen: one weight at a time, on validation days only.
@@ -529,22 +621,24 @@ function tuningPanel() {
         <td class="num">${ev(base + ".breach_pct", "pct", { bare: true })}</td>
         <td class="num">${ev(base + ".p99_wait_min", "min", { bare: true })}</td></tr>`;
   }).join("");
-  return `<div class="panel" id="tuning-panel"><h3>How the weights were chosen (validation days only)</h3>
-      <p class="small muted">Days ${ev("details.tuning.validation_days[0]", "int")}–${ev("details.tuning.validation_days[1]", "int")},
+  return `<section class="card" id="tuning-panel"><div class="card-head"><div><h3 class="card-title">How the weights were chosen</h3>
+      <div class="card-sub">Validation days only, one weight at a time</div></div></div>
+      <p class="small muted" style="margin-bottom: 10px">Days ${ev("details.tuning.validation_days[0]", "int")}–${ev("details.tuning.validation_days[1]", "int")},
         seeds ${evText("details.tuning.seeds")}. ${escapeHtml(policyLabel("baseline_b"))} on the same days:
         breach ${ev("details.tuning.baseline_b.breach_pct", "pct")}, P99 wait ${ev("details.tuning.baseline_b.p99_wait_min", "min")}.</p>
       ${chosen ? `<div class="chips">${chosen}</div>` : ""}
-      <details style="margin-top: 10px"><summary class="small">Every setting we tried</summary>
-        <div class="table-wrap"><table class="small">
+      <details class="disclosure"><summary>Show every setting we tried</summary>
+        <div class="table-wrap"><table>
           <thead><tr><th>Weight</th><th class="num">Value</th><th class="num">Breach (%)</th><th class="num">P99 wait (min)</th></tr></thead>
           <tbody>${rows}</tbody></table></div>
-      </details></div>`;
+      </details></section>`;
 }
 
 // Written by us, in words only. These are the honest limits we say out loud in the pitch.
 function limitationsPanel() {
-  return `<div class="panel" id="limitations"><h3>Limitations</h3>
-      <ul>
+  return `<section class="card" id="limitations"><div class="card-head"><div><h3 class="card-title">Limitations</h3>
+      <div class="card-sub">What we say out loud in the pitch</div></div></div>
+      <ul class="small" style="margin: 0; padding-left: 20px; line-height: 1.8">
         <li>The operations layer (timestamps, agents, skills, shifts, SLAs) is generated, not real. We say so openly.</li>
         <li>Ticket text is partly synthetic: food-specific intents come from templates with typos and Hinglish.</li>
         <li>We designed the planted problems. Blind recall on random plant sets and the real UCI log guard against "you only found what you planted".</li>
@@ -552,5 +646,5 @@ function limitationsPanel() {
         <li>The simulator is a model of a support floor. It is checked against Erlang C, but real agents behave in ways it does not capture.</li>
         <li>Stress tests are shown with their verdicts above, including the ones OpsLens does not win.</li>
         <li>LLM text (cluster names, the brief) never contains digits; our code fills in every number.</li>
-      </ul></div>`;
+      </ul></section>`;
 }

@@ -12,7 +12,11 @@
 export const state = {
   results: null, // the parsed results JSON
   source: "", // where it came from, shown in the header and the popover
-  whatif: null, // the last What-if answer from the server (M10), read by "whatif.*" paths
+  // The last live answers from the server. They are not in the results file; their numbers
+  // are read by "whatif.*", "plant.*" and "upload.*" paths so they are clickable too.
+  whatif: null, // POST /api/whatif
+  plant: null, // POST /api/plant
+  upload: null, // POST /api/upload
   staticServer: false, // true when served by `python -m http.server` (no API at all)
 };
 
@@ -80,10 +84,23 @@ export function getPath(root, path) {
 }
 
 // The one function the rest of the UI uses to read a value.
-// "whatif.*" paths read the last What-if answer; everything else reads the results JSON.
+// Paths that start with a live answer's name read that answer; everything else reads the
+// results JSON.
+export const LIVE_SOURCES = {
+  whatif: "POST /api/whatif (live simulation)",
+  plant: "POST /api/plant (live detection on fresh data)",
+  upload: "POST /api/upload (live analysis of the uploaded file)",
+};
+
+export function liveSource(path) {
+  const first = path.split(/[.[]/)[0];
+  return LIVE_SOURCES[first] ? first : null;
+}
+
 export function lookup(path) {
-  if (path.startsWith("whatif.")) {
-    return getPath({ whatif: state.whatif }, path);
+  const live = liveSource(path);
+  if (live) {
+    return getPath({ [live]: state[live] }, path);
   }
   return getPath(state.results, path);
 }

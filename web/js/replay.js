@@ -10,37 +10,42 @@
 import { state, policyKeys } from "./data.js";
 import { ev, evText } from "./evidence.js";
 import { makeChart, policyStyle } from "./charts.js";
-import { policyName, policyBorder } from "./ui.js";
+import { policyName } from "./ui.js";
 
 let index = 0; // the replay step on screen
 let timer = null; // setInterval handle while playing
 let charts = {}; // { waiting: Chart, breached: Chart }
 let keys = []; // policies that have a replay series
 let maxWaiting = 1; // for the queue bar widths
+let speed = 1; // 1×, 2× or 4×
 
 const STEP_MS = 700; // real milliseconds per replay step at 1× speed
 
 export function replayHtml() {
-  return `<div class="panel" id="replay">
-      <h3>Replay: ${evText("sim.replay.title")}</h3>
-      <p class="muted small">Same tickets, same luck, same agents. One point every
-         ${ev("sim.replay.step_min", "min")}. Press Play, or drag the slider.</p>
+  return `<section class="card" id="replay">
+      <div class="card-head">
+        <div>
+          <h3 class="card-title">Replay · ${evText("sim.replay.title")}</h3>
+          <div class="card-sub">Same tickets, same luck, same agents; one point every ${ev("sim.replay.step_min", "min")}.
+            Press Play, or drag the slider.</div>
+        </div>
+      </div>
       <div class="replay-controls">
         <button type="button" class="btn btn-primary" id="rp-play">Play</button>
-        <div class="replay-clock" id="rp-clock"></div>
+        <div class="clock" id="rp-clock"></div>
         <input type="range" id="rp-scrub" min="0" value="0" aria-label="Replay time">
-        <label class="small">Speed
-          <select id="rp-speed">
-            <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
-          </select>
-        </label>
+        <div class="segmented" role="group" aria-label="Speed">
+          <button type="button" data-speed="1" aria-pressed="true">1×</button>
+          <button type="button" data-speed="2" aria-pressed="false">2×</button>
+          <button type="button" data-speed="4" aria-pressed="false">4×</button>
+        </div>
       </div>
-      <div class="grid-3" id="rp-lanes"></div>
-      <div class="grid-2" style="margin-top: 16px">
-        <div><h3>Tickets waiting</h3><div class="chart-box replay-chart"><canvas id="rp-wait-chart"></canvas></div></div>
-        <div><h3>Breaches so far</h3><div class="chart-box replay-chart"><canvas id="rp-breach-chart"></canvas></div></div>
+      <div class="grid cols-3" id="rp-lanes"></div>
+      <div class="grid cols-2" style="margin-top: 20px">
+        <div><div class="section-label">Tickets waiting</div><div class="chart sm"><canvas id="rp-wait-chart"></canvas></div></div>
+        <div><div class="section-label">Breaches so far</div><div class="chart sm"><canvas id="rp-breach-chart"></canvas></div></div>
       </div>
-    </div>`;
+    </section>`;
 }
 
 // Call after replayHtml() is in the page.
@@ -52,11 +57,11 @@ export function initReplay() {
   keys.forEach((k) => replay.series[k].waiting.forEach((w) => { maxWaiting = Math.max(maxWaiting, w); }));
 
   document.getElementById("rp-lanes").innerHTML = keys.map((k) => `
-      <div class="lane" style="${policyBorder(k)}">
+      <div class="lane">
         ${policyName(k)}
         <div class="lane-numbers">
-          <div><div class="tile-label">Waiting now</div><div class="tile-value" id="rp-w-${k}"></div></div>
-          <div><div class="tile-label">Breaches so far</div><div class="tile-value" id="rp-b-${k}"></div></div>
+          <div><div class="stat-label">Waiting now</div><div class="stat-value md" id="rp-w-${k}"></div></div>
+          <div><div class="stat-label">Breaches so far</div><div class="stat-value md" id="rp-b-${k}"></div></div>
         </div>
         <div class="queue-track"><div class="queue-fill" id="rp-q-${k}" style="background: ${policyStyle(k).color}"></div></div>
       </div>`).join("");
@@ -65,11 +70,16 @@ export function initReplay() {
   scrub.max = String(replay.times.length - 1);
   scrub.addEventListener("input", () => showStep(Number(scrub.value)));
   document.getElementById("rp-play").addEventListener("click", () => (timer ? pauseReplay() : startReplay()));
-  document.getElementById("rp-speed").addEventListener("change", () => {
-    if (timer) {
-      pauseReplay();
-      startReplay();
-    }
+  // Speed buttons: press one, and restart the timer at the new speed if it is playing.
+  document.querySelectorAll("#replay [data-speed]").forEach((button) => {
+    button.addEventListener("click", () => {
+      speed = Number(button.dataset.speed);
+      document.querySelectorAll("#replay [data-speed]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+      if (timer) {
+        pauseReplay();
+        startReplay();
+      }
+    });
   });
   // Stop the animation when the user leaves this tab.
   document.addEventListener("tab-shown", (event) => {
@@ -95,8 +105,9 @@ function lineChart(canvasId, field, unit) {
         data: [],
         borderColor: policyStyle(k).color,
         borderDash: policyStyle(k).dash,
-        borderWidth: 3,
+        borderWidth: 2.5,
         pointRadius: 0,
+        tension: 0.3,
         pointHitRadius: 8,
       })),
     },
@@ -107,8 +118,8 @@ function lineChart(canvasId, field, unit) {
         x: { ticks: { maxTicksLimit: 8, maxRotation: 0 }, grid: { display: false } },
         y: { beginAtZero: true, suggestedMax: top },
       },
-      // Legend entries drawn as short lines with each policy's dash, like the chart lines.
-      plugins: { legend: { position: "top", labels: { usePointStyle: true, pointStyle: "line" } } },
+      // No legend: the three lanes above name the policies in the same colours.
+      plugins: { legend: { display: false } },
     },
   }, (datasetIndex, i) => ({ path: `sim.replay.series.${keys[datasetIndex]}.${field}[${i}]`, unit }));
 }
@@ -135,7 +146,6 @@ export function startReplay() {
   if (index >= last) {
     showStep(0); // at the end: start again from the beginning
   }
-  const speed = Number(document.getElementById("rp-speed").value);
   pauseReplay();
   timer = setInterval(() => {
     if (index >= last) {

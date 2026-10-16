@@ -13,10 +13,10 @@
 import { openEvidenceAt, closeEvidence } from "./evidence.js";
 
 // Ink colours for text, axes and grid (text never wears a series colour).
-export const INK = "#16181d";
-export const INK_SOFT = "#474b53";
-export const GRID = "#e4e4df";
-export const ALERT = "#b3122a"; // our red accent; used only for "over capacity" marks
+export const INK = "#0f172a";
+export const INK_SOFT = "#5b6b80";
+export const GRID = "#edf1f5";
+export const ALERT = "#c22b33"; // used only for the "bottleneck" label on the forecast
 
 // One colour + line style per policy. The colour follows the policy everywhere.
 export const POLICY_STYLE = {
@@ -33,19 +33,31 @@ export function policyStyle(key) {
 // Categorical slots, in fixed order, for charts that are not about policies.
 export const SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"];
 
-// Big, calm defaults for a projector. Chart is the global from vendor/chart.umd.js.
+// Calm defaults that match the cards: light grid, no axis borders, muted ticks, round
+// legend markers. Chart is the global from vendor/chart.umd.js.
 export function setChartDefaults() {
-  Chart.defaults.font.family = '"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
-  Chart.defaults.font.size = 16;
+  Chart.defaults.font.family = '"Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
+  Chart.defaults.font.size = 14;
   Chart.defaults.color = INK_SOFT;
   Chart.defaults.borderColor = GRID;
   Chart.defaults.maintainAspectRatio = false;
   Chart.defaults.animation.duration = 300;
-  Chart.defaults.plugins.legend.labels.boxWidth = 28;
+  Chart.defaults.scale.border.display = false;
+  Chart.defaults.scale.grid.color = GRID;
+  Chart.defaults.scale.ticks.padding = 8;
+  Chart.defaults.plugins.legend.align = "start";
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.pointStyle = "circle";
+  Chart.defaults.plugins.legend.labels.boxWidth = 8;
+  Chart.defaults.plugins.legend.labels.boxHeight = 8;
+  Chart.defaults.plugins.legend.labels.padding = 16;
   Chart.defaults.plugins.legend.labels.color = INK;
-  Chart.defaults.plugins.tooltip.titleFont = { size: 16, weight: "600" };
-  Chart.defaults.plugins.tooltip.bodyFont = { size: 16 };
+  Chart.defaults.plugins.tooltip.backgroundColor = "#0b1322";
+  Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: "600" };
+  Chart.defaults.plugins.tooltip.bodyFont = { size: 14 };
   Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 8;
+  Chart.defaults.plugins.tooltip.usePointStyle = true;
 }
 
 // Create a chart (replacing any old one on the same canvas) and make its points clickable.
@@ -142,11 +154,11 @@ export function shadeRanges(ranges) {
       ranges.forEach((range) => {
         const left = Math.max(chartArea.left, xScale.getPixelForValue(range.from) - halfStep);
         const right = Math.min(chartArea.right, xScale.getPixelForValue(range.to) + halfStep);
-        ctx.fillStyle = range.color || "rgba(179, 18, 42, 0.10)";
+        ctx.fillStyle = range.color || "rgba(194, 43, 51, 0.08)";
         ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
         if (range.label) {
           ctx.fillStyle = ALERT;
-          ctx.font = '600 14px "Segoe UI", system-ui, sans-serif';
+          ctx.font = '600 13px "Segoe UI", system-ui, sans-serif';
           ctx.fillText(range.label, left + 4, chartArea.bottom - 8); // bottom: clear of the data points
         }
       });

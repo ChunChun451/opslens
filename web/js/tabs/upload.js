@@ -9,7 +9,9 @@
 // ticket_id = number, created_at = opened_at, resolved_at = resolved_at, team = assignment_group.
 
 import { state } from "../data.js";
-import { backendMissing } from "../ui.js";
+import { pageHeader, card, stat, backendMissing, postForm, showWaiting } from "../ui.js";
+import { ev, evText } from "../evidence.js";
+import { CAUSE_LABELS } from "./patterns.js";
 import { escapeHtml } from "../format.js";
 
 // The fields OpsLens needs, and column names that usually mean the same thing.
@@ -36,27 +38,30 @@ const UCI_COLUMNS = [
 ];
 
 let chosenFile = null;
+const UPLOAD_TIMEOUT_MS = 180000; // the UCI example takes about 10 s; big files longer
 
 export function render(section) {
   section.innerHTML = `
-    <div class="tab-head"><div>
-      <h2>Upload data</h2>
-      <p>Run OpsLens on any helpdesk export. Pick a CSV, tell us which column is which, and run.</p>
-    </div></div>
-    <div class="panel" id="upload-panel">
-      <div class="btn-row">
-        <button type="button" class="btn" id="up-choose">Choose a CSV file</button>
-        <input type="file" id="up-file" accept=".csv,text/csv" hidden>
-        <button type="button" class="btn" id="up-uci">Use the UCI incident log example</button>
-        <span id="up-file-name" class="muted small"></span>
-      </div>
-      <div id="up-mapping" style="margin-top: 18px"></div>
-      <div id="up-result" style="margin-top: 16px"></div>
-    </div>
-    <div class="panel muted small">
-      The UCI ServiceNow incident log (CC BY 4.0) has a real SLA flag (<code>made_sla</code>),
-      priority, assignment group and reassignment count, so it shows the engine on data we did not generate.
-    </div>`;
+    ${pageHeader("Upload data", "Run OpsLens on any helpdesk export: pick a CSV, tell us which column is which, and run.")}
+    ${card({
+      id: "upload-panel",
+      body: `<div class="dropzone">
+          <div>
+            <div class="card-title">Your helpdesk export</div>
+            <div class="card-sub" id="up-file-name">A CSV with one row per ticket (or per ticket event)</div>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn" id="up-uci">Use the UCI example</button>
+            <button type="button" class="btn btn-primary" id="up-choose">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4.5M7.5 9L12 4.5 16.5 9"/><path d="M4.5 15v3.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V15"/></svg>Choose a CSV file</button>
+            <input type="file" id="up-file" accept=".csv,text/csv" hidden>
+          </div>
+        </div>
+        <div id="up-mapping"></div>
+        <div id="up-result" style="margin-top: 16px"></div>`,
+    })}
+    <p class="card-foot">The UCI ServiceNow incident log (CC BY 4.0) has a real SLA flag (<code>made_sla</code>),
+      priority, assignment group and reassignment count, so it shows the engine on data we did not generate.</p>`;
 
   // A real button (keyboard-friendly) that opens the hidden file picker.
   section.querySelector("#up-choose").addEventListener("click", () => section.querySelector("#up-file").click());
@@ -108,49 +113,72 @@ function showMapping(section, columns) {
     const guess = guessColumn(field, columns);
     const options = [`<option value="">${field.required ? "— choose —" : "— not in file —"}</option>`]
       .concat(columns.map((c) => `<option value="${escapeHtml(c)}" ${c === guess ? "selected" : ""}>${escapeHtml(c)}</option>`));
-    return `<label>${escapeHtml(field.label)}${field.required ? " *" : ""}
+    return `<label class="field"><span class="field-label">${escapeHtml(field.label)}${field.required ? " *" : ""}</span>
         <select data-field="${field.key}">${options.join("")}</select></label>`;
   }).join("");
   section.querySelector("#up-mapping").innerHTML = `
-    <h3>Column mapping</h3>
-    <p class="muted small">We guessed from the column names; fix any that are wrong. * = required.</p>
+    <div class="section-label" style="margin-top: 24px">Column mapping</div>
+    <p class="small muted" style="margin-bottom: 14px">We guessed from the column names; fix any that are wrong. * = required.</p>
     <div class="form-grid">${selects}</div>
-    <div class="btn-row" style="margin-top: 16px">
+    <div class="btn-row" style="margin-top: 20px">
       <button type="button" class="btn btn-primary" id="up-run">Run OpsLens on this data</button>
     </div>`;
   section.querySelector("#up-result").innerHTML = "";
   section.querySelector("#up-run").addEventListener("click", () => run(section));
 }
 
-// The analysis of an uploaded file is computed for that file only, so its numbers are shown as
-// the server sent them (they are not part of results.json).
+// The live answer from POST /api/upload: the same analysis as the main engine, run on the
+// uploaded file only. Not part of results.json; kept in state.upload so its numbers are
+// clickable ("upload.*" paths).
+// Example (UCI example): 24,918 incidents, 2016-02-29 to 2017-02-16, breach 36.6%,
+// worst teams and categories, and 4 evidence cards.
 function uploadAnswerHtml(a) {
-  const minutes = (v) => (v === null || v === undefined ? "–" : `${Math.round(v).toLocaleString()} min`);
-  const table = (title, rows) => (rows && rows.length
-    ? `<h3>${escapeHtml(title)}</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th class="num">Tickets</th>
-         <th class="num">Breach %</th><th class="num">Mean resolution</th></tr></thead><tbody>
-         ${rows.map((r) => `<tr><td>${escapeHtml(r.name)}</td><td class="num">${r.tickets.toLocaleString()}</td>
-           <td class="num">${r.breach_pct.toFixed(1)}%</td><td class="num">${minutes(r.mean_resolution_min)}</td></tr>`).join("")}
-       </tbody></table></div>` : "");
-  const cards = (a.cards || []).map((c) => `<div class="card"><strong>${escapeHtml(c.title)}</strong>
-      <p>${escapeHtml(c.comparison_text)}</p>
-      <p class="muted">Cause: ${escapeHtml(c.cause_type)} · ${c.affected_tickets.toLocaleString()} tickets</p></div>`).join("");
-  return `<div class="notice ok"><strong>${escapeHtml(a.source)}</strong>: ${a.rows.toLocaleString()} tickets,
-      ${escapeHtml(a.date_range[0])} to ${escapeHtml(a.date_range[1])} · breach ${a.breach_pct.toFixed(1)}% ·
-      mean resolution ${minutes(a.mean_resolution_min)} · P90 ${minutes(a.p90_resolution_min)} · ${a.seconds} s</div>
-    ${table("Worst teams by breach %", a.by_team)}${table("Worst categories by breach %", a.by_category)}
-    <h3>Findings (same pattern scans as the main engine)</h3>${cards || "<p class=\"muted\">No finding passed the thresholds.</p>"}`;
+  const range = Array.isArray(a.date_range)
+    ? `${evText("upload.date_range[0]")} to ${evText("upload.date_range[1]")}` : "";
+  const stats = `<div class="grid cols-4 stretch" style="margin-top: 4px">
+      ${card({ body: stat("Tickets", ev("upload.rows", "int"), range) })}
+      ${card({ body: stat("SLA breach rate", ev("upload.breach_pct", "pct"), "share that missed its SLA") })}
+      ${card({ body: stat("Mean resolution", ev("upload.mean_resolution_min", "dur"), "created to resolved") })}
+      ${card({ body: stat("P90 resolution", ev("upload.p90_resolution_min", "dur"), `analysed in ${ev("upload.seconds", "sec")}`) })}
+    </div>`;
+  const table = (title, key) => {
+    const rows = a[key] || [];
+    if (!rows.length) return "";
+    const body = rows.map((r, i) => `<tr><td>${evText(`upload.${key}[${i}].name`)}</td>
+        <td class="num">${ev(`upload.${key}[${i}].tickets`, "int")}</td>
+        <td class="num">${ev(`upload.${key}[${i}].breach_pct`, "pct")}</td>
+        <td class="num">${ev(`upload.${key}[${i}].mean_resolution_min`, "dur")}</td></tr>`).join("");
+    return card({
+      title,
+      body: `<div class="table-wrap"><table><thead><tr><th>Name</th><th class="num">Tickets</th>
+        <th class="num">Breach</th><th class="num">Mean resolution</th></tr></thead><tbody>${body}</tbody></table></div>`,
+    });
+  };
+  const cards = (a.cards || []).map((c, i) => `<li>
+      <div class="issue">
+        <span class="issue-title">${evText(`upload.cards[${i}].title`)}</span>
+        <span class="pill">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
+        <span class="issue-text">${evText(`upload.cards[${i}].comparison_text`)} · ${ev(`upload.cards[${i}].affected_tickets`, "int")} tickets</span>
+      </div></li>`).join("");
+  return `<div class="callout good"><strong>${evText("upload.source")}</strong>: analysed with the same pattern scans as the main engine.</div>
+    ${stats}
+    <div class="grid cols-2" style="margin-top: 20px">${table("Worst teams by breach rate", "by_team")}${table("Worst categories by breach rate", "by_category")}</div>
+    <div style="margin-top: 20px">${card({
+      title: "Findings in your data",
+      body: cards ? `<ul class="list">${cards}</ul>` : `<p class="muted">No finding passed the thresholds.</p>`,
+    })}</div>`;
 }
 
 async function run(section) {
   const result = section.querySelector("#up-result");
+  const button = section.querySelector("#up-run");
   const mapping = {};
   section.querySelectorAll("[data-field]").forEach((select) => {
     mapping[select.dataset.field] = select.value;
   });
   const missingFields = FIELDS.filter((f) => f.required && !mapping[f.key]).map((f) => f.label);
   if (missingFields.length) {
-    result.innerHTML = `<div class="notice warn">Please choose a column for: ${escapeHtml(missingFields.join(", "))}.</div>`;
+    result.innerHTML = `<div class="callout warn">Please choose a column for: ${escapeHtml(missingFields.join(", "))}.</div>`;
     return;
   }
   const form = new FormData();
@@ -160,20 +188,17 @@ async function run(section) {
   } else {
     form.append("example", "uci_incidents");
   }
-  result.innerHTML = `<p class="muted">Running the engine on the data… (the UCI example takes about 10 seconds)</p>`;
+  button.disabled = true;
+  showWaiting(result, "Reading the file and running the engine's pattern scans on it…");
   try {
-    if (state.staticServer) {
-      throw new Error("No API on the static preview server");
-    }
-    const response = await fetch("/api/upload", { method: "POST", body: form });
-    const answer = await response.json();
-    if (!response.ok) {
-      result.innerHTML = `<div class="notice warn">${escapeHtml(answer.error || ("HTTP " + response.status))}</div>`;
-      return;
-    }
-    result.innerHTML = uploadAnswerHtml(answer);
+    state.upload = await postForm("/api/upload", form, UPLOAD_TIMEOUT_MS);
+    result.innerHTML = uploadAnswerHtml(state.upload);
   } catch (error) {
-    result.innerHTML = backendMissing("POST /api/upload", "M10",
-      "Your column mapping is ready; the server will run the engine on it.");
+    state.upload = null;
+    result.innerHTML = state.staticServer || /HTTP (404|405|501)/.test(error.message)
+      ? backendMissing("POST /api/upload", "Your column mapping is ready; start the server to run the engine on it.")
+      : `<div class="callout warn"><strong>The analysis did not finish.</strong> ${escapeHtml(error.message)}.</div>`;
+  } finally {
+    button.disabled = false;
   }
 }

@@ -14,7 +14,7 @@
 
 import { state, policyKeys, policyLabel, teamNames } from "../data.js";
 import { ev } from "../evidence.js";
-import { postJson, policyName } from "../ui.js";
+import { pageHeader, card, postJson, policyName, shortLabel, showWaiting } from "../ui.js";
 import { escapeHtml, kpiInfo, unitSuffix } from "../format.js";
 
 // Slider ranges. These are input limits for the judge, not results.
@@ -33,38 +33,37 @@ export function render(section) {
   const teams = teamNames();
   const policies = policyKeys();
 
-  section.innerHTML = `
-    <div class="tab-head"><div>
-      <h2>What-if</h2>
-      <p>Change the staffing or the volume for one held-out day and re-run the fair simulator.</p>
-    </div></div>
-    <div class="panel" id="whatif-form">
-      <div class="form-grid">
-        <label>Test day
-          <select id="wi-day">${days.map((d) => `<option value="${d}" ${d === replayDay ? "selected" : ""}>Day ${d}</option>`).join("")}</select>
-        </label>
-        <label>Policy
-          <select id="wi-policy">${policies.map((k) => `<option value="${escapeHtml(k)}" ${k === "opslens" ? "selected" : ""}>${escapeHtml(policyLabel(k))}</option>`).join("")}</select>
-        </label>
-        <label>Volume <span class="slider-value" id="wi-volume-value"></span>
-          <input type="range" id="wi-volume" min="${VOLUME_MIN}" max="${VOLUME_MAX}" step="0.05" value="1">
-        </label>
-      </div>
-      <h3 style="margin-top: 18px">Agents per team (change from the normal schedule)</h3>
-      <div class="form-grid">
-        ${teams.map((t) => `<label>Team ${escapeHtml(t)} <span class="slider-value" id="wi-team-${escapeHtml(t)}-value"></span>
-          <input type="range" data-team="${escapeHtml(t)}" min="${-AGENT_DELTA_LIMIT}" max="${AGENT_DELTA_LIMIT}" step="1" value="0">
-        </label>`).join("")}
-      </div>
-      <div class="btn-row" style="margin-top: 18px">
-        <button type="button" class="btn btn-primary" id="wi-run">Run simulation</button>
+  const controls = `
+    <div class="grid" style="gap: 16px">
+      <label class="field"><span class="field-label">Test day</span>
+        <select id="wi-day">${days.map((d) => `<option value="${d}" ${d === replayDay ? "selected" : ""}>Day ${d}</option>`).join("")}</select>
+      </label>
+      <label class="field"><span class="field-label">Policy to highlight</span>
+        <select id="wi-policy">${policies.map((k) => `<option value="${escapeHtml(k)}" ${k === "opslens" ? "selected" : ""}>${escapeHtml(policyLabel(k))}</option>`).join("")}</select>
+      </label>
+      <label class="field"><span class="field-label">Ticket volume <span class="field-value" id="wi-volume-value"></span></span>
+        <input type="range" id="wi-volume" min="${VOLUME_MIN}" max="${VOLUME_MAX}" step="0.05" value="1">
+      </label>
+      <div class="section-label" style="margin: 6px 0 0">Agents per team, change from the normal roster</div>
+      ${teams.map((t) => `<label class="field"><span class="field-label">Team ${escapeHtml(t)} <span class="field-value" id="wi-team-${escapeHtml(t)}-value"></span></span>
+        <input type="range" data-team="${escapeHtml(t)}" min="${-AGENT_DELTA_LIMIT}" max="${AGENT_DELTA_LIMIT}" step="1" value="0">
+      </label>`).join("")}
+      <div class="btn-row" style="margin-top: 4px">
+        <button type="button" class="btn btn-primary" id="wi-run">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Run simulation</button>
         <button type="button" class="btn" id="wi-reset">Reset</button>
       </div>
-      <div id="whatif-result" style="margin-top: 16px"></div>
-      <details style="margin-top: 12px">
-        <summary class="small">Request sent to the server</summary>
+      <details class="disclosure" style="margin-top: 0">
+        <summary>Request sent to the server</summary>
         <pre id="wi-request"></pre>
       </details>
+    </div>`;
+
+  section.innerHTML = `
+    ${pageHeader("What-if", "Change the staffing or the volume for one held-out day and re-run the fair simulator for all three policies.")}
+    <div class="grid cols-side">
+      ${card({ id: "whatif-form", title: "Your changes", body: controls })}
+      ${card({ title: "Simulated result", sub: "Same tickets and the same luck for every policy", body: `<div id="whatif-result">${emptyState()}</div>` })}
     </div>`;
 
   section.querySelectorAll("input[type=range]").forEach((input) => {
@@ -74,10 +73,15 @@ export function render(section) {
   section.querySelector("#wi-reset").addEventListener("click", () => {
     section.querySelector("#wi-volume").value = "1";
     section.querySelectorAll("input[data-team]").forEach((input) => { input.value = "0"; });
-    section.querySelector("#whatif-result").innerHTML = "";
+    section.querySelector("#whatif-result").innerHTML = emptyState();
     updateLabels(section);
   });
   updateLabels(section);
+}
+
+function emptyState() {
+  return `<div class="wi-empty"><div><strong>No simulation yet</strong>
+      Move a slider, then press Run simulation.<br>The server replays the whole day for every policy.</div></div>`;
 }
 
 function buildRequest(section) {
@@ -110,10 +114,7 @@ async function run(section) {
   const button = section.querySelector("#wi-run");
   const request = buildRequest(section);
   button.disabled = true;
-  result.innerHTML = `<div class="whatif-wait" role="status">
-      <span class="spinner" aria-hidden="true"></span>
-      Simulating the whole day for all three policies with your changes…
-    </div>`;
+  showWaiting(result, "Simulating the whole day for all three policies with your changes…");
   try {
     state.whatif = await postJson("/api/whatif", request, TIMEOUT_MS);
     result.innerHTML = answerHtml(state.whatif);
@@ -121,11 +122,11 @@ async function run(section) {
     state.whatif = null;
     if (state.staticServer || /HTTP (404|405|501)/.test(error.message)) {
       // The page is served without the OpsLens API (for example by python -m http.server).
-      result.innerHTML = `<div class="notice warn"><strong>What-if needs the OpsLens server.</strong>
+      result.innerHTML = `<div class="callout warn"><strong>What-if needs the OpsLens server.</strong>
         Start it with <code>.venv/Scripts/python.exe -m uvicorn server.app:app --port 8000</code>
         and open <code>http://localhost:8000/web/</code>.</div>`;
     } else {
-      result.innerHTML = `<div class="notice warn"><strong>The simulation did not finish.</strong>
+      result.innerHTML = `<div class="callout warn"><strong>The simulation did not finish.</strong>
         ${escapeHtml(error.message)}. Try again, or check the server window.</div>`;
     }
   } finally {
@@ -137,13 +138,12 @@ async function run(section) {
 // its path starts with "whatif." and the popover names the live simulation as the source.
 function answerHtml(answer) {
   if (!answer || !answer.all_policies) {
-    return `<div class="notice warn">The server answered, but without "all_policies".</div>`;
+    return `<div class="callout warn">The server answered, but without "all_policies".</div>`;
   }
   const chosen = answer.request ? answer.request.policy : "opslens";
   const keys = policyKeys().filter((k) => answer.all_policies[k]);
   const kpis = Object.keys(answer.all_policies[keys[0]]);
-  const header = keys.map((k) => `<th class="num ${k === chosen ? "chosen" : ""}">${policyName(k)}
-      ${k === chosen ? `<div class="small">your choice</div>` : ""}</th>`).join("");
+  const header = keys.map((k) => `<th class="num ${k === chosen ? "chosen" : ""}">${policyName(k, shortLabel(k))}</th>`).join("");
   const rows = kpis.map((kpi) => {
     const info = kpiInfo(kpi);
     const best = bestOf(answer.all_policies, keys, kpi, info.better);
@@ -153,14 +153,16 @@ function answerHtml(answer) {
     const label = escapeHtml(info.label) + (suffix ? ` <span class="muted">(${escapeHtml(suffix)})</span>` : "");
     return `<tr><td>${label}</td>${cells}</tr>`;
   }).join("");
-  return `<div class="notice ok">Simulated day ${ev("whatif.request.day", "int")},
-      volume ×${ev("whatif.request.volume_factor", "num")}, ${ev("whatif.agents_on_roster", "int")} agents
-      on the roster. Same tickets and the same luck for every policy.</div>
-    <div class="table-wrap"><table class="whatif-table">
+  return `<div class="chips" style="margin-bottom: 14px">
+      <span class="chip"><b>Day</b>${ev("whatif.request.day", "int")}</span>
+      <span class="chip"><b>Volume</b>×${ev("whatif.request.volume_factor", "num")}</span>
+      <span class="chip"><b>Agents on roster</b>${ev("whatif.agents_on_roster", "int")}</span>
+    </div>
+    <div class="table-wrap"><table>
       <thead><tr><th>KPI</th>${header}</tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
-    <p class="panel-note">Bold = best on that row. Tinted column = the policy you picked.</p>`;
+    <p class="card-foot">Bold = best on that row. Shaded column = the policy you picked.</p>`;
 }
 
 // Which policy is best on this KPI (a comparison only; no new number is shown).

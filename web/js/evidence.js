@@ -11,7 +11,7 @@
 //              data-unit="pct">4.1%</button>
 //   Clicking it shows "± 0.3 pts" and "OpsLens − Baseline A: −8.9 pts (95% CI −9.7 to −8.1)".
 
-import { lookup, state, policyLabel } from "./data.js";
+import { lookup, state, policyLabel, liveSource, LIVE_SOURCES } from "./data.js";
 import {
   fmt, fmtSigned, spreadUnit, escapeHtml, definitionFor, kpiInfo, prettyKey,
 } from "./format.js";
@@ -114,8 +114,11 @@ function evidenceHtml(path, unit, value) {
   } else {
     valueText = String(value);
   }
+  // The unrounded value, cut to 6 significant digits when it is very long (2.3791…).
+  let rawText = String(value);
+  if (typeof value === "number" && rawText.length > 10) rawText = value.toPrecision(6) + "…";
   const raw = typeof value === "number" && String(value) !== valueText
-    ? `<span class="pop-raw">raw ${escapeHtml(String(value))}</span>`
+    ? `<span class="pop-raw" title="${escapeHtml(String(value))}">raw ${escapeHtml(rawText)}</span>`
     : "";
   const lines = spreadLines(path, unit).map((line) => `<li>${line}</li>`).join("");
   const fixtureTag = state.results.meta.fixture ? ' <strong class="pop-fixture">FIXTURE</strong>' : "";
@@ -161,8 +164,9 @@ function titleFor(path) {
 }
 
 function sourceFor(path) {
-  if (path.startsWith("whatif.")) {
-    return "POST /api/whatif (live simulation)";
+  const live = liveSource(path);
+  if (live) {
+    return LIVE_SOURCES[live];
   }
   return state.source;
 }
