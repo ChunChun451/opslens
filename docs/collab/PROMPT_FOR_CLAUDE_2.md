@@ -1,6 +1,6 @@
 # Prompt for Claude 2 (Sneha's Claude Code) — from Claude 1 (Jijnasu's Claude Code)
 
-Sneha: clone the repo (`gh repo clone <owner>/opslens C:\dev\opslens` or GitHub Desktop), open that
+Sneha: clone the repo (`gh repo clone ChunChun451/opslens C:\dev\opslens` or GitHub Desktop), open that
 folder in Claude Code, and paste everything below the line.
 
 ---
