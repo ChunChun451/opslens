@@ -101,6 +101,33 @@ def baseline_b() -> TeamQueuePolicy:
     )
 
 
+class DeadlineQueuePolicy(TeamQueuePolicy):
+    """Baseline C: the "SLA due" sort every helpdesk already has (Zendesk, Freshdesk).
+
+    Tickets that can still make their SLA come first, earliest deadline first. Tickets already
+    past their SLA come after them, earliest deadline first (so the latest customer is next once
+    the savable work is done). Same team queues, menu routing and skill rules as A and B, and
+    no model: this is the rule a sharp team lead would set up by hand. If OpsLens cannot beat
+    this, the risk model is not earning its place.
+
+    Example at 20:00: T1 P1 due 20:20, T2 P2 due 20:10, T3 P1 due 19:50 (already late).
+    Order: T2, T1, T3.
+    """
+
+    def __init__(self) -> None:
+        super().__init__("Baseline C (SLA due)", sort_key=lambda t: (t.sla_deadline_min, t.idx))
+
+    def decide(self, state: SimState, now: float) -> list[Assignment]:
+        # The "late" flag depends on the clock, so the sort key is rebuilt at every decision.
+        self._sort_key = lambda t: (t.sla_deadline_min <= now, t.sla_deadline_min, t.idx)
+        return super().decide(state, now)
+
+
+def baseline_c() -> DeadlineQueuePolicy:
+    """SLA due first, already-late tickets after the savable ones."""
+    return DeadlineQueuePolicy()
+
+
 # ---- OpsLens ---------------------------------------------------------------------------------
 
 @dataclass

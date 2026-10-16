@@ -282,6 +282,14 @@ class PlaybooksSection(Strict):
     base: dict[str, Any]
 
 
+class BaselineCSection(Strict):
+    """Baseline C, the "SLA due" sort a helpdesk already has, vs A, B and OpsLens, plus how late
+    the late customers are (eval/run_baseline_c.py; Claude 2 review). Validation first, then test."""
+
+    validation: dict[str, Any]
+    test: dict[str, Any]
+
+
 class Results(Strict):
     meta: Meta
     sim: SimSection | None = None
@@ -296,6 +304,7 @@ class Results(Strict):
     speed: SpeedSection | None = None
     brief: Brief | None = None
     playbooks: PlaybooksSection | None = None
+    baseline_c: BaselineCSection | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

@@ -53,10 +53,33 @@ def summarize(result: SimResult) -> dict[str, float]:
         "quality.p99_wait_min": float(np.percentile(t["wait_min"].dropna(), 99)),
         "quality.mean_utilisation": float(utils.mean()) if len(utils) else 0.0,
         "quality.load_fairness_std": float(utils.std()) if len(utils) else 0.0,
+        # How late the late customers are. Breach % alone rewards giving up on a ticket once it
+        # is late; these two show whether that happens. Unresolved tickets count as resolved at
+        # the end of the run's drain window (a lower bound on their lateness).
+        **lateness(t),
         "segment.p1_breach_pct": segment_rate(t, t["priority"] == "P1"),
         "segment.gold_breach_pct": segment_rate(t, t["tier"] == "gold"),
         "segment.hindi_breach_pct": segment_rate(t, t["language"] == "hi"),
         "tickets": float(len(t)),
+    }
+
+
+def lateness(t) -> dict[str, float]:
+    """Minutes past SLA: mean and P90 over breached tickets, and per 100 tickets overall.
+
+    Example: 3 tickets with SLA 60 resolved after 50, 90 and 150 min → 2 breached, late 30
+    and 90 min → mean 60, late minutes per 100 tickets = 100 × 120 / 3 = 4,000.
+    """
+    if "sla_min" not in t:
+        return {}
+    end = t["resolved_min"].max()
+    resolution = t["resolution_min"].fillna(end - t["created_min"])
+    late = (resolution - t["sla_min"]).clip(lower=0.0)
+    breached = late[t["breached"]]
+    return {
+        "quality.mean_minutes_late": float(breached.mean()) if len(breached) else 0.0,
+        "quality.p90_minutes_late": float(np.percentile(breached, 90)) if len(breached) else 0.0,
+        "quality.late_minutes_per_100": 100.0 * float(late.sum()) / max(1, len(t)),
     }
 
 

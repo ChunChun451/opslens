@@ -35,7 +35,7 @@ PARTS = ROOT / "eval" / "parts"
 STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
-         ("playbooks", "eval/run_playbooks.py")]
+         ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py")]
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -183,6 +183,8 @@ def assemble(timings: dict[str, float]) -> dict:
     if (PARTS / "playbooks.json").exists():
         pb = part("playbooks")
         results["playbooks"] = {k: pb[k] for k in ("test_days", "seeds", "playbooks", "all", "opslens_all_vs_baseline_b", "base")}
+    if (PARTS / "baseline_c.json").exists():
+        results["baseline_c"] = part("baseline_c")
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
@@ -287,7 +289,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -321,6 +323,29 @@ def playbooks_md(r: dict) -> list[str]:
               f"(of {base_b:.0f}), breach % {cell(h['breach_pct'])} points.",
               "- Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; "
               "see `playbooks[].sensitivity` in results.json."]
+    return lines
+
+
+def baseline_c_md(r: dict) -> list[str]:
+    """Baseline C ("SLA due") and lateness, test days. Empty if eval/run_baseline_c.py has not run."""
+    c = r.get("baseline_c")
+    if not c:
+        return []
+    test = c["test"]
+    names = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)",
+             "baseline_c": "Baseline C (SLA due)", "opslens": "OpsLens"}
+    rows = [("turnaround.breach_pct", "SLA breach %"), ("segment.p1_breach_pct", "P1 breach %"),
+            ("quality.mean_minutes_late", "Minutes late, mean over breached tickets"),
+            ("quality.late_minutes_per_100", "Minutes late per 100 tickets (all customers)"),
+            ("quality.p99_wait_min", "P99 wait (min)")]
+    lines = ["", "## A stronger baseline: the \"SLA due\" sort, and how late the late customers are (test days)", "",
+             "| KPI | " + " | ".join(names.values()) + " | OpsLens − C (95% CI) |", "|---|---|---|---|---|---|"]
+    for key, label in rows:
+        means = [sum(s[key] for s in test["per_seed"][p]) / len(test["per_seed"][p]) for p in names]
+        d = test["opslens_minus_c"][key]
+        lines.append(f"| {label} | " + " | ".join(fmt(m) for m in means)
+                     + f" | {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}] |")
+    lines += ["", "- Baseline C has no weights, so nothing was tuned; it ran on validation days first, then once on test days."]
     return lines
 
 

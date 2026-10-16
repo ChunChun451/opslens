@@ -10,8 +10,11 @@ Value of agent a taking ticket i:
   Already-lost tickets and tickets with lots of slack have little rescue value; tickets near
   their deadline that can still make it have the most.
 - impact    = 1 (+0.5 for gold) + 0.1 × log(1 + order value ÷ 350).
-- aging     = 0.05 per hour waited — fairness; and a starvation guard: any ticket waiting longer
-  than max_wait gets a huge bonus, so OpsLens never "gives up" on a customer.
+- aging     = (policy v3, the shipped one) 3.0 per SLA-length waited, capped at 1 SLA; once a
+  ticket is past its SLA it drops to a small fixed value (0.2) — it can no longer be saved, so
+  it stops outranking tickets that can. A starvation guard gives a huge bonus to a ticket
+  480 min past its SLA, except while more than 150 tickets wait (crisis mode). So late
+  customers ARE deprioritised for up to 8 h; the lateness KPIs in impact.py measure the cost.
 - mismatch  = cost of asking an agent to handle a category they are not trained for (1.6× slower,
   more reopens). Only allowed when the agent speaks the customer's language.
 - scarcity  = cost of spending a rare skill pair (e.g. Hindi + refunds) on a ticket that many

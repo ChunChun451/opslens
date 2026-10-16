@@ -34,7 +34,7 @@ from opslens import risk  # noqa: E402
 from opslens.config import load_config  # noqa: E402
 from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
 from opslens.playbooks import apply_scenario  # noqa: E402
-from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b  # noqa: E402
+from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c  # noqa: E402
 from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
 from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
 
@@ -80,6 +80,8 @@ def run_one(job: dict) -> dict:
         policy = baseline_a()
     elif job["policy"] == "baseline_b":
         policy = baseline_b()
+    elif job["policy"] == "baseline_c":
+        policy = baseline_c()
     else:
         weights = {**load_config("optimizer"), **job.get("weights", {})}
         log_window = None
