@@ -190,3 +190,22 @@ floor) is the right data; it needs a picture.
 3. `--no-llm` passthrough + test skip + README line (F9).
 4. Per-day win count (F7).
 Claude 1 (rehearsal docs owner): F1 text, and F6 framing in DEMO_SCRIPT.
+
+---
+
+## 5. Round 2 (17 Oct, after reading the DEV_103 PDF itself)
+
+| PS asks for | OpsLens | Verdict |
+|---|---|---|
+| Identify patterns | evidence cards, 5/5 planted, 57/60 blind | strong |
+| Predict bottlenecks / SLA breaches | risk model, 48 h forecast with conformal bands | strong |
+| Recommend actions by urgency, capacity, impact | optimiser; beats FIFO, priority **and** SLA-due | strong |
+| Explain decisions | TreeSHAP reasons, click-to-evidence | good |
+| Measure impact: turnaround, productivity, quality | turnaround and quality strong; **productivity flat** (5.29 → 5.30 tickets/agent-hour) | say it: the floor is demand-bound; the gain is fewer transfers (4.6 → 1.0 per 100) and agent-hours freed by playbooks |
+| *"NLP or LLMs for classifying issues and summarising patterns"* | LLM on 1.5% of tickets + one brief | was weak where visible → **Ask OpsLens** |
+| *"prototype using a provided or publicly available dataset"* | headline on generated data; UCI as a check | our biggest exposure → lead with UCI results, sealed world, Upload |
+
+**Built in round 2:** Ask OpsLens (LLM routes, engine answers, grounding check, offline rules);
+floor map in the replay (first on its tab); brief units; sealed-world script.
+**Not built, on purpose:** a free-form chatbot (it would invent numbers), deep learning,
+more playbooks (most are within noise).
