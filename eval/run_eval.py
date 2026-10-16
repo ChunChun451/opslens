@@ -185,6 +185,9 @@ def assemble(timings: dict[str, float]) -> dict:
         results["playbooks"] = {k: pb[k] for k in ("test_days", "seeds", "playbooks", "all", "opslens_all_vs_baseline_b", "base")}
     if (PARTS / "baseline_c.json").exists():
         results["baseline_c"] = part("baseline_c")
+    # Not a STEP: run once, after the freeze (eval/run_sealed_world.py); kept as a part file.
+    if (PARTS / "sealed_world.json").exists():
+        results["sealed_world"] = part("sealed_world")
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
@@ -289,7 +292,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + sealed_world_md(r) + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -346,6 +349,28 @@ def baseline_c_md(r: dict) -> list[str]:
         lines.append(f"| {label} | " + " | ".join(fmt(m) for m in means)
                      + f" | {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}] |")
     lines += ["", "- Baseline C has no weights, so nothing was tuned; it ran on validation days first, then once on test days."]
+    return lines
+
+
+def sealed_world_md(r: dict) -> list[str]:
+    """The world generated after the freeze, evaluated once (eval/run_sealed_world.py)."""
+    s = r.get("sealed_world")
+    if not s:
+        return []
+    names = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)",
+             "baseline_c": "Baseline C (SLA due)", "opslens": "OpsLens"}
+    per = s["test"]["per_seed"]
+
+    def mean(p: str, key: str) -> float:
+        return sum(x[key] for x in per[p]) / len(per[p])
+
+    d = s["test"]["opslens_minus_c"]["turnaround.breach_pct"]
+    lines = ["", f"## Sealed second world (data seed {s['data_seed']}, generated after the freeze, run once)", "",
+             "| KPI | " + " | ".join(names.values()) + " |", "|---|---|---|---|---|"]
+    for key, label in (("turnaround.breach_pct", "SLA breach %"), ("quality.late_minutes_per_100", "Minutes late per 100 tickets")):
+        lines.append(f"| {label} | " + " | ".join(fmt(mean(p, key)) for p in names) + " |")
+    lines += ["", f"- OpsLens − Baseline C, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}]. "
+              f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}. Weights unchanged."]
     return lines
 
 

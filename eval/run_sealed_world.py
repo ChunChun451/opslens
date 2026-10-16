@@ -74,7 +74,7 @@ def main() -> int:
         risk = json.loads((dest / "eval" / "parts" / "risk.json").read_text(encoding="utf-8"))
     out = {"data_seed": seed, "classifier": "local only" if no_llm else "cascade (local + LLM)",
            "note": "New world generated after the policy freeze; weights unchanged; run once.",
-           "risk_auc": risk.get("auc"), **out}
+           "risk_auc": (risk.get("test") or {}).get("auc"), **out}
     (ROOT / "eval" / "parts" / "sealed_world.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print("wrote eval/parts/sealed_world.json")
     return 0

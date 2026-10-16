@@ -309,6 +309,9 @@ class Results(Strict):
     brief: Brief | None = None
     playbooks: PlaybooksSection | None = None
     baseline_c: BaselineCSection | None = None
+    # A second world generated after the policy freeze (eval/run_sealed_world.py): data seed,
+    # classifier used, retrained risk AUC, and A/B/C/OpsLens on its test days, run once.
+    sealed_world: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".
