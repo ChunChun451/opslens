@@ -184,16 +184,26 @@ def assemble(timings: dict[str, float]) -> dict:
         pb = part("playbooks")
         results["playbooks"] = {k: pb[k] for k in ("test_days", "seeds", "playbooks", "all", "opslens_all_vs_baseline_b", "base")}
     if (PARTS / "baseline_c.json").exists():
-        results["baseline_c"] = part("baseline_c")
+        results["baseline_c"] = with_means(part("baseline_c"))
     # Not a STEP: run once, after the freeze (eval/run_sealed_world.py); kept as a part file.
     if (PARTS / "sealed_world.json").exists():
-        results["sealed_world"] = part("sealed_world")
+        results["sealed_world"] = with_means(part("sealed_world"))
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
     results["brief"] = make_brief(results)
     Results.model_validate(results)  # fails loudly if anything drifted from the contract
     return results
+
+
+def with_means(section: dict) -> dict:
+    """Add {policy: {kpi: mean over seeds}} next to each per_seed block, so the dashboard can
+    point every number at a path in results.json (click-to-evidence)."""
+    for block in section.values():
+        if isinstance(block, dict) and "per_seed" in block:
+            block["means"] = {p: {k: sum(s[k] for s in runs) / len(runs) for k in runs[0]}
+                              for p, runs in block["per_seed"].items()}
+    return section
 
 
 def make_brief(r: dict) -> dict:
