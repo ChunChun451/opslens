@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-16T10:54:19 (commit 3844c6a). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-17T07:07:56 (commit 7227fb8). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -69,6 +69,27 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 - WAPE 0.305 vs same-hour-last-week 0.415 (Poisson floor 0.280).
 - Conformal coverage: 80% range 79.2%, 90% range 90.0%.
 
+## A stronger baseline: the "SLA due" sort, and how late the late customers are (test days)
+
+| KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | OpsLens | OpsLens − C (95% CI) |
+|---|---|---|---|---|---|
+| SLA breach % | 13.11 | 6.82 | 5.40 | 2.20 | -3.20 [-3.93, -2.46] |
+| P1 breach % | 27.34 | 9.13 | 8.94 | 4.89 | -4.05 [-5.67, -2.44] |
+| Minutes late, mean over breached tickets | 212.65 | 328.03 | 765.89 | 229.85 | -536.04 [-687.99, -384.09] |
+| Minutes late per 100 tickets (all customers) | 2,820.08 | 2,281.67 | 4,189.41 | 528.93 | -3660.48 [-4916.26, -2404.70] |
+| P99 wait (min) | 816.27 | 1,007.37 | 1,434.88 | 727.81 | -707.08 [-1085.48, -328.68] |
+
+- Baseline C has no weights, so nothing was tuned; it ran on validation days first, then once on test days.
+
+## Sealed second world (data seed 4242, generated after the freeze, run once)
+
+| KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | OpsLens |
+|---|---|---|---|---|
+| SLA breach % | 15.22 | 8.21 | 6.13 | 3.07 |
+| Minutes late per 100 tickets | 3,433.60 | 2,989.54 | 5,326.21 | 893.19 |
+
+- OpsLens − Baseline C, breach %: -3.06 [-3.67, -2.45]. Retrained risk AUC 0.970. Classifier: cascade (local + LLM). Weights unchanged.
+
 ## Fix-at-source playbooks (test days, change vs the same policy without it)
 
 | Playbook | Owner | Tickets prevented | Breaches: priority-first | Breaches: OpsLens | Agent-hours (OpsLens) |
@@ -91,6 +112,6 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 
 ## Speed
 
-- Optimiser per decision: median 0.08 ms, max 5.9 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.049 s.
-- Full evaluation pipeline: 38.0 min.
+- Optimiser per decision: median 0.06 ms, max 1.0 ms.
+- Scale test: 5,000 tickets × 500 agents solved in 0.037 s.
+- Full evaluation pipeline: 55.9 min.

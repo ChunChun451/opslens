@@ -2,7 +2,8 @@
 
 Reviewer: Claude 2 (Sneha's Claude). Commit reviewed: `64f42cf` (`main`).
 Severity: **LOSE** = could lose us the finale · **POINTS** = costs points · **MINOR**.
-Numbers marked *(C2 run)* come from my own re-run on Sneha's laptop
+**Update 17 Oct 07:08:** the official `make eval` (with LLM, commit after `7227fb8`) is now in
+`eval/results.json`; numbers below are the official ones. Earlier, numbers marked *(C2 run)* came from my own re-run on Sneha's laptop
 (`docs/collab/evidence/baseline_c_no_llm_17oct.json`, classifier without LLM because no keys
 yet). They are **not** official until `make eval` writes them into `eval/results.json`.
 
@@ -12,10 +13,10 @@ yet). They are **not** official until `make eval` writes them into `eval/results
 
 1. **The core claim survives a hard attack.** I added the baseline an Eternal engineer would
    name first — sort by SLA due time, the way Zendesk/Freshdesk already do — and OpsLens
-   still wins clearly on test days: **5.40% → 2.20%, −3.20 points [−3.86, −2.54]** *(C2 run)*.
+   still wins clearly on test days: **5.40% → 2.20%, −3.20 points [−3.93, −2.46]** (official).
 2. **The "you abandon late customers" attack is now answered with a number**, not a hope:
-   minutes past SLA per 100 tickets **537 (OpsLens) vs 2,282 (priority-first) vs 4,189 (SLA due)**
-   *(C2 run)*. That is the strongest new line for the pitch.
+   minutes past SLA per 100 tickets **529 (OpsLens) vs 2,282 (priority-first) vs 4,189 (SLA due)**
+   (official). That is the strongest new line for the pitch.
 3. **But our current answer to that same question is wrong.** `docs/JUDGE_QA.md` Q26–Q28
    quote policy **v1** numbers (5.08%, P99 474 min, a 240-min guard). Said on stage, the
    dashboard (728 min) contradicts us in front of the judges.
@@ -41,9 +42,9 @@ yet). They are **not** official until `make eval` writes them into `eval/results
   judge opens the dashboard, our credibility (moat #2, Trust) is gone.
 - **Proposal (text for Claude 1, who owns the rehearsal docs):** answer Q27 honestly:
   *"Yes, once a ticket has missed its SLA, OpsLens serves tickets that can still be saved
-  first — and we measured the cost. Late customers are late by 233 min on average, about the
+  first — and we measured the cost. Late customers are late by 230 min on average, about the
   same as FIFO (213), better than priority-first (328). Total minutes past SLA per 100 tickets:
-  537 vs 2,282 for priority-first. A naive 'SLA due' sort that also skips late tickets leaves
+  529 vs 2,282 for priority-first. A naive 'SLA due' sort that also skips late tickets leaves
   them 766 min late; that is why we added a guard."* (numbers once they are in results.json).
   Also refresh Q26 and Q28 to v3. **Add a check**: a test that every number in
   JUDGE_QA/DEMO_SCRIPT exists in `results.json` (my quick audit found only 6 orphans — UCI
@@ -58,15 +59,15 @@ yet). They are **not** official until `make eval` writes them into `eval/results
   menu routing and skill rules as A/B, sorted by SLA deadline with already-late tickets after
   the savable ones. No weights, so nothing to tune; ran on validation (36–42) first, then once
   on test (43–56). `eval/run_baseline_c.py`, wired into `make eval` and `NUMBERS.md`; 3 tests.
-- **Result (C2 run, test days, 5 seeds):**
+- **Result (official, test days, 5 seeds):**
 
   | | A FIFO | B priority | **C SLA due** | OpsLens | OpsLens − C |
   |---|---|---|---|---|---|
-  | Breach % | 13.11 | 6.82 | **5.40** | 2.20 | −3.20 [−3.86, −2.54] |
-  | P1 breach % | 27.34 | 9.13 | 8.94 | 4.82 | −4.12 [−5.69, −2.55] |
-  | Min late, mean of breached | 213 | 328 | 766 | 233 | −533 |
-  | Min late per 100 tickets | 2,820 | 2,282 | 4,189 | 537 | −3,653 |
-  | P99 wait (min) | 816 | 1,007 | 1,435 | 730 | −705 |
+  | Breach % | 13.11 | 6.82 | **5.40** | 2.20 | −3.20 [−3.93, −2.46] |
+  | P1 breach % | 27.34 | 9.13 | 8.94 | 4.89 | −4.05 [−5.67, −2.44] |
+  | Min late, mean of breached | 213 | 328 | 766 | 230 | −536 |
+  | Min late per 100 tickets | 2,820 | 2,282 | 4,189 | 529 | −3,660 |
+  | P99 wait (min) | 816 | 1,007 | 1,435 | 728 | −707 |
 
   Validation days told the same story (C 4.80% vs OpsLens 2.17%).
 - **Proposal:** Jijnasu runs `mingw32-make eval` (or `python eval/run_baseline_c.py` then
@@ -169,7 +170,7 @@ yet). They are **not** official until `make eval` writes them into `eval/results
 > *"Same agents, same hours: three-quarters fewer customer-minutes past the promise — and it
 > beats the 'SLA due' sort your helpdesk already has, on days it never saw."*
 
-(numbers: late minutes per 100 tickets 2,282 → 537 vs priority-first; breach 5.4% → 2.2% vs
+(numbers: late minutes per 100 tickets 2,282 → 529 vs priority-first; breach 5.4% → 2.2% vs
 SLA-due — once official.)
 
 **Story (non-technical judge, first 90 seconds):**

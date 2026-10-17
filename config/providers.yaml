@@ -34,6 +34,19 @@ providers:
     extra_params:
       max_tokens: 900           # a request expecting > 1,000 output tokens is refused outright
 
+  # The daily brief (opslens/brief.py) is written ONCE per `make eval` and stored in results.json,
+  # so it can use a stronger, slower model: Flash-Lite wrote "2.2% of tickets occurred with
+  # OpsLens" (17 Oct). The demo never calls it live.
+  gemini_brief:
+    kind: openai_compat
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+    model: gemini-3.8-flash
+    api_key_env: GEMINI_API_KEY
+    requests_per_minute: 5
+    requests_per_day: 50
+    timeout_s: 90
+    extra_params: {}
+
   # Ask OpsLens (opslens/ask.py) routes ONE question per request with a ~60-token reply, so
   # it can ask more often than the batch classifier above without nearing 1,000 output
   # tokens/minute. Separate entry = separate pacing counter. Groq answered in 0.2 s on

@@ -212,7 +212,8 @@ def make_brief(r: dict) -> dict:
     from opslens.llm.client import build_client
 
     try:
-        client = build_client()
+        # Stronger model first: the brief is written once here, never live (config/providers.yaml).
+        client = build_client(["gemini_brief", "gemini", "groq"])
     except Exception:  # no keys / no network: the template is always available
         client = None
     return write_brief(r, client)
