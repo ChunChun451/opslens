@@ -212,7 +212,7 @@ function spreadLines(path, unit) {
   if (stress) {
     const row = r.stress[Number(stress[1])];
     if (typeof row.opslens_minus_b === "number") {
-      lines.push(`OpsLens − Baseline B: ${fmtSigned(row.opslens_minus_b, "pts")} (95% CI `
+      lines.push(`OpsLens − urgent first: ${fmtSigned(row.opslens_minus_b, "pts")} (95% CI `
         + `${fmtSigned(row.ci_low, "pts")} to ${fmtSigned(row.ci_high, "pts")})`);
     }
   }

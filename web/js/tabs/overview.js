@@ -30,7 +30,7 @@ const KEY_KPIS = [
 export function render(section) {
   const r = state.results;
   section.innerHTML = `
-    ${pageHeader("Overview", "Held-out test days, replayed in a fair simulator: the same tickets, the same luck and the same agents for every policy.")}
+    ${pageHeader("Overview", "Every ticket is a promise to help a customer in time. We replayed 14 days OpsLens had never seen, with the same tickets, agents and luck for every way of working.")}
     ${r.sim && hasMission() ? missionHtml() : ""}
     <div class="grid cols-3-2 stretch">
       ${r.sim ? heroCard() : missing("The simulator comparison", "M7")}
@@ -74,8 +74,8 @@ function heroCard() {
 
   return card({
     id: "ov-headline",
-    title: "SLA breach rate on held-out days",
-    sub: `Mean over simulator seeds ${evText("sim.seeds")}`,
+    title: "Missed promises on days it had never seen",
+    sub: `Share of tickets not solved in time (SLA breach rate), average over simulator seeds ${evText("sim.seeds")}`,
     body: `<div class="hero">
         <div>
           ${stat("OpsLens", ev(path("opslens"), "pct"), "", "xl")}
@@ -102,7 +102,7 @@ function proofStrip() {
       return `<div class="proof">
         <div class="proof-q">Beats the industry standard</div>
         <div class="proof-a">${ev(`${c}.opslens.${BREACH}`, "pct")} <span class="muted">vs</span> ${ev(`${c}.${best[0]}.${BREACH}`, "pct")}</div>
-        <div class="proof-s">SLA breaches, OpsLens vs ${best[2]} · 95% CI
+        <div class="proof-s">Missed promises, OpsLens vs ${best[2]}. 95% CI
           ${ev(`baseline_c.test.opslens_minus_${best[1]}.${BREACH}.ci_low`, "pts", { signed: true, bare: true })} to
           ${ev(`baseline_c.test.opslens_minus_${best[1]}.${BREACH}.ci_high`, "pts", { signed: true, bare: true })} pts</div>
       </div>`;
@@ -111,15 +111,15 @@ function proofStrip() {
         <div class="proof-q">Late customers are not abandoned</div>
         <div class="proof-a">${ev(`${c}.opslens.quality.late_minutes_per_100`, "int")} <span class="muted">vs</span>
           ${ev(`${c}.${r.baseline_c.test.means.baseline_d ? "baseline_d" : "baseline_b"}.quality.late_minutes_per_100`, "int")}</div>
-        <div class="proof-s">minutes past SLA per 100 tickets, OpsLens vs ${r.baseline_c.test.means.baseline_d ? "industry standard" : "urgent-first"}</div>
+        <div class="proof-s">Minutes past the promise per 100 tickets, OpsLens vs ${r.baseline_c.test.means.baseline_d ? "the industry standard" : "urgent first"}</div>
       </div>`,
   ];
   if (r.sealed_world && r.sealed_world.test.means) {
     const s = "sealed_world.test.means";
     tiles.push(`<div class="proof">
-        <div class="proof-q">Holds on a world generated after the freeze</div>
+        <div class="proof-q">Still wins on data made after we froze it</div>
         <div class="proof-a">${ev(`${s}.opslens.${BREACH}`, "pct")} <span class="muted">vs</span> ${ev(`${s}.baseline_c.${BREACH}`, "pct")}</div>
-        <div class="proof-s">SLA breaches, OpsLens vs SLA due · new data seed ${evText("sealed_world.data_seed")}, weights unchanged, evaluated once</div>
+        <div class="proof-s">Missed promises, OpsLens vs due time first, on a new world (seed ${evText("sealed_world.data_seed")}) tested once</div>
       </div>`);
   }
   return `<div class="grid cols-${tiles.length} stretch proof-strip">${tiles.join("")}</div>`;
@@ -178,7 +178,7 @@ function issuesCard() {
   return card({
     id: "ov-issues",
     title: "Top problems found",
-    sub: "Strongest evidence first · click one to see its evidence",
+    sub: "Strongest evidence first. Open one to see the tickets behind it.",
     actions: `<a class="btn btn-sm" href="#patterns">All findings</a>`,
     body: `<ul class="list">${items}</ul>`,
   });
@@ -203,5 +203,5 @@ function segmentsCard() {
     }).join("");
     return `<div class="section-label">${escapeHtml(kpiInfo(kpi).label)}</div><div class="mini-bars">${bars}</div>`;
   }).join("");
-  return card({ id: "ov-segments", title: "Who is protected", sub: "Breach rate for the customers who matter most", body: blocks });
+  return card({ id: "ov-segments", title: "Who is protected", sub: "Missed promises for the customers who matter most", body: blocks });
 }

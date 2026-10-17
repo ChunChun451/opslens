@@ -637,3 +637,390 @@ tr.is-ours td {
 tr.is-ours td:first-child {
   box-shadow: inset 3px 0 0 var(--blue);
 }
+
+/* =============================================================================================
+   Design v3 — "Every ticket is a promise" (Claude 2, 17 Oct, with the frontend-design guide).
+   Palette from the subject: indigo night (the dinner rush), saffron (promises kept / attention),
+   chilli (missed promises), electric indigo (OpsLens). Bricolage Grotesque for headlines,
+   Inter for reading and numbers. One bold moment (the cold open, js/intro.js); everything
+   else calm. This block overrides v2 above where they differ.
+   ============================================================================================= */
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("vendor/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: "Bricolage Grotesque", "Inter", "Segoe UI", system-ui, sans-serif;
+  --night: #141238;
+  --night-2: #1d1a4d;
+  --saffron: #f2a007;
+  --saffron-soft: #fff4dc;
+  --chilli: #d7263d;
+  --bg: #f3f5fa;
+  --ink: #12162b;
+  --blue: #4b4bf5;
+  --blue-soft: #ececff;
+  --bad: #d7263d;
+  --bad-soft: #fde9ec;
+}
+
+/* Headlines carry the personality; body stays quiet. */
+.page-title,
+.card-title,
+.mission h2 {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 100;
+}
+
+.page-title {
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+/* Restraint: the cold open is the one orchestrated moment, so pages no longer stagger in and
+   cards no longer lift on hover (both read as generated defaults). */
+.tab-panel:not([hidden]) > * {
+  animation: none;
+}
+
+.card:hover {
+  box-shadow: var(--shadow);
+  border-color: var(--border);
+}
+
+/* Labels in sentence case, no tracking: they inform, they do not shout. */
+.section-label,
+table th {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.74rem;
+}
+
+.mission-eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.82rem;
+}
+
+/* The OpsLens hero band: indigo night instead of generic near-black. */
+.mission {
+  background:
+    radial-gradient(800px 340px at 90% -30%, rgba(75, 75, 245, 0.55), transparent 70%),
+    var(--night);
+}
+
+.mission h2 span {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: #fff;
+}
+
+.mission-score .theirs .v { color: #ff8a97; }
+.mission-score .ours .v { color: var(--saffron); }
+.mission .tile.busy { background: #7b7bff; box-shadow: none; }
+.mission .tile.cross { background: var(--saffron); box-shadow: none; }
+.mission .tile.wrong { background: var(--chilli); box-shadow: none; }
+.mission .dot.late { background: #ff4d61; box-shadow: none; }
+.mission-progress > i { background: var(--saffron); }
+
+.proof::before {
+  background: var(--saffron);
+}
+
+/* ---- Side menu: replay the cold open ------------------------------------------------------ */
+
+.intro-replay {
+  margin: 0 12px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.intro-replay svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--saffron);
+}
+
+.intro-replay:hover {
+  border-color: var(--saffron);
+}
+
+/* ---- The cold open (js/intro.js) ---------------------------------------------------------- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  color: #eef0ff;
+  background:
+    radial-gradient(1200px 700px at 50% 120%, rgba(75, 75, 245, 0.35), transparent 70%),
+    radial-gradient(900px 500px at 50% -20%, rgba(242, 160, 7, 0.10), transparent 70%),
+    var(--night);
+  transition: opacity 0.45s ease;
+}
+
+.intro.leaving {
+  opacity: 0;
+}
+
+body.intro-open {
+  overflow: hidden;
+}
+
+.intro-skip {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: #c9cdf2;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.intro-skip:hover,
+.intro-skip:focus-visible {
+  border-color: var(--saffron);
+  color: #fff;
+}
+
+.intro-stage {
+  width: min(1180px, calc(100vw - 48px));
+  text-align: center;
+}
+
+.intro-line {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+#il-2 {
+  margin-top: 6px;
+  color: #b9bde8;
+  font-weight: 400;
+}
+
+.intro-line.in,
+.intro-skies.in,
+.intro-end.in {
+  opacity: 1;
+  transform: none;
+}
+
+.intro-skies {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease, filter 0.6s ease;
+}
+
+.intro-skies.dim {
+  filter: blur(2px) brightness(0.45);
+}
+
+.sky {
+  margin: 0;
+}
+
+.sky figcaption {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.sky.ours figcaption {
+  color: var(--saffron);
+}
+
+.sky svg {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sky .d {
+  transition: fill 0.25s ease, opacity 0.25s ease, r 0.25s ease;
+}
+
+.sky .d.off { fill: #ffffff; opacity: 0.04; }
+.sky .d.wait { fill: #dfe2ff; opacity: 0.85; }
+.sky .d.late { fill: #ff4d61; opacity: 1; }
+
+.sky-count {
+  margin-top: 10px;
+  color: #b9bde8;
+  font-size: 0.95rem;
+}
+
+.sky-count b {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  margin-right: 6px;
+}
+
+.sky.theirs .sky-count b { color: #ff8a97; }
+.sky.ours .sky-count b { color: var(--saffron); }
+
+.intro-clock {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.intro-end {
+  position: relative;
+  margin-top: -340px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  pointer-events: none;
+}
+
+.intro-end.in {
+  pointer-events: auto;
+}
+
+.intro-big {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11vw, 9rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.intro-big .t { color: #ff8a97; }
+.intro-big .o { color: var(--saffron); }
+
+.intro-big .vs {
+  margin: 0 0.25em;
+  font-size: 0.32em;
+  font-weight: 500;
+  color: #8e93c9;
+  vertical-align: middle;
+}
+
+.intro-claim {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.8vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.intro-small {
+  max-width: 62ch;
+  margin: 12px auto 0;
+  color: #a9add9;
+  font-size: 0.9rem;
+}
+
+.intro-actions {
+  margin-top: 26px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.intro .btn {
+  padding: 12px 26px;
+  font-size: 1rem;
+}
+
+.intro .intro-go {
+  background: var(--saffron);
+  border-color: var(--saffron);
+  color: var(--night);
+}
+
+.intro .btn.ghost {
+  background: transparent;
+  color: #dfe2ff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 760px) {
+  .intro-skies {
+    grid-template-columns: 1fr;
+  }
+  .intro-end {
+    margin-top: 24px;
+  }
+}
+
+/* Visible keyboard focus everywhere (the dashboard is driven live on stage). */
+:focus-visible {
+  outline: 3px solid var(--saffron);
+  outline-offset: 2px;
+}
+
+/* Cold open: the end card sits centred over the dimmed night, whatever the screen size. */
+.intro-stage {
+  position: relative;
+}
+
+.intro-end {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  margin-top: 0;
+  transform: translateY(-40%);
+}
+
+.intro-end.in {
+  transform: translateY(-50%);
+}
+
+.intro-skies.dim {
+  filter: blur(4px) brightness(0.3);
+}
+
+@media (max-width: 760px) {
+  .intro-end {
+    position: static;
+    transform: none;
+  }
+  .intro-end.in {
+    transform: none;
+  }
+}

@@ -58,3 +58,15 @@ add sealed-world + Baseline C to the dashboard's How we tested and Overview.
   savable tickets). Over the 14 test days it is lower on both. UI and Ask now say so plainly.
   Retuning now would re-open the test days a 4th time and break the sealed world's "frozen" claim.
 - Session folder moved to `Documents\OpsLens\o` (git re-linked, .env and Chart.js restored).
+
+## Session 1, part 4 — design v3 "Every ticket is a promise" (frontend-design skill)
+
+- Cold open (`web/js/intro.js`): ~12 s full-screen night; dots = waiting customers per 5-min frame of
+  the recorded replay, red = promise missed; counters = replay series; ends "21 vs 7 — Same people.
+  Same tickets. Different decisions." Plays once per session; Esc/Enter/Skip; "Replay the night".
+- Plain language: SLA = "promise", breach = "missed promise"; policies "First come, first served /
+  Urgent first / Due time first / Industry standard"; menu "Recurring problems, Next 48 hours,
+  Tickets at risk, What to do, Side by side, Try a what-if, Use your own data". Technical term kept
+  in brackets for engineers.
+- Palette indigo night / saffron / chilli / electric indigo; Bricolage Grotesque headlines (vendored, OFL).
+- Removed v2 generic tells: per-section stagger, card hover lift, gradient half-headline, ALL-CAPS labels.

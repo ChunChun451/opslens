@@ -13,6 +13,7 @@ import { initTabs } from "./js/router.js";
 import { initStory } from "./js/story.js";
 import { initAsk } from "./js/ask.js";
 import { initMotion, initSliderFill } from "./js/motion.js";
+import { initIntro } from "./js/intro.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -50,6 +51,7 @@ async function start() {
   initTabs();
   initStory();
   initAsk();
+  initIntro(); // the cold open plays last, over the ready dashboard
 }
 
 function showLoadError(error) {

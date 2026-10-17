@@ -8,7 +8,7 @@
 //
 // Example at 21:30 (official results, 17 Oct): urgent-first 13 breaches so far, OpsLens 2.
 
-import { state } from "./data.js";
+import { state, policyLabel } from "./data.js";
 import { ev, evText } from "./evidence.js";
 import { drawFloorInto, floorLegend } from "./floormap.js";
 import { escapeHtml } from "./format.js";
@@ -28,21 +28,21 @@ export function missionHtml() {
   const floor = state.results.sim.replay.floor;
   // The strongest baseline with a recorded floor: industry standard if present, else urgent-first.
   theirs = ["baseline_d", "baseline_b", "baseline_a"].find((k) => floor[k]) || "";
-  const theirsLabel = state.results.sim.policies[theirs]?.label || theirs;
+  const theirsLabel = policyLabel(theirs);
   return `<section class="mission" id="ov-mission" aria-label="Live replay of a Saturday evening">
       <div>
         <div class="mission-eyebrow"><span class="live-dot"></span>Replay · ${evText("sim.replay.title")}</div>
-        <h2>Same agents. Same tickets.<br><span>Only the decisions differ.</span></h2>
-        <p class="mission-sub">The dinner peak on a held-out Saturday, replayed with identical luck.
-          Blue tiles are agents working; red dots are customers already past their SLA.</p>
+        <h2>Same agents. Same tickets.<br>Only the decisions differ.</h2>
+        <p class="mission-sub">The dinner rush on a Saturday OpsLens had never seen, replayed with identical luck.
+          Tiles are agents at work; red dots are customers whose promise is already missed.</p>
         <div class="mission-clock" id="ms-clock">18:00</div>
         <div class="mission-score">
-          <div class="theirs"><div class="k">Breaches so far · ${escapeHtml(theirsLabel)}</div><div class="v" id="ms-b-theirs">0</div></div>
-          <div class="ours"><div class="k">Breaches so far · OpsLens</div><div class="v" id="ms-b-ours">0</div></div>
+          <div class="theirs"><div class="k">Missed promises so far, ${escapeHtml(theirsLabel.toLowerCase())}</div><div class="v" id="ms-b-theirs">0</div></div>
+          <div class="ours"><div class="k">Missed promises so far, OpsLens</div><div class="v" id="ms-b-ours">0</div></div>
         </div>
         <div class="mission-actions">
           <button type="button" class="btn" id="ms-play">Pause</button>
-          <a class="btn ghost" href="#compare">Full comparison →</a>
+          <a class="btn ghost" href="#compare">See the full comparison</a>
         </div>
       </div>
       <div class="mission-floors">

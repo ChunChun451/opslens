@@ -30,8 +30,8 @@ export function floorLegend() {
       <span><i class="tile cross"></i>cross-skill rescue</span>
       <span><i class="tile wrong"></i>opened a wrong-queue ticket</span>
       <span><i class="tile idle"></i>free</span>
-      <span><i class="dot"></i>waiting, can still make SLA</span>
-      <span><i class="dot late"></i>waiting, already late</span>
+      <span><i class="dot"></i>waiting, still in time</span>
+      <span><i class="dot late"></i>waiting, promise missed</span>
     </div>`;
 }
 
