@@ -149,6 +149,9 @@ export const KPIS = {
   "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: null }, // more or less is not clearly better
   "quality.reopen_rate_pct": { label: "Reopen rate", unit: "pct", better: "lower" },
   "quality.p99_wait_min": { label: "P99 wait", unit: "min", better: "lower" },
+  "quality.late_minutes_per_100": { label: "Minutes past SLA per 100 tickets", unit: "int", better: "lower" },
+  "quality.mean_minutes_late": { label: "Minutes late, mean of late tickets", unit: "min", better: "lower" },
+  "quality.p90_minutes_late": { label: "Minutes late, P90 of late tickets", unit: "min", better: "lower" },
   "quality.max_wait_min": { label: "Max wait", unit: "min", better: "lower" },
   "quality.mean_utilisation": { label: "Mean utilisation (ρ)", unit: "ratio", better: null },
   "quality.load_fairness_std": { label: "Load fairness (std of utilisation)", unit: "ratio", better: "lower" },

@@ -42,3 +42,19 @@ first on its tab, `eval/run_sealed_world.py`.
 **Next**: sealed world result (seed 4242) → `eval/parts/sealed_world.json`; then the official
 `make eval` (if Claude 1 agrees on #3) so baseline_c / floor / sealed reach results.json;
 add sealed-world + Baseline C to the dashboard's How we tested and Overview.
+
+## Session 1, part 3 — 17 Oct 2026 (Sneha: "beat the industry standard", "2015-esque UI")
+
+- **Baseline D, industry standard** (skills-based routing + AI triage with our classifier, priority
+  then SLA due, any team): test 5.51% vs OpsLens 2.20%, −3.31 [−4.79, −1.84]; validation −2.43.
+  Now in the main comparison, replay/floor, NUMBERS.md, What-if and Ask OpsLens.
+- **Design v2** (`web/theme.css`): Inter (vendored), refined light palette, frosted sidebar, glass
+  top bar, staggered entry, count-up numbers, styled sliders/selects, dark "mission control"
+  hero on the Overview playing the Saturday floor (industry standard vs OpsLens).
+- How we tested → Baselines table (all baselines + sealed world). Story mode leads with the
+  industry standard and ends on Ask OpsLens. Playbook drafts + brief use gemini-3.8-flash.
+- **Known trade-off (not tuned away, on purpose):** on an overloaded What-if day OpsLens has
+  fewer breaches but more minutes late than the industry standard (crisis mode protects
+  savable tickets). Over the 14 test days it is lower on both. UI and Ask now say so plainly.
+  Retuning now would re-open the test days a 4th time and break the sealed world's "frozen" claim.
+- Session folder moved to `Documents\OpsLens\o` (git re-linked, .env and Chart.js restored).

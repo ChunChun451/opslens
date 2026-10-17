@@ -220,6 +220,10 @@ def whatif_text(out: dict) -> dict:
         # breaches fall; minutes past SLA (all customers) is the fair way to show that trade-off.
         lines.append(f"Minutes past SLA per 100 tickets: OpsLens {o['quality.late_minutes_per_100']:,.0f}, "
                      f"{b_name.lower()} {b['quality.late_minutes_per_100']:,.0f}.")
+        late_worse = o["quality.late_minutes_per_100"] > b["quality.late_minutes_per_100"]
+        if late_worse and o["turnaround.breach_pct"] < b["turnaround.breach_pct"]:
+            lines.append("Trade-off: in this overload OpsLens saves the tickets that can still make it first, "
+                         "so customers already late wait longer; a guard brings them back after 8 hours.")
     facts = [{"label": POLICY_NAMES[k], "breach_pct": v["turnaround.breach_pct"], "p90_min": v["turnaround.p90_resolution_min"],
               "max_backlog": v["turnaround.max_backlog"], "late_per_100": v.get("quality.late_minutes_per_100")}
              for k, v in pol.items()]

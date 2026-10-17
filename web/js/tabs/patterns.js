@@ -114,7 +114,7 @@ function findingCard(c, i) {
           <div class="stat-label">${escapeHtml(c.metric)}</div>
           <div class="mini-bars">
             <div class="mini-bar"><span>This segment</span>
-              <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.value)}%; background: var(--ink)"></div></div>
+              <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.value)}%; background: linear-gradient(90deg, var(--brand), #f59e0b)"></div></div>
               <span class="cbar-value">${ev(base + ".value")}</span></div>
             <div class="mini-bar"><span>Comparison</span>
               <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.comparison_value)}%; background: var(--border-strong)"></div></div>

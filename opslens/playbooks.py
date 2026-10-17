@@ -78,7 +78,9 @@ def card_facts(card: dict) -> dict[str, tuple[str, str]]:
     elif metric.startswith("share"):
         unit, name = "%", metric
     elif "per 100" in metric:
-        unit, name = " per 100 tickets", metric.split(" per 100")[0]  # transfers per 100 tickets
+        unit, name = " " + metric, metric.split(" per 100")[0]       # "13.0 transfers per 100 tickets"
+    elif metric == "tickets per day":
+        unit, name = " tickets a day", "daily volume"                 # "254 tickets a day"
     elif "rho" in metric:
         unit, name = "× the agent-time on shift", "work"            # work ÷ agent-time (rho)
     else:
@@ -304,8 +306,12 @@ def in_window(tickets: pd.DataFrame, when: str, first_weekday: int) -> pd.Series
 SYSTEM = (
     "You write a short message from the head of a food-delivery support floor to another team, "
     "asking them to take one action. Use ONLY the facts given. Never write a number yourself, in "
-    "digits or in words: refer to numbers as {{key}} exactly as listed. Two or three sentences, "
-    'polite and concrete. Reply with JSON only: {"message": "..."}'
+    "digits or in words: refer to numbers as {{key}} exactly as listed. Each value already carries "
+    "its unit, so use it as a quantity in a natural sentence, never as 'the {{key}}'. Name the "
+    "group of customers in plain words. Example of the style (other facts): 'Hindi refund customers "
+    "wait {{issue_value}} on average, against {{normal_value}} for comparable tickets; that is "
+    "{{affected}} over the last six weeks.' Two or three sentences, polite and concrete, ending "
+    'with the one action you ask for. Reply with JSON only: {"message": "..."}'
 )
 
 

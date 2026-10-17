@@ -12,7 +12,7 @@ import { setChartDefaults } from "./js/charts.js";
 import { initTabs } from "./js/router.js";
 import { initStory } from "./js/story.js";
 import { initAsk } from "./js/ask.js";
-import { initMotion } from "./js/motion.js";
+import { initMotion, initSliderFill } from "./js/motion.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -46,6 +46,7 @@ async function start() {
   setChartDefaults();
   initEvidence(); // before story mode, so Esc closes the popover first
   initMotion(); // before the first tab is shown, so its numbers count up too
+  initSliderFill();
   initTabs();
   initStory();
   initAsk();

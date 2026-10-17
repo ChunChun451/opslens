@@ -19,6 +19,7 @@ import { escapeHtml, prettyKey, unitForKey } from "../format.js";
 // The sections of this tab, for the jump bar at the top (id, label).
 const SECTIONS = [
   ["what-failed", "What failed"],
+  ["t-baselines", "Baselines"],
   ["t-sim", "Simulator"],
   ["t-recall", "Recall"],
   ["t-class", "Classifier"],
@@ -39,6 +40,7 @@ export function render(section) {
       ${SECTIONS.map(([id, label]) => `<button type="button" data-jump="${id}" aria-pressed="false">${label}</button>`).join("")}
     </div></div>
     ${r.stress.length || details().v1_record ? honestPanel() : ""}
+    ${r.baseline_c && r.baseline_c.test.means ? baselinesPanel() : ""}
     <div class="grid cols-2">
       ${setupPanel()}
       ${r.patterns ? recallPanel() : missing("Pattern recall", "M4")}
@@ -69,6 +71,41 @@ export function render(section) {
   if (details().risk && details().risk.feature_gain) drawFeatureGain();
   if (ablationRows().length) drawAblations();
   if (r.stress.length) drawStress();
+}
+
+// Every baseline we compared against, weakest to strongest, and the sealed second world
+// (Claude 2 review, 17 Oct). One line says what each baseline does, so a judge can check the
+// comparison is fair; every number clicks through to results.json.
+const BASELINES = [
+  ["baseline_a", "First come, first served", "Each team's oldest ticket first; routed by the customer's menu choice."],
+  ["baseline_b", "Urgent first", "P1 before P2 before P3, then oldest; same team queues."],
+  ["baseline_c", "SLA due first", "Earliest SLA deadline first; tickets already late go after the savable ones."],
+  ["baseline_d", "Industry standard", "Skills-based routing with AI triage (our own classifier), priority then SLA due, any team: what helpdesk suites do out of the box."],
+  ["opslens", "OpsLens", "Risk-aware value, optimiser, rare-skill protection, cross-skill rescues."],
+];
+
+function baselinesPanel() {
+  const r = state.results;
+  const m = "baseline_c.test.means";
+  const sealed = r.sealed_world && r.sealed_world.test.means;
+  const rows = BASELINES.filter(([key]) => r.baseline_c.test.means[key]).map(([key, name, what]) => `
+      <tr class="${key === "opslens" ? "is-ours" : ""}">
+        <td><strong>${escapeHtml(name)}</strong><div class="small muted">${escapeHtml(what)}</div></td>
+        <td class="num">${ev(`${m}.${key}.turnaround.breach_pct`, "pct")}</td>
+        <td class="num">${ev(`${m}.${key}.segment.p1_breach_pct`, "pct")}</td>
+        <td class="num">${ev(`${m}.${key}.quality.late_minutes_per_100`, "int")}</td>
+        <td class="num">${sealed && sealed[key] ? ev(`sealed_world.test.means.${key}.turnaround.breach_pct`, "pct") : '<span class="muted">not run</span>'}</td>
+      </tr>`).join("");
+  return `<section class="card" id="t-baselines">
+      <div class="card-head"><div><h3 class="card-title">Every baseline we beat, weakest to strongest</h3>
+        <div class="card-sub">Held-out test days, 5 seeds, same tickets and luck. Baselines have no weights, so nothing
+          was tuned: each ran on validation days first, then once on test days. The sealed world was generated after the
+          policy freeze and evaluated once (the industry-standard baseline was added after that run).</div></div></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Policy</th><th class="num">SLA breaches</th><th class="num">P1 breaches</th>
+          <th class="num">Minutes late / 100 tickets</th><th class="num">Sealed world: breaches</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+    </section>`;
 }
 
 // The free-form `details` object (or an empty one, so `details().x` never crashes).

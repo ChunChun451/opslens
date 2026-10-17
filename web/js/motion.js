@@ -43,3 +43,16 @@ export function countUp(root) {
     requestAnimationFrame(step);
   });
 }
+
+// Range sliders: paint the part left of the thumb (CSS reads --fill; see theme.css).
+export function initSliderFill() {
+  const paint = (input) => {
+    const min = Number(input.min || 0);
+    const max = Number(input.max || 100);
+    input.style.setProperty("--fill", `${(100 * (Number(input.value) - min)) / (max - min || 1)}%`);
+  };
+  document.addEventListener("input", (event) => {
+    if (event.target.matches('input[type="range"]')) paint(event.target);
+  });
+  document.addEventListener("tab-shown", () => document.querySelectorAll('input[type="range"]').forEach(paint));
+}

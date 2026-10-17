@@ -78,7 +78,7 @@ def summarise(runs: list[dict], base: dict[tuple, dict]) -> dict:
 def llm_client():
     try:
         from opslens.llm.client import build_client
-        return build_client()
+        return build_client(["gemini_brief", "gemini", "groq"])  # stronger model first: drafts are written once, never live
     except Exception:  # no keys / no network: the template text is always there
         return None
 

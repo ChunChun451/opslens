@@ -29,7 +29,7 @@ export function missionHtml() {
   // The strongest baseline with a recorded floor: industry standard if present, else urgent-first.
   theirs = ["baseline_d", "baseline_b", "baseline_a"].find((k) => floor[k]) || "";
   const theirsLabel = state.results.sim.policies[theirs]?.label || theirs;
-  return `<section class="mission" aria-label="Live replay of a Saturday evening">
+  return `<section class="mission" id="ov-mission" aria-label="Live replay of a Saturday evening">
       <div>
         <div class="mission-eyebrow"><span class="live-dot"></span>Replay · ${evText("sim.replay.title")}</div>
         <h2>Same agents. Same tickets.<br><span>Only the decisions differ.</span></h2>

@@ -544,3 +544,96 @@ table tbody tr:hover {
 .dot {
   transition: background-color 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s;
 }
+
+/* ---- Form controls: no raw browser defaults on stage ------------------------------------- */
+
+select,
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background-color: var(--surface);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.04);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(61, 90, 254, 0.14);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue) var(--fill, 50%), var(--surface-3) var(--fill, 50%));
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--blue);
+  box-shadow: 0 2px 6px rgba(10, 12, 16, 0.18);
+  transition: transform 0.12s var(--ease);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+
+input[type="range"]::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--blue);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--blue);
+}
+
+/* Bars in charts-as-HTML (cbar) get a soft track and rounded ends. */
+.cbar-track {
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cbar-fill {
+  border-radius: 999px;
+  transition: width 0.8s var(--ease);
+}
+
+/* OpsLens row in comparison tables. */
+tr.is-ours td {
+  background: var(--blue-soft);
+}
+
+tr.is-ours td:first-child {
+  box-shadow: inset 3px 0 0 var(--blue);
+}

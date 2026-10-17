@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-17T14:20:04",
-  "git_commit": "4d6f787",
+  "generated_at": "2026-10-17T14:29:00",
+  "git_commit": "b393d85",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -11650,7 +11650,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.038
+   "seconds": 0.037
   }
  },
  "details": {
@@ -12728,7 +12728,7 @@
      "the new menu is as accurate as the other channels' (20% of today's wrong choices remain)"
     ],
     "message": {
-     "text": "Our team has observed that 13.0 per 100 tickets significantly exceeds 2.6 per 100 tickets for the 10,788 tickets group. Please investigate and fix the phone menu to reduce these unnecessary ticket transfers.",
+     "text": "Phone IVR customers experience 13.0 transfers per 100 tickets, against 2.6 transfers per 100 tickets for comparable tickets; that is 10,788 tickets on the history days. Could you please fix the phone menu (IVR)?",
      "source": "llm"
     },
     "effect": {
@@ -12903,7 +12903,7 @@
      "training is finished before the period and trained agents work at full speed"
     ],
     "message": {
-     "text": "We have identified a skill gap where the 336 min is significantly higher than the 65.5 min for the 2,871 tickets group. Please cross-train our Hindi-speaking agents on payment failure and refund processes to address this discrepancy.",
+     "text": "Hindi Team B customers wait 336 min on average, against 65.5 min for comparable tickets. This skill gap has affected 2,871 tickets over the history days. Please cross-train Hindi-speaking agents on payment failure and refund.",
      "source": "llm"
     },
     "effect": {
@@ -13077,7 +13077,7 @@
      "policy choice: only orders up to \u20b9300"
     ],
     "message": {
-     "text": "Our Team C is currently overloaded with 1.4\u00d7 the agent-time on shift compared to the 1.0\u00d7 the agent-time on shift for similar tickets. Please implement a self-serve instant refund for weekend dinner to reduce the 1,887 tickets.",
+     "text": "Weekend dinner customers handled by Team C require 1.4\u00d7 the agent-time on shift, against 1.0\u00d7 the agent-time on shift for comparable tickets. This capacity constraint has impacted 1,887 tickets over the history days. Please implement a self-serve instant refund on weekend dinner for Team C.",
      "source": "llm"
     },
     "effect": {
@@ -13535,7 +13535,7 @@
      "ASSUMPTION: 30% of customers who see the banner do not open a ticket"
     ],
     "message": {
-     "text": "We are seeing a volume spike where the current 254 significantly exceeds the 117 for this category. Please ensure a status banner is triggered the moment an alert fires for the 254 tickets group to help manage customer expectations.",
+     "text": "Payment failure customers generated 254 tickets a day daily during the Thursday September spike, compared to 117 tickets a day for comparable tickets, representing 254 tickets on the history days. Could you please display a status banner the moment a spike alert fires?",
      "source": "llm"
     },
     "effect": {
@@ -13995,7 +13995,7 @@
      "ASSUMPTION: 100% of the cluster's extra wrong item tickets go away"
     ],
     "message": {
-     "text": "We have identified a partner issue within cluster 17 where the share of wrong item tickets is 24.5%, compared to the 9.6% seen in similar cases. Please perform a kitchen order-check for the 264 tickets affected tickets to help us resolve this discrepancy.",
+     "text": "For customers ordering from restaurant cluster 17, wrong item tickets stand at 24.5%, against 9.6% for comparable tickets; that is 264 tickets on the history days. Please conduct a kitchen order-check for restaurant cluster 17.",
      "source": "llm"
     },
     "effect": {
@@ -14314,7 +14314,7 @@
      "policy choice: only orders up to \u20b9300"
     ],
     "message": {
-     "text": "Our team is seeing a significant spike in wait times for Team B during weekday nights, where the 228 min is currently exceeding the 109 min. Please implement a self-serve instant refund feature for the 744 tickets to help us manage this capacity issue.",
+     "text": "Team B customers on weekday nights wait 228 min on average, against 109 min for comparable tickets; that is 744 tickets over the history days. Due to capacity constraints, could you please enable self-serve instant refunds on weekday nights for Team B?",
      "source": "llm"
     },
     "effect": {
