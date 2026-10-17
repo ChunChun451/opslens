@@ -17,8 +17,8 @@ let selectedTeam = null;
 
 export function render(section) {
   const f = state.results.forecast;
-  const head = pageHeader("Forecast",
-    "Work arriving per hour for each team, with the 80% conformal band, against the agent-hours on the roster.");
+  const head = pageHeader("The next 48 hours",
+    "Like a weather forecast for the support floor: when will each team have more work than people? OpsLens warns you before the storm, so you can move people in time.");
   if (!f) {
     section.innerHTML = head + missing("The forecast", "M6");
     return;
@@ -32,6 +32,8 @@ export function render(section) {
       ${teams.map((t) => `<button type="button" data-team="${escapeHtml(t)}">Team ${escapeHtml(t)}</button>`).join("")}
     </div>`;
   section.innerHTML = `${head}
+    ${weatherHtml(f, teams)}
+    <h2 class="section-title">For the engineers: how good is the forecast?</h2>
     <div class="grid cols-4 stretch">
       ${card({ body: stat("Forecast error (WAPE)", ev("forecast.wape_model", "frac_pct"), noiseFloor()) })}
       ${card({ body: stat("Seasonal-naive error", ev("forecast.wape_naive", "frac_pct"), "same hour last week (the baseline to beat)") })}
@@ -56,6 +58,61 @@ export function render(section) {
     });
   });
   drawChart(section);
+}
+
+// Team names in plain words (roster in config/roster.yaml).
+const TEAM_NAMES = { A: "Live orders", B: "Payments & refunds", C: "Order accuracy", D: "Account, app & partners" };
+
+// The weather strip: one row per team, one cell per hour. A cell's level compares the upper
+// end of the forecast band with the agent-hours on shift: calm (plenty of room), busy (close
+// to full), storm (more work than people). The level is a picture of two numbers already in
+// results.json (hover a cell to see them); the storm warnings are the engine's bottlenecks.
+function weatherHtml(f, teams) {
+  const times = [...new Set(f.horizon.map((h) => h.time))].sort();
+  const byKey = {};
+  f.horizon.forEach((h, index) => { byKey[h.team + "|" + h.time] = { h, index }; });
+  // Storm = inside a bottleneck window the ENGINE flagged (Erlang C on the upper band, which
+  // also counts agents who can help from other teams). Busy = the forecast is above the team's
+  // own on-shift capacity, so it needs that help. Calm = neither. No new thresholds invented.
+  const storms = f.bottlenecks.map((b) => [b.team, b.start, b.end]);
+  const level = (h) => {
+    if (!h) return "none";
+    if (storms.some(([team, start, end]) => team === h.team && h.time >= start && h.time < end)) return "storm";
+    return h.demand_hours > h.capacity_hours ? "busy" : "calm";
+  };
+  const header = times.map((t, k) => {
+    const hour = t.slice(11, 13);
+    const label = hour === "00" || k === 0 ? `<b>${escapeHtml(new Date(t).toLocaleDateString("en-GB", { weekday: "short" }))}</b>`
+      : hour % 6 === 0 ? escapeHtml(hour) : "";
+    return `<span class="wx-h">${label}</span>`;
+  }).join("");
+  const rows = teams.map((team) => {
+    const cells = times.map((t) => {
+      const item = byKey[team + "|" + t];
+      const lv = level(item && item.h);
+      const tip = item ? `${hourLabel(t)}: about ${item.h.demand_hours} agent-hours of work, ${item.h.capacity_hours} from the team's own agents` : "";
+      return `<i class="wx wx-${lv}" title="${escapeHtml(tip)}"></i>`;
+    }).join("");
+    return `<div class="wx-row"><div class="wx-team"><b>Team ${escapeHtml(team)}</b><span>${escapeHtml(TEAM_NAMES[team] || "")}</span></div>
+      <div class="wx-cells" style="--n: ${times.length}">${cells}</div></div>`;
+  }).join("");
+  const inWindow = f.bottlenecks
+    .map((b, index) => ({ b, index }))
+    .filter(({ b }) => b.start >= times[0] && b.start <= times[times.length - 1]);
+  const warnings = (inWindow.length ? inWindow : f.bottlenecks.map((b, index) => ({ b, index })).slice(0, 2))
+    .slice(0, 3)
+    .map(({ index }) => `<div class="storm"><span class="storm-icon" aria-hidden="true"></span>
+        <div><b>${evText(`forecast.bottlenecks[${index}].text`)}</b>
+        <span>${ev(`forecast.bottlenecks[${index}].agent_hours_short`, "num")} agent-hours short in total. Move people before it starts.</span></div></div>`).join("");
+  return `<section class="weather" aria-label="Load forecast per team and hour">
+      <div class="wx-grid">
+        <div class="wx-row wx-head"><div class="wx-team"></div><div class="wx-cells" style="--n: ${times.length}">${header}</div></div>
+        ${rows}
+      </div>
+      <div class="wx-legend"><span><i class="wx wx-calm"></i>Calm: the team can handle it</span><span><i class="wx wx-busy"></i>Busy: needs help from other teams</span>
+        <span><i class="wx wx-storm"></i>Storm: customers will wait, even with help</span></div>
+      ${warnings ? `<div class="storms"><h3>Storm warnings</h3>${warnings}</div>` : ""}
+    </section>`;
 }
 
 // The WAPE no forecast can beat (random arrivals), when the engine reports it.

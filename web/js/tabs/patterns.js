@@ -32,10 +32,10 @@ const PLANT_TIMEOUT_MS = 120000; // fresh data + detection takes 20-40 s; give u
 export function render(section) {
   const p = state.results.patterns;
   const plantButton = `<button type="button" class="btn btn-primary" id="plant-open">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Plant a problem</button>`;
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Hide a problem, see if it finds it</button>`;
   section.innerHTML = `
-    ${pageHeader("Patterns",
-      `Recurring problems found in the history (days ${ev("meta.train_days[0]", "int")}–${ev("meta.validation_days[1]", "int")}), strongest first. Each finding carries its own evidence.`,
+    ${pageHeader("What keeps going wrong",
+      `OpsLens read six weeks of tickets (days ${ev("meta.train_days[0]", "int")}–${ev("meta.validation_days[1]", "int")}) and found these problems on its own, strongest first. Each one comes with the customers it hurt and what to do about it.`,
       plantButton)}
     ${p ? summaryStats(p) : ""}
     ${p ? findings(p) : missing("Patterns", "M4")}
@@ -51,79 +51,101 @@ export function render(section) {
   wirePlantDialog(section);
 }
 
-// Four headline numbers about how well pattern finding works.
+// "Can you trust it?" as sentences, not tiles: how the pattern finder did on problems it was
+// never told about. Every number clicks through to results.json.
 function summaryStats(p) {
-  const tiles = [];
+  const parts = [];
   if (p.recall) {
-    tiles.push(stat("Planted problems found",
-      `${ev("patterns.recall.found", "int")} <span class="muted">of</span> ${ev("patterns.recall.planted", "int")}`,
-      `false alarms ${ev("patterns.recall.false_alarms", "int")}`));
+    parts.push(`In our own data it found ${ev("patterns.recall.found", "int")} of the
+      ${ev("patterns.recall.planted", "int")} problems we planted, with ${ev("patterns.recall.false_alarms", "int")} false alarm.`);
   }
   const b = p.blind_recall;
-  if (b) {
-    const counts = typeof b.planted === "number"
-      ? `${ev("patterns.blind_recall.found", "int")} of ${ev("patterns.blind_recall.planted", "int")} random plants, `
-      : "";
-    tiles.push(stat("Blind recall", ev("patterns.blind_recall.found_pct", "pct"),
-      `${counts}${ev("patterns.blind_recall.sets", "int")} sets we never looked at`));
-    if (typeof b.diagnosed_pct === "number") {
-      tiles.push(stat("Right cause (blind)", ev("patterns.blind_recall.diagnosed_pct", "pct"), "found and given the right cause type"));
-    }
+  if (b && typeof b.planted === "number") {
+    parts.push(`Then we hid ${ev("patterns.blind_recall.planted", "int")} random problems in
+      ${ev("patterns.blind_recall.sets", "int")} datasets it had never seen: it found
+      <b>${ev("patterns.blind_recall.found", "int")}</b> (${ev("patterns.blind_recall.found_pct", "pct")})${typeof b.diagnosed_pct === "number"
+        ? ` and named the right cause for ${ev("patterns.blind_recall.diagnosed_pct", "pct")}` : ""}.`);
   }
   if (typeof p.live_detection_latency_min === "number") {
-    tiles.push(stat("Live spike detected after", ev("patterns.live_detection_latency_min", "min"), "an unseen surge on a test day"));
+    parts.push(`A surge nobody warned it about was flagged ${ev("patterns.live_detection_latency_min", "min")} after it began.`);
   }
-  return `<div class="grid cols-4 stretch">${tiles.map((t) => card({ body: t })).join("")}</div>`;
+  return parts.length ? `<section class="trust-strip"><h2>Can you trust it?</h2><p>${parts.join(" ")}</p></section>` : "";
 }
 
 function findings(p) {
   return p.cards
     .map((c, index) => ({ c, index }))
     .sort((a, b) => b.c.strength - a.c.strength)
-    .map(({ c, index }) => findingCard(c, index))
+    .map(({ c, index }, k) => findingCard(c, index, k + 1))
     .join("");
 }
 
-function findingCard(c, i) {
+// One finding as a "case file": the finding in plain words, the comparison as two bars, real
+// customer messages as chat bubbles (masked), and what to do. Technical detail stays one click away.
+const CAUSE_HELP = {
+  capacity: "More work than people at that time",
+  skill_gap: "Too few agents with the right skill or language",
+  volume_spike: "A sudden surge of one kind of ticket",
+  partner_issue: "A restaurant partner keeps getting orders wrong",
+  process: "The way tickets are routed sends them to the wrong team",
+};
+
+function findingCard(c, i, rank) {
   const base = `patterns.cards[${i}]`;
   // The two bars are a picture of value vs comparison (scaled to the larger), not new numbers.
   const top = Math.max(Math.abs(c.value), Math.abs(c.comparison_value)) || 1;
-  const width = (v) => Math.round((Math.abs(v) / top) * 100);
+  const width = (v) => Math.max(2, Math.round((Math.abs(v) / top) * 100));
   const chips = Object.keys(c.segment).map((key) =>
     `<span class="chip"><b>${escapeHtml(prettyKey(key))}</b>${evText(`${base}.segment.${key}`)}</span>`).join("");
-  const examples = c.examples.length ? examplesTable(c, base) : "";
-  return `<article class="card evidence-card" id="card-${escapeHtml(c.id)}">
-      <div class="finding">
-        <div>
-          <div class="finding-meta">
-            <span class="pill">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
-            <span class="small muted">${ev(base + ".affected_tickets", "int")} tickets ·
-              ${ev(base + ".affected_share_pct", "pct")} of all</span>
-          </div>
-          <h3>${evText(base + ".title")}</h3>
-          <p class="finding-compare">${evText(base + ".comparison_text")}</p>
-          ${c.recommendation ? `<div class="callout info finding-action"><strong>Suggested action:</strong> ${evText(base + ".recommendation")}</div>` : ""}
-          <details class="disclosure">
-            <summary>Show evidence</summary>
-            <div class="chips">${chips}</div>
-            ${c.not_explained_by ? `<p class="small"><strong>Why it is not a known event:</strong> ${evText(base + ".not_explained_by")}</p>` : ""}
-            ${examples}
-          </details>
+  const voices = c.examples.slice(0, 2).map((e, j) => bubble(e, `${base}.examples[${j}]`)).join("");
+  const more = c.examples.length > 2 ? examplesTable(c, base) : "";
+  return `<article class="case cause-${escapeHtml(c.cause_type)}" id="card-${escapeHtml(c.id)}">
+      <div class="case-rank" aria-hidden="true">${rank}</div>
+      <div class="case-main">
+        <div class="case-meta">
+          <span class="cause-tag">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
+          <span class="muted">${escapeHtml(CAUSE_HELP[c.cause_type] || "")}</span>
         </div>
-        <div class="finding-side">
-          <div class="stat-label">${escapeHtml(c.metric)}</div>
-          <div class="mini-bars">
-            <div class="mini-bar"><span>This segment</span>
-              <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.value)}%; background: linear-gradient(90deg, var(--brand), #f59e0b)"></div></div>
-              <span class="cbar-value">${ev(base + ".value")}</span></div>
-            <div class="mini-bar"><span>Comparison</span>
-              <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.comparison_value)}%; background: var(--border-strong)"></div></div>
-              <span class="cbar-value">${ev(base + ".comparison_value")}</span></div>
-          </div>
-          <div class="stat-sub">Strength ${ev(base + ".strength")} (robust z or ratio; higher = more unusual)</div>
+        <h3 class="case-title">${evText(base + ".title", capitalize(c.title))}</h3>
+        <div class="case-compare">
+          <div class="cmp"><span class="cmp-label">This group</span>
+            <div class="cmp-track"><i class="cmp-fill hot" style="width: ${width(c.value)}%"></i></div>
+            <span class="cmp-value">${ev(base + ".value")}</span></div>
+          <div class="cmp"><span class="cmp-label">Everyone else</span>
+            <div class="cmp-track"><i class="cmp-fill" style="width: ${width(c.comparison_value)}%"></i></div>
+            <span class="cmp-value">${ev(base + ".comparison_value")}</span></div>
+          <div class="cmp-unit">${escapeHtml(c.metric)} · ${ev(base + ".affected_tickets", "int")} tickets
+            (${ev(base + ".affected_share_pct", "pct")} of all)</div>
         </div>
+        ${c.recommendation ? `<div class="case-action"><strong>What to do</strong>${evText(base + ".recommendation")}</div>` : ""}
+        <details class="disclosure">
+          <summary>How we know</summary>
+          <div class="chips">${chips}</div>
+          ${c.not_explained_by ? `<p class="small"><strong>Why it is not a known event:</strong> ${evText(base + ".not_explained_by")}</p>` : ""}
+          <p class="small muted">Strength ${ev(base + ".strength")} (robust z or ratio; higher = more unusual).</p>
+          ${more}
+        </details>
+      </div>
+      <div class="case-voices" aria-label="What customers wrote">
+        <div class="voices-label">What customers wrote</div>
+        ${voices || '<p class="muted small">No example messages for this finding.</p>'}
       </div>
     </article>`;
+}
+
+// "phone (IVR) tickets ..." -> "Phone (IVR) tickets ..." (display only; the popover keeps the original).
+export function capitalize(text) {
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+}
+
+// A customer's (PII-masked) message as a chat bubble, with how long they waited.
+function bubble(e, path) {
+  const late = e.breached === true;
+  return `<div class="bubble ${late ? "late" : ""}">
+      <p>${evText(path + ".text")}</p>
+      <span class="bubble-meta">${evText(path + ".created_at")} · first reply after ${ev(path + ".wait_min", "min")}
+        ${late ? `· <b>${evText(path + ".breached", "promise missed")}</b>` : e.breached === false ? "· helped in time" : ""}</span>
+    </div>`;
 }
 
 function examplesTable(c, base) {
