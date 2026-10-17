@@ -42,7 +42,7 @@ const UPLOAD_TIMEOUT_MS = 180000; // the UCI example takes about 10 s; big files
 
 export function render(section) {
   section.innerHTML = `
-    ${pageHeader("Use your own data", "OpsLens is not tied to our demo. Drop in any helpdesk export (CSV), tell it which column is which, and it finds the problems in your tickets. Try it on a real ServiceNow log with one click.")}
+    ${pageHeader("Upload data", "Run OpsLens on any helpdesk export: pick a CSV, tell us which column is which, and run.")}
     ${card({
       id: "upload-panel",
       body: `<div class="dropzone">

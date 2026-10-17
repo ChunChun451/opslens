@@ -35,7 +35,7 @@ const SECTIONS = [
 export function render(section) {
   const r = state.results;
   section.innerHTML = `
-    ${pageHeader("How we tested", "The receipts. Every claim on this dashboard, how we measured it, what we got wrong on the way, and what OpsLens cannot do yet.")}
+    ${pageHeader("How we tested", "Every claim on this dashboard, how it was measured, what failed, and our limits.")}
     <div class="subnav"><div class="segmented" role="navigation" aria-label="Sections">
       ${SECTIONS.map(([id, label]) => `<button type="button" data-jump="${id}" aria-pressed="false">${label}</button>`).join("")}
     </div></div>

@@ -17,9 +17,9 @@ import { escapeHtml, kpiInfo, spreadUnit, unitSuffix, KPI_GROUPS } from "../form
 
 export function render(section) {
   const sim = state.results.sim;
-  const head = pageHeader("Side by side",
-    `Four ways to run the same support floor, on days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")} that OpsLens never saw.
-     Every way gets the same tickets, the same agents and the same luck (simulator seeds ${evText("sim.seeds")}), so the only difference is the decisions.`);
+  const head = pageHeader("Baseline vs OpsLens",
+    `Held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}, simulator seeds ${evText("sim.seeds")}.
+     Same tickets, same luck (common random numbers), same decision cadence, same agents and agent-hours.`);
   if (!sim) {
     section.innerHTML = head + missing("The simulator comparison", "M7");
     return;

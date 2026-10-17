@@ -60,7 +60,7 @@ export function render(section) {
     </div>`;
 
   section.innerHTML = `
-    ${pageHeader("Try a what-if", "What if two people call in sick, or a sale brings 30% more orders? Change one held-out day and watch every way of working replay it in seconds. Or just ask in the bar at the top.")}
+    ${pageHeader("What-if", "Change the staffing or the volume for one held-out day and re-run the fair simulator for all three policies.")}
     <div class="grid cols-side">
       ${card({ id: "whatif-form", title: "Your changes", body: controls })}
       ${card({ title: "Simulated result", sub: "Same tickets and the same luck for every policy", body: `<div id="whatif-result">${emptyState()}</div>` })}

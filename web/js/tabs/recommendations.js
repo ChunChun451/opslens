@@ -22,8 +22,8 @@ const ASSIGNMENTS_SHOWN = 8;
 
 export function render(section) {
   const rec = state.results.recommendations;
-  const head = pageHeader("What to do",
-    "Two kinds of advice: who should pick up which ticket right now, and what other teams could fix so the tickets never arrive. Accept or override any suggestion: every click is logged.");
+  const head = pageHeader("Recommendations",
+    "Who should take which ticket right now, and staffing moves that keep the same people and the same agent-hours. Accept or override: every click is logged.");
   if (!rec) {
     section.innerHTML = head + missing("Recommendations", "M7");
     return;
