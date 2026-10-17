@@ -1,0 +1,546 @@
+/*
+  OpsLens design v2 (Claude 2, 17 Oct) — loaded AFTER styles.css, so everything here wins.
+
+  Why a separate file: styles.css is the component library; this file is the "skin". Reverting
+  the look is one line in index.html, and a reviewer sees the whole redesign in one place.
+
+  Direction: premium light UI (projectors wash out dark pages, CLAUDE.md §8), with ONE dark
+  "mission control" band on the Overview for the live floor. Inter type (vendored, works with
+  Wi-Fi off), quiet greys, one confident accent for OpsLens, soft layered depth, motion that
+  explains (staggered page entry, count-up numbers), never decorates.
+*/
+
+@font-face {
+  font-family: "Inter";
+  src: url("vendor/fonts/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Inter", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --surface-3: #eff1f5;
+  --border: #e6e8ee;
+  --border-strong: #d5d9e2;
+
+  --ink: #0a0c10;
+  --ink-2: #353b48;
+  --muted: #6a7282;
+
+  --brand: #e5484d;
+  --blue: #3d5afe;
+  --blue-soft: #eef1ff;
+  --good: #11885a;
+  --good-soft: #e8f6ef;
+  --bad: #d93a42;
+  --bad-soft: #fdeeee;
+  --warn: #b26a00;
+  --warn-soft: #fff5e3;
+
+  --nav-bg: #fbfbfc;
+  --nav-ink: #4b5263;
+  --nav-active: #ffffff;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 1px rgba(10, 12, 16, 0.03), 0 2px 4px rgba(10, 12, 16, 0.03), 0 8px 24px -12px rgba(10, 12, 16, 0.08);
+  --shadow-hover: 0 1px 1px rgba(10, 12, 16, 0.04), 0 6px 12px rgba(10, 12, 16, 0.05), 0 18px 40px -16px rgba(10, 12, 16, 0.16);
+  --shadow-lg: 0 24px 64px -12px rgba(10, 12, 16, 0.25), 0 2px 8px rgba(10, 12, 16, 0.06);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --sidebar-w: 236px;
+  --topbar-h: 64px;
+}
+
+html {
+  font-size: 17.5px;
+}
+
+body {
+  font-feature-settings: "cv11", "ss01", "ss03"; /* Inter: straight 1, open digits — easier on a projector */
+  letter-spacing: -0.006em;
+  background:
+    radial-gradient(1200px 500px at 70% -200px, rgba(61, 90, 254, 0.07), transparent 70%),
+    var(--bg);
+}
+
+::selection {
+  background: rgba(61, 90, 254, 0.18);
+}
+
+/* ---- Frame: light sidebar, glass top bar ------------------------------------------------- */
+
+.sidebar {
+  background: var(--nav-bg);
+  border-right: 1px solid var(--border);
+}
+
+.brand-mark {
+  border-color: var(--ink);
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.brand-name {
+  color: var(--ink);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.brand-tag {
+  color: var(--muted);
+}
+
+.nav a {
+  color: var(--nav-ink);
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.nav a:hover {
+  background: rgba(10, 12, 16, 0.04);
+  color: var(--ink);
+}
+
+.nav a[aria-current="page"] {
+  background: var(--nav-active);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.06), 0 0 0 1px var(--border);
+}
+
+.nav a[aria-current="page"]::before {
+  left: auto;
+  right: 12px;
+  top: 50%;
+  bottom: auto;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.15);
+}
+
+.nav a[aria-current="page"] .nav-icon {
+  color: var(--blue);
+}
+
+.sidebar-foot {
+  color: var(--muted);
+  border-top-color: var(--border);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid rgba(10, 12, 16, 0.06);
+}
+
+/* ---- Type --------------------------------------------------------------------------------- */
+
+.page-title {
+  font-size: 2.1rem;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+
+.page-sub {
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.card-title {
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.stat-value {
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.stat-value.xl {
+  font-size: 4.2rem;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.section-label {
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+}
+
+/* ---- Cards: soft depth, gentle lift ------------------------------------------------------- */
+
+.card {
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.25s var(--ease), transform 0.25s var(--ease), border-color 0.25s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-strong);
+}
+
+.grid {
+  gap: 18px;
+}
+
+/* ---- Buttons, pills, tables --------------------------------------------------------------- */
+
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform 0.12s var(--ease), box-shadow 0.2s, background-color 0.2s;
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.btn-primary:hover {
+  background: #1d2129;
+}
+
+.pill {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+table th {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+table tbody tr {
+  transition: background-color 0.15s;
+}
+
+table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+/* Clickable evidence numbers: quiet until hovered. */
+.ev {
+  border-radius: 6px;
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.ev:hover {
+  background: var(--blue-soft);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+/* ---- Motion: each page enters in a short stagger ------------------------------------------ */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.tab-panel:not([hidden]) > * {
+  animation: rise 0.55s var(--ease) both;
+}
+
+.tab-panel:not([hidden]) > *:nth-child(2) { animation-delay: 0.05s; }
+.tab-panel:not([hidden]) > *:nth-child(3) { animation-delay: 0.10s; }
+.tab-panel:not([hidden]) > *:nth-child(4) { animation-delay: 0.15s; }
+.tab-panel:not([hidden]) > *:nth-child(5) { animation-delay: 0.20s; }
+.tab-panel:not([hidden]) > *:nth-child(n+6) { animation-delay: 0.25s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel:not([hidden]) > * { animation: none; }
+  .card, .btn { transition: none; }
+}
+
+/* ---- Ask OpsLens: the command bar is the centre of the top bar ----------------------------- */
+
+.ask-form {
+  height: 42px;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--border);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.04);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.ask-form:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(61, 90, 254, 0.14);
+}
+
+.ask-panel {
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  animation: rise 0.25s var(--ease) both;
+}
+
+/* ---- Proof strip -------------------------------------------------------------------------- */
+
+.proof {
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
+  padding: 18px 20px 16px;
+}
+
+.proof::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), #8b5cf6);
+}
+
+.proof-a {
+  font-size: 2rem;
+  letter-spacing: -0.045em;
+}
+
+/* ---- Mission control: the dark live-floor band on the Overview (tabs/overview.js) ---------- */
+
+.mission {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: 28px;
+  padding: 28px 30px;
+  border-radius: 20px;
+  color: #e9ecf5;
+  background:
+    radial-gradient(700px 300px at 85% -40%, rgba(61, 90, 254, 0.45), transparent 70%),
+    radial-gradient(500px 260px at -10% 120%, rgba(229, 72, 77, 0.22), transparent 70%),
+    #0b0e17;
+  box-shadow: var(--shadow-lg);
+  isolation: isolate;
+}
+
+.mission::after {
+  /* faint grid, like an ops console */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, black, transparent 90%);
+}
+
+.mission-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9aa6c4;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5a5f;
+  box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.6);
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.55); }
+  70% { box-shadow: 0 0 0 9px rgba(255, 90, 95, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0); }
+}
+
+.mission h2 {
+  margin-top: 14px;
+  font-size: 2.05rem;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  color: #fff;
+}
+
+.mission h2 span {
+  background: linear-gradient(90deg, #8ea2ff, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.mission-sub {
+  margin-top: 10px;
+  color: #a9b3cc;
+  font-size: 0.86rem;
+  max-width: 40ch;
+}
+
+.mission-clock {
+  margin-top: 22px;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.mission-score {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mission-score > div {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mission-score .k {
+  font-size: 0.7rem;
+  color: #9aa6c4;
+}
+
+.mission-score .v {
+  margin-top: 2px;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-score .ours .v { color: #9fb0ff; }
+.mission-score .theirs .v { color: #ff9a9e; }
+
+.mission-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mission .btn {
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+}
+
+.mission .btn.ghost {
+  background: transparent;
+  color: #cfd6ea;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.mission .ev,
+.mission .ev:hover {
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mission-floors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mission-lane-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: #fff;
+}
+
+.mission-lane-title small {
+  font-weight: 500;
+  color: #9aa6c4;
+}
+
+.mission .floor {
+  margin-top: 0;
+  gap: 8px;
+}
+
+.mission .floor-team {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.mission .floor-name,
+.mission .floor .muted {
+  color: #8d98b4;
+}
+
+.mission .floor-name b {
+  color: #e9ecf5;
+}
+
+.mission .tile.busy { background: #5b74ff; box-shadow: 0 0 10px rgba(91, 116, 255, 0.55); }
+.mission .tile.cross { background: #f5a524; box-shadow: 0 0 10px rgba(245, 165, 36, 0.5); }
+.mission .tile.wrong { background: #ff5a5f; box-shadow: 0 0 10px rgba(255, 90, 95, 0.55); }
+.mission .tile.idle { background: transparent; border-color: #3ddc97; }
+.mission .dot { background: #56607a; }
+.mission .dot.late { background: #ff5a5f; box-shadow: 0 0 6px rgba(255, 90, 95, 0.7); }
+
+.mission .floor-legend {
+  grid-column: 1 / -1;
+  margin-top: 0;
+  color: #8d98b4;
+}
+
+.mission-progress {
+  grid-column: 1 / -1;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.mission-progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #5b74ff, #c4b5fd);
+  transition: width 0.3s linear;
+}
+
+@media (max-width: 1100px) {
+  .mission {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tiles and dots ease in instead of blinking between frames. */
+.tile,
+.dot {
+  transition: background-color 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s;
+}

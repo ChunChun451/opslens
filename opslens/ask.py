@@ -198,7 +198,8 @@ def answer(question: str, client, tools: dict[str, Callable[..., dict]], results
 
 # ---- Answers (all numbers come from tool output) -----------------------------------------------
 
-POLICY_NAMES = {"baseline_a": "First come, first served", "baseline_b": "Urgent first (priority)", "opslens": "OpsLens"}
+POLICY_NAMES = {"baseline_a": "First come, first served", "baseline_b": "Urgent first (priority)",
+                "baseline_d": "Industry standard (skills routing)", "opslens": "OpsLens"}
 
 
 def whatif_text(out: dict) -> dict:
@@ -207,16 +208,18 @@ def whatif_text(out: dict) -> dict:
     if req["volume_factor"] != 1.0:
         change.append(f"volume ×{req['volume_factor']:g}")
     change += [f"Team {t} {d:+d} agents" for t, d in req["agents_delta"].items() if d]
-    o, b = pol["opslens"], pol["baseline_b"]
+    o = pol["opslens"]
+    other = "baseline_d" if "baseline_d" in pol else "baseline_b"  # compare with the strongest baseline
+    b, b_name = pol[other], POLICY_NAMES[other]
     lines = [f"Day {req['day']} with {', '.join(change) or 'no change'}: {o['tickets']:.0f} tickets.",
              f"OpsLens: {o['turnaround.breach_pct']:.1f}% SLA breaches, P90 resolution {o['turnaround.p90_resolution_min']:.0f} min.",
-             f"Urgent-first on the same day: {b['turnaround.breach_pct']:.1f}% breaches "
+             f"{b_name} on the same day: {b['turnaround.breach_pct']:.1f}% breaches "
              f"({b['turnaround.breach_pct'] - o['turnaround.breach_pct']:+.1f} points vs OpsLens)."]
     if "quality.late_minutes_per_100" in o:
         # Under heavy load OpsLens saves the tickets that can still make it, so P90 can rise while
         # breaches fall; minutes past SLA (all customers) is the fair way to show that trade-off.
         lines.append(f"Minutes past SLA per 100 tickets: OpsLens {o['quality.late_minutes_per_100']:,.0f}, "
-                     f"urgent-first {b['quality.late_minutes_per_100']:,.0f}.")
+                     f"{b_name.lower()} {b['quality.late_minutes_per_100']:,.0f}.")
     facts = [{"label": POLICY_NAMES[k], "breach_pct": v["turnaround.breach_pct"], "p90_min": v["turnaround.p90_resolution_min"],
               "max_backlog": v["turnaround.max_backlog"], "late_per_100": v.get("quality.late_minutes_per_100")}
              for k, v in pol.items()]

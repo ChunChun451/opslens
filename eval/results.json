@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-17T07:07:56",
-  "git_commit": "7227fb8",
+  "generated_at": "2026-10-17T14:20:04",
+  "git_commit": "4d6f787",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -376,6 +376,179 @@
       "segment.p1_breach_pct": 7.885824866956942,
       "segment.gold_breach_pct": 5.817782656421515,
       "segment.hindi_breach_pct": 14.495320010118897,
+      "tickets": 18032.0
+     }
+    ]
+   },
+   "baseline_d": {
+    "key": "baseline_d",
+    "label": "Industry standard (skills routing)",
+    "kpis": {
+     "turnaround.breach_pct": {
+      "mean": 5.5146406388642415,
+      "std": 1.446436306721135
+     },
+     "turnaround.mean_resolution_min": {
+      "mean": 80.14294228214939,
+      "std": 17.686493085817496
+     },
+     "turnaround.p90_resolution_min": {
+      "mean": 202.70324749336342,
+      "std": 56.74183971958513
+     },
+     "turnaround.mean_wait_min": {
+      "mean": 65.67243606212976,
+      "std": 17.448788500430446
+     },
+     "turnaround.max_backlog": {
+      "mean": 221.6,
+      "std": 46.949973375924294
+     },
+     "productivity.tickets_per_agent_hour": {
+      "mean": 5.2934648822597,
+      "std": 0.09834598997064835
+     },
+     "productivity.transfers_per_100": {
+      "mean": 1.0248447204968945,
+      "std": 0.007230703643747359
+     },
+     "productivity.busy_agent_hours": {
+      "mean": 2913.4885160292415,
+      "std": 9.99860924743261
+     },
+     "quality.reopen_rate_pct": {
+      "mean": 3.9341171251109137,
+      "std": 0.14842381042947025
+     },
+     "quality.p99_wait_min": {
+      "mean": 947.9923491236771,
+      "std": 213.24400818355906
+     },
+     "quality.mean_utilisation": {
+      "mean": 0.8553347185302822,
+      "std": 0.016941614802409452
+     },
+     "quality.load_fairness_std": {
+      "mean": 0.14192408894671077,
+      "std": 0.0029671925899468423
+     },
+     "segment.p1_breach_pct": {
+      "mean": 7.547169811320755,
+      "std": 1.1919931025124992
+     },
+     "segment.gold_breach_pct": {
+      "mean": 5.429930479326748,
+      "std": 1.670076154735879
+     },
+     "segment.hindi_breach_pct": {
+      "mean": 13.34682519605363,
+      "std": 2.8093382350836738
+     }
+    },
+    "per_seed": [
+     {
+      "turnaround.breach_pct": 5.773070097604259,
+      "turnaround.mean_resolution_min": 88.7704344357491,
+      "turnaround.p90_resolution_min": 218.48748351936226,
+      "turnaround.mean_wait_min": 74.04768385731181,
+      "turnaround.max_backlog": 227.0,
+      "productivity.tickets_per_agent_hour": 5.371462615430444,
+      "productivity.transfers_per_100": 1.0259538598047915,
+      "productivity.busy_agent_hours": 2917.1522729317057,
+      "quality.reopen_rate_pct": 3.7877107364685005,
+      "quality.p99_wait_min": 1067.9580753145465,
+      "quality.mean_utilisation": 0.8679115323080133,
+      "quality.load_fairness_std": 0.14100253445660482,
+      "quality.mean_minutes_late": 321.8127452715065,
+      "quality.p90_minutes_late": 824.9662831086316,
+      "quality.late_minutes_per_100": 1857.8475367548704,
+      "segment.p1_breach_pct": 7.256894049346879,
+      "segment.gold_breach_pct": 5.598243688254665,
+      "segment.hindi_breach_pct": 14.09056412850999,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 5.251774622892635,
+      "turnaround.mean_resolution_min": 70.62478907068196,
+      "turnaround.p90_resolution_min": 178.0694301297822,
+      "turnaround.mean_wait_min": 56.13921356617402,
+      "turnaround.max_backlog": 215.0,
+      "productivity.tickets_per_agent_hour": 5.258675998833479,
+      "productivity.transfers_per_100": 1.0204081632653061,
+      "productivity.busy_agent_hours": 2913.114762148957,
+      "quality.reopen_rate_pct": 4.098269742679681,
+      "quality.p99_wait_min": 783.5362246679651,
+      "quality.mean_utilisation": 0.8487853830554531,
+      "quality.load_fairness_std": 0.1378736754938251,
+      "quality.mean_minutes_late": 205.8947217831463,
+      "quality.p90_minutes_late": 535.44921556357,
+      "quality.late_minutes_per_100": 1081.3126748482673,
+      "segment.p1_breach_pct": 7.885824866956942,
+      "segment.gold_breach_pct": 4.976216611781925,
+      "segment.hindi_breach_pct": 12.522135087275487,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 4.2979148181011535,
+      "turnaround.mean_resolution_min": 66.49229323387583,
+      "turnaround.p90_resolution_min": 167.9130727341755,
+      "turnaround.mean_wait_min": 52.1320259016719,
+      "turnaround.max_backlog": 150.0,
+      "productivity.tickets_per_agent_hour": 5.195044655718813,
+      "productivity.transfers_per_100": 1.0314995563442768,
+      "productivity.busy_agent_hours": 2924.810437778882,
+      "quality.reopen_rate_pct": 4.042812777284827,
+      "quality.p99_wait_min": 782.4016984003767,
+      "quality.mean_utilisation": 0.8431815542157949,
+      "quality.load_fairness_std": 0.14377924686775725,
+      "quality.mean_minutes_late": 250.2863838435518,
+      "quality.p90_minutes_late": 599.0504405891262,
+      "quality.late_minutes_per_100": 1075.7095578901544,
+      "segment.p1_breach_pct": 6.418319625866796,
+      "segment.gold_breach_pct": 3.8785217709476765,
+      "segment.hindi_breach_pct": 10.650139134834303,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 7.858251996450755,
+      "turnaround.mean_resolution_min": 107.34039110693193,
+      "turnaround.p90_resolution_min": 294.7371128176397,
+      "turnaround.mean_wait_min": 92.58498464225431,
+      "turnaround.max_backlog": 280.0,
+      "productivity.tickets_per_agent_hour": 5.421527360192424,
+      "productivity.transfers_per_100": 1.0148624667258208,
+      "productivity.busy_agent_hours": 2914.882721919127,
+      "quality.reopen_rate_pct": 3.970718722271517,
+      "quality.p99_wait_min": 1266.3016577779235,
+      "quality.mean_utilisation": 0.8781528366680504,
+      "quality.load_fairness_std": 0.14128443204120783,
+      "quality.mean_minutes_late": 256.82944768620666,
+      "quality.p90_minutes_late": 614.5669282422928,
+      "quality.late_minutes_per_100": 2018.2305200274782,
+      "segment.p1_breach_pct": 9.433962264150944,
+      "segment.gold_breach_pct": 8.196121478229053,
+      "segment.hindi_breach_pct": 17.83455603339236,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 4.392191659272405,
+      "turnaround.mean_resolution_min": 67.48680356350813,
+      "turnaround.p90_resolution_min": 154.30913826585743,
+      "turnaround.mean_wait_min": 53.45827234323676,
+      "turnaround.max_backlog": 236.0,
+      "productivity.tickets_per_agent_hour": 5.220613781123335,
+      "productivity.transfers_per_100": 1.0314995563442768,
+      "productivity.busy_agent_hours": 2897.482385367535,
+      "quality.reopen_rate_pct": 3.771073646850044,
+      "quality.p99_wait_min": 839.7640894575733,
+      "quality.mean_utilisation": 0.8386422864040994,
+      "quality.load_fairness_std": 0.14568055587415882,
+      "quality.mean_minutes_late": 307.81614460819634,
+      "quality.p90_minutes_late": 748.9301103549645,
+      "quality.late_minutes_per_100": 1351.987502937508,
+      "segment.p1_breach_pct": 6.7408482502822125,
+      "segment.gold_breach_pct": 4.500548847420418,
+      "segment.hindi_breach_pct": 11.63673159625601,
       "tickets": 18032.0
      }
     ]
@@ -824,6 +997,141 @@
     "ci_low": -15.907350336887788,
     "ci_high": -9.531556822231867,
     "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "turnaround.breach_pct",
+    "mean_diff": -3.3141082519964504,
+    "ci_low": -4.792780533717838,
+    "ci_high": -1.8354359702750627,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "turnaround.mean_resolution_min",
+    "mean_diff": -18.892096734758105,
+    "ci_low": -24.668679021591615,
+    "ci_high": -13.115514447924598,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "turnaround.p90_resolution_min",
+    "mean_diff": -62.19562037820068,
+    "ci_low": -95.78849707229905,
+    "ci_high": -28.602743684102307,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "turnaround.mean_wait_min",
+    "mean_diff": -20.909173848325167,
+    "ci_low": -27.383317608995696,
+    "ci_high": -14.435030087654638,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "turnaround.max_backlog",
+    "mean_diff": -21.0,
+    "ci_low": -82.82445548486456,
+    "ci_high": 40.824455484864565,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "productivity.tickets_per_agent_hour",
+    "mean_diff": 0.002767724209912359,
+    "ci_low": -0.004915478196804348,
+    "ci_high": 0.010450926616629067,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "productivity.transfers_per_100",
+    "mean_diff": -0.055456965394853654,
+    "ci_low": -0.0777662277325987,
+    "ci_high": -0.03314770305710861,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "productivity.busy_agent_hours",
+    "mean_diff": 80.02986940364117,
+    "ci_low": 68.35104115040265,
+    "ci_high": 91.70869765687969,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "quality.reopen_rate_pct",
+    "mean_diff": 0.4702750665483584,
+    "ci_low": 0.3884647808573471,
+    "ci_high": 0.5520853522393696,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "quality.p99_wait_min",
+    "mean_diff": -220.18595757201348,
+    "ci_low": -306.01898169949277,
+    "ci_high": -134.35293344453416,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "quality.mean_utilisation",
+    "mean_diff": 0.024096968800839315,
+    "ci_low": 0.020354598991307916,
+    "ci_high": 0.027839338610370714,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "quality.load_fairness_std",
+    "mean_diff": -0.00973153577976088,
+    "ci_low": -0.018126225530634713,
+    "ci_high": -0.00133684602888705,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "segment.p1_breach_pct",
+    "mean_diff": -2.660861151427189,
+    "ci_low": -3.8078919935328317,
+    "ci_high": -1.5138303093215468,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "segment.gold_breach_pct",
+    "mean_diff": -3.600439077936334,
+    "ci_low": -5.443820715658587,
+    "ci_high": -1.7570574402140804,
+    "n": 5
+   },
+   {
+    "policy": "opslens",
+    "baseline": "baseline_d",
+    "kpi": "segment.hindi_breach_pct",
+    "mean_diff": -9.886162408297494,
+    "ci_low": -12.816613216704352,
+    "ci_high": -6.955711599890636,
+    "n": 5
    }
   ],
   "replay": {
@@ -968,6 +1276,62 @@
       23,
       25,
       26
+     ]
+    },
+    "baseline_d": {
+     "waiting": [
+      55,
+      47,
+      49,
+      50,
+      46,
+      45,
+      51,
+      60,
+      59,
+      63,
+      73,
+      82,
+      97,
+      106,
+      113,
+      121,
+      125,
+      124,
+      118,
+      124,
+      135,
+      126,
+      121,
+      119,
+      111
+     ],
+     "breached_cum": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      2,
+      4,
+      4,
+      4,
+      4,
+      7,
+      8,
+      9,
+      10,
+      10,
+      13,
+      13,
+      14,
+      15,
+      15,
+      17,
+      18,
+      20,
+      21
      ]
     },
     "opslens": {
@@ -4446,6 +4810,1643 @@
        "C": [
         17,
         0
+       ]
+      }
+     ]
+    },
+    "baseline_d": {
+     "agents": [
+      {
+       "id": "A01",
+       "team": "A",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "A02",
+       "team": "A",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "A03",
+       "team": "A",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "A04",
+       "team": "A",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "A05",
+       "team": "A",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "A06",
+       "team": "A",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "A07",
+       "team": "A",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "A08",
+       "team": "A",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "A09",
+       "team": "A",
+       "languages": [
+        "en",
+        "hi",
+        "other"
+       ]
+      },
+      {
+       "id": "B01",
+       "team": "B",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "B02",
+       "team": "B",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "B03",
+       "team": "B",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "B04",
+       "team": "B",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "B05",
+       "team": "B",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "B06",
+       "team": "B",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "B07",
+       "team": "B",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "B08",
+       "team": "B",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "B09",
+       "team": "B",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "B10",
+       "team": "B",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "B11",
+       "team": "B",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "C01",
+       "team": "C",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "C02",
+       "team": "C",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "C03",
+       "team": "C",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "C04",
+       "team": "C",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "C05",
+       "team": "C",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "C06",
+       "team": "C",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "C07",
+       "team": "C",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "C08",
+       "team": "C",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "C09",
+       "team": "C",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "D01",
+       "team": "D",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "D02",
+       "team": "D",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "D03",
+       "team": "D",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "D04",
+       "team": "D",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "D05",
+       "team": "D",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "D06",
+       "team": "D",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "D07",
+       "team": "D",
+       "languages": [
+        "en",
+        "other"
+       ]
+      },
+      {
+       "id": "D08",
+       "team": "D",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "D09",
+       "team": "D",
+       "languages": [
+        "en"
+       ]
+      },
+      {
+       "id": "D10",
+       "team": "D",
+       "languages": [
+        "en",
+        "hi"
+       ]
+      },
+      {
+       "id": "D11",
+       "team": "D",
+       "languages": [
+        "en",
+        "hi",
+        "other"
+       ]
+      }
+     ],
+     "times": [
+      "18:00",
+      "18:05",
+      "18:10",
+      "18:15",
+      "18:20",
+      "18:25",
+      "18:30",
+      "18:35",
+      "18:40",
+      "18:45",
+      "18:50",
+      "18:55",
+      "19:00",
+      "19:05",
+      "19:10",
+      "19:15",
+      "19:20",
+      "19:25",
+      "19:30",
+      "19:35",
+      "19:40",
+      "19:45",
+      "19:50",
+      "19:55",
+      "20:00",
+      "20:05",
+      "20:10",
+      "20:15",
+      "20:20",
+      "20:25",
+      "20:30",
+      "20:35",
+      "20:40",
+      "20:45",
+      "20:50",
+      "20:55",
+      "21:00",
+      "21:05",
+      "21:10",
+      "21:15",
+      "21:20",
+      "21:25",
+      "21:30",
+      "21:35",
+      "21:40",
+      "21:45",
+      "21:50",
+      "21:55",
+      "22:00",
+      "22:05",
+      "22:10",
+      "22:15",
+      "22:20",
+      "22:25",
+      "22:30",
+      "22:35",
+      "22:40",
+      "22:45",
+      "22:50",
+      "22:55",
+      "23:00",
+      "23:05",
+      "23:10",
+      "23:15",
+      "23:20",
+      "23:25",
+      "23:30",
+      "23:35",
+      "23:40",
+      "23:45",
+      "23:50",
+      "23:55",
+      "00:00"
+     ],
+     "status": [
+      "oooiiobbobooooobobbooooioioiioooobbbobbo",
+      "oooiiobiobooooobobbooooioiobboooobbbobbo",
+      "oooiioibobooooobobbooooioboiioooobbbobbo",
+      "oooiioiiobooooobobbooooboioiioooobbbobbo",
+      "ooobiobiobooooobobbooooioioiboooobbbobbo",
+      "ooobboiiobooooobobbooooiobobioooobbbobbo",
+      "oooibobiobooooobobbooooiobobioooobbbobbo",
+      "ooobbobbobooooobobbooooboiobioooobbbobbo",
+      "oooibobbobooooobobbooooboiobboooobbbobbo",
+      "oooiioiiobooooobobbooooioboiboooobbbobbo",
+      "ooobioiiobooooobobbooooboboiioooobbbobbo",
+      "ooobbobiobooooobobbooooioboiioooobbbobbo",
+      "ooobiobiobooooobobbooooioboiioooobbbowbo",
+      "ooobbobbobooooobobbooooiobobioooobbbobbo",
+      "ooobbobbobooooobobbooooioboiboooobbbobbo",
+      "ooobbobboboooooiobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobioooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobboooooooioiioooobobobboooobbbobbo",
+      "ooobbobboooooooboiiooooiobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "oooiioiiooooooobobbooooboboiboooobbbobbo",
+      "oooibobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobbooooboiobboooobbbobbo",
+      "ooobbobbooooooobobwoooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "ooobbobbooooooobobboooobobobboooobbbobbo",
+      "oooobobbooooooobobboooobobobbooooobbobbo",
+      "oooobobbooooooobobboooobobobbooooobbobbo",
+      "oooobobbooooooobobboooooobobbooooobwobbo",
+      "oooobobbooooooobobboooooobobbooooobbobbo",
+      "oooobobbooooooobobboooooobobbooooobbobbo",
+      "oooobobbooooooobobboooooobobbooooobbobbo",
+      "oooobobbooooooobobboooooobobbooooobbobbo",
+      "oooobobbooooooobobboooooobobiooooobbobbo",
+      "oooobobbooooooobobbooooooiobiooooobbobbo",
+      "oooobobbooooooobobbooooooboibooooobbobbo",
+      "oooobobbooooooobobboooooobobiooooobbobbo",
+      "oooobobbioooooobobbiooooobobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobiooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbboooooiobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooowobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbboooooboibooooobbobbo",
+      "oooobobbboooooobobbbooooobobiooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobbooooobbobbo",
+      "oooobobbboooooobobbbooooobobboooooobobbo",
+      "oooooobbboooooobobbbooooobobboooooobobbo",
+      "oooooobbboooooobobbboooooioiioooooobobbo",
+      "oooooobbboooooobobbboooooiobioooooobobbo",
+      "oooooobbboooooobobbboooooiobioooooobobbo",
+      "oooooobbboooooobobbboooooioiioooooobobbo",
+      "oooooobbboooooobobbboooooioiioooooobobbo",
+      "oooooobbboooooobobbboooooioiboooooobobbo",
+      "oooooobbboooooobobbboooooiobioooooobobbo",
+      "oooooobbboooooobobbboooooboiioooooobobbo",
+      "oooooobbboooooobobbboooooiobioooooobobbo",
+      "oooooobbboooooobobbbooooooobioooooobobbo"
+     ],
+     "queues": [
+      {
+       "B": [
+        16,
+        0
+       ],
+       "D": [
+        39,
+        0
+       ]
+      },
+      {
+       "D": [
+        35,
+        0
+       ],
+       "B": [
+        15,
+        0
+       ]
+      },
+      {
+       "D": [
+        36,
+        0
+       ],
+       "B": [
+        14,
+        0
+       ],
+       "A": [
+        1,
+        0
+       ]
+      },
+      {
+       "D": [
+        34,
+        0
+       ],
+       "B": [
+        12,
+        0
+       ],
+       "A": [
+        1,
+        0
+       ]
+      },
+      {
+       "D": [
+        35,
+        0
+       ],
+       "B": [
+        14,
+        0
+       ],
+       "A": [
+        2,
+        0
+       ]
+      },
+      {
+       "D": [
+        36,
+        0
+       ],
+       "B": [
+        13,
+        0
+       ],
+       "A": [
+        2,
+        0
+       ]
+      },
+      {
+       "B": [
+        12,
+        0
+       ],
+       "D": [
+        34,
+        0
+       ],
+       "A": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        12,
+        0
+       ],
+       "D": [
+        33,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        11,
+        0
+       ],
+       "D": [
+        34,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        11,
+        0
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        10,
+        0
+       ],
+       "D": [
+        36,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        9,
+        0
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        8,
+        0
+       ],
+       "D": [
+        34,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        9,
+        0
+       ],
+       "D": [
+        32,
+        0
+       ],
+       "A": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        10,
+        0
+       ],
+       "D": [
+        29,
+        0
+       ],
+       "A": [
+        9,
+        1
+       ]
+      },
+      {
+       "B": [
+        9,
+        0
+       ],
+       "D": [
+        27,
+        0
+       ],
+       "A": [
+        7,
+        1
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        11,
+        0
+       ],
+       "D": [
+        30,
+        0
+       ],
+       "A": [
+        9,
+        1
+       ],
+       "C": [
+        2,
+        0
+       ]
+      },
+      {
+       "B": [
+        10,
+        0
+       ],
+       "D": [
+        31,
+        0
+       ],
+       "A": [
+        7,
+        1
+       ]
+      },
+      {
+       "B": [
+        12,
+        0
+       ],
+       "D": [
+        32,
+        0
+       ],
+       "A": [
+        5,
+        2
+       ]
+      },
+      {
+       "B": [
+        12,
+        0
+       ],
+       "D": [
+        34,
+        0
+       ],
+       "A": [
+        2,
+        2
+       ]
+      },
+      {
+       "B": [
+        13,
+        0
+       ],
+       "D": [
+        33,
+        0
+       ],
+       "A": [
+        4,
+        3
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        13,
+        1
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        6,
+        4
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        14,
+        1
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        4,
+        3
+       ]
+      },
+      {
+       "B": [
+        13,
+        1
+       ],
+       "D": [
+        36,
+        0
+       ],
+       "A": [
+        3,
+        3
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        14,
+        1
+       ],
+       "D": [
+        37,
+        0
+       ],
+       "A": [
+        3,
+        3
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        14,
+        1
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        5,
+        3
+       ]
+      },
+      {
+       "B": [
+        14,
+        1
+       ],
+       "D": [
+        33,
+        0
+       ],
+       "A": [
+        5,
+        3
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        18,
+        1
+       ],
+       "D": [
+        34,
+        0
+       ],
+       "A": [
+        4,
+        3
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        17,
+        1
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        5,
+        3
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        20,
+        1
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        4,
+        3
+       ],
+       "C": [
+        7,
+        0
+       ]
+      },
+      {
+       "B": [
+        23,
+        1
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        7,
+        3
+       ],
+       "C": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        24,
+        2
+       ],
+       "D": [
+        35,
+        0
+       ],
+       "A": [
+        8,
+        3
+       ],
+       "C": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        29,
+        2
+       ],
+       "D": [
+        36,
+        0
+       ],
+       "A": [
+        10,
+        4
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        30,
+        2
+       ],
+       "D": [
+        35,
+        1
+       ],
+       "A": [
+        5,
+        4
+       ],
+       "C": [
+        5,
+        0
+       ]
+      },
+      {
+       "B": [
+        35,
+        2
+       ],
+       "D": [
+        34,
+        1
+       ],
+       "A": [
+        7,
+        4
+       ],
+       "C": [
+        5,
+        0
+       ]
+      },
+      {
+       "B": [
+        37,
+        2
+       ],
+       "D": [
+        38,
+        1
+       ],
+       "A": [
+        8,
+        5
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        39,
+        2
+       ],
+       "D": [
+        39,
+        1
+       ],
+       "A": [
+        10,
+        5
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        39,
+        3
+       ],
+       "D": [
+        38,
+        1
+       ],
+       "A": [
+        12,
+        5
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        40,
+        3
+       ],
+       "D": [
+        39,
+        1
+       ],
+       "A": [
+        14,
+        5
+       ],
+       "C": [
+        4,
+        0
+       ]
+      },
+      {
+       "B": [
+        40,
+        3
+       ],
+       "D": [
+        38,
+        1
+       ],
+       "A": [
+        14,
+        5
+       ],
+       "C": [
+        5,
+        0
+       ]
+      },
+      {
+       "B": [
+        42,
+        3
+       ],
+       "D": [
+        40,
+        1
+       ],
+       "A": [
+        17,
+        5
+       ],
+       "C": [
+        5,
+        0
+       ]
+      },
+      {
+       "B": [
+        43,
+        3
+       ],
+       "D": [
+        43,
+        1
+       ],
+       "A": [
+        15,
+        5
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        43,
+        4
+       ],
+       "D": [
+        42,
+        1
+       ],
+       "A": [
+        15,
+        5
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        43,
+        4
+       ],
+       "D": [
+        42,
+        1
+       ],
+       "A": [
+        20,
+        5
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        43,
+        4
+       ],
+       "D": [
+        43,
+        1
+       ],
+       "A": [
+        21,
+        5
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        47,
+        4
+       ],
+       "D": [
+        42,
+        1
+       ],
+       "A": [
+        21,
+        5
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        44,
+        5
+       ],
+       "D": [
+        40,
+        1
+       ],
+       "A": [
+        17,
+        5
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        48,
+        5
+       ],
+       "D": [
+        43,
+        1
+       ],
+       "A": [
+        16,
+        5
+       ],
+       "C": [
+        2,
+        0
+       ]
+      },
+      {
+       "B": [
+        53,
+        6
+       ],
+       "D": [
+        43,
+        1
+       ],
+       "A": [
+        15,
+        5
+       ],
+       "C": [
+        2,
+        0
+       ]
+      },
+      {
+       "B": [
+        51,
+        6
+       ],
+       "D": [
+        44,
+        1
+       ],
+       "A": [
+        15,
+        3
+       ],
+       "C": [
+        2,
+        0
+       ]
+      },
+      {
+       "B": [
+        51,
+        6
+       ],
+       "D": [
+        43,
+        1
+       ],
+       "A": [
+        21,
+        1
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        50,
+        6
+       ],
+       "D": [
+        44,
+        1
+       ],
+       "A": [
+        22,
+        0
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        49,
+        6
+       ],
+       "D": [
+        45,
+        1
+       ],
+       "A": [
+        21,
+        0
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        47,
+        6
+       ],
+       "D": [
+        43,
+        1
+       ],
+       "A": [
+        21,
+        0
+       ]
+      },
+      {
+       "B": [
+        46,
+        6
+       ],
+       "D": [
+        45,
+        1
+       ],
+       "A": [
+        20,
+        0
+       ]
+      },
+      {
+       "B": [
+        47,
+        6
+       ],
+       "D": [
+        47,
+        1
+       ],
+       "A": [
+        18,
+        0
+       ]
+      },
+      {
+       "B": [
+        47,
+        7
+       ],
+       "D": [
+        47,
+        1
+       ],
+       "A": [
+        18,
+        0
+       ]
+      },
+      {
+       "B": [
+        50,
+        7
+       ],
+       "D": [
+        47,
+        1
+       ],
+       "A": [
+        18,
+        0
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        52,
+        7
+       ],
+       "D": [
+        49,
+        1
+       ],
+       "A": [
+        18,
+        0
+       ],
+       "C": [
+        3,
+        0
+       ]
+      },
+      {
+       "B": [
+        54,
+        7
+       ],
+       "D": [
+        50,
+        1
+       ],
+       "A": [
+        18,
+        0
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        54,
+        7
+       ],
+       "D": [
+        51,
+        1
+       ],
+       "A": [
+        20,
+        0
+       ],
+       "C": [
+        2,
+        0
+       ]
+      },
+      {
+       "B": [
+        54,
+        7
+       ],
+       "D": [
+        49,
+        1
+       ],
+       "A": [
+        19,
+        0
+       ]
+      },
+      {
+       "B": [
+        52,
+        8
+       ],
+       "D": [
+        50,
+        1
+       ],
+       "A": [
+        18,
+        0
+       ]
+      },
+      {
+       "B": [
+        53,
+        8
+       ],
+       "D": [
+        50,
+        1
+       ],
+       "A": [
+        14,
+        0
+       ]
+      },
+      {
+       "B": [
+        53,
+        8
+       ],
+       "D": [
+        51,
+        1
+       ],
+       "A": [
+        12,
+        0
+       ]
+      },
+      {
+       "B": [
+        55,
+        8
+       ],
+       "A": [
+        9,
+        0
+       ],
+       "D": [
+        51,
+        1
+       ]
+      },
+      {
+       "B": [
+        53,
+        9
+       ],
+       "A": [
+        8,
+        0
+       ],
+       "D": [
+        50,
+        1
+       ]
+      },
+      {
+       "B": [
+        54,
+        9
+       ],
+       "A": [
+        8,
+        0
+       ],
+       "D": [
+        49,
+        1
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        53,
+        10
+       ],
+       "A": [
+        7,
+        0
+       ],
+       "D": [
+        52,
+        1
+       ],
+       "C": [
+        1,
+        0
+       ]
+      },
+      {
+       "B": [
+        51,
+        11
+       ],
+       "A": [
+        7,
+        0
+       ],
+       "D": [
+        49,
+        1
+       ]
+      },
+      {
+       "B": [
+        49,
+        12
+       ],
+       "A": [
+        9,
+        0
+       ],
+       "D": [
+        46,
+        1
+       ]
+      },
+      {
+       "B": [
+        47,
+        12
+       ],
+       "A": [
+        10,
+        0
+       ],
+       "D": [
+        45,
+        1
+       ]
+      },
+      {
+       "B": [
+        45,
+        12
+       ],
+       "A": [
+        7,
+        0
+       ],
+       "D": [
+        46,
+        1
        ]
       }
      ]
@@ -9642,14 +11643,14 @@
  ],
  "speed": {
   "pipeline_seconds": 3355.5,
-  "optimizer_ms_median": 0.0562999994144775,
-  "optimizer_ms_max": 1.0296000000380445,
+  "optimizer_ms_median": 0.058099998568650335,
+  "optimizer_ms_max": 0.8711000045877881,
   "scale_test": {
    "tickets": 5000,
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.037
+   "seconds": 0.038
   }
  },
  "details": {
@@ -13204,6 +15205,71 @@
       "tickets": 8745.0
      }
     ],
+    "baseline_d": [
+     {
+      "turnaround.breach_pct": 4.299599771297884,
+      "turnaround.mean_resolution_min": 55.063534970106176,
+      "turnaround.p90_resolution_min": 145.85844898770452,
+      "turnaround.mean_wait_min": 41.011913173777195,
+      "turnaround.max_backlog": 113.0,
+      "productivity.tickets_per_agent_hour": 5.168439716312057,
+      "productivity.transfers_per_100": 1.074899942824471,
+      "productivity.busy_agent_hours": 1496.764873303425,
+      "quality.reopen_rate_pct": 4.276729559748428,
+      "quality.p99_wait_min": 713.5484371155582,
+      "quality.mean_utilisation": 0.8864412890979138,
+      "quality.load_fairness_std": 0.17097144630706002,
+      "quality.mean_minutes_late": 234.55665216405868,
+      "quality.p90_minutes_late": 600.2845795800604,
+      "quality.late_minutes_per_100": 1008.4997280009841,
+      "segment.p1_breach_pct": 6.59699542782495,
+      "segment.gold_breach_pct": 4.633204633204633,
+      "segment.hindi_breach_pct": 10.118130457113509,
+      "tickets": 8745.0
+     },
+     {
+      "turnaround.breach_pct": 4.539736992567181,
+      "turnaround.mean_resolution_min": 67.29712921282591,
+      "turnaround.p90_resolution_min": 157.00021699252542,
+      "turnaround.mean_wait_min": 52.95076979129965,
+      "turnaround.max_backlog": 159.0,
+      "productivity.tickets_per_agent_hour": 5.224014336917563,
+      "productivity.transfers_per_100": 1.0634648370497428,
+      "productivity.busy_agent_hours": 1505.0530240094515,
+      "quality.reopen_rate_pct": 3.9679817038307608,
+      "quality.p99_wait_min": 781.4655426986451,
+      "quality.mean_utilisation": 0.9011953844816116,
+      "quality.load_fairness_std": 0.18665488620839837,
+      "quality.mean_minutes_late": 287.703231686149,
+      "quality.p90_minutes_late": 721.9474151097079,
+      "quality.late_minutes_per_100": 1306.0970037667373,
+      "segment.p1_breach_pct": 6.3357282821685175,
+      "segment.gold_breach_pct": 4.16988416988417,
+      "segment.hindi_breach_pct": 11.864406779661017,
+      "tickets": 8745.0
+     },
+     {
+      "turnaround.breach_pct": 4.848484848484849,
+      "turnaround.mean_resolution_min": 60.10419477396658,
+      "turnaround.p90_resolution_min": 168.85963102545506,
+      "turnaround.mean_wait_min": 45.83128540088509,
+      "turnaround.max_backlog": 130.0,
+      "productivity.tickets_per_agent_hour": 5.132042253521127,
+      "productivity.transfers_per_100": 1.0977701543739278,
+      "productivity.busy_agent_hours": 1518.8156076999305,
+      "quality.reopen_rate_pct": 3.979416809605489,
+      "quality.p99_wait_min": 647.8301484678301,
+      "quality.mean_utilisation": 0.897140514776653,
+      "quality.load_fairness_std": 0.1655119669474118,
+      "quality.mean_minutes_late": 199.7302881111117,
+      "quality.p90_minutes_late": 579.3978014443694,
+      "quality.late_minutes_per_100": 968.3892756902386,
+      "segment.p1_breach_pct": 7.544088830829524,
+      "segment.gold_breach_pct": 5.250965250965251,
+      "segment.hindi_breach_pct": 10.888546481766822,
+      "tickets": 8745.0
+     }
+    ],
     "opslens": [
      {
       "turnaround.breach_pct": 2.0468839336763867,
@@ -13326,6 +15392,62 @@
      "n": 3
     }
    },
+   "opslens_minus_d": {
+    "turnaround.breach_pct": {
+     "mean_diff": -2.4280541261673334,
+     "ci_low": -2.8063626212682946,
+     "ci_high": -2.049745631066372,
+     "n": 3
+    },
+    "segment.p1_breach_pct": {
+     "mean_diff": -2.133681689527542,
+     "ci_low": -2.7894839973873284,
+     "ci_high": -1.4778793816677553,
+     "n": 3
+    },
+    "turnaround.p90_resolution_min": {
+     "mean_diff": -35.30863346352368,
+     "ci_low": -62.60122607239809,
+     "ci_high": -8.016040854649262,
+     "n": 3
+    },
+    "quality.p99_wait_min": {
+     "mean_diff": -178.26428369087967,
+     "ci_low": -276.967881841117,
+     "ci_high": -79.56068554064237,
+     "n": 3
+    },
+    "quality.mean_minutes_late": {
+     "mean_diff": -70.85023245244035,
+     "ci_low": -114.2921097440922,
+     "ci_high": -27.408355160788503,
+     "n": 3
+    },
+    "quality.p90_minutes_late": {
+     "mean_diff": -195.10300207303194,
+     "ci_low": -359.45252747467237,
+     "ci_high": -30.753476671391496,
+     "n": 3
+    },
+    "quality.late_minutes_per_100": {
+     "mean_diff": -734.9357538575813,
+     "ci_low": -1102.143760279019,
+     "ci_high": -367.7277474361435,
+     "n": 3
+    },
+    "productivity.transfers_per_100": {
+     "mean_diff": -0.07242233657327994,
+     "ci_low": -0.13802935010482165,
+     "ci_high": -0.006815323041738236,
+     "n": 3
+    },
+    "quality.reopen_rate_pct": {
+     "mean_diff": 0.4307223175147703,
+     "ci_low": 0.26426270095448023,
+     "ci_high": 0.5971819340750604,
+     "n": 3
+    }
+   },
    "means": {
     "baseline_a": {
      "turnaround.breach_pct": 10.84048027444254,
@@ -13388,6 +15510,27 @@
      "segment.p1_breach_pct": 8.142826039625517,
      "segment.gold_breach_pct": 4.942084942084942,
      "segment.hindi_breach_pct": 10.717342920732753,
+     "tickets": 8745.0
+    },
+    "baseline_d": {
+     "turnaround.breach_pct": 4.562607204116638,
+     "turnaround.mean_resolution_min": 60.82161965229955,
+     "turnaround.p90_resolution_min": 157.23943233522834,
+     "turnaround.mean_wait_min": 46.59798945532065,
+     "turnaround.max_backlog": 134.0,
+     "productivity.tickets_per_agent_hour": 5.174832102250249,
+     "productivity.transfers_per_100": 1.0787116447493805,
+     "productivity.busy_agent_hours": 1506.8778350042692,
+     "quality.reopen_rate_pct": 4.074709357728225,
+     "quality.p99_wait_min": 714.2813760940111,
+     "quality.mean_utilisation": 0.8949257294520594,
+     "quality.load_fairness_std": 0.17437943315429005,
+     "quality.mean_minutes_late": 240.66339065377315,
+     "quality.p90_minutes_late": 633.8765987113792,
+     "quality.late_minutes_per_100": 1094.3286691526534,
+     "segment.p1_breach_pct": 6.82560418027433,
+     "segment.gold_breach_pct": 4.684684684684685,
+     "segment.hindi_breach_pct": 10.95702790618045,
      "tickets": 8745.0
     },
     "opslens": {
@@ -13747,6 +15890,113 @@
       "tickets": 18032.0
      }
     ],
+    "baseline_d": [
+     {
+      "turnaround.breach_pct": 5.773070097604259,
+      "turnaround.mean_resolution_min": 88.7704344357491,
+      "turnaround.p90_resolution_min": 218.48748351936226,
+      "turnaround.mean_wait_min": 74.04768385731181,
+      "turnaround.max_backlog": 227.0,
+      "productivity.tickets_per_agent_hour": 5.371462615430444,
+      "productivity.transfers_per_100": 1.0259538598047915,
+      "productivity.busy_agent_hours": 2917.1522729317057,
+      "quality.reopen_rate_pct": 3.7877107364685005,
+      "quality.p99_wait_min": 1067.9580753145465,
+      "quality.mean_utilisation": 0.8679115323080133,
+      "quality.load_fairness_std": 0.14100253445660482,
+      "quality.mean_minutes_late": 321.8127452715065,
+      "quality.p90_minutes_late": 824.9662831086316,
+      "quality.late_minutes_per_100": 1857.8475367548704,
+      "segment.p1_breach_pct": 7.256894049346879,
+      "segment.gold_breach_pct": 5.598243688254665,
+      "segment.hindi_breach_pct": 14.09056412850999,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 5.251774622892635,
+      "turnaround.mean_resolution_min": 70.62478907068196,
+      "turnaround.p90_resolution_min": 178.0694301297822,
+      "turnaround.mean_wait_min": 56.13921356617402,
+      "turnaround.max_backlog": 215.0,
+      "productivity.tickets_per_agent_hour": 5.258675998833479,
+      "productivity.transfers_per_100": 1.0204081632653061,
+      "productivity.busy_agent_hours": 2913.114762148957,
+      "quality.reopen_rate_pct": 4.098269742679681,
+      "quality.p99_wait_min": 783.5362246679651,
+      "quality.mean_utilisation": 0.8487853830554531,
+      "quality.load_fairness_std": 0.1378736754938251,
+      "quality.mean_minutes_late": 205.8947217831463,
+      "quality.p90_minutes_late": 535.44921556357,
+      "quality.late_minutes_per_100": 1081.3126748482673,
+      "segment.p1_breach_pct": 7.885824866956942,
+      "segment.gold_breach_pct": 4.976216611781925,
+      "segment.hindi_breach_pct": 12.522135087275487,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 4.2979148181011535,
+      "turnaround.mean_resolution_min": 66.49229323387583,
+      "turnaround.p90_resolution_min": 167.9130727341755,
+      "turnaround.mean_wait_min": 52.1320259016719,
+      "turnaround.max_backlog": 150.0,
+      "productivity.tickets_per_agent_hour": 5.195044655718813,
+      "productivity.transfers_per_100": 1.0314995563442768,
+      "productivity.busy_agent_hours": 2924.810437778882,
+      "quality.reopen_rate_pct": 4.042812777284827,
+      "quality.p99_wait_min": 782.4016984003767,
+      "quality.mean_utilisation": 0.8431815542157949,
+      "quality.load_fairness_std": 0.14377924686775725,
+      "quality.mean_minutes_late": 250.2863838435518,
+      "quality.p90_minutes_late": 599.0504405891262,
+      "quality.late_minutes_per_100": 1075.7095578901544,
+      "segment.p1_breach_pct": 6.418319625866796,
+      "segment.gold_breach_pct": 3.8785217709476765,
+      "segment.hindi_breach_pct": 10.650139134834303,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 7.858251996450755,
+      "turnaround.mean_resolution_min": 107.34039110693193,
+      "turnaround.p90_resolution_min": 294.7371128176397,
+      "turnaround.mean_wait_min": 92.58498464225431,
+      "turnaround.max_backlog": 280.0,
+      "productivity.tickets_per_agent_hour": 5.421527360192424,
+      "productivity.transfers_per_100": 1.0148624667258208,
+      "productivity.busy_agent_hours": 2914.882721919127,
+      "quality.reopen_rate_pct": 3.970718722271517,
+      "quality.p99_wait_min": 1266.3016577779235,
+      "quality.mean_utilisation": 0.8781528366680504,
+      "quality.load_fairness_std": 0.14128443204120783,
+      "quality.mean_minutes_late": 256.82944768620666,
+      "quality.p90_minutes_late": 614.5669282422928,
+      "quality.late_minutes_per_100": 2018.2305200274782,
+      "segment.p1_breach_pct": 9.433962264150944,
+      "segment.gold_breach_pct": 8.196121478229053,
+      "segment.hindi_breach_pct": 17.83455603339236,
+      "tickets": 18032.0
+     },
+     {
+      "turnaround.breach_pct": 4.392191659272405,
+      "turnaround.mean_resolution_min": 67.48680356350813,
+      "turnaround.p90_resolution_min": 154.30913826585743,
+      "turnaround.mean_wait_min": 53.45827234323676,
+      "turnaround.max_backlog": 236.0,
+      "productivity.tickets_per_agent_hour": 5.220613781123335,
+      "productivity.transfers_per_100": 1.0314995563442768,
+      "productivity.busy_agent_hours": 2897.482385367535,
+      "quality.reopen_rate_pct": 3.771073646850044,
+      "quality.p99_wait_min": 839.7640894575733,
+      "quality.mean_utilisation": 0.8386422864040994,
+      "quality.load_fairness_std": 0.14568055587415882,
+      "quality.mean_minutes_late": 307.81614460819634,
+      "quality.p90_minutes_late": 748.9301103549645,
+      "quality.late_minutes_per_100": 1351.987502937508,
+      "segment.p1_breach_pct": 6.7408482502822125,
+      "segment.gold_breach_pct": 4.500548847420418,
+      "segment.hindi_breach_pct": 11.63673159625601,
+      "tickets": 18032.0
+     }
+    ],
     "opslens": [
      {
       "turnaround.breach_pct": 2.001996450754215,
@@ -13911,6 +16161,62 @@
      "n": 5
     }
    },
+   "opslens_minus_d": {
+    "turnaround.breach_pct": {
+     "mean_diff": -3.3141082519964504,
+     "ci_low": -4.792780533717838,
+     "ci_high": -1.8354359702750627,
+     "n": 5
+    },
+    "segment.p1_breach_pct": {
+     "mean_diff": -2.660861151427189,
+     "ci_low": -3.8078919935328317,
+     "ci_high": -1.5138303093215468,
+     "n": 5
+    },
+    "turnaround.p90_resolution_min": {
+     "mean_diff": -62.19562037820068,
+     "ci_low": -95.78849707229905,
+     "ci_high": -28.602743684102307,
+     "n": 5
+    },
+    "quality.p99_wait_min": {
+     "mean_diff": -220.18595757201348,
+     "ci_low": -306.01898169949277,
+     "ci_high": -134.35293344453416,
+     "n": 5
+    },
+    "quality.mean_minutes_late": {
+     "mean_diff": -38.67766679133471,
+     "ci_low": -185.12034018325875,
+     "ci_high": 107.76500660058934,
+     "n": 5
+    },
+    "quality.p90_minutes_late": {
+     "mean_diff": -75.43921579882071,
+     "ci_low": -490.69150871575016,
+     "ci_high": 339.8130771181087,
+     "n": 5
+    },
+    "quality.late_minutes_per_100": {
+     "mean_diff": -948.0890215148468,
+     "ci_low": -1356.6141111862376,
+     "ci_high": -539.563931843456,
+     "n": 5
+    },
+    "productivity.transfers_per_100": {
+     "mean_diff": -0.055456965394853654,
+     "ci_low": -0.0777662277325987,
+     "ci_high": -0.03314770305710861,
+     "n": 5
+    },
+    "quality.reopen_rate_pct": {
+     "mean_diff": 0.4702750665483584,
+     "ci_low": 0.3884647808573471,
+     "ci_high": 0.5520853522393696,
+     "n": 5
+    }
+   },
    "means": {
     "baseline_a": {
      "turnaround.breach_pct": 13.105590062111801,
@@ -13973,6 +16279,27 @@
      "segment.p1_breach_pct": 8.937268182551202,
      "segment.gold_breach_pct": 5.35675082327113,
      "segment.hindi_breach_pct": 12.324816594991146,
+     "tickets": 18032.0
+    },
+    "baseline_d": {
+     "turnaround.breach_pct": 5.5146406388642415,
+     "turnaround.mean_resolution_min": 80.14294228214939,
+     "turnaround.p90_resolution_min": 202.70324749336342,
+     "turnaround.mean_wait_min": 65.67243606212976,
+     "turnaround.max_backlog": 221.6,
+     "productivity.tickets_per_agent_hour": 5.293464882259699,
+     "productivity.transfers_per_100": 1.0248447204968945,
+     "productivity.busy_agent_hours": 2913.488516029241,
+     "quality.reopen_rate_pct": 3.9341171251109137,
+     "quality.p99_wait_min": 947.9923491236771,
+     "quality.mean_utilisation": 0.8553347185302822,
+     "quality.load_fairness_std": 0.14192408894671077,
+     "quality.mean_minutes_late": 268.5278886385215,
+     "quality.p90_minutes_late": 664.592595571717,
+     "quality.late_minutes_per_100": 1477.0175584916556,
+     "segment.p1_breach_pct": 7.547169811320755,
+     "segment.gold_breach_pct": 5.429930479326748,
+     "segment.hindi_breach_pct": 13.34682519605363,
      "tickets": 18032.0
     },
     "opslens": {

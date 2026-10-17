@@ -58,7 +58,9 @@ export function initReplay() {
   maxWaiting = 1;
   keys.forEach((k) => replay.series[k].waiting.forEach((w) => { maxWaiting = Math.max(maxWaiting, w); }));
 
-  document.getElementById("rp-lanes").innerHTML = keys.map((k) => `
+  const lanes = document.getElementById("rp-lanes");
+  lanes.className = `grid cols-${Math.min(keys.length, 4)}`; // one lane per policy in the results
+  lanes.innerHTML = keys.map((k) => `
       <div class="lane">
         ${policyName(k)}
         <div class="lane-numbers">

@@ -38,14 +38,15 @@ export function floorLegend() {
 // Draw every lane at replay time `time` ("21:30"). Floor frames are every 5 min, the replay
 // every 15 min, so we look the frame up by its clock time.
 export function drawFloor(keys, time) {
-  const floor = state.results.sim.replay.floor;
-  keys.forEach((key) => {
-    const box = document.getElementById("rp-f-" + key);
-    const f = floor[key];
-    if (!box || !f) return;
-    const frame = Math.max(0, f.times.indexOf(time));
-    box.innerHTML = Object.keys(TEAM_NAMES).map((team) => teamRow(team, f, frame)).join("");
-  });
+  keys.forEach((key) => drawFloorInto(document.getElementById("rp-f-" + key), key, time));
+}
+
+// Draw one policy's floor at clock time `time` into `box` (also used by the Overview hero).
+export function drawFloorInto(box, key, time) {
+  const f = state.results.sim.replay.floor[key];
+  if (!box || !f) return;
+  const frame = Math.max(0, f.times.indexOf(time));
+  box.innerHTML = Object.keys(TEAM_NAMES).map((team) => teamRow(team, f, frame)).join("");
 }
 
 function teamRow(team, f, frame) {

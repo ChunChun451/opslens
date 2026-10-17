@@ -22,7 +22,9 @@ sys.path.insert(0, str(ROOT))
 from eval.run_opslens import PARTS, run_jobs  # noqa: E402
 from opslens.impact import mean_std, paired_ci  # noqa: E402
 
-POLICIES = ["baseline_a", "baseline_b", "baseline_c", "opslens"]
+# Baseline D (added 17 Oct): the industry standard — skills-based routing with AI triage,
+# priority then SLA due (opslens/policies.py::SkillsRoutingPolicy). Also no weights.
+POLICIES = ["baseline_a", "baseline_b", "baseline_c", "baseline_d", "opslens"]
 SHOW = ["turnaround.breach_pct", "segment.p1_breach_pct", "turnaround.p90_resolution_min",
         "quality.p99_wait_min", "quality.mean_minutes_late", "quality.p90_minutes_late",
         "quality.late_minutes_per_100", "productivity.transfers_per_100", "quality.reopen_rate_pct"]
@@ -38,12 +40,15 @@ def compare(first: int, last: int, seeds: list[int]) -> dict:
     print(f"{'KPI':32s}" + "".join(f"{p:>18s}" for p in POLICIES))
     for k in SHOW:
         print(f"{k:32s}" + "".join(f"{mean_std([r[k] for r in per[p]])[0]:18.2f}" for p in POLICIES))
-    diffs = {}
-    for k in SHOW:
-        ci = paired_ci([r[k] for r in per["opslens"]], [r[k] for r in per["baseline_c"]])
-        diffs[k] = ci
-        print(f"OpsLens - C  {k:32s} {ci['mean_diff']:+9.2f} [{ci['ci_low']:+.2f}, {ci['ci_high']:+.2f}]")
-    return {"days": [first, last], "seeds": seeds, "per_seed": per, "opslens_minus_c": diffs}
+    out = {"days": [first, last], "seeds": seeds, "per_seed": per}
+    for base, label in (("baseline_c", "c"), ("baseline_d", "d")):
+        diffs = {}
+        for k in SHOW:
+            ci = paired_ci([r[k] for r in per["opslens"]], [r[k] for r in per[base]])
+            diffs[k] = ci
+            print(f"OpsLens - {label.upper()}  {k:32s} {ci['mean_diff']:+9.2f} [{ci['ci_low']:+.2f}, {ci['ci_high']:+.2f}]")
+        out[f"opslens_minus_{label}"] = diffs
+    return out
 
 
 if __name__ == "__main__":

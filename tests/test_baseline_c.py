@@ -47,3 +47,18 @@ def test_floor_recorder_does_not_change_the_run() -> None:
     assert plain.tickets["resolved_min"].tolist() == recorded.tickets["resolved_min"].tolist()
     # At minute 5: X works on T0 (refund, Team B), Y has nothing it can do; 3 refunds wait.
     assert recorded.floor[1] == {"minute": 5, "agents": {"X": "busy", "Y": "idle"}, "queues": {"B": [3, 0]}}
+
+
+def test_industry_standard_routing_is_skills_based_priority_then_due() -> None:
+    from opslens.policies import baseline_d
+
+    # Agent X is in Team A (late_delivery) with the extra skill wrong_item; busy with T0 until 30.
+    # Waiting from minute 1: T1 P2 wrong_item, T2 P1 wrong_item, T3 P1 refund (no skill).
+    x = agent("X", "A", {"late_delivery"}, extra={"wrong_item"})
+    world = make_world([0, 1, 1, 1], [30, 10, 10, 10], [x],
+                       true_cat=["late_delivery", "wrong_item", "wrong_item", "refund"],
+                       priority=["P2", "P2", "P1", "P1"])
+    out = by_id(simulate(world, baseline_d(world, {}), 0, 200, decide_every_min=1))
+    assert out.loc["T000002", "resolved_min"] == 40  # P1 wrong_item first (extra skill counts)
+    assert out.loc["T000001", "resolved_min"] == 50
+    assert np.isnan(out.loc["T000003", "resolved_min"])  # nobody has the refund skill

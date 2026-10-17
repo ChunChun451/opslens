@@ -252,9 +252,11 @@ def numbers_md(r: dict) -> str:
         f"Data: {r['meta']['n_tickets']:,} tickets over {r['meta']['days']} days; train days {r['meta']['train_days']}, "
         f"validation {r['meta']['validation_days']}, test {r['meta']['test_days']}. Simulator seeds {r['sim']['seeds']}.", "",
         "## Baseline vs OpsLens (test days, mean ± std over seeds)", "",
-        "| KPI | Baseline A (FIFO) | Baseline B (priority) | OpsLens | OpsLens − B (95% CI) |",
-        "|---|---|---|---|---|",
+        "| KPI | Baseline A (FIFO) | Baseline B (priority) | Industry standard (skills routing) | OpsLens "
+        "| OpsLens − industry standard (95% CI) | OpsLens − B (95% CI) |",
+        "|---|---|---|---|---|---|---|",
     ]
+    has_d = "baseline_d" in pol
     for name, label in [("turnaround.breach_pct", "SLA breach %"), ("turnaround.p90_resolution_min", "P90 resolution (min)"),
                         ("turnaround.mean_wait_min", "Mean wait (min)"), ("turnaround.max_backlog", "Max backlog (tickets)"),
                         ("productivity.transfers_per_100", "Transfers per 100"), ("productivity.tickets_per_agent_hour", "Tickets per agent-hour"),
@@ -262,9 +264,12 @@ def numbers_md(r: dict) -> str:
                         ("quality.load_fairness_std", "Load fairness (std of utilisation)"),
                         ("segment.p1_breach_pct", "P1 breach %"), ("segment.hindi_breach_pct", "Hindi customers' breach %")]:
         c = ci[("baseline_b", name)]
+        d = ci.get(("baseline_d", name)) if has_d else None
+        d_mean = f"{fmt(k('baseline_d', name)['mean'])} ± {fmt(k('baseline_d', name)['std'])}" if has_d else "–"
+        d_diff = f"{d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}]" if d else "–"
         lines.append(f"| {label} | {fmt(k('baseline_a', name)['mean'])} ± {fmt(k('baseline_a', name)['std'])} | "
-                     f"{fmt(k('baseline_b', name)['mean'])} ± {fmt(k('baseline_b', name)['std'])} | "
-                     f"**{fmt(k('opslens', name)['mean'])}** ± {fmt(k('opslens', name)['std'])} | "
+                     f"{fmt(k('baseline_b', name)['mean'])} ± {fmt(k('baseline_b', name)['std'])} | {d_mean} | "
+                     f"**{fmt(k('opslens', name)['mean'])}** ± {fmt(k('opslens', name)['std'])} | {d_diff} | "
                      f"{c['mean_diff']:+.2f} [{c['ci_low']:+.2f}, {c['ci_high']:+.2f}] |")
     c_a = ci[("baseline_a", "turnaround.breach_pct")]
     lines += ["", f"OpsLens − Baseline A, breach %: {c_a['mean_diff']:+.2f} [{c_a['ci_low']:+.2f}, {c_a['ci_high']:+.2f}].", "",
@@ -348,18 +353,24 @@ def baseline_c_md(r: dict) -> list[str]:
     test = c["test"]
     names = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)",
              "baseline_c": "Baseline C (SLA due)", "opslens": "OpsLens"}
+    if "baseline_d" in test["per_seed"]:
+        names = {**{k: v for k, v in names.items() if k != "opslens"},
+                 "baseline_d": "Industry standard (skills routing)", "opslens": "OpsLens"}
     rows = [("turnaround.breach_pct", "SLA breach %"), ("segment.p1_breach_pct", "P1 breach %"),
             ("quality.mean_minutes_late", "Minutes late, mean over breached tickets"),
             ("quality.late_minutes_per_100", "Minutes late per 100 tickets (all customers)"),
             ("quality.p99_wait_min", "P99 wait (min)")]
     lines = ["", "## A stronger baseline: the \"SLA due\" sort, and how late the late customers are (test days)", "",
-             "| KPI | " + " | ".join(names.values()) + " | OpsLens − C (95% CI) |", "|---|---|---|---|---|---|"]
+             "| KPI | " + " | ".join(names.values()) + " | OpsLens − C (95% CI) |", "|" + "---|" * (len(names) + 2)]
     for key, label in rows:
         means = [sum(s[key] for s in test["per_seed"][p]) / len(test["per_seed"][p]) for p in names]
         d = test["opslens_minus_c"][key]
         lines.append(f"| {label} | " + " | ".join(fmt(m) for m in means)
                      + f" | {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}] |")
-    lines += ["", "- Baseline C has no weights, so nothing was tuned; it ran on validation days first, then once on test days."]
+    lines += ["", "- Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days."]
+    if "opslens_minus_d" in test:
+        d = test["opslens_minus_d"]["turnaround.breach_pct"]
+        lines.append(f"- OpsLens − industry standard, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}].")
     return lines
 
 

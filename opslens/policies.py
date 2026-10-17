@@ -128,6 +128,55 @@ def baseline_c() -> DeadlineQueuePolicy:
     return DeadlineQueuePolicy()
 
 
+class SkillsRoutingPolicy:
+    """Baseline D: the industry standard — omnichannel skills-based routing with AI triage.
+
+    What Zendesk / Freshdesk / Salesforce Omni-Channel do out of the box:
+    - AI triage predicts the ticket's intent (we hand it OUR classifier, to be generous),
+    - one queue ordered by priority, then SLA due time, then age,
+    - the longest-idle free agent takes the first ticket they have the skill and language for —
+      any team, team skills and extra skills alike (no fixed team queues).
+    No risk model, no optimiser, no deliberate cross-skill jobs, no special handling of late
+    tickets: those are exactly what OpsLens adds.
+
+    Example at 20:00: free agent A09 (Team A: late_delivery; extra skills include wrong_item).
+    Waiting: T1 P2 wrong_item due 20:30, T2 P1 wrong_item due 20:50, T3 P1 refund due 20:20.
+    A09 takes T2: P1 before P2, and T3 is a refund, which A09 has no skill for.
+    """
+
+    def __init__(self, world: World, predicted: dict[str, str]) -> None:
+        self.name = "Baseline D (industry standard)"
+        # Category known at arrival: the AI-triage prediction (else the menu choice).
+        self.pred = [predicted.get(tid) or sel for tid, sel in zip(world.ticket_ids, world.selected_category)]
+
+    def category(self, t: TicketView) -> str:
+        return t.known_category or self.pred[t.idx]
+
+    def decide(self, state: SimState, now: float) -> list[Assignment]:
+        free = state.free_agents(now)
+        if not free:
+            return []
+        queue = sorted(state.waiting_tickets(),
+                       key=lambda t: (PRIORITY_RANK[t.priority], t.sla_deadline_min, t.created_min, t.idx))
+        taken: set[int] = set()
+        out: list[Assignment] = []
+        for agent in free:
+            for _ in range(agent.free_slots):
+                pick = next((t for t in queue if t.idx not in taken and t.language in agent.languages
+                             and self.category(t) in agent.skills), None)
+                if pick is None:
+                    break
+                taken.add(pick.idx)
+                out.append(Assignment(pick.idx, agent.agent_id, self.category(pick),
+                                      reason=f"{self.name}: skills-based, priority then SLA due"))
+        return out
+
+
+def baseline_d(world: World, predicted: dict[str, str]) -> SkillsRoutingPolicy:
+    """Industry-standard skills-based routing with AI triage."""
+    return SkillsRoutingPolicy(world, predicted)
+
+
 # ---- OpsLens ---------------------------------------------------------------------------------
 
 @dataclass

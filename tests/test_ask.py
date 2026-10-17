@@ -52,4 +52,4 @@ def test_answer_numbers_come_from_the_tool() -> None:
                                                      "baseline_a": {**k, "turnaround.breach_pct": 15.0}}}
     out = answer(Q, None, {"whatif": fake_whatif}, {}, (43, 56), 0)
     text = " ".join(out["lines"])
-    assert "4.2%" in text and "9.8%" in text and "+5.5 points" in text
+    assert "4.2%" in text and "9.8%" in text and "+5.5 points" in text  # no baseline_d here → urgent-first

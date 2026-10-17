@@ -16,6 +16,7 @@ import {
 import { escapeHtml, kpiInfo, unitForPath, spreadUnit } from "../format.js";
 import { policyStyle } from "../charts.js";
 import { CAUSE_LABELS } from "./patterns.js";
+import { hasMission, missionHtml, initMission } from "../mission.js";
 
 const BREACH = "turnaround.breach_pct";
 // The four supporting KPIs shown under the hero (a design choice; values come from the JSON).
@@ -30,6 +31,7 @@ export function render(section) {
   const r = state.results;
   section.innerHTML = `
     ${pageHeader("Overview", "Held-out test days, replayed in a fair simulator: the same tickets, the same luck and the same agents for every policy.")}
+    ${r.sim && hasMission() ? missionHtml() : ""}
     <div class="grid cols-3-2 stretch">
       ${r.sim ? heroCard() : missing("The simulator comparison", "M7")}
       ${briefCard()}
@@ -40,6 +42,7 @@ export function render(section) {
       ${issuesCard()}
       ${r.sim ? segmentsCard() : ""}
     </div>`;
+  if (r.sim && hasMission()) initMission();
 }
 
 // The hero: OpsLens's breach rate, its paired CIs against each baseline, and the three bars.
@@ -54,7 +57,8 @@ function heroCard() {
   sim.comparisons.forEach((c, i) => {
     if (c.kpi !== BREACH || c.policy !== "opslens") return;
     const base = `sim.comparisons[${i}]`;
-    deltas.push(`<div>${deltaPill(base, "pts", "lower")} vs ${escapeHtml(shortLabel(c.baseline))}
+    // The strongest baseline (industry standard) goes first: it is the comparison that matters.
+    (c.baseline === "baseline_d" ? deltas.unshift.bind(deltas) : deltas.push.bind(deltas))(`<div>${deltaPill(base, "pts", "lower")} vs ${escapeHtml(shortLabel(c.baseline))}
         <span class="ci">95% CI ${ev(base + ".ci_low", "pts", { signed: true, bare: true })} to ${ev(base + ".ci_high", "pts", { signed: true, bare: true })}</span></div>`);
   });
 
@@ -90,18 +94,24 @@ function proofStrip() {
   if (!r.baseline_c || !r.baseline_c.test.means) return "";
   const c = "baseline_c.test.means";
   const tiles = [
-    `<div class="proof">
-        <div class="proof-q">Beats the "SLA due" sort your helpdesk already has</div>
-        <div class="proof-a">${ev(`${c}.opslens.${BREACH}`, "pct")} <span class="muted">vs</span> ${ev(`${c}.baseline_c.${BREACH}`, "pct")}</div>
-        <div class="proof-s">SLA breaches, OpsLens vs SLA due, same held-out days · 95% CI
-          ${ev(`baseline_c.test.opslens_minus_c.${BREACH}.ci_low`, "pts", { signed: true, bare: true })} to
-          ${ev(`baseline_c.test.opslens_minus_c.${BREACH}.ci_high`, "pts", { signed: true, bare: true })} pts</div>
-      </div>`,
+    // The strongest comparison we have: industry-standard skills routing with AI triage (D) if
+    // it was run, else the "SLA due" sort (C).
+    (() => {
+      const best = r.baseline_c.test.means.baseline_d ? ["baseline_d", "d", "industry-standard skills routing with AI triage"]
+        : ["baseline_c", "c", "the SLA-due sort"];
+      return `<div class="proof">
+        <div class="proof-q">Beats the industry standard</div>
+        <div class="proof-a">${ev(`${c}.opslens.${BREACH}`, "pct")} <span class="muted">vs</span> ${ev(`${c}.${best[0]}.${BREACH}`, "pct")}</div>
+        <div class="proof-s">SLA breaches, OpsLens vs ${best[2]} · 95% CI
+          ${ev(`baseline_c.test.opslens_minus_${best[1]}.${BREACH}.ci_low`, "pts", { signed: true, bare: true })} to
+          ${ev(`baseline_c.test.opslens_minus_${best[1]}.${BREACH}.ci_high`, "pts", { signed: true, bare: true })} pts</div>
+      </div>`;
+    })(),
     `<div class="proof">
         <div class="proof-q">Late customers are not abandoned</div>
         <div class="proof-a">${ev(`${c}.opslens.quality.late_minutes_per_100`, "int")} <span class="muted">vs</span>
-          ${ev(`${c}.baseline_b.quality.late_minutes_per_100`, "int")}</div>
-        <div class="proof-s">minutes past SLA per 100 tickets, OpsLens vs urgent-first</div>
+          ${ev(`${c}.${r.baseline_c.test.means.baseline_d ? "baseline_d" : "baseline_b"}.quality.late_minutes_per_100`, "int")}</div>
+        <div class="proof-s">minutes past SLA per 100 tickets, OpsLens vs ${r.baseline_c.test.means.baseline_d ? "industry standard" : "urgent-first"}</div>
       </div>`,
   ];
   if (r.sealed_world && r.sealed_world.test.means) {

@@ -34,7 +34,7 @@ from opslens import risk  # noqa: E402
 from opslens.config import load_config  # noqa: E402
 from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
 from opslens.playbooks import apply_scenario  # noqa: E402
-from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c  # noqa: E402
+from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d  # noqa: E402
 from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
 from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
 
@@ -82,6 +82,8 @@ def run_one(job: dict) -> dict:
         policy = baseline_b()
     elif job["policy"] == "baseline_c":
         policy = baseline_c()
+    elif job["policy"] == "baseline_d":
+        policy = baseline_d(world, dict(zip(preds.ticket_id, preds.pred_final)))
     else:
         weights = {**load_config("optimizer"), **job.get("weights", {})}
         log_window = None
@@ -197,6 +199,8 @@ def compare(seeds: list[int]) -> int:
     for s in seeds:
         jobs.append({"policy": "baseline_a", "seed": s, "first_day": first, "last_day": last, "log": s == seeds[0]})
         jobs.append({"policy": "baseline_b", "seed": s, "first_day": first, "last_day": last, "log": s == seeds[0]})
+        # Industry standard (added 17 Oct, Claude 2): skills-based routing with AI triage.
+        jobs.append({"policy": "baseline_d", "seed": s, "first_day": first, "last_day": last, "log": s == seeds[0]})
         jobs.append({"policy": "opslens", "seed": s, "first_day": first, "last_day": last, "staffing": True,
                      "log": s == seeds[0]})
     started = time.perf_counter()
@@ -204,7 +208,8 @@ def compare(seeds: list[int]) -> int:
     by_policy: dict[str, list[dict]] = {}
     for r in results:
         by_policy.setdefault(r["job"]["policy"], []).append(r)
-    labels = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)", "opslens": "OpsLens"}
+    labels = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)",
+              "baseline_d": "Industry standard (skills routing)", "opslens": "OpsLens"}
     print(f"test days {first}-{last}, seeds {seeds}, {len(jobs)} runs in {time.perf_counter() - started:.0f}s")
     print(f"{'KPI':36s}" + "".join(f"{labels[p]:>24s}" for p in labels))
     policies = {}
@@ -215,7 +220,7 @@ def compare(seeds: list[int]) -> int:
     for k in KPIS:
         print(f"{k:36s}" + "".join(f"{policies[p]['kpis'][k]['mean']:16.2f} ±{policies[p]['kpis'][k]['std']:5.2f}" for p in labels))
     comparisons = []
-    for base in ("baseline_a", "baseline_b"):
+    for base in ("baseline_a", "baseline_b", "baseline_d"):
         for k in KPIS:
             ci = paired_ci([r[k] for r in policies["opslens"]["per_seed"]], [r[k] for r in policies[base]["per_seed"]])
             comparisons.append({"policy": "opslens", "baseline": base, "kpi": k, **ci})
