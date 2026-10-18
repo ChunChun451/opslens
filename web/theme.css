@@ -1147,3 +1147,23 @@ tr.hot td { background: var(--bad-soft); }
 @media (max-width: 1400px) { .topbar .status { display: none; } }
 @media (max-width: 1100px) { #story-button { display: none; } }
 .stat-card { padding: 18px 20px; }
+
+/* Projector width (1366 px): put each interval under its number so wide tables fit their cards. */
+.kpi-table .pm,
+.playbook td.num .small {
+  display: block;
+  margin-left: 0;
+}
+.kpi-table thead th,
+.playbook thead th {
+  white-space: normal;
+  vertical-align: bottom;
+}
+.kpi-table td:first-child {
+  min-width: 180px;
+}
+.kpi-table th,
+.kpi-table td {
+  padding-left: 8px;
+  padding-right: 8px;
+}
