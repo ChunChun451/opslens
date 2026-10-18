@@ -383,3 +383,26 @@ from luck in its 5-seed design run, so it was NOT shipped then; a new pre-regist
 Gemini daily quota ran out): OpsLens 2.20% vs industry 5.84%, least slack + rescue 3.11%, floor 1.31%,
 81% ± 4. Cost: under +25% volume (validation) late customers get later; reopens 4.44%. Not below 2.0%
 on test, and we did not tune to get there.
+
+---
+
+## V3 — Plan v3: from engine to product (19 Oct 2026)
+
+**Why:** the owner could not explain what each screen was for; Accept/Override did nothing; the
+public dataset (deliverable 1) was hidden behind Upload. Re-read the problem statement verbatim:
+it asks for "a dashboard showing the expected impact of these interventions". Plan: docs/PLAN_V3.md.
+
+**Built**
+- Public dataset chosen with evidence: UCI ServiceNow (real teams, agents, hand-offs, SLA flag).
+  Checked first, then built: OpsLens does NOT route to the right team better than the real desk
+  (61.8% vs 66.2% overall; when sure 78.2% vs 77.8%) and its forecast does not beat "same day last
+  week" (0.365 vs 0.341) — both shown as such. It DOES warn early: AUC 0.857 vs 0.552; riskiest 20%
+  hold 49.9% of SLA misses vs 24.6% for the priority field.
+- `opslens/realdesk.py`, `eval/run_realdesk.py` → `results.realdesk` (a STEP in make eval).
+- Dashboard: world switch, six question-shaped screens (old names still work), Your plan
+  (web/js/plan.js): Accept with measured effect, Override with a reason, Simulate (calls
+  POST /api/plan/impact, built by the parallel "Make Accept/Override real" session).
+- docs/OPSLENS_IN_PLAIN_WORDS.md for the owner; DEMO_SCRIPT rewritten; JUDGE_QA Q51–Q55.
+
+**Open:** merge the plan-impact session's branch (API + per-item effects for staffing moves) and
+wire its ids; story mode tour through the new screens; projector check at 1366×768.

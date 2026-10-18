@@ -7,6 +7,9 @@ Team SoyaChaap
 
 **Plan v2 — 15 Oct 2026.** v1 is kept in `docs/CLAUDE_v1.md`. Every change from v1, the
 reason for it and the 2026 research behind it are in `docs/PLAN.md`.
+**Plan v3 — 19 Oct 2026** (`docs/PLAN_V3.md`): two worlds (the simulated food floor + a REAL public
+service desk, UCI), six screens that each answer one question, and Accept / Override that build a
+plan with its expected impact. Plain-words guide for the owner: `docs/OPSLENS_IN_PLAIN_WORDS.md`.
 
 Read this file and `PROGRESS.md` at the start of every session. This file is the plan.
 `PROGRESS.md` is the log of what is done. If anything here is wrong or impossible,
@@ -109,6 +112,7 @@ is itself a git repo, and OneDrive would sync the venv and data). Python 3.12 ve
 
 | PS requirement | OpsLens feature | Proof shown to judges |
 |---|---|---|
+| Deliverable 1: prototype on a public dataset | The **real service desk** world (UCI ServiceNow, CC BY 4.0) on every screen, next to the simulated food floor | Early warning AUC 0.857 vs 0.552 for the desk's priority field, scored on later months; what does NOT beat the desk is shown too |
 | Identify patterns | Evidence cards: KPIs, delay decomposition, anomaly detection, LLM-named clusters | Planted recall (target 5/5) + false alarms; **blind recall on 20 random plant sets**; real-data findings (UCI) |
 | Predict bottlenecks | 48 h forecast with conformal intervals vs capacity; per-ticket breach risk | WAPE vs seasonal-naive; interval coverage; risk AUC, PR-AUC, top-10% precision, Brier (held-out); AUC on real UCI SLA data |
 | Recommend actions | Optimised assignment + Erlang-C staffing moves (budget-neutral) | Simulator: breach %, P90 time vs 2 baselines, 5 seeds, paired 95% CI |
@@ -373,6 +377,13 @@ deflects) lives in `config/playbooks.yaml`, is labelled an assumption and gets a
 range. The LLM drafts the action text (partner notice, IVR wording, banner) under the same
 no-digit rule as `brief.py`.
 
+**`realdesk.py`** *(added 19 Oct, Plan v3)* — the real public service desk (UCI log): evidence
+cards from the event log (where open time goes, waits on others, bouncing categories), an SLA-miss
+early warning 1 h after opening (vs the desk's priority field), a team workload forecast and routing
+hints — learned on the first 70% of incidents, scored on the rest; choices on the last 20% of the
+learning period. Reports honestly what is NOT better than the desk. `eval/run_realdesk.py` →
+`results.realdesk`.
+
 **`floor.py`** *(added 18 Oct)* — the **physical floor**: per ticket, the earliest it could be
 resolved with unlimited agents (four plans: trained or cross-skill work, before and after a
 reopen). Tickets still past their SLA breach under ANY legal policy — proof in the docstring,
@@ -427,6 +438,12 @@ number. Keyword rules answer when the LLM is offline. This is a tool router, not
 ## 8. Dashboard (`web/`, served by `server/app.py`)
 
 Clean, light, large text for a projector; red accent used sparingly; OpsLens brand only.
+**Plan v3 (19 Oct) — current structure:** a top-bar switch between **Food delivery (simulated)** and
+**IT service desk (real, public)**, and six screens: Overview (what is happening?), Problems (why does
+it go wrong?), Risks (what will go wrong? — at-risk tickets + next 48 h), Actions (what to do? —
+Accept / Override into **Your plan**, which shows each item's measured effect and can simulate the
+plan), Proof (does it work? — side by side, what-if, how we tested), Your data. Ticket-by-ticket
+dispatch is automatic and explained. The list below is the original (pre-v3) tab plan.
 *(Design v3 by Claude 2, 17 Oct: "Every ticket is a promise".)* The app opens on a **cold open**:
 Saturday dinner, the industry standard vs OpsLens as two animated floors, ending on the missed
 promises of each (from `sim.replay`). An **Ask OpsLens** bar sits in the top bar. The replay has a
@@ -474,7 +491,7 @@ opslens/                     (C:\dev\opslens)
     results_schema.py
     privacy.py ingest.py classify.py patterns.py features.py forecast.py
     risk.py optimize.py staffing.py policies.py simulate.py whatif.py impact.py brief.py
-    playbooks.py ask.py floor.py
+    playbooks.py ask.py floor.py realdesk.py
   server/app.py
   web/      index.html app.js styles.css vendor/chart.umd.js
   eval/     run_eval.py results.json fixture_results.json challengers/(optional)
@@ -502,6 +519,7 @@ opslens/                     (C:\dev\opslens)
 | P1 | 16–18 Oct | *(added 16 Oct)* Fix-at-source playbooks (`playbooks.py`), measured on test days; challenger arena | Each playbook's tickets prevented / breaches avoided with CI in `results.json`; arena rule applied |
 | C2 | 16–18 Oct | *(Claude 2, Sneha's Claude, PR #1, merged 18 Oct)* Review; Baselines C/D; lateness; Ask OpsLens; floor map + cold open; sealed world; official `make eval` | 0 of 3,744 existing numbers moved; 122 tests pass |
 | P2 | 18 Oct | *(Claude 1)* Breach diagnosis; v4 tested (not adopted); proven physical floor; simulator fairness fix; v5 roster-aware rescue (confirmed, shipped); all numbers regenerated; new sealed worlds | Test 2.05%, floor 1.31%, OpsLens captures 83%; 162 tests pass |
+| V3 | 19–22 Oct | *(Plan v3)* Real public service desk world; six screens + world switch; Accept/Override → Your plan with expected impact (plan API in a parallel session); plain-words guide; demo script | Owner can explain every screen in one sentence; every button does something |
 | — | 22 Oct | **Model + weight freeze** | No model changes after this |
 | U1 | 18–22 Oct | *(parallel session)* UI shell on fixture results: layout, all tabs, charts, replay player, story-mode skeleton | Every tab renders from `fixture_results.json` with the FIXTURE banner |
 | M9 | 23–24 Oct | Server + wire every tab to real results; click-to-evidence; Accept/Override log | Full flow works on generated data |
