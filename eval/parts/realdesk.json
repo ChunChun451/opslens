@@ -1,0 +1,809 @@
+{
+ "summary": {
+  "source": "UCI ServiceNow incident log (CC BY 4.0), a real company's IT service desk",
+  "incidents": 24918,
+  "events": 141712,
+  "teams": 70,
+  "agents": 234,
+  "missed_sla_pct": 36.579982342082026,
+  "passed_between_teams_pct": 45.62565213901597,
+  "median_resolution_h": 22.1,
+  "learning_period": [
+   "2016-02-29",
+   "2016-05-02"
+  ],
+  "test_period": [
+   "2016-05-02",
+   "2017-02-16"
+  ],
+  "test_incidents": 7476,
+  "open_time_share_pct": {
+   "being worked on": 35.4,
+   "waiting for a vendor": 6.4,
+   "waiting for another fix": 2.5,
+   "waiting for the user": 31.4,
+   "waiting to be picked up": 24.3
+  }
+ },
+ "cards": [
+  {
+   "id": "R1",
+   "title": "Incidents that wait on someone outside the team miss their SLA 2.4\u00d7 as often",
+   "cause_type": "process",
+   "metric": "SLA missed (%)",
+   "value": 74.5,
+   "comparison_value": 31.2,
+   "comparison_text": "incidents that never waited",
+   "segment": {
+    "waits": "user, vendor or another fix"
+   },
+   "affected_tickets": 4474,
+   "affected_share_pct": 25.7,
+   "recommendation": "Waiting for the user is 31% of all open time. Remind the user automatically and close or pause stale waits.",
+   "not_explained_by": "measured on the real event log (learning period)",
+   "examples": [
+    {
+     "ticket_id": "INC0000047",
+     "category": "Category 40",
+     "team": "Group 24",
+     "priority": "3 - Moderate",
+     "missed_sla": false,
+     "resolution_h": 29.2
+    },
+    {
+     "ticket_id": "INC0000065",
+     "category": "Category 45",
+     "team": "Group 33",
+     "priority": "3 - Moderate",
+     "missed_sla": false,
+     "resolution_h": 55.7
+    },
+    {
+     "ticket_id": "INC0000070",
+     "category": "Category 9",
+     "team": "Group 29",
+     "priority": "3 - Moderate",
+     "missed_sla": true,
+     "resolution_h": 193.7
+    }
+   ]
+  },
+  {
+   "id": "R2",
+   "title": "24% of all open time is spent waiting for someone to pick the incident up",
+   "cause_type": "capacity",
+   "metric": "SLA missed (%)",
+   "value": 64.8,
+   "comparison_value": 33.1,
+   "comparison_text": "incidents picked up within 8 h",
+   "segment": {
+    "waited_to_be_picked_up_h": ">8"
+   },
+   "affected_tickets": 5056,
+   "affected_share_pct": 29.0,
+   "recommendation": "Staff the teams where incidents queue longest at the hours they arrive (see next week's forecast).",
+   "not_explained_by": "measured on the real event log (learning period)",
+   "examples": [
+    {
+     "ticket_id": "INC0000057",
+     "category": "Category 20",
+     "team": "Group 70",
+     "priority": "3 - Moderate",
+     "missed_sla": false,
+     "resolution_h": 20.8
+    },
+    {
+     "ticket_id": "INC0000060",
+     "category": "Category 9",
+     "team": "Group 25",
+     "priority": "3 - Moderate",
+     "missed_sla": false,
+     "resolution_h": 53.5
+    },
+    {
+     "ticket_id": "INC0000062",
+     "category": "Category 53",
+     "team": "Group 23",
+     "priority": "2 - High",
+     "missed_sla": true,
+     "resolution_h": 8.9
+    }
+   ]
+  },
+  {
+   "id": "R3",
+   "title": "Category 26: 57% of incidents are passed between teams",
+   "cause_type": "process",
+   "metric": "SLA missed (%)",
+   "value": 58.2,
+   "comparison_value": 13.1,
+   "comparison_text": "Category 26 incidents that stayed with one team",
+   "segment": {
+    "category": "Category 26"
+   },
+   "affected_tickets": 2341,
+   "affected_share_pct": 13.4,
+   "recommendation": "Agree a single owning team for Category 26, or route it there directly when OpsLens is sure.",
+   "not_explained_by": "measured on the real event log (learning period)",
+   "examples": [
+    {
+     "ticket_id": "INC0000253",
+     "category": "Category 26",
+     "team": "Group 28",
+     "priority": "3 - Moderate",
+     "missed_sla": false,
+     "resolution_h": 44.4
+    },
+    {
+     "ticket_id": "INC0000332",
+     "category": "Category 26",
+     "team": "Group 70",
+     "priority": "3 - Moderate",
+     "missed_sla": true,
+     "resolution_h": 211.9
+    },
+    {
+     "ticket_id": "INC0000592",
+     "category": "Category 26",
+     "team": "Group 54",
+     "priority": "3 - Moderate",
+     "missed_sla": false,
+     "resolution_h": 79.6
+    }
+   ]
+  }
+ ],
+ "early_warning": {
+  "n_test": 7476,
+  "missed_pct": 23.28785446762975,
+  "auc_opslens": 0.8573709003884469,
+  "auc_priority": 0.55150358525875,
+  "caught_top20_opslens_pct": 49.85640436530729,
+  "caught_top20_priority_pct": 24.583572659391155,
+  "at_risk": [
+   {
+    "ticket_id": "24627",
+    "risk": 0.963,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 22",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.52
+     },
+     {
+      "text": "now held by Group 22",
+      "share": 0.16
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.14
+     }
+    ]
+   },
+   {
+    "ticket_id": "24596",
+    "risk": 0.963,
+    "missed_sla": false,
+    "priority": "2 - High",
+    "team_now": "Group 10",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.41
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.18
+     },
+     {
+      "text": "now held by Group 10",
+      "share": 0.15
+     }
+    ]
+   },
+   {
+    "ticket_id": "19275",
+    "risk": 0.962,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 57",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.54
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.22
+     },
+     {
+      "text": "now held by Group 57",
+      "share": 0.13
+     }
+    ]
+   },
+   {
+    "ticket_id": "23432",
+    "risk": 0.962,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 72",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.49
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.24
+     },
+     {
+      "text": "now held by Group 72",
+      "share": 0.18
+     }
+    ]
+   },
+   {
+    "ticket_id": "24632",
+    "risk": 0.962,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 22",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.52
+     },
+     {
+      "text": "now held by Group 22",
+      "share": 0.15
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.14
+     }
+    ]
+   },
+   {
+    "ticket_id": "21415",
+    "risk": 0.962,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 65",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.58
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.2
+     },
+     {
+      "text": "now held by Group 65",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "ticket_id": "17963",
+    "risk": 0.961,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 10",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.41
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.18
+     },
+     {
+      "text": "now held by Group 10",
+      "share": 0.15
+     }
+    ]
+   },
+   {
+    "ticket_id": "24638",
+    "risk": 0.96,
+    "missed_sla": true,
+    "priority": "2 - High",
+    "team_now": "Group 57",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.53
+     },
+     {
+      "text": "state after 1 h: New",
+      "share": 0.17
+     },
+     {
+      "text": "now held by Group 57",
+      "share": 0.14
+     }
+    ]
+   }
+  ]
+ },
+ "forecast": {
+  "teams": [
+   "Group 70",
+   "Group 20",
+   "Group 25",
+   "Group 24",
+   "Group 64",
+   "Group 65",
+   "Group 55",
+   "Group 66"
+  ],
+  "chosen_on_check_weeks": "learned (LightGBM)",
+  "wape_learned": 0.36528410771842307,
+  "wape_same_day_last_week": 0.3414816197051689,
+  "next_week": [
+   {
+    "team": "Group 20",
+    "date": "Mon 02 May",
+    "forecast": 23.1,
+    "usual_closures": 7.5,
+    "actual": 41
+   },
+   {
+    "team": "Group 20",
+    "date": "Tue 03 May",
+    "forecast": 21.9,
+    "usual_closures": 7.5,
+    "actual": 20
+   },
+   {
+    "team": "Group 20",
+    "date": "Wed 04 May",
+    "forecast": 24.3,
+    "usual_closures": 7.5,
+    "actual": 33
+   },
+   {
+    "team": "Group 20",
+    "date": "Thu 05 May",
+    "forecast": 17.3,
+    "usual_closures": 7.5,
+    "actual": 25
+   },
+   {
+    "team": "Group 20",
+    "date": "Fri 06 May",
+    "forecast": 17.1,
+    "usual_closures": 7.5,
+    "actual": 31
+   },
+   {
+    "team": "Group 20",
+    "date": "Sat 07 May",
+    "forecast": 2.9,
+    "usual_closures": 7.5,
+    "actual": 2
+   },
+   {
+    "team": "Group 20",
+    "date": "Sun 08 May",
+    "forecast": 3.0,
+    "usual_closures": 7.5,
+    "actual": 2
+   },
+   {
+    "team": "Group 24",
+    "date": "Mon 02 May",
+    "forecast": 11.2,
+    "usual_closures": 14.0,
+    "actual": 11
+   },
+   {
+    "team": "Group 24",
+    "date": "Tue 03 May",
+    "forecast": 13.0,
+    "usual_closures": 14.0,
+    "actual": 8
+   },
+   {
+    "team": "Group 24",
+    "date": "Wed 04 May",
+    "forecast": 7.9,
+    "usual_closures": 14.0,
+    "actual": 9
+   },
+   {
+    "team": "Group 24",
+    "date": "Thu 05 May",
+    "forecast": 11.8,
+    "usual_closures": 14.0,
+    "actual": 8
+   },
+   {
+    "team": "Group 24",
+    "date": "Fri 06 May",
+    "forecast": 10.2,
+    "usual_closures": 14.0,
+    "actual": 8
+   },
+   {
+    "team": "Group 24",
+    "date": "Sat 07 May",
+    "forecast": 1.1,
+    "usual_closures": 14.0,
+    "actual": 3
+   },
+   {
+    "team": "Group 24",
+    "date": "Sun 08 May",
+    "forecast": 1.3,
+    "usual_closures": 14.0,
+    "actual": 2
+   },
+   {
+    "team": "Group 25",
+    "date": "Mon 02 May",
+    "forecast": 12.4,
+    "usual_closures": 19.0,
+    "actual": 4
+   },
+   {
+    "team": "Group 25",
+    "date": "Tue 03 May",
+    "forecast": 11.7,
+    "usual_closures": 19.0,
+    "actual": 4
+   },
+   {
+    "team": "Group 25",
+    "date": "Wed 04 May",
+    "forecast": 11.0,
+    "usual_closures": 19.0,
+    "actual": 6
+   },
+   {
+    "team": "Group 25",
+    "date": "Thu 05 May",
+    "forecast": 11.1,
+    "usual_closures": 19.0,
+    "actual": 23
+   },
+   {
+    "team": "Group 25",
+    "date": "Fri 06 May",
+    "forecast": 12.5,
+    "usual_closures": 19.0,
+    "actual": 11
+   },
+   {
+    "team": "Group 25",
+    "date": "Sat 07 May",
+    "forecast": 1.3,
+    "usual_closures": 19.0,
+    "actual": 1
+   },
+   {
+    "team": "Group 25",
+    "date": "Sun 08 May",
+    "forecast": 1.4,
+    "usual_closures": 19.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 55",
+    "date": "Mon 02 May",
+    "forecast": 6.3,
+    "usual_closures": 3.0,
+    "actual": 5
+   },
+   {
+    "team": "Group 55",
+    "date": "Tue 03 May",
+    "forecast": 5.6,
+    "usual_closures": 3.0,
+    "actual": 3
+   },
+   {
+    "team": "Group 55",
+    "date": "Wed 04 May",
+    "forecast": 4.9,
+    "usual_closures": 3.0,
+    "actual": 4
+   },
+   {
+    "team": "Group 55",
+    "date": "Thu 05 May",
+    "forecast": 5.3,
+    "usual_closures": 3.0,
+    "actual": 3
+   },
+   {
+    "team": "Group 55",
+    "date": "Fri 06 May",
+    "forecast": 5.3,
+    "usual_closures": 3.0,
+    "actual": 3
+   },
+   {
+    "team": "Group 55",
+    "date": "Sat 07 May",
+    "forecast": 1.3,
+    "usual_closures": 3.0,
+    "actual": 1
+   },
+   {
+    "team": "Group 55",
+    "date": "Sun 08 May",
+    "forecast": 1.2,
+    "usual_closures": 3.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 64",
+    "date": "Mon 02 May",
+    "forecast": 14.2,
+    "usual_closures": 8.0,
+    "actual": 5
+   },
+   {
+    "team": "Group 64",
+    "date": "Tue 03 May",
+    "forecast": 6.9,
+    "usual_closures": 8.0,
+    "actual": 1
+   },
+   {
+    "team": "Group 64",
+    "date": "Wed 04 May",
+    "forecast": 5.9,
+    "usual_closures": 8.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 64",
+    "date": "Thu 05 May",
+    "forecast": 7.5,
+    "usual_closures": 8.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 64",
+    "date": "Fri 06 May",
+    "forecast": 7.9,
+    "usual_closures": 8.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 64",
+    "date": "Sat 07 May",
+    "forecast": 1.9,
+    "usual_closures": 8.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 64",
+    "date": "Sun 08 May",
+    "forecast": 4.2,
+    "usual_closures": 8.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 65",
+    "date": "Mon 02 May",
+    "forecast": 5.2,
+    "usual_closures": 2.0,
+    "actual": 8
+   },
+   {
+    "team": "Group 65",
+    "date": "Tue 03 May",
+    "forecast": 4.7,
+    "usual_closures": 2.0,
+    "actual": 14
+   },
+   {
+    "team": "Group 65",
+    "date": "Wed 04 May",
+    "forecast": 4.0,
+    "usual_closures": 2.0,
+    "actual": 12
+   },
+   {
+    "team": "Group 65",
+    "date": "Thu 05 May",
+    "forecast": 4.2,
+    "usual_closures": 2.0,
+    "actual": 7
+   },
+   {
+    "team": "Group 65",
+    "date": "Fri 06 May",
+    "forecast": 4.2,
+    "usual_closures": 2.0,
+    "actual": 11
+   },
+   {
+    "team": "Group 65",
+    "date": "Sat 07 May",
+    "forecast": 1.2,
+    "usual_closures": 2.0,
+    "actual": 3
+   },
+   {
+    "team": "Group 65",
+    "date": "Sun 08 May",
+    "forecast": 1.8,
+    "usual_closures": 2.0,
+    "actual": 1
+   },
+   {
+    "team": "Group 66",
+    "date": "Mon 02 May",
+    "forecast": 9.8,
+    "usual_closures": 3.0,
+    "actual": 6
+   },
+   {
+    "team": "Group 66",
+    "date": "Tue 03 May",
+    "forecast": 10.9,
+    "usual_closures": 3.0,
+    "actual": 3
+   },
+   {
+    "team": "Group 66",
+    "date": "Wed 04 May",
+    "forecast": 6.1,
+    "usual_closures": 3.0,
+    "actual": 1
+   },
+   {
+    "team": "Group 66",
+    "date": "Thu 05 May",
+    "forecast": 8.2,
+    "usual_closures": 3.0,
+    "actual": 11
+   },
+   {
+    "team": "Group 66",
+    "date": "Fri 06 May",
+    "forecast": 7.6,
+    "usual_closures": 3.0,
+    "actual": 6
+   },
+   {
+    "team": "Group 66",
+    "date": "Sat 07 May",
+    "forecast": 0.9,
+    "usual_closures": 3.0,
+    "actual": 1
+   },
+   {
+    "team": "Group 66",
+    "date": "Sun 08 May",
+    "forecast": 0.9,
+    "usual_closures": 3.0,
+    "actual": 0
+   },
+   {
+    "team": "Group 70",
+    "date": "Mon 02 May",
+    "forecast": 218.1,
+    "usual_closures": 118.0,
+    "actual": 277
+   },
+   {
+    "team": "Group 70",
+    "date": "Tue 03 May",
+    "forecast": 201.8,
+    "usual_closures": 118.0,
+    "actual": 214
+   },
+   {
+    "team": "Group 70",
+    "date": "Wed 04 May",
+    "forecast": 211.9,
+    "usual_closures": 118.0,
+    "actual": 209
+   },
+   {
+    "team": "Group 70",
+    "date": "Thu 05 May",
+    "forecast": 154.9,
+    "usual_closures": 118.0,
+    "actual": 197
+   },
+   {
+    "team": "Group 70",
+    "date": "Fri 06 May",
+    "forecast": 202.6,
+    "usual_closures": 118.0,
+    "actual": 208
+   },
+   {
+    "team": "Group 70",
+    "date": "Sat 07 May",
+    "forecast": 31.1,
+    "usual_closures": 118.0,
+    "actual": 35
+   },
+   {
+    "team": "Group 70",
+    "date": "Sun 08 May",
+    "forecast": 21.0,
+    "usual_closures": 118.0,
+    "actual": 26
+   }
+  ],
+  "bottlenecks": [
+   {
+    "team": "Group 70",
+    "date": "Mon 02 May",
+    "forecast": 218.1,
+    "usual_closures": 118.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Wed 04 May",
+    "forecast": 211.9,
+    "usual_closures": 118.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Fri 06 May",
+    "forecast": 202.6,
+    "usual_closures": 118.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Tue 03 May",
+    "forecast": 201.8,
+    "usual_closures": 118.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Thu 05 May",
+    "forecast": 154.9,
+    "usual_closures": 118.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Wed 04 May",
+    "forecast": 24.3,
+    "usual_closures": 7.5
+   },
+   {
+    "team": "Group 20",
+    "date": "Mon 02 May",
+    "forecast": 23.1,
+    "usual_closures": 7.5
+   },
+   {
+    "team": "Group 20",
+    "date": "Tue 03 May",
+    "forecast": 21.9,
+    "usual_closures": 7.5
+   }
+  ]
+ },
+ "routing": {
+  "threshold": 0.6,
+  "test": {
+   "n": 7385,
+   "desk_right_pct": 66.18821936357482,
+   "opslens_all_right_pct": 61.773865944482054,
+   "sure_share_pct": 54.285714285714285,
+   "opslens_sure_right_pct": 78.2239960089798,
+   "desk_on_same_right_pct": 77.7500623596907,
+   "fixed": 319,
+   "made_wrong": 300,
+   "net_first_time_right": 19
+  },
+  "note": "The final team is not always the 'right' one: many incidents go to the front-line desk (Group 70) by design. OpsLens only suggests a team when it is at least this sure."
+ },
+ "seconds": 66.45882530001109
+}
