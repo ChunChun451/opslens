@@ -321,9 +321,9 @@ class Results(Strict):
     # The physical floor on the test days (eval/run_floor.py, added 18 Oct): breaches that happen
     # even with unlimited agents, and the share of the possible improvement OpsLens captures.
     floor: dict[str, Any] | None = None
-    # A NEW world (never-used seed) generated after OpsLens v4 was frozen, run once: every baseline,
-    # the published rules, OpsLens v3 beside v4, and the floor (eval/run_sealed_world.py --v4).
-    sealed_world_v4: dict[str, Any] | None = None
+    # A NEW world (never-used seed) under the corrected simulator, run once: every baseline, the
+    # published rules, the frozen OpsLens policy and the floor (eval/run_sealed_world.py --new).
+    sealed_world_new: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

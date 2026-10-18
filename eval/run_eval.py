@@ -178,13 +178,15 @@ def assemble(timings: dict[str, float]) -> dict:
                                               "the +25% volume test on the test days (it lands on a sale day and a surge)."),
             "design_v2": part("design_v2") if (PARTS / "design_v2.json").exists() else {},
             "design_v3": part("design_v3") if (PARTS / "design_v3.json").exists() else {},
-            "v3_record": version_record("v3", "flat cross-skill penalty: a savable P2 with no trained agent on shift "
-                                              "(e.g. Hindi refunds at night) was never rescued. Won every test, but v4 "
-                                              "fixes the penalty's units (chosen on validation days)."),
+            "v3_before_sim_fix": version_record("v3", "the current policy, measured before the 18 Oct simulator "
+                                                      "correction (a transfer used to shift a ticket's work-time draw)."),
             "design_v4": part("design_v4") if (PARTS / "design_v4.json").exists() else {},
-            "test_runs_note": ("The test days were run four times in total: v1, v2, v3 and v4 (current). Each new version "
-                               "was designed and chosen on validation days only; all four test results are kept here. "
-                               "v4 was also checked once on a new sealed world generated after it was frozen."),
+            "test_runs_note": ("Policies run on the test days: v1, v2 and v3 (current), each designed and chosen on "
+                               "validation days only; all results are kept here. On 18 Oct the simulator was corrected "
+                               "(work-time draws no longer shifted by transfers; off-shift starts refused) and every "
+                               "number was regenerated; v3 before the correction is kept as v3_before_sim_fix. v4 "
+                               "(cross-skill cost in risk units) was tested on validation days and not adopted "
+                               "(design_v4). A new sealed world (seed 5151) was run once after the correction."),
         },
     }
     if (PARTS / "playbooks.json").exists():
@@ -205,12 +207,12 @@ def assemble(timings: dict[str, float]) -> dict:
         results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
     if (PARTS / "floor.json").exists():
         results["floor"] = part("floor")
-    if (PARTS / "sealed_world_v4.json").exists():  # not a STEP: a new world, run once after the v4 freeze
-        sealed = part("sealed_world_v4")
+    if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
+        sealed = part("sealed_world_new")
         for key in ("test", "best_baselines_test", "rescue_test"):
             if sealed.get(key):
                 with_means({key: sealed[key]})
-        results["sealed_world_v4"] = sealed
+        results["sealed_world_new"] = sealed
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
@@ -349,7 +351,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + floor_md(r) + sealed_v4_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -560,16 +562,16 @@ def floor_md(r: dict) -> list[str]:
             f"industry standard: (D − OpsLens) ÷ (D − floor), per seed."]
 
 
-def sealed_v4_md(r: dict) -> list[str]:
-    """A new world generated after v4 was frozen, run once (eval/run_sealed_world.py --v4)."""
-    s = r.get("sealed_world_v4")
+def sealed_new_md(r: dict) -> list[str]:
+    """A new world under the corrected simulator, run once (eval/run_sealed_world.py --new)."""
+    s = r.get("sealed_world_new")
     if not s:
         return []
     means = {**s["test"]["means"], **s["best_baselines_test"]["means"], **((s.get("rescue_test") or {}).get("means") or {})}
     names = {"baseline_d": "Industry standard", "least_slack": "Least slack first", "least_slack_rescue": "Least slack + rescue",
-             "gen_cmu": "Generalized c-mu", "opslens_v3": "OpsLens v3", "opslens": "OpsLens v4"}
+             "gen_cmu": "Generalized c-mu", "opslens": "OpsLens"}
     names = {k: v for k, v in names.items() if k in means}
-    lines = ["", f"## New sealed world for v4 (data seed {s['data_seed']}, generated after v4 was frozen, run once)", "",
+    lines = ["", f"## New sealed world (data seed {s['data_seed']}, corrected simulator, run once)", "",
              "| KPI | " + " | ".join(names.values()) + " | Floor |", "|---|" + "---|" * (len(names) + 1)]
     for key, label in (("turnaround.breach_pct", "SLA breach %"), ("quality.late_minutes_per_100", "Minutes late per 100 tickets")):
         floor = fmt(s["floor"]["floor_breach_pct_mean"]) if key == "turnaround.breach_pct" else "—"

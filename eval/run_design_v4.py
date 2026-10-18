@@ -38,7 +38,7 @@ from opslens.impact import paired_ci  # noqa: E402
 
 SEEDS = [1, 2, 3, 4, 5]
 FIRST, LAST = 36, 42
-VARIANTS = {"v3 (flat penalty 2.0)": {}, **{f"v4 cost {c}": {"mismatch_cost": c} for c in (0.2, 0.4, 0.6, 0.8, 1.0)}}
+VARIANTS = {"v3 (flat penalty 2.0)": {"mismatch_cost": None}, **{f"v4 cost {c}": {"mismatch_cost": c} for c in (0.2, 0.4, 0.6, 0.8, 1.0)}}
 LOADS = {"normal": {}, "+25% volume": {"volume_boost": 0.25}}
 KPIS = ["turnaround.breach_pct", "segment.p1_breach_pct", "segment.hindi_breach_pct", "quality.late_minutes_per_100",
         "quality.p99_wait_min", "quality.reopen_rate_pct"]
