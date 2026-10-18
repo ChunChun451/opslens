@@ -61,6 +61,14 @@ class SolveStats:
     solve_ms: list[float] = field(default_factory=list)
 
 
+def urgency_impact(priority: str, tier: str, order_value: float, w: dict) -> float:
+    """How much one breach-probability unit of this ticket is worth: urgency × impact.
+    Example: a P2 (urgency 1.5) normal customer with a ₹350 order → 1.5 × (1 + 0.1 × log 2) = 1.60."""
+    impact = 1.0 + (w["gold_weight"] - 1.0 if tier == "gold" else 0.0)
+    impact += w["order_value_weight"] * math.log1p(order_value / 350.0)
+    return w["urgency_weight"][priority] * impact
+
+
 def ticket_value(priority: str, tier: str, order_value: float, rescue: float, waited_min: float,
                  w: dict, sla_min: float | None = None, guard_on: bool = True) -> float:
     """Value of serving this ticket now (before agent-specific costs).
@@ -72,8 +80,6 @@ def ticket_value(priority: str, tier: str, order_value: float, rescue: float, wa
       tickets cannot crowd out tickets that can still be saved. The guard starts when a ticket
       is max_late_min past its SLA. v1 failed the +25% volume stress test (see PROGRESS.md, M8).
     """
-    impact = 1.0 + (w["gold_weight"] - 1.0 if tier == "gold" else 0.0)
-    impact += w["order_value_weight"] * math.log1p(order_value / 350.0)
     if w.get("aging_in_sla_units") and sla_min:
         aging = w["aging_per_sla"] * min(waited_min / sla_min, w["aging_cap"])
         if waited_min > sla_min and w.get("aging_lost") is not None:
@@ -84,7 +90,7 @@ def ticket_value(priority: str, tier: str, order_value: float, rescue: float, wa
     else:
         aging = w["aging_per_hour"] * waited_min / 60.0
         guard = waited_min >= w["max_wait_min"]
-    value = w["urgency_weight"][priority] * impact * (max(rescue, w["rescue_floor"]) + aging)
+    value = urgency_impact(priority, tier, order_value, w) * (max(rescue, w["rescue_floor"]) + aging)
     if guard and guard_on:
         value += w["starvation_bonus"]  # the guard: never leave a customer behind
     return value

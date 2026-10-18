@@ -33,7 +33,7 @@ import pandas as pd
 
 from opslens.classify import TEAM_OF
 from opslens.features import WAITING_COLUMNS, QueueSnapshot, capability_table, features_for_snapshot
-from opslens.optimize import Candidate, SolveStats, solve, ticket_value, top_k
+from opslens.optimize import Candidate, SolveStats, solve, ticket_value, top_k, urgency_impact
 from opslens.risk import risk_if_assigned_now
 from opslens.simulate import AgentView, Assignment, SimState, TicketView, World
 
@@ -508,7 +508,12 @@ class OpsLensPolicy:
                     continue  # cross-skill work (1.6x slower) only to save a ticket that is in real danger
                 value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, self.w,
                                      sla_min=t.sla_deadline_min - t.created_min, guard_on=guard_on)
-                if not skilled:
+                if not skilled and self.w.get("mismatch_cost") is not None:
+                    # v4: the cost of a cross-skill job (1.6x slower, ~4x the reopens) in breach-
+                    # probability units, scaled like the ticket's own value. A flat penalty (v3) cost a
+                    # P2 twice what it cost a P1, so savable P2s at night never got a rescue.
+                    value -= self.w["mismatch_cost"] * urgency_impact(t.priority, t.tier, t.order_value, self.w)
+                elif not skilled:
                     value -= self.w["mismatch_penalty"]
                 scarcity = 0.0
                 if self.settings.use_scarcity and value > 0:

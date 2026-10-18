@@ -66,6 +66,21 @@ def test_language_never_violated_and_cross_skill_needs_danger() -> None:
     assert np.isnan(out.loc["T000000", "resolution_min"])
 
 
+def test_v4_prices_cross_skill_in_risk_units() -> None:
+    # A Hindi P2 refund in danger (rescue 0.9) and only a Hindi-speaking agent NOT trained on refunds.
+    w = {**WEIGHTS, "new_ticket_rescue": 0.9}
+    world = make_world([0], [20], [agent("hi_app", {"app_bug"}, ("en", "hi"))], language=["hi"],
+                       true_cat=["refund"], sla=60)
+    v3 = simulate(world, OpsLensPolicy(world, {}, None, w, OpsLensSettings(use_risk=False)), 0, 300,
+                  decide_every_min=1).tickets.set_index("ticket_id")
+    # v3: value 1.59 x 0.9 - 2.0 < 0, so it waits until aging lifts it (~43 min); 1.6 x 20 = 32 min of work: breach.
+    assert v3.loc["T000000", "wait_min"] > 40 and v3.loc["T000000", "breached"]
+    v4 = simulate(world, OpsLensPolicy(world, {}, None, {**w, "mismatch_cost": 0.4}, OpsLensSettings(use_risk=False)),
+                  0, 300, decide_every_min=1).tickets.set_index("ticket_id")
+    # v4: 1.59 x (0.9 - 0.4) > 0 at once: served at minute 0, done at minute 32 < 60.
+    assert v4.loc["T000000", "wait_min"] == 0 and not v4.loc["T000000", "breached"]
+
+
 def test_rare_agent_is_never_idle_with_only_common_work() -> None:
     # Only a Hindi+refund agent (rare pair) is on shift; only English refunds are waiting.
     world = make_world([0, 0], [10, 10], [agent("kavita", {"refund"}, ("en", "hi"))], language=["en", "en"])

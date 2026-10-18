@@ -32,3 +32,11 @@ max_late_min: 480
 # Validation: normal 2.13% (B 5.94%), +25% 6.17% (B 16.55%), +40% 15.07% (B 32.23%).
 aging_lost: 0.2
 guard_queue_limit: 150
+# v4 (chosen 18 Oct on validation days 36-42, seeds 1-5, at normal and +25% volume; see
+# eval/run_design_v4.py and eval/parts/design_v4.json). A breach diagnosis showed Hindi and
+# regional-language P2s at night waiting ~11 h: the flat mismatch_penalty (2.0, tuned for v1's
+# scale) cost a P2 more than it could ever be worth. v4 prices a cross-skill job in breach-
+# probability units, scaled like the ticket's value. Validation: 2.07% -> 1.92% breaches
+# (-0.15, 95% CI [-0.24, -0.07]), +25% volume 6.02% -> 5.47%, late min/100 366 -> 322.
+# mismatch_penalty above is only used when mismatch_cost is absent (v3 runs: mismatch_cost: null).
+mismatch_cost: 0.8
