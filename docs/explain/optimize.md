@@ -48,20 +48,21 @@ in turn; rare-skill agent, no rare work is more urgent".
 ## Results on the held-out test days (43–56, 5 seeds, same tickets and luck)
 | | Baseline A (FIFO) | Baseline B (priority) | **OpsLens** |
 |---|---|---|---|
-| SLA breach % | 13.11 | 6.82 | **2.20** |
-| P1 breach % | 27.34 | 9.13 | **4.89** |
-| Hindi customers' breach % | 22.11 | 16.18 | **3.46** |
+| SLA breach % | 13.08 | 6.77 | **2.21** |
+| P1 breach % | 27.25 | 9.01 | **4.89** |
+| Hindi customers' breach % | 22.15 | 16.17 | **3.53** |
 | P90 resolution (min) | 185 | 198 | **141** |
-| P99 wait (min) | 816 | 1,007 | **728** |
-| Transfers per 100 | 4.66 | 4.59 | **0.97** |
-| Reopen rate % | 3.93 | 3.93 | 4.40 |
-OpsLens − Baseline B: breach **−4.62 points, 95% CI [−6.01, −3.23]**; P90 −58 min; P99 −280 min.
-OpsLens − Baseline A: breach **−10.91 [−13.38, −8.43]**.
+| P99 wait (min) | 817 | 1,009 | **729** |
+| Transfers per 100 | 4.63 | 4.62 | **0.97** |
+| Reopen rate % | 3.93 | 3.93 | 4.41 |
+OpsLens − Baseline B: breach **−4.55 points, 95% CI [−5.81, −3.29]**; P90 −56 min; P99 −280 min.
+OpsLens − Baseline A: breach **−10.86 [−13.32, −8.40]**. (Numbers after the 18 Oct simulator
+correction; the physical floor is 1.31%, so OpsLens captures 78% of what is possible: `floor.md`.)
 Solver: median 0.06 ms per decision, no fallbacks. 5,000 tickets × 500 agents: 0.07 s (numbers: `docs/NUMBERS.md`).
 Ablations and stress tests: `docs/NUMBERS.md`.
 
 ## Weaknesses
-- Reopens rise a little (4.40% vs 3.93%): the price of cross-skill rescue jobs.
+- Reopens rise a little (4.41% vs 3.93%): the price of cross-skill rescue jobs.
 - The value formula is hand-built (with tuned weights), not learned end to end.
 - With instant decisions, usually one agent is free at a time, so the joint solve rarely beats a
   per-agent greedy pick (see the ablations). It matters at shift starts and at scale.

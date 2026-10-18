@@ -19,20 +19,21 @@ Confirm the real time limit with the organisers; cut from the bottom of each ste
 Let it play in silence for the first seconds: Saturday 17 Oct, dinner rush, two floors side by
 side. Left, the industry standard; right, OpsLens; a dot is a customer waiting, red means the
 promise was missed.
-**Sneha (as it ends on 21 vs 7):** "Every ticket is a promise to help a customer in time. Same
-people. Same tickets. Different decisions. On this one evening, 21 missed promises against 7."
+**Sneha (as it ends on 24 vs 6):** "Every ticket is a promise to help a customer in time. Same
+people. Same tickets. Different decisions. On this one evening, 24 missed promises against 6."
 Click **See how**.
 
 ## 1. The claim, and why you can believe it (45 s) — Overview
-**Jijnasu:** "That was one evening. Over 14 days OpsLens never saw, 2.20% of customers missed
+**Jijnasu:** "That was one evening. Over 14 days OpsLens never saw, 2.21% of customers missed
 their SLA, against 5.51% with industry-standard skills routing — the way helpdesks route today,
-even with our AI triage added. 95% interval: −4.79 to −1.84 points."
+even with our AI triage added. 95% interval: −4.60 to −1.98 points."
 **Sneha:** "And it is not luck: we built a second world after we froze the system and ran it
-once. OpsLens 3.07%, the 'SLA due' sort 6.13%."
+once. OpsLens 2.50%, the industry standard 6.56%. And we measured the physical limit — the breaches
+no one could prevent even with unlimited agents: OpsLens captures 78% of everything that is possible."
 
 ## 2. Nobody is abandoned (30 s) — Overview proof strip
 **Jijnasu:** "The obvious trick would be to give up on late customers. We measured it: minutes
-past the promise, per 100 tickets — 529 with OpsLens, 1,477 with the industry standard, 2,282 with
+past the promise, per 100 tickets — 544 with OpsLens, 1,432 with the industry standard, 2,256 with
 urgent-first."
 
 ## 3. Why the floor fails (45 s) — Recurring problems
@@ -49,7 +50,7 @@ capable agent" → 0.29.
 misses at 0.857, against 0.552 for the priority rule."
 
 ## 5. What to do about it (40 s) — What to do
-Show **Fix at the source → Cross-train 2 Hindi-speaking agents** only: 51 fewer missed SLAs in two
+Show **Fix at the source → Cross-train 2 Hindi-speaking agents** only: 50 fewer missed SLAs in two
 weeks even with OpsLens running.
 **Sneha:** "We tested six upstream fixes. Most barely help once OpsLens runs the floor. This one
 does — so this is where to spend."
@@ -65,7 +66,7 @@ not, honestly). Time both in rehearsal; say the wait out loud ("simulating the w
 ## 7. The honest box and close (30 s) — How we tested
 **Jijnasu:** "Our first version failed a stress test with 25% more tickets. We fixed it on
 validation days only and kept every failure on record. Today, with 25% more tickets: 10.7% against
-29.1% for urgent-first."
+28.9% for urgent-first."
 **Sneha:** "Proven on days it never saw, on a world built after we froze it, on real ServiceNow
 data — and on your question, just now. OpsLens: every ticket is a promise; we help you keep it."
 

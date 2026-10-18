@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-18T19:11:17 (commit 55b5f7d). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-18T21:34:58 (commit 01bd021). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -8,45 +8,45 @@ Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test
 
 | KPI | Baseline A (FIFO) | Baseline B (priority) | Industry standard (skills routing) | OpsLens | OpsLens − industry standard (95% CI) | OpsLens − B (95% CI) |
 |---|---|---|---|---|---|---|
-| SLA breach % | 13.11 ± 2.23 | 6.82 ± 1.34 | 5.51 ± 1.45 | **2.20** ± 0.32 | -3.31 [-4.79, -1.84] | -4.62 [-6.01, -3.23] |
-| P90 resolution (min) | 184.78 ± 35.79 | 198.45 ± 44.15 | 202.70 ± 56.74 | **140.51** ± 30.65 | -62.20 [-95.79, -28.60] | -57.94 [-75.51, -40.37] |
-| Mean wait (min) | 64.52 ± 14.02 | 68.15 ± 16.38 | 65.67 ± 17.45 | **44.76** ± 12.77 | -20.91 [-27.38, -14.44] | -23.39 [-29.63, -17.15] |
-| Max backlog (tickets) | 227.40 ± 48.59 | 233.80 ± 52.21 | 221.60 ± 46.95 | **200.60** ± 74.04 | -21.00 [-82.82, +40.82] | -33.20 [-92.44, +26.04] |
-| Transfers per 100 | 4.66 ± 0.03 | 4.59 ± 0.04 | 1.02 ± 0.01 | **0.97** ± 0.02 | -0.06 [-0.08, -0.03] | -3.62 [-3.66, -3.59] |
+| SLA breach % | 13.08 ± 2.24 | 6.77 ± 1.25 | 5.51 ± 1.35 | **2.21** ± 0.36 | -3.29 [-4.60, -1.98] | -4.55 [-5.81, -3.29] |
+| P90 resolution (min) | 183.49 ± 36.55 | 196.17 ± 37.61 | 203.55 ± 58.73 | **140.14** ± 30.11 | -63.40 [-99.29, -27.52] | -56.03 [-66.65, -45.40] |
+| Mean wait (min) | 64.02 ± 14.04 | 68.03 ± 15.68 | 65.74 ± 17.61 | **44.85** ± 12.84 | -20.90 [-27.43, -14.37] | -23.18 [-29.50, -16.87] |
+| Max backlog (tickets) | 224.80 ± 49.65 | 236.20 ± 51.87 | 220.40 ± 48.03 | **204.00** ± 75.10 | -16.40 [-78.70, +45.90] | -32.20 [-92.47, +28.07] |
+| Transfers per 100 | 4.63 ± 0.04 | 4.62 ± 0.04 | 1.01 ± 0.01 | **0.97** ± 0.02 | -0.04 [-0.07, -0.02] | -3.65 [-3.71, -3.59] |
 | Tickets per agent-hour | 5.29 ± 0.10 | 5.29 ± 0.10 | 5.29 ± 0.10 | **5.30** ± 0.10 | +0.00 [-0.00, +0.01] | +0.00 [-0.00, +0.01] |
-| Reopen rate % | 3.93 ± 0.15 | 3.93 ± 0.15 | 3.93 ± 0.15 | **4.40** ± 0.18 | +0.47 [+0.39, +0.55] | +0.47 [+0.39, +0.55] |
-| P99 wait (min) | 816.27 ± 100.16 | 1,007.37 ± 149.90 | 947.99 ± 213.24 | **727.81** ± 188.95 | -220.19 [-306.02, -134.35] | -279.57 [-407.33, -151.80] |
-| Load fairness (std of utilisation) | 0.12 ± 0.01 | 0.12 ± 0.01 | 0.14 ± 0.00 | **0.13** ± 0.01 | -0.01 [-0.02, -0.00] | +0.01 [+0.00, +0.01] |
-| P1 breach % | 27.34 ± 4.46 | 9.13 ± 1.52 | 7.55 ± 1.19 | **4.89** ± 0.32 | -2.66 [-3.81, -1.51] | -4.24 [-5.81, -2.68] |
-| Hindi customers' breach % | 22.11 ± 3.28 | 16.18 ± 2.98 | 13.35 ± 2.81 | **3.46** ± 0.64 | -9.89 [-12.82, -6.96] | -12.72 [-15.91, -9.53] |
+| Reopen rate % | 3.93 ± 0.15 | 3.93 ± 0.15 | 3.93 ± 0.15 | **4.41** ± 0.19 | +0.47 [+0.37, +0.57] | +0.47 [+0.37, +0.57] |
+| P99 wait (min) | 817.16 ± 91.73 | 1,009.15 ± 162.70 | 941.19 ± 199.63 | **729.38** ± 196.46 | -211.81 [-297.05, -126.56] | -279.77 [-409.03, -150.50] |
+| Load fairness (std of utilisation) | 0.12 ± 0.01 | 0.12 ± 0.00 | 0.14 ± 0.00 | **0.13** ± 0.01 | -0.01 [-0.02, -0.00] | +0.01 [+0.00, +0.02] |
+| P1 breach % | 27.25 ± 4.44 | 9.01 ± 1.50 | 7.50 ± 1.12 | **4.89** ± 0.39 | -2.61 [-3.60, -1.62] | -4.12 [-5.60, -2.64] |
+| Hindi customers' breach % | 22.15 ± 3.35 | 16.17 ± 2.83 | 13.32 ± 2.55 | **3.53** ± 0.72 | -9.80 [-12.29, -7.30] | -12.64 [-15.55, -9.73] |
 
-OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
+OpsLens − Baseline A, breach %: -10.86 [-13.32, -8.40].
 
 ## Which part creates the gain (ablations, test days)
 
 | Variant | Breach % | Δ vs full | P90 (min) |
 |---|---|---|---|
-| OpsLens (full) | 2.20 | +0.00 [+0.00, +0.00] | 140.5 |
-| without staffing plan | 2.25 | +0.05 [-0.06, +0.16] | 149.3 |
-| without risk scores | 4.21 | +2.01 [+1.55, +2.47] | 169.1 |
-| without optimiser (greedy per agent) | 2.18 | -0.02 [-0.11, +0.06] | 139.2 |
-| without classifier (menu choice routing) | 2.34 | +0.14 [+0.01, +0.27] | 155.0 |
-| without scarcity cost | 2.23 | +0.03 [-0.10, +0.16] | 142.1 |
+| OpsLens (full) | 2.21 | +0.00 [+0.00, +0.00] | 140.1 |
+| without staffing plan | 2.33 | +0.12 [+0.02, +0.22] | 150.5 |
+| without risk scores | 4.19 | +1.98 [+1.49, +2.46] | 169.8 |
+| without optimiser (greedy per agent) | 2.22 | +0.01 [-0.04, +0.06] | 139.1 |
+| without classifier (menu choice routing) | 2.37 | +0.15 [-0.01, +0.31] | 155.0 |
+| without scarcity cost | 2.19 | -0.03 [-0.06, +0.01] | 141.7 |
 
 ## Stress tests (conditions never seen in training)
 
 | Scenario | Baseline A | Baseline B | OpsLens | OpsLens − B |
 |---|---|---|---|---|
-| +25% volume | 53.55% | 29.06% | **10.71%** | -18.34 [-22.17, -14.51] |
-| 10% absenteeism | 20.32% | 9.89% | **3.09%** | -6.79 [-8.06, -5.53] |
+| +25% volume | 53.60% | 28.86% | **10.74%** | -18.11 [-21.86, -14.36] |
+| 10% absenteeism | 20.21% | 9.84% | **3.10%** | -6.74 [-8.00, -5.48] |
 
 ## Gold-customer weight sensitivity
 
 | Gold weight | Breach % (all) | Breach % (gold) |
 |---|---|---|
-| ×1.0 | 2.20 | 2.08 |
-| ×1.5 | 2.20 | 1.83 |
-| ×2.0 | 2.25 | 1.85 |
+| ×1.0 | 2.18 | 2.03 |
+| ×1.5 | 2.21 | 1.87 |
+| ×2.0 | 2.24 | 1.76 |
 
 ## Patterns
 
@@ -73,57 +73,71 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 
 | KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | Industry standard (skills routing) | OpsLens | OpsLens − C (95% CI) |
 |---|---|---|---|---|---|---|
-| SLA breach % | 13.11 | 6.82 | 5.40 | 5.51 | 2.20 | -3.20 [-3.93, -2.46] |
-| P1 breach % | 27.34 | 9.13 | 8.94 | 7.55 | 4.89 | -4.05 [-5.67, -2.44] |
-| Minutes late, mean over breached tickets | 212.65 | 328.03 | 765.89 | 268.53 | 229.85 | -536.04 [-687.99, -384.09] |
-| Minutes late per 100 tickets (all customers) | 2,820.08 | 2,281.67 | 4,189.41 | 1,477.02 | 528.93 | -3660.48 [-4916.26, -2404.70] |
-| P99 wait (min) | 816.27 | 1,007.37 | 1,434.88 | 947.99 | 727.81 | -707.08 [-1085.48, -328.68] |
+| SLA breach % | 13.08 | 6.77 | 5.38 | 5.51 | 2.21 | -3.16 [-3.80, -2.52] |
+| P1 breach % | 27.25 | 9.01 | 8.87 | 7.50 | 4.89 | -3.98 [-5.37, -2.59] |
+| Minutes late, mean over breached tickets | 210.91 | 328.11 | 772.71 | 261.87 | 233.41 | -539.30 [-706.74, -371.86] |
+| Minutes late per 100 tickets (all customers) | 2,789.67 | 2,255.96 | 4,206.04 | 1,432.37 | 543.87 | -3662.17 [-4920.02, -2404.33] |
+| P99 wait (min) | 817.16 | 1,009.15 | 1,422.47 | 941.19 | 729.38 | -693.09 [-1084.48, -301.70] |
 
 - Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days.
-- OpsLens − industry standard, breach %: -3.31 [-4.79, -1.84].
+- OpsLens − industry standard, breach %: -3.29 [-4.60, -1.98].
 
 ## The strongest published rules, and what perfect information buys them (test days)
 
 | KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant least slack* | Clairvoyant least slack + staffing* |
 |---|---|---|---|---|---|---|---|
-| SLA breach % | 5.40 | 5.51 | 3.96 | 5.30 | 2.20 | 3.81 | 3.81 |
-| P1 breach % | 8.94 | 7.55 | 7.00 | 7.97 | 4.89 | 6.71 | 6.83 |
-| Minutes late, mean over breached tickets | 765.89 | 268.53 | 881.01 | 239.94 | 229.85 | 876.45 | 833.21 |
-| Minutes late per 100 tickets | 4,189.41 | 1,477.02 | 3,525.96 | 1,255.00 | 528.93 | 3,380.06 | 3,247.22 |
-| P99 wait (min) | 1,434.88 | 947.99 | 1,378.51 | 910.30 | 727.81 | 1,373.25 | 1,456.91 |
+| SLA breach % | 5.38 | 5.51 | 3.94 | 5.27 | 2.21 | 3.81 | 3.81 |
+| P1 breach % | 8.87 | 7.50 | 6.97 | 7.99 | 4.89 | 6.71 | 6.83 |
+| Minutes late, mean over breached tickets | 772.71 | 261.87 | 891.73 | 238.33 | 233.41 | 876.45 | 833.21 |
+| Minutes late per 100 tickets | 4,206.04 | 1,432.37 | 3,552.01 | 1,237.68 | 543.87 | 3,380.06 | 3,247.22 |
+| P99 wait (min) | 1,422.47 | 941.19 | 1,386.21 | 905.22 | 729.38 | 1,373.25 | 1,456.91 |
 
 *Not implementable: knows each ticket's true category and true handle time. Not the optimum either (the true optimum for this many tickets cannot be computed).
 
 | OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) |
 |---|---|---|
-| C: SLA due (EDF) | -3.20 [-3.93, -2.46] | -3660 [-4916, -2405] |
-| D: industry standard | -3.31 [-4.79, -1.84] | -948 [-1357, -540] |
-| Least slack first | -1.75 [-2.07, -1.44] | -2997 [-4196, -1798] |
-| Generalized c-mu | -3.10 [-4.50, -1.69] | -726 [-1132, -320] |
-| Clairvoyant least slack* | -1.61 [-1.89, -1.33] | -2851 [-3962, -1740] |
-| Clairvoyant least slack + staffing* | -1.61 [-1.79, -1.43] | -2718 [-4286, -1151] |
+| C: SLA due (EDF) | -3.16 [-3.80, -2.52] | -3662 [-4920, -2404] |
+| D: industry standard | -3.29 [-4.60, -1.98] | -888 [-1319, -458] |
+| Least slack first | -1.72 [-2.00, -1.44] | -3008 [-4212, -1805] |
+| Generalized c-mu | -3.06 [-4.41, -1.71] | -694 [-1123, -264] |
+| Clairvoyant least slack* | -1.60 [-1.89, -1.31] | -2836 [-3949, -1723] |
+| Clairvoyant least slack + staffing* | -1.59 [-1.78, -1.41] | -2703 [-4264, -1143] |
 
-- What perfect information buys the best rule (clairvoyant − least slack), breach %: -0.14 [-0.27, -0.01].
-- Chosen on validation days 36-42 only: c-mu tau 0.25, beta 1.0 (of 8 shapes; lowest validation breach %, ties broken by fewer late minutes per 100). Validation breach %: OpsLens 2.13, least slack 3.69, c-mu 4.34 → gate passed; test days run once.
+- What perfect information buys the best rule (clairvoyant − least slack), breach %: -0.13 [-0.25, +0.00].
+- Chosen on validation days 36-42 only: c-mu tau 0.25, beta 1.0 (of 8 shapes; lowest validation breach %, ties broken by fewer late minutes per 100). Validation breach %: OpsLens 2.09, least slack 3.68, c-mu 4.34 → gate passed; test days run once.
 
 ### Least slack + cross-skill rescue (the same freedom as OpsLens)
 
 | KPI | Least slack first | Least slack + cross-skill rescue | OpsLens |
 |---|---|---|---|
-| SLA breach % | 3.96 | 2.98 | 2.20 |
-| P1 breach % | 7.00 | 5.44 | 4.89 |
-| Minutes late, mean over breached tickets | 881.01 | 645.63 | 229.85 |
-| Minutes late per 100 tickets | 3,525.96 | 1,960.33 | 528.93 |
-| P99 wait (min) | 1,378.51 | 927.64 | 727.81 |
-| Reopen rate % | 3.93 | 4.09 | 4.40 |
+| SLA breach % | 3.94 | 2.98 | 2.21 |
+| P1 breach % | 6.97 | 5.52 | 4.89 |
+| Minutes late, mean over breached tickets | 891.73 | 649.20 | 233.41 |
+| Minutes late per 100 tickets | 3,552.01 | 1,969.19 | 543.87 |
+| P99 wait (min) | 1,386.21 | 930.08 | 729.38 |
+| Reopen rate % | 3.93 | 4.10 | 4.41 |
 
 | OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) | Reopen rate % (95% CI) |
 |---|---|---|---|
-| Least slack + cross-skill rescue | -0.78 [-0.99, -0.56] | -1431 [-2057, -805] | +0.31 [+0.22, +0.40] |
-| Least slack first | -1.75 [-2.07, -1.44] | -2997 [-4196, -1798] | +0.47 [+0.39, +0.55] |
+| Least slack + cross-skill rescue | -0.77 [-0.97, -0.56] | -1425 [-2015, -835] | +0.30 [+0.20, +0.41] |
+| Least slack first | -1.72 [-2.00, -1.44] | -3008 [-4212, -1805] | +0.47 [+0.37, +0.57] |
 
-- What the rescue buys least slack (rescue − plain), breach %: -0.98 [-1.16, -0.80].
-- Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. Threshold chosen on validation days 36-42 only (lowest validation breach %, ties broken by fewer late minutes per 100): 30 min. Validation breach %: 10 min 3.26%, 20 min 2.99%, 30 min 2.82%, 60 min 3.35%, 120 min 3.19%, 240 min 2.90%; OpsLens 2.13 → gate passed; test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: yes.
+- What the rescue buys least slack (rescue − plain), breach %: -0.96 [-1.14, -0.77].
+- Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. Threshold chosen on validation days 36-42 only (lowest validation breach %, ties broken by fewer late minutes per 100): 30 min. Validation breach %: 10 min 3.22%, 20 min 2.97%, 30 min 2.81%, 60 min 3.27%, 120 min 3.18%, 240 min 2.98%; OpsLens 2.09 → gate passed; test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: yes.
+
+## How close to perfect (test days)
+
+- Physical floor: 1.31% of tickets breach even with unlimited agents and perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).
+- OpsLens is 0.91 points above that floor and captures 78% ± 4 of the improvement possible over the industry standard: (D − OpsLens) ÷ (D − floor), per seed.
+
+## New sealed world (data seed 5151, corrected simulator, run once)
+
+| KPI | Industry standard | Least slack first | Least slack + rescue | Generalized c-mu | OpsLens | Floor |
+|---|---|---|---|---|---|---|
+| SLA breach % | 6.56 | 4.34 | 3.52 | 6.21 | 2.50 | 1.30 |
+| Minutes late per 100 tickets | 1,792.26 | 4,438.99 | 3,054.68 | 1,383.12 | 783.25 | — |
+
+- Share of the possible improvement captured: 77% ± 2. Retrained risk AUC 0.974. New world generated on 18 Oct, after the simulator correction (work draws no longer shifted by transfers); OpsLens weights unchanged (v3), routine retraining; run once.
 
 ## Sealed second world (data seed 4242, generated after the freeze, run once)
 
@@ -165,15 +179,15 @@ Least slack + cross-skill rescue (added after the re-run; this world built a thi
 
 | Playbook | Owner | Tickets prevented | Breaches: priority-first | Breaches: OpsLens | Agent-hours (OpsLens) |
 |---|---|---|---|---|---|
-| Fix the phone menu (IVR) | Product / IVR team | 0 | -46.4 [-75.3, -17.5] | -3.0 [-18.3, +12.3] | -2.7 |
-| Cross-train 2 Hindi-speaking agents on payment failure and refund | Training / workforce | 0 | -83.2 [-131.4, -35.0] | -50.6 [-71.4, -29.8] | -19.4 |
-| Self-serve instant refund on weekend dinner (Team C) | Product | 83 | -16.8 [-26.6, -7.0] | -1.0 [-15.3, +13.3] | -11.4 |
-| Status banner the moment a spike alert fires | Product / customer comms | 30 | -10.6 [-16.1, -5.1] | -8.2 [-16.3, -0.1] | -8.7 |
-| Kitchen order-check for restaurant cluster 17 | Partner operations | 67 | -13.6 [-23.9, -3.3] | -4.2 [-20.7, +12.3] | -10.8 |
-| Self-serve instant refund on weekday night (Team B) | Product | 23 | -12.8 [-20.3, -5.3] | +0.2 [-19.8, +20.2] | -4.8 |
-| **All together** | | 206 | -179.0 [-218.9, -139.1] | -56.6 [-73.3, -39.9] | -56.7 |
+| Fix the phone menu (IVR) | Product / IVR team | 0 | -39.0 [-56.4, -21.6] | +3.8 [-4.0, +11.6] | -4.1 |
+| Cross-train 2 Hindi-speaking agents on payment failure and refund | Training / workforce | 0 | -79.0 [-131.4, -26.6] | -49.8 [-64.5, -35.1] | -17.8 |
+| Self-serve instant refund on weekend dinner (Team C) | Product | 83 | -12.6 [-22.3, -2.9] | -3.8 [-13.1, +5.5] | -11.6 |
+| Status banner the moment a spike alert fires | Product / customer comms | 30 | -5.0 [-13.9, +3.9] | -3.4 [-8.3, +1.5] | -8.4 |
+| Kitchen order-check for restaurant cluster 17 | Partner operations | 67 | -9.2 [-25.7, +7.3] | -1.8 [-13.3, +9.7] | -11.7 |
+| Self-serve instant refund on weekday night (Team B) | Product | 23 | -16.8 [-29.9, -3.7] | -6.2 [-15.0, +2.6] | -5.0 |
+| **All together** | | 206 | -162.6 [-200.6, -124.6] | -60.6 [-70.6, -50.6] | -56.7 |
 
-- OpsLens with every playbook vs priority-first today: breaches -889.4 [-1126.6, -652.2] (of 1230), breach % -4.9 [-6.2, -3.6] points.
+- OpsLens with every playbook vs priority-first today: breaches -881.4 [-1106.0, -656.8] (of 1220), breach % -4.9 [-6.1, -3.6] points.
 - Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; see `playbooks[].sensitivity` in results.json.
 
 ## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
@@ -183,6 +197,6 @@ Least slack + cross-skill rescue (added after the re-run; this world built a thi
 
 ## Speed
 
-- Optimiser per decision: median 0.06 ms, max 0.9 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.063 s.
-- Full evaluation pipeline: 55.9 min.
+- Optimiser per decision: median 0.07 ms, max 2.2 ms.
+- Scale test: 5,000 tickets × 500 agents solved in 0.059 s.
+- Full evaluation pipeline: 49.5 min.

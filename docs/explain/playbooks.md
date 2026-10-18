@@ -1,5 +1,9 @@
 # playbooks.py — fix the problem at its source, and measure it
 
+> **18 Oct:** the simulator was corrected (a transfer no longer changes a ticket's work-time draw) and every
+> number was regenerated; figures below are from before the correction and moved by at most ~0.2
+> points. Current values: `docs/NUMBERS.md` (generated from `eval/results.json`).
+
 ## What it does
 - Every evidence card names a cause (process, partner, skill gap, spike, capacity).
 - For each cause, OpsLens writes an **upstream action** for a team outside support:

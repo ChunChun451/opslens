@@ -1,5 +1,9 @@
 # opslens/simulate.py, world.py, policies.py, impact.py — the fair test bench
 
+> **18 Oct:** the simulator was corrected (a transfer no longer changes a ticket's work-time draw) and every
+> number was regenerated; figures below are from before the correction and moved by at most ~0.2
+> points. Current values: `docs/NUMBERS.md` (generated from `eval/results.json`).
+
 ## What it does
 - `simulate.py` replays a support floor minute by minute: tickets arrive, agents pick them up,
   finish, transfer them, customers reopen them. It works for any policy.
@@ -56,3 +60,10 @@ beat **both**: fewer breaches *and* no starved customers.
 3. `world.py` → `build_world()` (where the luck is drawn).
 4. `impact.py` → `summarize()` and `paired_ci()`.
 Tests: `tests/test_simulate.py` (hand cases, transfers, reopens, CRN, Erlang C).
+
+## Fairness fix found while proving the floor (18 Oct)
+Common random numbers used to draw a ticket's work time per *attempt*, and a transfer counted as
+an attempt. So a misrouted ticket got a different work time than the same ticket routed right, and a
+policy with many transfers did not see exactly the same luck. Now the k-th piece of real work always
+uses draw k (transfers do not count), and starting work with an off-shift agent raises an error.
+Tests: `test_a_transfer_does_not_reroll_the_work_time`, `test_off_shift_agent_cannot_start_work`.

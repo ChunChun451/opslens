@@ -340,3 +340,37 @@ ChunChun451/opslens; Claude 1 reviewed (PR comment), the owner approved, merged 
 - Ask OpsLens sends the question to Groq without `mask_pii()`.
 - Confirm `gemini-3.8-flash` in `make ping`.
 - TabPFN-3 still waits for the licence key. M12 rehearsal.
+
+---
+
+## P2 — Can OpsLens do better? Diagnosis, v4, a proven floor, a simulator fix (18 Oct 2026)
+
+**Asked:** make OpsLens better than 2.2%; then "prove the floor".
+
+**Diagnosis (validation days 36-42 only).** Of v3's breaches, most happen even with unlimited
+agents and perfect routing. The biggest avoidable group: Hindi / regional-language P2s at night,
+never given to an untrained agent who speaks the language, because the flat cross-skill penalty
+(2.0, tuned for v1's scale) cost a P2 more than it could ever be worth.
+
+**v4 (cross-skill cost in breach-probability units) — tested, NOT adopted.** Pre-registered rule in
+`eval/run_design_v4.py`. Under the old simulator it passed (2.07% → 1.92%). Under the corrected
+simulator: 2.03% → 1.95%, CI [−0.21, +0.05], so v3 stays. (The first re-run compared v4 with
+itself after `mismatch_cost` entered the config — caught because both rows were identical; fixed.)
+
+**Proven floor (`opslens/floor.py`).** Exact per-ticket lower bound with a proof; attacked by
+`tests/test_floor.py` (10 policies incl. random legal ones, 25 random worlds, no counterexample,
+tight in 3). Test days: 1.31% (1.23-1.38 by seed). The number belongs to the data.
+
+**Found while proving it:** the simulator drew a ticket's work time per attempt, and a transfer
+counted as an attempt (unequal luck for policies with many transfers; a re-roll loophole). Fixed:
+the k-th piece of real work uses draw k. Off-shift starts now raise. Every number regenerated.
+
+**Key numbers (corrected simulator, test days 43-56, 5 seeds)**
+- OpsLens 2.21%, industry standard 5.51% (−3.29 [−4.60, −1.98]), SLA due 5.38%, least slack 3.94%,
+  least slack + rescue 2.98%, c-mu 5.27%, priority-first 6.77%, FIFO 13.08%.
+- Floor 1.31% → OpsLens captures 78% ± 4 of the possible improvement over industry routing.
+- New sealed world (seed 5151, run once): OpsLens 2.50% vs industry 6.56%, least slack + rescue
+  3.52%, floor 1.30%, captured 77% ± 2. Cold-open replay: industry 24 vs OpsLens 6.
+
+**Open:** UI copy that says "21 vs 7" is read from results (now 24 vs 6) — check the cold open.
+TabPFN-3 still waits for its licence key. M12 rehearsal with the updated DEMO_SCRIPT.

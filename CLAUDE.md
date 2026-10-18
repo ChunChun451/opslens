@@ -306,6 +306,9 @@ now" and show the drop. Same code run on UCI → real-data AUC.
 - Output each assignment with a one-line reason.
 - Weights live in `config/optimizer.yaml` and are **chosen on validation days by simulated
   breaches** (decision-focused selection), never on test days.
+- *(18 Oct)* v4 — the cross-skill cost in breach-probability units (`mismatch_cost`) — was tested
+  on validation days with a pre-registered rule and **not adopted** (gain not clearly above zero
+  under the corrected simulator). v3 is shipped; v4 stays available as an option.
 
 **`staffing.py`** — from the forecast's upper (P80) band, compute needed agents per skill per
 hour with **Erlang C** (wait target from config, ρ ≤ 0.85 cap). Propose **budget-neutral**
@@ -333,7 +336,8 @@ floor where the next ticket is pulled at once), plus a 2-minute tick that catche
 Erlang-C test exposed.) OpsLens refreshes risk scores and staffing every 15 min inside its policy.
 **Common random numbers:** each ticket's randomness (handle time, reopen, absenteeism draws)
 comes from its own stream seeded by (seed, ticket_id), so all policies see identical tickets
-and identical luck, whatever order events happen in.
+and identical luck, whatever order events happen in. *(18 Oct fix:)* the k-th piece of real work
+uses draw k — a transfer does not re-roll it — and starting work with an off-shift agent raises.
 Tests: tiny hand-computed cases (2 agents, 3 tickets) must pass exactly; an M/M/c steady-state
 run must match **Erlang C** average wait within 5%.
 
@@ -363,6 +367,12 @@ CI. Any effect size that is a business guess (e.g. how many app-bug tickets a st
 deflects) lives in `config/playbooks.yaml`, is labelled an assumption and gets a sensitivity
 range. The LLM drafts the action text (partner notice, IVR wording, banner) under the same
 no-digit rule as `brief.py`.
+
+**`floor.py`** *(added 18 Oct)* — the **physical floor**: per ticket, the earliest it could be
+resolved with unlimited agents (four plans: trained or cross-skill work, before and after a
+reopen). Tickets still past their SLA breach under ANY legal policy — proof in the docstring,
+attacked by `tests/test_floor.py` (10 policies incl. random ones, 25 random worlds). Turns the
+result into "share of the possible improvement captured". The number belongs to the data.
 
 **`ask.py`** *(added 17 Oct by Claude 2; owner approved 18 Oct)* — **Ask OpsLens**: a manager
 types a question in plain words (or Hinglish). The LLM only **routes** it to ONE engine tool
@@ -402,6 +412,10 @@ number. Keyword rules answer when the LLM is offline. This is a tool router, not
     three times".
 15. *(added 18 Oct)* `tests/test_doc_numbers.py`: every number in JUDGE_QA and DEMO_SCRIPT must
     exist in the CURRENT results (history records of v1/v2 only on lines that name them).
+16. *(added 18 Oct)* **Physical floor** (`eval/run_floor.py`): exact unavoidable breaches on the test
+    days and the share of the possible improvement OpsLens captures over industry routing.
+17. *(added 18 Oct)* **New sealed world** (seed 5151, `eval/run_sealed_world.py --new`): generated after
+    the simulator correction, every baseline + published rule + floor, run once.
 
 ---
 
@@ -455,7 +469,7 @@ opslens/                     (C:\dev\opslens)
     results_schema.py
     privacy.py ingest.py classify.py patterns.py features.py forecast.py
     risk.py optimize.py staffing.py policies.py simulate.py whatif.py impact.py brief.py
-    playbooks.py ask.py
+    playbooks.py ask.py floor.py
   server/app.py
   web/      index.html app.js styles.css vendor/chart.umd.js
   eval/     run_eval.py results.json fixture_results.json challengers/(optional)
@@ -482,6 +496,7 @@ opslens/                     (C:\dev\opslens)
 | M8 | 22 Oct | `make eval`: ablations, sensitivity, stress, speed/scale, (challengers); `NUMBERS.md` | One command reproduces every number |
 | P1 | 16–18 Oct | *(added 16 Oct)* Fix-at-source playbooks (`playbooks.py`), measured on test days; challenger arena | Each playbook's tickets prevented / breaches avoided with CI in `results.json`; arena rule applied |
 | C2 | 16–18 Oct | *(Claude 2, Sneha's Claude, PR #1, merged 18 Oct)* Review; Baselines C/D; lateness; Ask OpsLens; floor map + cold open; sealed world; official `make eval` | 0 of 3,744 existing numbers moved; 122 tests pass |
+| P2 | 18 Oct | *(Claude 1)* Breach diagnosis; v4 tested (not adopted); proven physical floor; simulator fairness fix; all numbers regenerated; new sealed world | Floor 1.31%, OpsLens captures 78% (new world 77%); 161 tests pass |
 | — | 22 Oct | **Model + weight freeze** | No model changes after this |
 | U1 | 18–22 Oct | *(parallel session)* UI shell on fixture results: layout, all tabs, charts, replay player, story-mode skeleton | Every tab renders from `fixture_results.json` with the FIXTURE banner |
 | M9 | 23–24 Oct | Server + wire every tab to real results; click-to-evidence; Accept/Override log | Full flow works on generated data |

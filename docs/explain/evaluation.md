@@ -1,5 +1,9 @@
 # eval/ — how every number is produced (`mingw32-make eval`)
 
+> **18 Oct:** the simulator was corrected (a transfer no longer changes a ticket's work-time draw) and every
+> number was regenerated; figures below are from before the correction and moved by at most ~0.2
+> points. Current values: `docs/NUMBERS.md` (generated from `eval/results.json`).
+
 ## What it does
 - One command re-runs every experiment and writes `eval/results.json` (the only source of numbers
   for the dashboard, the brief and the pitch) and `docs/NUMBERS.md` (generated, never typed).

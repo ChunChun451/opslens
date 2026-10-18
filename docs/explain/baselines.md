@@ -1,5 +1,9 @@
 # Baselines — does OpsLens beat the best published rules? (added 18 Oct)
 
+> **18 Oct:** the simulator was corrected (a transfer no longer changes a ticket's work-time draw) and every
+> number was regenerated; figures below are from before the correction and moved by at most ~0.2
+> points. Current values: `docs/NUMBERS.md` (generated from `eval/results.json`).
+
 ## What this does
 - Baseline D ("industry standard") is our own reading of what helpdesks ship. A judge can say:
   "you built your own opponent". So we also test the rules the **scheduling literature** says are
