@@ -178,15 +178,22 @@ def assemble(timings: dict[str, float]) -> dict:
                                               "the +25% volume test on the test days (it lands on a sale day and a surge)."),
             "design_v2": part("design_v2") if (PARTS / "design_v2.json").exists() else {},
             "design_v3": part("design_v3") if (PARTS / "design_v3.json").exists() else {},
-            "v3_before_sim_fix": version_record("v3", "the current policy, measured before the 18 Oct simulator "
-                                                      "correction (a transfer used to shift a ticket's work-time draw)."),
+            "v3_record": version_record("v3", "flat cross-skill penalty: a savable ticket with no trained agent who "
+                                              "speaks its language on shift (e.g. Hindi refunds at night) waited for "
+                                              "one. Replaced by v5 (roster-aware rescue), chosen on validation days."),
+            "v3_before_sim_fix": version_record("v3oldsim", "v3 measured before the 18 Oct simulator correction "
+                                                            "(a transfer used to shift a ticket's work-time draw)."),
             "design_v4": part("design_v4") if (PARTS / "design_v4.json").exists() else {},
-            "test_runs_note": ("Policies run on the test days: v1, v2 and v3 (current), each designed and chosen on "
+            "design_v5": part("design_v5") if (PARTS / "design_v5.json").exists() else {},
+            "confirm_v5": part("confirm_v5") if (PARTS / "confirm_v5.json").exists() else {},
+            "sealed_world_5151_v3": part("sealed_world_5151_v3") if (PARTS / "sealed_world_5151_v3.json").exists() else {},
+            "test_runs_note": ("Policies run on the test days: v1, v2, v3 and v5 (current), each designed and chosen on "
                                "validation days only; all results are kept here. On 18 Oct the simulator was corrected "
                                "(work-time draws no longer shifted by transfers; off-shift starts refused) and every "
-                               "number was regenerated; v3 before the correction is kept as v3_before_sim_fix. v4 "
-                               "(cross-skill cost in risk units) was tested on validation days and not adopted "
-                               "(design_v4). A new sealed world (seed 5151) was run once after the correction."),
+                               "number was regenerated (v3 before the correction: v3_before_sim_fix). v4 was tested on "
+                               "validation days and not adopted (design_v4). v5 passed a pre-registered confirmation on "
+                               "20 fresh seeds (confirm_v5). Sealed worlds: 4242 (v3, old simulator), 5151 (v3, run "
+                               "once), 6262 (v5, generated after v5 was frozen, run once)."),
         },
     }
     if (PARTS / "playbooks.json").exists():

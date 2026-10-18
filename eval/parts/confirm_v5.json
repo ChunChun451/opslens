@@ -1,0 +1,128 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25
+ ],
+ "means": {
+  "v3|normal": {
+   "turnaround.breach_pct": 1.9765580331618071,
+   "segment.hindi_breach_pct": 3.0842321520287617,
+   "quality.late_minutes_per_100": 344.79230940962856,
+   "quality.p99_wait_min": 488.9655458963777,
+   "quality.reopen_rate_pct": 4.397369925671812
+  },
+  "v5 margin 10|normal": {
+   "turnaround.breach_pct": 1.810177244139508,
+   "segment.hindi_breach_pct": 2.390857729840781,
+   "quality.late_minutes_per_100": 287.3379063600977,
+   "quality.p99_wait_min": 501.18241297508814,
+   "quality.reopen_rate_pct": 4.420811892510006
+  },
+  "v3|+25% volume": {
+   "turnaround.breach_pct": 5.405343581297466,
+   "segment.hindi_breach_pct": 8.42072667217176,
+   "quality.late_minutes_per_100": 4369.097379057281,
+   "quality.p99_wait_min": 1622.3135748993159,
+   "quality.reopen_rate_pct": 4.724585963949127
+  },
+  "v5 margin 10|+25% volume": {
+   "turnaround.breach_pct": 5.326653856711501,
+   "segment.hindi_breach_pct": 7.285301403798513,
+   "quality.late_minutes_per_100": 4542.446108686747,
+   "quality.p99_wait_min": 1696.488172471533,
+   "quality.reopen_rate_pct": 4.785433250983622
+  }
+ },
+ "v5_minus_v3": {
+  "normal": {
+   "turnaround.breach_pct": {
+    "mean_diff": -0.16638078902229841,
+    "ci_low": -0.19875709985924203,
+    "ci_high": -0.1340044781853548,
+    "n": 20
+   },
+   "segment.hindi_breach_pct": {
+    "mean_diff": -0.6933744221879816,
+    "ci_low": -0.7983222242110454,
+    "ci_high": -0.5884266201649179,
+    "n": 20
+   },
+   "quality.late_minutes_per_100": {
+    "mean_diff": -57.45440304953079,
+    "ci_low": -68.54870248439217,
+    "ci_high": -46.36010361466941,
+    "n": 20
+   },
+   "quality.p99_wait_min": {
+    "mean_diff": 12.216867078710488,
+    "ci_low": 2.1912687268515274,
+    "ci_high": 22.242465430569446,
+    "n": 20
+   },
+   "quality.reopen_rate_pct": {
+    "mean_diff": 0.023441966838193128,
+    "ci_low": 0.0037630490948600756,
+    "ci_high": 0.04312088458152618,
+    "n": 20
+   }
+  },
+  "+25% volume": {
+   "turnaround.breach_pct": {
+    "mean_diff": -0.07868972458596417,
+    "ci_low": -0.15699608654271502,
+    "ci_high": -0.00038336262921331854,
+    "n": 20
+   },
+   "segment.hindi_breach_pct": {
+    "mean_diff": -1.1354252683732455,
+    "ci_low": -1.334387494666289,
+    "ci_high": -0.936463042080202,
+    "n": 20
+   },
+   "quality.late_minutes_per_100": {
+    "mean_diff": 173.34872962946454,
+    "ci_low": 58.54436290689085,
+    "ci_high": 288.15309635203823,
+    "n": 20
+   },
+   "quality.p99_wait_min": {
+    "mean_diff": 74.17459757221675,
+    "ci_low": 12.098857634998623,
+    "ci_high": 136.25033750943487,
+    "n": 20
+   },
+   "quality.reopen_rate_pct": {
+    "mean_diff": 0.06084728703449542,
+    "ci_low": 0.024018311244254867,
+    "ci_high": 0.09767626282473597,
+    "n": 20
+   }
+  }
+ },
+ "decision": {
+  "adopt_v5": true,
+  "rule": "normal breach CI entirely below 0, not worse at +25% volume, not worse on late minutes per 100"
+ }
+}
