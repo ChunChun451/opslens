@@ -203,6 +203,14 @@ def assemble(timings: dict[str, float]) -> dict:
             with_means(results["best_baselines"]["rescue"])
     if (PARTS / "sealed_world_rerun.json").exists():
         results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
+    if (PARTS / "floor.json").exists():
+        results["floor"] = part("floor")
+    if (PARTS / "sealed_world_v4.json").exists():  # not a STEP: a new world, run once after the v4 freeze
+        sealed = part("sealed_world_v4")
+        for key in ("test", "best_baselines_test", "rescue_test"):
+            if sealed.get(key):
+                with_means({key: sealed[key]})
+        results["sealed_world_v4"] = sealed
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
@@ -341,7 +349,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + floor_md(r) + sealed_v4_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -536,6 +544,38 @@ def sealed_world_md(r: dict) -> list[str]:
         lines.append(f"| {label} | " + " | ".join(fmt(mean(p, key)) for p in names) + " |")
     lines += ["", f"- OpsLens − Baseline C, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}]. "
               f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}. Weights unchanged."]
+    return lines
+
+
+def floor_md(r: dict) -> list[str]:
+    """The physical floor and the share of the possible improvement captured (eval/run_floor.py)."""
+    f = r.get("floor")
+    if not f:
+        return []
+    return ["", "## How close to perfect (test days)", "",
+            f"- Physical floor: {fmt(f['floor_breach_pct_mean'])}% of tickets breach even with unlimited agents and "
+            f"perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).",
+            f"- OpsLens is {fmt(f['opslens_above_floor_points'])} points above that floor and captures "
+            f"{fmt(f['captured_pct_mean'], 0)}% ± {fmt(f['captured_pct_std'], 0)} of the improvement possible over the "
+            f"industry standard: (D − OpsLens) ÷ (D − floor), per seed."]
+
+
+def sealed_v4_md(r: dict) -> list[str]:
+    """A new world generated after v4 was frozen, run once (eval/run_sealed_world.py --v4)."""
+    s = r.get("sealed_world_v4")
+    if not s:
+        return []
+    means = {**s["test"]["means"], **s["best_baselines_test"]["means"], **((s.get("rescue_test") or {}).get("means") or {})}
+    names = {"baseline_d": "Industry standard", "least_slack": "Least slack first", "least_slack_rescue": "Least slack + rescue",
+             "gen_cmu": "Generalized c-mu", "opslens_v3": "OpsLens v3", "opslens": "OpsLens v4"}
+    names = {k: v for k, v in names.items() if k in means}
+    lines = ["", f"## New sealed world for v4 (data seed {s['data_seed']}, generated after v4 was frozen, run once)", "",
+             "| KPI | " + " | ".join(names.values()) + " | Floor |", "|---|" + "---|" * (len(names) + 1)]
+    for key, label in (("turnaround.breach_pct", "SLA breach %"), ("quality.late_minutes_per_100", "Minutes late per 100 tickets")):
+        floor = fmt(s["floor"]["floor_breach_pct_mean"]) if key == "turnaround.breach_pct" else "—"
+        lines.append(f"| {label} | " + " | ".join(fmt(means[p][key]) for p in names) + f" | {floor} |")
+    lines += ["", f"- Share of the possible improvement captured: {fmt(s['floor']['captured_pct_mean'], 0)}% ± "
+              f"{fmt(s['floor']['captured_pct_std'], 0)}. Retrained risk AUC {fmt(s['risk_auc'], 3)}. {s['note']}"]
     return lines
 
 

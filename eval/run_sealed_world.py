@@ -83,6 +83,9 @@ def main() -> int:
         run(dest, "eval/run_classification.py", *no_llm)
         run(dest, "eval/run_risk.py")
         run(dest, "eval/run_forecast.py")
+        if "--v4" in sys.argv:
+            run_v4(dest, seed, no_llm)
+            return 0
         if rescue:
             run(dest, "eval/run_best_baselines.py", "--rescue", "--test-only")
             add_rescue(json.loads((dest / "eval" / "parts" / "best_baselines.json").read_text(encoding="utf-8")))
@@ -108,6 +111,25 @@ def main() -> int:
     (ROOT / "eval" / "parts" / f"{name}.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print(f"wrote eval/parts/{name}.json")
     return 0
+
+
+def run_v4(dest: Path, seed: int, no_llm: list[str]) -> None:
+    """A NEW world for OpsLens v4 (seed never used before), generated after v4 was frozen, run once:
+    every baseline, the published rules, OpsLens v3 next to v4, and the physical floor."""
+    run(dest, "eval/run_baseline_c.py", "--test-only", "--with-v3")
+    run(dest, "eval/run_best_baselines.py", "--test-only")
+    run(dest, "eval/run_floor.py")
+    parts = dest / "eval" / "parts"
+    load = lambda name: json.loads((parts / name).read_text(encoding="utf-8"))  # noqa: E731
+    best = load("best_baselines.json")
+    out = {"data_seed": seed, "classifier": "local only" if no_llm else "cascade (local + LLM)",
+           "note": ("New world generated on 18 Oct after OpsLens v4 was frozen (weights unchanged, routine retraining); "
+                    "run once. OpsLens v3 runs beside v4 on the same tickets and luck."),
+           "risk_auc": (load("risk.json").get("test") or {}).get("auc"), "test": load("baseline_c.json")["test"],
+           "best_baselines_test": best["test"], "rescue_test": (best.get("rescue") or {}).get("test"),
+           "floor": load("floor.json")}
+    (ROOT / "eval" / "parts" / "sealed_world_v4.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
+    print("wrote eval/parts/sealed_world_v4.json")
 
 
 def add_rescue(best: dict) -> None:

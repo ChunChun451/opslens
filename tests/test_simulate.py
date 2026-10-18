@@ -84,6 +84,15 @@ def test_misrouted_ticket_is_transferred() -> None:
     assert row["last_agent"] == "B1"
 
 
+def test_a_transfer_does_not_reroll_the_work_time() -> None:
+    # Draws: first piece of work 10 min, second 99 min. The misroute costs 4 min of discovery but the
+    # refund agent still does the ticket's FIRST piece of work (10 min), as under perfect routing.
+    world = make_world([0], [[10, 99, 99]], [agent("A1", "A", {"late_delivery"}), agent("B1", "B", {"refund"})],
+                       true_cat=["refund"], selected=["late_delivery"])
+    row = by_id(simulate(world, baseline_a(), 0, 300, decide_every_min=1)).loc["T000000"]
+    assert row["transfers"] == 1 and row["handled_min"] == 10 and row["resolution_min"] == 14
+
+
 class GiveToFirstAgentAnyway:
     """Test policy: hand every ticket to the first free agent as a deliberate cross-skill job."""
 
@@ -136,6 +145,24 @@ def test_illegal_assignment_raises() -> None:
     world = make_world([0], [10], [agent("B1", "B", {"refund"})], language=["hi"])
     with pytest.raises(ValueError, match="language"):
         simulate(world, BadPolicy(), 0, 100, decide_every_min=1)
+
+
+class UsesOffShiftAgent:
+    """Test policy: assigns an agent who is not on shift (bypassing state.free_agents)."""
+
+    name = "off-shift"
+
+    def decide(self, state, now):
+        return [Assignment(t.idx, "late", "refund") for t in state.waiting_tickets()]
+
+
+def test_off_shift_agent_cannot_start_work() -> None:
+    late = Agent("late", "late", "B", frozenset({"refund"}), frozenset({"refund"}), frozenset({"en"}),
+                 shift_start_min=600, shift_minutes=60, days_off=frozenset())
+    # Another agent is on shift, so the policy is asked at minute 0 and picks the off-shift one.
+    world = make_world([0], [10], [late, agent("early", "A", {"late_delivery"})])
+    with pytest.raises(ValueError, match="not on shift"):
+        simulate(world, UsesOffShiftAgent(), 0, 100, decide_every_min=1)
 
 
 # ---- Common random numbers -------------------------------------------------------------------

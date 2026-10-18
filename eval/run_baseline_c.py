@@ -31,15 +31,19 @@ SHOW = ["turnaround.breach_pct", "segment.p1_breach_pct", "turnaround.p90_resolu
 
 
 def compare(first: int, last: int, seeds: list[int]) -> dict:
-    jobs = [{"policy": p, "seed": s, "first_day": first, "last_day": last, "staffing": p == "opslens"}
-            for p in POLICIES for s in seeds]
+    keys = POLICIES + (["opslens_v3"] if "--with-v3" in sys.argv else [])
+    # "opslens_v3": the previous policy (flat cross-skill penalty), for the v4 sealed world only.
+    jobs = [{"policy": "opslens" if p == "opslens_v3" else p, "key": p, "seed": s, "first_day": first,
+             "last_day": last, "staffing": p.startswith("opslens"),
+             **({"weights": {"mismatch_cost": None}} if p == "opslens_v3" else {})}
+            for p in keys for s in seeds]
     results = run_jobs(jobs, workers=min(len(jobs), 10))
-    per = {p: [r["kpis"] for r in sorted((r for r in results if r["job"]["policy"] == p),
-                                         key=lambda r: r["job"]["seed"])] for p in POLICIES}
+    per = {p: [r["kpis"] for r in sorted((r for r in results if r["job"]["key"] == p),
+                                         key=lambda r: r["job"]["seed"])] for p in keys}
     print(f"\ndays {first}-{last}, seeds {seeds}")
-    print(f"{'KPI':32s}" + "".join(f"{p:>18s}" for p in POLICIES))
+    print(f"{'KPI':32s}" + "".join(f"{p:>18s}" for p in keys))
     for k in SHOW:
-        print(f"{k:32s}" + "".join(f"{mean_std([r[k] for r in per[p]])[0]:18.2f}" for p in POLICIES))
+        print(f"{k:32s}" + "".join(f"{mean_std([r[k] for r in per[p]])[0]:18.2f}" for p in keys))
     out = {"days": [first, last], "seeds": seeds, "per_seed": per}
     for base, label in (("baseline_c", "c"), ("baseline_d", "d")):
         diffs = {}

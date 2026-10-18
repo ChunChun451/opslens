@@ -165,7 +165,7 @@ class TicketState:
     queue_since_min: float = 0.0
     first_pickup_min: float = math.nan
     resolved_min: float = math.nan
-    attempts: int = 0
+    attempts: int = 0  # pieces of real work started (transfers do not count)
     transfers: int = 0
     reopens: int = 0
     known_category: str | None = None
@@ -196,6 +196,7 @@ class SimState:
     # boundaries, so we remember it until the next boundary. (Simulation time never goes back.)
     _shift_cache: dict[int, tuple[float, float | None]] = field(default_factory=dict)
     in_work: set[int] = field(default_factory=set)  # tickets an agent is working on right now
+    agent_index: dict[str, int] = field(default_factory=dict)  # agent_id -> position in world.agents
 
     def add_waiting(self, i: int) -> None:
         self.waiting[i] = self._view(i)
@@ -325,7 +326,7 @@ def simulate(
     tickets = [TicketState() for _ in range(world.n_tickets)]
     agent_states = {a.agent_id: AgentState(idle_since_min=start_min) for a in world.agents}
     agent_by_id = {a.agent_id: a for a in world.agents}
-    state = SimState(world, tickets, agent_states)
+    state = SimState(world, tickets, agent_states, agent_index={a.agent_id: k for k, a in enumerate(world.agents)})
     stop_min = end_min + drain_min
 
     heap: list[tuple[float, int, int, tuple]] = []
@@ -411,26 +412,31 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
         raise ValueError(f"agent {a.agent_id} has no free slot")
     if world.language[i] not in agent.languages:
         raise ValueError(f"agent {a.agent_id} cannot serve language {world.language[i]}")
+    if state.shift_end(state.agent_index[a.agent_id], now) is None:
+        raise ValueError(f"agent {a.agent_id} is not on shift at minute {now:.0f}")
 
     state.waiting.pop(i, None)
     state.in_work.add(i)
     t.status = "in_work"
     if math.isnan(t.first_pickup_min):
         t.first_pickup_min = now
-    attempt = min(t.attempts, world.base_handle_min.shape[1] - 1)
-    t.attempts += 1
     ast.busy += 1
     t.last_agent = a.agent_id
     t.working_cross = a.deliberate_cross_skill
 
     true_cat = world.true_category[i]
-    base = float(world.base_handle_min[i, attempt])
-    if t.reopens > 0:
-        base *= world.reopen_handle_factor
-    if true_cat in agent.skills:
-        duration, outcome, mismatch = base, "resolve", False
-    elif a.deliberate_cross_skill:
-        duration, outcome, mismatch = base * world.mismatch_factor, "resolve", True
+    if true_cat in agent.skills or a.deliberate_cross_skill:
+        # Common random numbers: the k-th piece of real WORK on a ticket always uses draw k, so
+        # a transfer (wrong queue) does not move the ticket to another draw. The same ticket then
+        # costs the same work under every policy, and no policy can re-roll a long job by
+        # misrouting it on purpose. (Until 18 Oct transfers also used up a draw.)
+        attempt = min(t.attempts, world.base_handle_min.shape[1] - 1)
+        t.attempts += 1
+        base = float(world.base_handle_min[i, attempt])
+        if t.reopens > 0:
+            base *= world.reopen_handle_factor
+        mismatch = true_cat not in agent.skills
+        duration, outcome = (base * world.mismatch_factor if mismatch else base), "resolve"
     else:
         # The agent believed it was theirs; reading it shows it belongs elsewhere.
         duration, outcome, mismatch = world.transfer_discovery_min, "transfer", False

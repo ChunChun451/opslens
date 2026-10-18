@@ -318,6 +318,12 @@ class Results(Strict):
     # The sealed world run a second time with Baseline D and those rules (they were added after
     # the first sealed run, which stays in `sealed_world`).
     sealed_world_rerun: dict[str, Any] | None = None
+    # The physical floor on the test days (eval/run_floor.py, added 18 Oct): breaches that happen
+    # even with unlimited agents, and the share of the possible improvement OpsLens captures.
+    floor: dict[str, Any] | None = None
+    # A NEW world (never-used seed) generated after OpsLens v4 was frozen, run once: every baseline,
+    # the published rules, OpsLens v3 beside v4, and the floor (eval/run_sealed_world.py --v4).
+    sealed_world_v4: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

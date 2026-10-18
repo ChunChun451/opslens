@@ -16,7 +16,12 @@ Value of agent a taking ticket i:
   480 min past its SLA, except while more than 150 tickets wait (crisis mode). So late
   customers ARE deprioritised for up to 8 h; the lateness KPIs in impact.py measure the cost.
 - mismatch  = cost of asking an agent to handle a category they are not trained for (1.6× slower,
-  more reopens). Only allowed when the agent speaks the customer's language.
+  ~4× the reopens). Only allowed when the agent speaks the customer's language. Policy v4 (shipped)
+  charges it in breach-probability units scaled like the ticket's own value:
+  mismatch_cost (0.8) × urgency × impact. v3 subtracted a flat 2.0 after the urgency multiplier,
+  which cost a P2 twice what it cost a P1, so savable Hindi P2s at night were never rescued.
+  Example: Hindi P2 refund, rescue 0.9, normal ₹300 order (urgency × impact 1.59), only an untrained
+  Hindi agent free → v4 value 1.59 × (0.9 − 0.8) = 0.16 > 0, served now; v3 value 1.43 − 2.0 < 0.
 - scarcity  = cost of spending a rare skill pair (e.g. Hindi + refunds) on a ticket that many
   others could take, in proportion to how much rare work is waiting per capable agent.
 
