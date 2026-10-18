@@ -92,9 +92,19 @@ def main() -> int:
         name = "sealed_world_rerun"
         out["note"] = RERUN_NOTE
         out["best_baselines_test"] = best
+        out["same_as_first_run"] = same_as_first_run(out)
     (ROOT / "eval" / "parts" / f"{name}.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print(f"wrote eval/parts/{name}.json")
     return 0
+
+
+def same_as_first_run(rerun: dict) -> dict[str, bool]:
+    """Per policy in both runs: are the per-seed KPIs of the re-run identical to the first run?"""
+    first_path = ROOT / "eval" / "parts" / "sealed_world.json"
+    if not first_path.exists():
+        return {}
+    first = json.loads(first_path.read_text(encoding="utf-8"))["test"]["per_seed"]
+    return {p: first[p] == runs for p, runs in rerun["test"]["per_seed"].items() if p in first}
 
 
 RERUN_NOTE = ("Re-run on 18 Oct 2026 because baselines were added AFTER the first sealed run: Baseline D (industry "

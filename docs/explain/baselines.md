@@ -71,6 +71,18 @@ How to read this:
   is worth a rescue, a deliberate cross-skill job, which agent takes which ticket), not from
   knowing more. Without the risk model OpsLens falls to 4.21% (`ablations`), about where least slack is.
 
+## The sealed second world (data seed 4242, `results.json → sealed_world_rerun`)
+The sealed world was generated after the freeze and first run without these baselines, so it was
+run a second time with D and the new rules. Nothing was chosen on it: OpsLens weights and the c-mu
+shape are frozen. A, B, C and OpsLens came out identical to the first run, seed for seed.
+- Breach %: OpsLens 3.07, clairvoyant + staffing 3.68, clairvoyant 4.00, least slack 4.21,
+  c-mu 6.12, C 6.13, D 6.34.
+- OpsLens − least slack −1.15 [−1.35, −0.94]; − D −3.27 [−4.45, −2.10]; − clairvoyant + staffing
+  −0.62 [−0.84, −0.39]. The gap to the clairvoyant rule is smaller here than on the main world.
+- Late minutes per 100: OpsLens 893.19 vs c-mu 1,445.45 and D 1,771.11. But the mean lateness of
+  a breached ticket is 283.71 min for OpsLens vs 236.36 for c-mu and 277.20 for D: OpsLens has
+  far fewer late tickets, and those few are not served faster than under c-mu.
+
 ## Weaknesses (say them before a judge does)
 - **The rules may not make cross-skill jobs**; OpsLens may (when rescue ≥ 0.5). That is part of
   what OpsLens adds, but "least slack + cross-skill rescue" was not tested. The cost shows: OpsLens

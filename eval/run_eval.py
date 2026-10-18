@@ -461,6 +461,10 @@ def sealed_rerun_md(r: dict) -> list[str]:
               f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}.",
               "- Baselines were added after the first sealed run, so this world was run a second time (the first run is "
               "kept above, unchanged). OpsLens weights and the c-mu shape are frozen; nothing was chosen on this world."]
+    same = s.get("same_as_first_run") or {}
+    if same:
+        verdict = "identical to" if all(same.values()) else "NOT identical to"
+        lines.append(f"- Policies in both runs ({', '.join(same)}): per-seed results {verdict} the first run.")
     return lines
 
 
