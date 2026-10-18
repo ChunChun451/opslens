@@ -535,170 +535,170 @@
    "label": "OpsLens",
    "kpis": {
     "turnaround.breach_pct": {
-     "mean": 2.2149511978704526,
-     "std": 0.35827946634020275
+     "mean": 2.0463620230700976,
+     "std": 0.3580519177793183
     },
     "turnaround.mean_resolution_min": {
-     "mean": 61.38260824096121,
-     "std": 14.150339786891902
+     "mean": 61.684554526506645,
+     "std": 13.956641263740998
     },
     "turnaround.p90_resolution_min": {
-     "mean": 140.1413736723522,
-     "std": 30.106076423974994
+     "mean": 140.44010230746557,
+     "std": 30.42047065348438
     },
     "turnaround.mean_wait_min": {
-     "mean": 44.846979170590075,
-     "std": 12.840522391334122
+     "mean": 45.04704567816185,
+     "std": 12.787687834540428
     },
     "turnaround.max_backlog": {
-     "mean": 204.0,
-     "std": 75.09660445053424
+     "mean": 209.0,
+     "std": 75.65381682373996
     },
     "productivity.tickets_per_agent_hour": {
      "mean": 5.296232606469611,
      "std": 0.09731145946177727
     },
     "productivity.transfers_per_100": {
-     "mean": 0.9716060337178349,
-     "std": 0.01976323167835566
+     "mean": 0.9660603371783496,
+     "std": 0.016820930443769994
     },
     "productivity.busy_agent_hours": {
-     "mean": 2994.4026045393316,
-     "std": 16.3692501313441
+     "mean": 2998.4864842384036,
+     "std": 17.23794992101241
     },
     "quality.reopen_rate_pct": {
-     "mean": 4.405501330967169,
-     "std": 0.1926521020658911
+     "mean": 4.4354480922803905,
+     "std": 0.18129423995395846
     },
     "quality.p99_wait_min": {
-     "mean": 729.3837603704317,
-     "std": 196.46150731102188
+     "mean": 728.3927441179793,
+     "std": 187.94200564274064
     },
     "quality.mean_utilisation": {
-     "mean": 0.8796848676441769,
-     "std": 0.019536472516862406
+     "mean": 0.8808842714490239,
+     "std": 0.01973776809206822
     },
     "quality.load_fairness_std": {
-     "mean": 0.13242901484918898,
-     "std": 0.007686238490331356
+     "mean": 0.13281488531292554,
+     "std": 0.008040823069119955
     },
     "segment.p1_breach_pct": {
-     "mean": 4.889533946137719,
-     "std": 0.38508080864954525
+     "mean": 4.844379938719561,
+     "std": 0.3526861937304891
     },
     "segment.gold_breach_pct": {
-     "mean": 1.8733991950237836,
-     "std": 0.3204483577872129
+     "mean": 1.7929015733626052,
+     "std": 0.3158191822472021
     },
     "segment.hindi_breach_pct": {
-     "mean": 3.5264356185175814,
-     "std": 0.7183258832850423
+     "mean": 2.7219833038198837,
+     "std": 0.5424474464604028
     }
    },
    "per_seed": [
     {
-     "turnaround.breach_pct": 1.9853593611357585,
-     "turnaround.mean_resolution_min": 64.93376924803864,
-     "turnaround.p90_resolution_min": 152.20280883574742,
-     "turnaround.mean_wait_min": 48.407416872968206,
-     "turnaround.max_backlog": 202.0,
+     "turnaround.breach_pct": 1.85226264418811,
+     "turnaround.mean_resolution_min": 66.792198082918,
+     "turnaround.p90_resolution_min": 156.15069154058727,
+     "turnaround.mean_wait_min": 50.144527241171886,
+     "turnaround.max_backlog": 217.0,
      "productivity.tickets_per_agent_hour": 5.371462615430444,
-     "productivity.transfers_per_100": 0.9649511978704525,
-     "productivity.busy_agent_hours": 3004.8055880834504,
-     "quality.reopen_rate_pct": 4.253549245785271,
-     "quality.p99_wait_min": 746.2261581451834,
-     "quality.mean_utilisation": 0.8938839967257419,
-     "quality.load_fairness_std": 0.12435577184802304,
-     "quality.mean_minutes_late": 211.78482932504153,
-     "quality.p90_minutes_late": 495.45681384888593,
-     "quality.late_minutes_per_100": 420.4689934470101,
-     "segment.p1_breach_pct": 4.628285760361233,
-     "segment.gold_breach_pct": 2.049030369557263,
-     "segment.hindi_breach_pct": 3.2380470528712366,
+     "productivity.transfers_per_100": 0.9815882874889086,
+     "productivity.busy_agent_hours": 3009.5479729506874,
+     "quality.reopen_rate_pct": 4.2979148181011535,
+     "quality.p99_wait_min": 767.8354924319281,
+     "quality.mean_utilisation": 0.8953133110662421,
+     "quality.load_fairness_std": 0.12666113856309746,
+     "quality.mean_minutes_late": 203.7254006003395,
+     "quality.p90_minutes_late": 503.14984442209675,
+     "quality.late_minutes_per_100": 377.35294920426685,
+     "segment.p1_breach_pct": 4.660538622802774,
+     "segment.gold_breach_pct": 1.9758507135016465,
+     "segment.hindi_breach_pct": 2.4538325322539842,
      "tickets": 18032.0
     },
     {
-     "turnaround.breach_pct": 2.329192546583851,
-     "turnaround.mean_resolution_min": 56.55281190486658,
-     "turnaround.p90_resolution_min": 129.79020620191366,
-     "turnaround.mean_wait_min": 39.79428335468214,
-     "turnaround.max_backlog": 234.0,
+     "turnaround.breach_pct": 2.129547471162378,
+     "turnaround.mean_resolution_min": 55.720364258637716,
+     "turnaround.p90_resolution_min": 129.07541295232366,
+     "turnaround.mean_wait_min": 39.02798189257627,
+     "turnaround.max_backlog": 233.0,
      "productivity.tickets_per_agent_hour": 5.272514619883041,
-     "productivity.transfers_per_100": 0.9871339840283939,
-     "productivity.busy_agent_hours": 2990.1804855426185,
-     "quality.reopen_rate_pct": 4.586291038154392,
-     "quality.p99_wait_min": 643.8993767472117,
-     "quality.mean_utilisation": 0.8740864410509104,
-     "quality.load_fairness_std": 0.13204320672663808,
-     "quality.mean_minutes_late": 229.54979250418083,
-     "quality.p90_minutes_late": 499.3476959413617,
-     "quality.late_minutes_per_100": 534.6656657706075,
-     "segment.p1_breach_pct": 5.015320109659732,
-     "segment.gold_breach_pct": 1.9392608854738382,
-     "segment.hindi_breach_pct": 3.8704781178851504,
+     "productivity.transfers_per_100": 0.9483141082519966,
+     "productivity.busy_agent_hours": 2992.2137414974322,
+     "quality.reopen_rate_pct": 4.597382431233362,
+     "quality.p99_wait_min": 612.3857541313008,
+     "quality.mean_utilisation": 0.8748652584833956,
+     "quality.load_fairness_std": 0.13226374988469622,
+     "quality.mean_minutes_late": 219.6630704880805,
+     "quality.p90_minutes_late": 503.652473921793,
+     "quality.late_minutes_per_100": 467.78293626565505,
+     "segment.p1_breach_pct": 4.870182228672794,
+     "segment.gold_breach_pct": 1.7197219173069889,
+     "segment.hindi_breach_pct": 3.0609663546673413,
      "tickets": 18032.0
     },
     {
-     "turnaround.breach_pct": 2.0907275953859803,
-     "turnaround.mean_resolution_min": 51.86147585882427,
-     "turnaround.p90_resolution_min": 120.07620248967577,
-     "turnaround.mean_wait_min": 36.12423803349682,
-     "turnaround.max_backlog": 131.0,
+     "turnaround.breach_pct": 1.9687222715173025,
+     "turnaround.mean_resolution_min": 52.88658765683739,
+     "turnaround.p90_resolution_min": 119.59395627599295,
+     "turnaround.mean_wait_min": 36.83001041181801,
+     "turnaround.max_backlog": 132.0,
      "productivity.tickets_per_agent_hour": 5.195044655718813,
-     "productivity.transfers_per_100": 0.942768411712511,
-     "productivity.busy_agent_hours": 3002.5462577612084,
-     "quality.reopen_rate_pct": 4.4698314108252,
-     "quality.p99_wait_min": 604.8989971257621,
-     "quality.mean_utilisation": 0.8655582128726111,
-     "quality.load_fairness_std": 0.13774521098749162,
-     "quality.mean_minutes_late": 163.26660860314706,
-     "quality.p90_minutes_late": 448.35324344978164,
-     "quality.late_minutes_per_100": 341.34600401168166,
-     "segment.p1_breach_pct": 4.821802935010482,
-     "segment.gold_breach_pct": 1.3904134650567141,
-     "segment.hindi_breach_pct": 3.2380470528712366,
-     "tickets": 18032.0
-    },
-    {
-     "turnaround.breach_pct": 2.7839396628216506,
-     "turnaround.mean_resolution_min": 84.33272477371415,
-     "turnaround.p90_resolution_min": 186.74753183845021,
-     "turnaround.mean_wait_min": 65.65559805057497,
-     "turnaround.max_backlog": 314.0,
-     "productivity.tickets_per_agent_hour": 5.421527360192424,
-     "productivity.transfers_per_100": 0.9926796805678793,
-     "productivity.busy_agent_hours": 3006.948796273004,
-     "quality.reopen_rate_pct": 4.56410825199645,
-     "quality.p99_wait_min": 1063.27794025599,
-     "quality.mean_utilisation": 0.9056739814033726,
-     "quality.load_fairness_std": 0.12570025445404898,
-     "quality.mean_minutes_late": 403.34036834653864,
-     "quality.p90_minutes_late": 1115.2489189889968,
-     "quality.late_minutes_per_100": 1122.8752490570232,
-     "segment.p1_breach_pct": 5.482986615062087,
-     "segment.gold_breach_pct": 2.2319795096963047,
-     "segment.hindi_breach_pct": 4.578800910700734,
-     "tickets": 18032.0
-    },
-    {
-     "turnaround.breach_pct": 1.885536823425022,
-     "turnaround.mean_resolution_min": 49.23225941936242,
-     "turnaround.p90_resolution_min": 111.89011899597389,
-     "turnaround.mean_wait_min": 34.25335954122825,
-     "turnaround.max_backlog": 139.0,
-     "productivity.tickets_per_agent_hour": 5.220613781123335,
      "productivity.transfers_per_100": 0.9704968944099378,
-     "productivity.busy_agent_hours": 2967.531895036377,
-     "quality.reopen_rate_pct": 4.153726708074535,
-     "quality.p99_wait_min": 588.6163295780109,
-     "quality.mean_utilisation": 0.8592217061682484,
-     "quality.load_fairness_std": 0.14230063022974324,
-     "quality.mean_minutes_late": 159.10489939696828,
-     "quality.p90_minutes_late": 425.84339440766786,
-     "quality.late_minutes_per_100": 299.99814660031734,
-     "segment.p1_breach_pct": 4.499274310595065,
-     "segment.gold_breach_pct": 1.756311745334797,
-     "segment.hindi_breach_pct": 2.7068049582595495,
+     "productivity.busy_agent_hours": 3007.314431573411,
+     "quality.reopen_rate_pct": 4.503105590062112,
+     "quality.p99_wait_min": 623.1096578665764,
+     "quality.mean_utilisation": 0.8669449541791773,
+     "quality.load_fairness_std": 0.1381692340961234,
+     "quality.mean_minutes_late": 160.16076245852528,
+     "quality.p90_minutes_late": 452.9595088816919,
+     "quality.late_minutes_per_100": 315.312060075291,
+     "segment.p1_breach_pct": 4.78955007256894,
+     "segment.gold_breach_pct": 1.353823637028906,
+     "segment.hindi_breach_pct": 2.4538325322539842,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 2.6120230700976044,
+     "turnaround.mean_resolution_min": 83.73799365565658,
+     "turnaround.p90_resolution_min": 185.80457904286303,
+     "turnaround.mean_wait_min": 65.15034232176882,
+     "turnaround.max_backlog": 319.0,
+     "productivity.tickets_per_agent_hour": 5.421527360192424,
+     "productivity.transfers_per_100": 0.9815882874889086,
+     "productivity.busy_agent_hours": 3012.3692469494376,
+     "quality.reopen_rate_pct": 4.586291038154392,
+     "quality.p99_wait_min": 1041.4162552575517,
+     "quality.mean_utilisation": 0.907146801368787,
+     "quality.load_fairness_std": 0.12372117120177427,
+     "quality.mean_minutes_late": 380.74325577151563,
+     "quality.p90_minutes_late": 1072.5873235863983,
+     "quality.late_minutes_per_100": 994.5101678592715,
+     "segment.p1_breach_pct": 5.418480890179003,
+     "segment.gold_breach_pct": 2.1953896816684964,
+     "segment.hindi_breach_pct": 3.4910194788768023,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 1.6692546583850931,
+     "turnaround.mean_resolution_min": 49.285628978483565,
+     "turnaround.p90_resolution_min": 111.57587172556086,
+     "turnaround.mean_wait_min": 34.08236652347427,
+     "turnaround.max_backlog": 144.0,
+     "productivity.tickets_per_agent_hour": 5.220613781123335,
+     "productivity.transfers_per_100": 0.9483141082519966,
+     "productivity.busy_agent_hours": 2970.9870282210495,
+     "quality.reopen_rate_pct": 4.192546583850932,
+     "quality.p99_wait_min": 597.2165609025395,
+     "quality.mean_utilisation": 0.8601510321475179,
+     "quality.load_fairness_std": 0.14325913281893637,
+     "quality.mean_minutes_late": 154.81476266790332,
+     "quality.p90_minutes_late": 461.8574180467549,
+     "quality.late_minutes_per_100": 258.42526377018027,
+     "segment.p1_breach_pct": 4.483147879374295,
+     "segment.gold_breach_pct": 1.7197219173069889,
+     "segment.hindi_breach_pct": 2.1502656210473057,
      "tickets": 18032.0
     }
    ]
@@ -709,45 +709,45 @@
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.breach_pct",
-   "mean_diff": -10.860692102928128,
-   "ci_low": -13.324900879001676,
-   "ci_high": -8.39648332685458,
+   "mean_diff": -11.029281277728483,
+   "ci_low": -13.480755946445923,
+   "ci_high": -8.577806609011043,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.mean_resolution_min",
-   "mean_diff": -18.733925260692978,
-   "ci_low": -25.104628371901853,
-   "ci_high": -12.363222149484102,
+   "mean_diff": -18.431978975147537,
+   "ci_low": -23.984617886637135,
+   "ci_high": -12.879340063657938,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.p90_resolution_min",
-   "mean_diff": -43.35138807388225,
-   "ci_low": -56.733596073932304,
-   "ci_high": -29.969180073832195,
+   "mean_diff": -43.052659438768885,
+   "ci_low": -54.50437219838033,
+   "ci_high": -31.60094667915744,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.mean_wait_min",
-   "mean_diff": -19.176405645089076,
-   "ci_low": -24.844612115297718,
-   "ci_high": -13.508199174880435,
+   "mean_diff": -18.9763391375173,
+   "ci_low": -23.930871224188383,
+   "ci_high": -14.021807050846217,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "turnaround.max_backlog",
-   "mean_diff": -20.8,
-   "ci_low": -80.55432693822263,
-   "ci_high": 38.954326938222636,
+   "mean_diff": -15.8,
+   "ci_low": -73.44061693493573,
+   "ci_high": 41.840616934935724,
    "n": 5
   },
   {
@@ -763,126 +763,126 @@
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "productivity.transfers_per_100",
-   "mean_diff": -3.660159716060337,
-   "ci_low": -3.7119102440190606,
-   "ci_high": -3.6084091881016134,
+   "mean_diff": -3.6657054125998223,
+   "ci_low": -3.726119180603469,
+   "ci_high": -3.605291644596176,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "productivity.busy_agent_hours",
-   "mean_diff": 33.07220803160853,
-   "ci_low": 20.789025277661832,
-   "ci_high": 45.35539078555523,
+   "mean_diff": 37.156087730680426,
+   "ci_low": 23.604967302611012,
+   "ci_high": 50.707208158749836,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.reopen_rate_pct",
-   "mean_diff": 0.4713842058562556,
-   "ci_low": 0.37317034864268733,
-   "ci_high": 0.569598063069824,
+   "mean_diff": 0.5013309671694764,
+   "ci_low": 0.410959111585814,
+   "ci_high": 0.5917028227531389,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.p99_wait_min",
-   "mean_diff": -87.77725523164438,
-   "ci_low": -289.9365993047361,
-   "ci_high": 114.38208884144734,
+   "mean_diff": -88.76827148409669,
+   "ci_low": -275.6600261316032,
+   "ci_high": 98.12348316340984,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.mean_utilisation",
-   "mean_diff": 0.010462944915351446,
-   "ci_low": 0.006834083150159184,
-   "ci_high": 0.014091806680543707,
+   "mean_diff": 0.011662348720198511,
+   "ci_low": 0.007813813766851696,
+   "ci_high": 0.015510883673545327,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "quality.load_fairness_std",
-   "mean_diff": 0.012932368179829387,
-   "ci_low": 0.007842343486030913,
-   "ci_high": 0.018022392873627863,
+   "mean_diff": 0.013318238643565938,
+   "ci_low": 0.007278294101612646,
+   "ci_high": 0.01935818318551923,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "segment.p1_breach_pct",
-   "mean_diff": -22.360909530720853,
-   "ci_low": -27.5090647200646,
-   "ci_high": -17.212754341377106,
+   "mean_diff": -22.406063538139012,
+   "ci_low": -27.550889293541957,
+   "ci_high": -17.261237782736067,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "segment.gold_breach_pct",
-   "mean_diff": -10.545188437614343,
-   "ci_low": -13.255579932483553,
-   "ci_high": -7.8347969427451325,
+   "mean_diff": -10.62568605927552,
+   "ci_low": -13.317399333030377,
+   "ci_high": -7.933972785520662,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_a",
    "kpi": "segment.hindi_breach_pct",
-   "mean_diff": -18.618770554009615,
-   "ci_low": -22.13487002319034,
-   "ci_high": -15.102671084828888,
+   "mean_diff": -19.423222868707313,
+   "ci_low": -23.116851901071676,
+   "ci_high": -15.72959383634295,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.breach_pct",
-   "mean_diff": -4.551907719609583,
-   "ci_low": -5.8092479282178076,
-   "ci_high": -3.2945675110013593,
+   "mean_diff": -4.720496894409938,
+   "ci_low": -5.979410046902869,
+   "ci_high": -3.461583741917007,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.mean_resolution_min",
-   "mean_diff": -23.241365921660925,
-   "ci_low": -29.7458669648338,
-   "ci_high": -16.73686487848805,
+   "mean_diff": -22.939419636115485,
+   "ci_low": -28.761669335598146,
+   "ci_high": -17.117169936632823,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.p90_resolution_min",
-   "mean_diff": -56.02709728191114,
-   "ci_low": -66.65227658843396,
-   "ci_high": -45.40191797538831,
+   "mean_diff": -55.728368646797776,
+   "ci_low": -64.9987658721654,
+   "ci_high": -46.45797142143016,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.mean_wait_min",
-   "mean_diff": -23.18134404301505,
-   "ci_low": -29.495722882334455,
-   "ci_high": -16.866965203695642,
+   "mean_diff": -22.981277535443272,
+   "ci_low": -28.686618542567693,
+   "ci_high": -17.27593652831885,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "turnaround.max_backlog",
-   "mean_diff": -32.2,
-   "ci_low": -92.46797653679772,
-   "ci_high": 28.06797653679771,
+   "mean_diff": -27.2,
+   "ci_low": -85.46558825790741,
+   "ci_high": 31.065588257907418,
    "n": 5
   },
   {
@@ -898,126 +898,126 @@
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "productivity.transfers_per_100",
-   "mean_diff": -3.652395740905058,
-   "ci_low": -3.713511564638189,
-   "ci_high": -3.591279917171927,
+   "mean_diff": -3.6579414374445434,
+   "ci_low": -3.701647640990264,
+   "ci_high": -3.614235233898823,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "productivity.busy_agent_hours",
-   "mean_diff": 33.25887469827531,
-   "ci_low": 21.475083850266838,
-   "ci_high": 45.04266554628377,
+   "mean_diff": 37.3427543973472,
+   "ci_low": 24.302546375020547,
+   "ci_high": 50.38296241967385,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.reopen_rate_pct",
-   "mean_diff": 0.4713842058562556,
-   "ci_low": 0.37317034864268733,
-   "ci_high": 0.569598063069824,
+   "mean_diff": 0.5013309671694764,
+   "ci_low": 0.410959111585814,
+   "ci_high": 0.5917028227531389,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.p99_wait_min",
-   "mean_diff": -279.76539730390493,
-   "ci_low": -409.0293158180468,
-   "ci_high": -150.501478789763,
+   "mean_diff": -280.75641355635724,
+   "ci_low": -403.0848520425295,
+   "ci_high": -158.42797507018494,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.mean_utilisation",
-   "mean_diff": 0.01045933544051636,
-   "ci_low": 0.006975814079559019,
-   "ci_high": 0.0139428568014737,
+   "mean_diff": 0.011658739245363425,
+   "ci_low": 0.007962530671395789,
+   "ci_high": 0.015354947819331062,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "quality.load_fairness_std",
-   "mean_diff": 0.008649092774061885,
-   "ci_low": 0.0017276431274973495,
-   "ci_high": 0.015570542420626419,
+   "mean_diff": 0.009034963237798435,
+   "ci_low": 0.0012274932290686187,
+   "ci_high": 0.016842433246528253,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "segment.p1_breach_pct",
-   "mean_diff": -4.118690533784873,
-   "ci_low": -5.5965838571619235,
-   "ci_high": -2.640797210407823,
+   "mean_diff": -4.163844541203032,
+   "ci_low": -5.662528872097074,
+   "ci_high": -2.66516021030899,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "segment.gold_breach_pct",
-   "mean_diff": -4.800585437248445,
-   "ci_low": -6.332761619629386,
-   "ci_high": -3.268409254867505,
+   "mean_diff": -4.881083058909622,
+   "ci_low": -6.4004793319239175,
+   "ci_high": -3.361686785895327,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_b",
    "kpi": "segment.hindi_breach_pct",
-   "mean_diff": -12.64356185175816,
-   "ci_low": -15.552392153011672,
-   "ci_high": -9.734731550504646,
+   "mean_diff": -13.448014166455858,
+   "ci_low": -16.51296970273472,
+   "ci_high": -10.383058630176995,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "turnaround.breach_pct",
-   "mean_diff": -3.291925465838509,
-   "ci_low": -4.602176743210308,
-   "ci_high": -1.9816741884667104,
+   "mean_diff": -3.460514640638864,
+   "ci_low": -4.767509604400027,
+   "ci_high": -2.153519676877701,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "turnaround.mean_resolution_min",
-   "mean_diff": -18.826493653252918,
-   "ci_low": -24.595654686986816,
-   "ci_high": -13.05733261951902,
+   "mean_diff": -18.524547367707477,
+   "ci_low": -23.965118632718806,
+   "ci_high": -13.083976102696148,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "turnaround.p90_resolution_min",
-   "mean_diff": -63.404262838081024,
-   "ci_low": -99.28746766537245,
-   "ci_high": -27.521058010789595,
+   "mean_diff": -63.10553420296766,
+   "ci_low": -99.18210878506336,
+   "ci_high": -27.02895962087196,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "turnaround.mean_wait_min",
-   "mean_diff": -20.896341612744546,
-   "ci_low": -27.427264493921314,
-   "ci_high": -14.36541873156778,
+   "mean_diff": -20.696275105172777,
+   "ci_low": -26.955318960683098,
+   "ci_high": -14.437231249662457,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "turnaround.max_backlog",
-   "mean_diff": -16.4,
-   "ci_low": -78.700020900157,
-   "ci_high": 45.900020900157,
+   "mean_diff": -11.4,
+   "ci_low": -72.0960830578053,
+   "ci_high": 49.2960830578053,
    "n": 5
   },
   {
@@ -1033,81 +1033,81 @@
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "productivity.transfers_per_100",
-   "mean_diff": -0.04214729370008885,
-   "ci_low": -0.06529083337753071,
-   "ci_high": -0.019003754022646993,
+   "mean_diff": -0.047692990239574115,
+   "ci_low": -0.06811657146855932,
+   "ci_high": -0.027269409010588917,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "productivity.busy_agent_hours",
-   "mean_diff": 80.00554136494193,
-   "ci_low": 68.02765037514546,
-   "ci_high": 91.98343235473841,
+   "mean_diff": 84.08942106401382,
+   "ci_low": 70.86003771811153,
+   "ci_high": 97.31880440991611,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "quality.reopen_rate_pct",
-   "mean_diff": 0.4713842058562556,
-   "ci_low": 0.37317034864268733,
-   "ci_high": 0.569598063069824,
+   "mean_diff": 0.5013309671694764,
+   "ci_low": 0.410959111585814,
+   "ci_high": 0.5917028227531389,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "quality.p99_wait_min",
-   "mean_diff": -211.80593467545478,
-   "ci_low": -297.0487370926913,
-   "ci_high": -126.56313225821826,
+   "mean_diff": -212.79695092790706,
+   "ci_low": -278.8655804855659,
+   "ci_high": -146.72832137024824,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "quality.mean_utilisation",
-   "mean_diff": 0.024062942647331866,
-   "ci_low": 0.020406578552256166,
-   "ci_high": 0.027719306742407565,
+   "mean_diff": 0.02526234645217893,
+   "ci_low": 0.02139367605391072,
+   "ci_high": 0.029131016850447142,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "quality.load_fairness_std",
-   "mean_diff": -0.00909482720305813,
-   "ci_low": -0.017823267588426922,
-   "ci_high": -0.0003663868176893414,
+   "mean_diff": -0.00870895673932158,
+   "ci_low": -0.017813958377203613,
+   "ci_high": 0.0003960448985604534,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "segment.p1_breach_pct",
-   "mean_diff": -2.609256571520723,
-   "ci_low": -3.6027808480565366,
-   "ci_high": -1.6157322949849093,
+   "mean_diff": -2.654410578938881,
+   "ci_low": -3.6769807528310254,
+   "ci_high": -1.631840405046737,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "segment.gold_breach_pct",
-   "mean_diff": -3.54189535309184,
-   "ci_low": -5.138052151429461,
-   "ci_high": -1.9457385547542185,
+   "mean_diff": -3.6223929747530184,
+   "ci_low": -5.198253857387023,
+   "ci_high": -2.0465320921190133,
    "n": 5
   },
   {
    "policy": "opslens",
    "baseline": "baseline_d",
    "kpi": "segment.hindi_breach_pct",
-   "mean_diff": -9.795092334935493,
-   "ci_low": -12.293903927527335,
-   "ci_high": -7.296280742343651,
+   "mean_diff": -10.599544649633192,
+   "ci_low": -13.272070488349462,
+   "ci_high": -7.9270188109169215,
    "n": 5
   }
  ],
@@ -1313,31 +1313,31 @@
    },
    "opslens": {
     "waiting": [
-     18,
-     15,
-     17,
-     17,
+     21,
+     16,
      19,
-     18,
-     19,
-     25,
-     22,
-     30,
-     37,
-     44,
-     56,
-     69,
-     75,
-     80,
-     86,
-     87,
+     20,
+     21,
+     20,
+     24,
+     27,
+     23,
+     24,
+     36,
+     40,
+     55,
+     67,
+     71,
+     72,
      77,
-     79,
-     86,
-     81,
-     78,
+     77,
+     71,
+     73,
+     83,
+     82,
      75,
-     74
+     71,
+     68
     ],
     "breached_cum": [
      0,
@@ -1350,15 +1350,15 @@
      1,
      1,
      1,
-     2,
-     2,
-     2,
-     2,
-     2,
-     2,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     3,
+     3,
      4,
-     4,
-     5,
      5,
      5,
      6,
@@ -6806,81 +6806,87 @@
      "00:00"
     ],
     "status": [
-     "ooobioiboiooooobobbooooiiioiioooobbbobbo",
-     "oooiioiboiooooobobiooooiiiobboooobbbobbo",
-     "ooobboiioboooooiobiooooiiboixoooobbbobbo",
+     "ooobioibobooooobobbooooiiioiioooobbbobbo",
+     "oooiioibobooooobobiooooiiiobboooobbbobbo",
+     "oooiboiboioooooiobiooooiiboixoooobbbobbo",
      "oooiioiioboooooioiiooooiiiobxoooobbbobbo",
      "ooobiobiobooooobobbooooiiioiboooobbbobbo",
-     "ooobioiboboooooioiboooobiiobioooobbbobbo",
-     "ooobioibobooooobobboooobiiobioooobbbobbo",
-     "ooobbobbobooooobobbooooiibobxoooobbbobbo",
-     "oooibobbobooooobobboooobibobxoooobbbobbo",
+     "ooobioiboboooooioiboooobixobioooobbbobbo",
+     "ooobioibobooooobobboooobixobioooobbbobbo",
+     "ooobbobbobooooobobbooooibiobxoooobbbobbo",
+     "oooibobbobooooobobboooobbiobxoooobbbobbo",
      "oooiioiiobooooobobxoooobiiobioooobbbobbo",
      "ooobioiiobooooobobxooooiiiobboooobbbobbo",
      "ooobbobioboooooiobiooooiiiobioooobbbobbo",
      "ooobiobioboooooiobiooooiiiobioooobbbobbo",
      "ooobbobboboooooioibooooiixobboooobbbobbo",
-     "ooobbobboboooooiobbooooibxobioooobbbobwo",
-     "ooobbobboooooooboiboooobbxoxboooobbbobbo",
-     "ooobbobbooooooobobboooobbxoxboooobbbobbo",
-     "ooobbobbooooooobobboooobbxoxboooobbbobbo",
-     "ooobbobbooooooobobbooooibxobboooobbbobbo",
-     "ooobboxbooooooobobboooobbxobioooobbbobbo",
-     "ooobboxboooooooxoiioooobbxobboooobbbobbo",
-     "ooobboxboooooooxobiooooxibobboooobbbobbo",
-     "ooobbobbooooooobobbooooxbxobioooobbbobbo",
-     "ooobbobboooooooboxboooobbxobboooobbbobbo",
-     "oooiioxboooooooboxboooobbxobboooobbbobbo",
-     "ooobboxboooooooboxboooobbxobboooobbwobbo",
-     "ooobboxboooooooboxboooobbxobboooobxbobbo",
-     "ooobbobbooooooobobboooobbbobboooobxbobbo",
-     "ooobbobbooooooobobboooobbbobboooobbbobbo",
-     "ooobbobbooooooobobboooobbbobboooobbbobbo",
+     "ooobbobboboooooiobbooooibxobioooobbbowbo",
+     "ooobbobboooooooboibooooxbxobboooobbbobbo",
+     "ooobbobbooooooobobbooooxbxobboooobbbobbo",
      "ooobbobbooooooobobboooobbxobboooobbbobbo",
      "ooobbobbooooooobobboooobbxobboooobbbobbo",
-     "ooobbobbooooooobobboooobbbobboooobbbobbo",
+     "ooobxoxbooooooobobboooobixobboooobbbobbo",
+     "ooobxoxboooooooxoiioooobbboxboooobbbobbo",
+     "ooobboxboooooooxobioooobbboxboooobbbobxo",
+     "ooobbobboooooooxobboooobbboxboooobbbobxo",
+     "ooobbobboooooooboxboooobbbobboooobbbobxo",
+     "oooibobboooooooboxboooobbbobboooobbbobwo",
+     "ooobbobioooooooboxboooobbbobboooobbbobbo",
+     "ooobxobboooooooboxboooobbbobboooobbbobbo",
+     "ooobxobbooooooobobboooobbbobboooobbbobbo",
+     "ooobbobbooooooowobboooobbbobboooobbbobbo",
      "ooobbobbooooooobobbooooxbbobboooobbbobbo",
      "ooobbobbooooooobobbooooxbxobboooobbbobbo",
-     "ooobbobbooooooowobbooooxbxobboooobbbobbo",
+     "ooobbobbooooooobobboooobbxobboooobbbobxo",
+     "ooobbobbooooooobobboooobbbobboooobbbobxo",
+     "ooobbobbooooooobobboooobbbobboooobbbobbo",
      "ooobbobbooooooobobbooooxbbobboooobbbobbo",
-     "ooobboxbooooooobobbooooxxbobboooobbbobbo",
-     "ooobboxbooooooobobboooooxboxbooooobbobbo",
-     "ooooboxbooooooobobboooooxboxboooooxbowbo",
-     "ooooboxbooooooobobboooooxbobboooooxbobbo",
-     "ooooboxbooooooobobbooooobbobbooooobbobbo",
-     "ooooboxbooooooobobbooooobxobboooooxbobbo",
-     "ooooboxboooooooboxbooooowxoxboooooxbobxo",
-     "ooooboxbooooooobobboooooxxoxxoooooxxoxxo",
-     "ooooboxbooooooobobboooooxboxxooooobxoxxo",
-     "ooooboxbooooooobobbooooobboxxooooobxobbo",
-     "ooooboxbooooooobobbooooobboxbooooobxobbo",
-     "ooooboxbioooooobobbioooobboxbooooobxobbo",
-     "oooobobbboooooobobbbooooxboxbooooobxobbo",
-     "oooobobbboooooobobbbooooxbobbooooobbobbo",
-     "oooobobbboooooobobbbooooxbobbooooobbobbo",
-     "oooobobbboooooobobbboooobxobwooooobbobbo",
-     "oooobobbboooooobobbboooobxobbooooobbobbo",
-     "oooobobbboooooobobbboooobxobbooooobbobbo",
-     "oooobobbboooooobobbboooobxoxbooooobbobbo",
-     "oooobobbboooooobobbboooobxoxbooooobbobbo",
-     "oooobobbboooooobobbboooobxobbooooobbobxo",
-     "oooobobbboooooobobbboooobxobbooooobbobxo",
-     "oooobobbboooooobobbboooobxobboooooxbobxo",
-     "oooobobbboooooobobbboooobxobboooooxbobxo",
-     "oooooobbboooooobobbbooooobobboooooobobxo",
-     "oooooobbboooooobobbbooooobobboooooobobxo",
+     "ooobbobbooooooobobbooooxxbobboooobbbobbo",
+     "ooobbobbooooooobobbooooxxbobboooobbbobbo",
+     "ooobbobbooooooobobbooooxxbobboooobbbobbo",
+     "oooobobbooooooobobbooooxbbobbooooobbobwo",
+     "oooobobbooooooobobbooooxbbobbooooobbobxo",
+     "oooobobbooooooobobbooooxbbobbooooobbobxo",
+     "oooobobbooooooobobbooooxbbobbooooobbobbo",
+     "oooobobbooooooobobbooooxbbobbooooobbobbo",
+     "oooobobbooooooobobbooooxbbobbooooobbobbo",
+     "oooobobbooooooobobbooooxiboxbooooobbobbo",
+     "oooobobbooooooobobbooooxxboxxoooooxbobbo",
+     "oooobobbooooooobobbooooxxboxboooooxboxbo",
+     "oooobobbooooooobobbooooxbboxbooooobbobbo",
+     "oooobobxioooooobobbioooobxobboooooxbobbo",
+     "oooobobxboooooobobbbooooixobboooooxbobbo",
+     "oooobobbboooooobobbboooobxoxboooooxbobbo",
+     "oooobobwboooooobobbboooobxoxbooooobbobxo",
+     "oooobobbboooooobobbboooobboxbooooobbobxo",
+     "oooobobbboooooobobbboooobbobbooooobbobxo",
+     "oooobobbboooooobobbboooobbobiooooobbobxo",
+     "oooobobbboooooobobbbooooxboxbooooobbobxo",
+     "oooobobbboooooobobbbooooxboxbooooobbobbo",
+     "ooooxoxbboooooobobbbooooxboxbooooobbobxo",
+     "ooooxoxbboooooobobbboooobboxboooooxbobxo",
+     "ooooxoxbboooooobobbboooobboxboooooxbobxo",
+     "ooooboxbboooooobobbboooobboxboooooxbobxo",
+     "oooooobbboooooobobbboooooboxboooooobobxo",
+     "oooooobbboooooobobbboooooboxboooooobobxo",
+     "oooooobbboooooobobbboooooboxboooooobobxo",
+     "oooooobbboooooobobbboooooboxboooooobobxo",
+     "oooooobbboooooobobbboooooxobboooooobobxo",
+     "oooooobbboooooobobbboooooxobboooooobobxo",
      "oooooobbboooooobobbboooooxoxboooooobobbo",
-     "oooooobbxoooooobobbboooooxoxboooooobobbo",
-     "ooooooxbxoooooobobbboooooxobboooooobobbo",
-     "ooooooxbxoooooobobbboooooxobboooooobobbo",
-     "oooooobbxoooooobobbboooooxobxoooooobobbo",
-     "oooooobbxoooooobobbboooooxobxoooooobobbo",
-     "oooooobbboooooobobbboooooxoxxoooooobobbo",
-     "oooooobbboooooobobbboooooxoxxoooooobobbo",
-     "oooooobbboooooobobbboooooxoxboooooobobbo",
-     "oooooobbboooooobobbboooooboxboooooobobbo"
+     "ooooooxbboooooobobbboooooxoxioooooobobbo",
+     "ooooooxbxoooooobobbboooooxoxboooooobobxo",
+     "ooooooxbxoooooobobbboooooioiboooooobobxo",
+     "ooooooxbboooooobobbboooooiobioooooobobxo",
+     "ooooooxbboooooobobbbooooobobioooooobobbo"
     ],
     "queues": [
+     {
+      "D": [
+       21,
+       0
+      ]
+     },
      {
       "D": [
        18,
@@ -6895,89 +6901,7 @@
      },
      {
       "D": [
-       15,
-       0
-      ]
-     },
-     {
-      "D": [
-       15,
-       0
-      ]
-     },
-     {
-      "D": [
        16,
-       0
-      ],
-      "A": [
-       1,
-       0
-      ],
-      "B": [
-       1,
-       0
-      ]
-     },
-     {
-      "D": [
-       16,
-       0
-      ],
-      "A": [
-       1,
-       0
-      ],
-      "B": [
-       1,
-       0
-      ]
-     },
-     {
-      "D": [
-       15,
-       0
-      ],
-      "A": [
-       2,
-       0
-      ]
-     },
-     {
-      "D": [
-       14,
-       0
-      ],
-      "A": [
-       2,
-       0
-      ],
-      "B": [
-       1,
-       0
-      ]
-     },
-     {
-      "D": [
-       14,
-       0
-      ],
-      "A": [
-       2,
-       0
-      ]
-     },
-     {
-      "D": [
-       15,
-       0
-      ],
-      "A": [
-       1,
-       0
-      ],
-      "B": [
-       1,
        0
       ]
      },
@@ -7011,14 +6935,10 @@
      },
      {
       "D": [
-       16,
+       17,
        0
       ],
       "A": [
-       1,
-       0
-      ],
-      "B": [
        2,
        0
       ]
@@ -7029,351 +6949,115 @@
        0
       ],
       "A": [
-       1,
-       0
-      ],
-      "B": [
-       1,
-       0
-      ]
-     },
-     {
-      "D": [
-       12,
-       0
-      ],
-      "A": [
-       7,
-       0
-      ],
-      "B": [
-       1,
-       0
-      ]
-     },
-     {
-      "D": [
-       11,
-       0
-      ],
-      "A": [
-       5,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "D": [
-       11,
-       0
-      ],
-      "A": [
-       7,
-       0
-      ],
-      "C": [
-       3,
-       0
-      ],
-      "B": [
-       2,
-       0
-      ]
-     },
-     {
-      "D": [
-       12,
-       0
-      ],
-      "A": [
-       5,
-       0
-      ],
-      "B": [
-       1,
-       0
-      ],
-      "C": [
-       1,
-       0
-      ]
-     },
-     {
-      "D": [
-       13,
-       0
-      ],
-      "A": [
-       3,
-       0
-      ],
-      "B": [
-       3,
-       0
-      ]
-     },
-     {
-      "D": [
-       12,
-       0
-      ],
-      "A": [
        2,
        0
       ],
       "B": [
-       2,
-       0
-      ],
-      "C": [
        1,
        0
       ]
      },
      {
-      "D": [
-       13,
-       0
-      ],
-      "A": [
-       4,
-       0
-      ],
-      "B": [
-       3,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       5,
-       1
-      ],
       "D": [
        14,
        0
       ],
-      "B": [
-       3,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       3,
-       2
-      ],
-      "D": [
-       15,
-       0
-      ],
-      "B": [
-       4,
-       0
-      ],
-      "C": [
-       1,
-       0
-      ]
-     },
-     {
       "A": [
        2,
-       1
-      ],
-      "D": [
-       14,
-       0
-      ],
-      "B": [
-       4,
-       0
-      ],
-      "C": [
-       1,
        0
       ]
      },
      {
-      "A": [
-       1,
-       1
-      ],
       "D": [
-       15,
-       0
-      ],
-      "B": [
-       4,
-       0
-      ],
-      "C": [
-       1,
-       0
-      ]
-     },
-     {
-      "A": [
-       3,
-       1
-      ],
-      "D": [
-       14,
-       0
-      ],
-      "B": [
-       4,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       5,
-       1
-      ],
-      "D": [
-       13,
-       0
-      ],
-      "B": [
-       5,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       5,
-       1
-      ],
-      "D": [
-       14,
-       0
-      ],
-      "B": [
-       8,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       6,
-       1
-      ],
-      "D": [
-       16,
-       0
-      ],
-      "B": [
-       7,
-       0
-      ]
-     },
-     {
-      "A": [
-       6,
-       1
-      ],
-      "B": [
-       9,
-       0
-      ],
-      "D": [
-       15,
-       0
-      ],
-      "C": [
-       5,
-       0
-      ]
-     },
-     {
-      "A": [
-       9,
-       1
-      ],
-      "B": [
-       11,
-       0
-      ],
-      "D": [
-       14,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       10,
-       1
-      ],
-      "B": [
-       13,
-       0
-      ],
-      "D": [
-       12,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "A": [
-       13,
-       1
-      ],
-      "B": [
        18,
        0
       ],
-      "D": [
-       12,
+      "A": [
+       1,
        0
       ],
-      "C": [
+      "B": [
        1,
        0
       ]
      },
      {
-      "A": [
-       10,
-       1
-      ],
-      "B": [
+      "D": [
        19,
        0
       ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
       "D": [
-       11,
+       18,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       18,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       17,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       16,
+       0
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       12,
+       0
+      ],
+      "A": [
+       5,
        0
       ],
       "C": [
@@ -7382,34 +7066,192 @@
       ]
      },
      {
-      "A": [
-       11,
-       1
-      ],
-      "B": [
-       22,
+      "D": [
+       13,
        0
       ],
+      "A": [
+       7,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
       "D": [
        12,
        0
       ],
+      "A": [
+       5,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ],
       "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       15,
+       0
+      ],
+      "A": [
        4,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       15,
+       0
+      ],
+      "A": [
+       3,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ],
+      "C": [
+       1,
        0
       ]
      },
      {
       "A": [
-       11,
-       1
-      ],
-      "B": [
-       24,
+       6,
        0
       ],
       "D": [
+       14,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       7,
+       1
+      ],
+      "D": [
+       16,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       6,
+       1
+      ],
+      "D": [
+       16,
+       0
+      ],
+      "B": [
+       4,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       1
+      ],
+      "D": [
+       17,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       1,
+       1
+      ],
+      "D": [
+       17,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       1
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "B": [
+       6,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       1
+      ],
+      "D": [
        13,
+       0
+      ],
+      "B": [
+       4,
        0
       ],
       "C": [
@@ -7419,119 +7261,65 @@
      },
      {
       "A": [
-       14,
-       1
-      ],
-      "B": [
-       26,
-       0
-      ],
-      "D": [
-       15,
-       0
-      ]
-     },
-     {
-      "A": [
-       16,
-       1
-      ],
-      "B": [
-       25,
-       0
-      ],
-      "D": [
-       14,
-       0
-      ],
-      "C": [
        3,
+       1
+      ],
+      "D": [
+       12,
+       0
+      ],
+      "B": [
+       6,
+       0
+      ],
+      "C": [
+       2,
        0
       ]
      },
      {
       "A": [
-       18,
+       3,
        1
-      ],
-      "B": [
-       26,
-       0
       ],
       "D": [
        14,
        0
       ],
-      "C": [
-       5,
+      "B": [
+       6,
        0
       ]
      },
      {
       "A": [
-       20,
+       4,
        1
       ],
       "B": [
-       26,
-       0
-      ],
-      "D": [
-       13,
-       0
-      ],
-      "C": [
-       9,
-       0
-      ]
-     },
-     {
-      "A": [
-       22,
-       1
-      ],
-      "B": [
-       27,
-       0
-      ],
-      "D": [
-       15,
-       0
-      ],
-      "C": [
        8,
        0
-      ]
-     },
-     {
-      "A": [
-       20,
-       1
-      ],
-      "B": [
-       29,
-       0
       ],
       "D": [
-       18,
+       12,
        0
       ],
       "C": [
-       5,
+       7,
        0
       ]
      },
      {
       "A": [
-       22,
+       6,
        1
       ],
       "B": [
-       26,
+       11,
        0
       ],
       "D": [
-       20,
+       12,
        0
       ],
       "C": [
@@ -7541,97 +7329,313 @@
      },
      {
       "A": [
-       24,
-       1
-      ],
-      "B": [
-       27,
-       0
-      ],
-      "D": [
-       21,
-       0
-      ],
-      "C": [
-       8,
-       0
-      ]
-     },
-     {
-      "A": [
-       23,
-       1
-      ],
-      "B": [
-       27,
-       0
-      ],
-      "D": [
-       24,
-       0
-      ],
-      "C": [
-       8,
-       0
-      ]
-     },
-     {
-      "A": [
-       21,
-       1
-      ],
-      "B": [
-       28,
-       0
-      ],
-      "D": [
-       23,
-       0
-      ],
-      "C": [
        7,
-       0
-      ]
-     },
-     {
-      "A": [
-       21,
        1
       ],
       "B": [
-       27,
+       12,
        0
       ],
       "D": [
-       21,
+       12,
        0
       ],
       "C": [
-       7,
+       5,
        0
       ]
      },
      {
       "A": [
+       10,
+       1
+      ],
+      "B": [
+       16,
+       0
+      ],
+      "D": [
+       12,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       6,
+       1
+      ],
+      "B": [
        18,
-       1
-      ],
-      "B": [
-       28,
        0
       ],
       "D": [
+       11,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "A": [
+       9,
+       1
+      ],
+      "B": [
+       21,
+       0
+      ],
+      "D": [
+       11,
+       0
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "A": [
+       10,
+       1
+      ],
+      "B": [
+       23,
+       0
+      ],
+      "D": [
+       13,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       12,
+       1
+      ],
+      "B": [
+       23,
+       0
+      ],
+      "D": [
+       16,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       15,
+       1
+      ],
+      "B": [
+       24,
+       0
+      ],
+      "D": [
+       14,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       15,
+       1
+      ],
+      "B": [
        25,
        0
       ],
+      "D": [
+       16,
+       0
+      ],
       "C": [
-       9,
+       6,
        0
       ]
      },
      {
       "A": [
        18,
+       1
+      ],
+      "B": [
+       25,
+       0
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "C": [
+       8,
+       0
+      ]
+     },
+     {
+      "A": [
+       18,
+       1
+      ],
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       18,
+       0
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "A": [
+       16,
+       1
+      ],
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       19,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       18,
+       1
+      ],
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       20,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       21,
+       1
+      ],
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       20,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "A": [
+       24,
+       1
+      ],
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       21,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       19,
+       1
+      ],
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       19,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       18,
+       1
+      ],
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       20,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       16,
+       1
+      ],
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       22,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       16,
        1
       ],
       "B": [
@@ -7639,115 +7643,161 @@
        0
       ],
       "D": [
-       25,
+       23,
        0
       ],
       "C": [
-       8,
+       3,
        0
       ]
      },
      {
-      "A": [
-       18,
+      "B": [
+       32,
        0
       ],
+      "D": [
+       26,
+       0
+      ],
+      "A": [
+       16,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
       "B": [
-       31,
+       32,
+       0
+      ],
+      "D": [
+       25,
+       0
+      ],
+      "A": [
+       19,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       30,
+       0
+      ],
+      "D": [
+       26,
+       0
+      ],
+      "A": [
+       19,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       27,
+       0
+      ],
+      "A": [
+       19,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       27,
+       0
+      ],
+      "A": [
+       19,
+       1
+      ]
+     },
+     {
+      "B": [
+       26,
        0
       ],
       "D": [
        29,
        0
       ],
-      "C": [
-       7,
-       0
+      "A": [
+       15,
+       1
       ]
      },
      {
-      "A": [
-       22,
-       0
-      ],
       "B": [
-       31,
-       0
-      ],
-      "D": [
        28,
        0
       ],
-      "C": [
-       6,
-       0
-      ]
-     },
-     {
-      "A": [
-       20,
-       1
-      ],
-      "B": [
+      "D": [
        31,
        0
       ],
-      "D": [
-       29,
+      "A": [
+       15,
        0
       ],
       "C": [
-       6,
+       1,
        0
       ]
      },
      {
-      "A": [
-       18,
-       1
-      ],
-      "B": [
-       30,
-       0
-      ],
-      "D": [
-       29,
-       0
-      ],
-      "C": [
-       6,
-       0
-      ]
-     },
-     {
-      "A": [
-       21,
-       1
-      ],
-      "B": [
-       27,
-       0
-      ],
-      "D": [
-       27,
-       0
-      ],
-      "C": [
-       5,
-       0
-      ]
-     },
-     {
-      "A": [
-       17,
-       1
-      ],
       "B": [
        25,
        0
       ],
       "D": [
        30,
+       0
+      ],
+      "A": [
+       13,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       26,
+       0
+      ],
+      "D": [
+       29,
+       0
+      ],
+      "A": [
+       14,
        0
       ],
       "C": [
@@ -7756,16 +7806,16 @@
       ]
      },
      {
-      "A": [
-       16,
-       0
-      ],
       "B": [
        27,
        0
       ],
       "D": [
-       32,
+       31,
+       0
+      ],
+      "A": [
+       15,
        0
       ],
       "C": [
@@ -7774,26 +7824,8 @@
       ]
      },
      {
-      "A": [
-       14,
-       0
-      ],
       "B": [
-       25,
-       0
-      ],
-      "D": [
-       31,
-       0
-      ],
-      "C": [
-       7,
-       0
-      ]
-     },
-     {
-      "B": [
-       28,
+       26,
        0
       ],
       "D": [
@@ -7801,25 +7833,25 @@
        0
       ],
       "A": [
-       12,
+       17,
        0
       ],
       "C": [
-       6,
+       4,
        0
       ]
      },
      {
       "B": [
-       31,
+       26,
        0
       ],
       "D": [
-       34,
+       35,
        0
       ],
       "A": [
-       11,
+       17,
        0
       ],
       "C": [
@@ -7829,7 +7861,161 @@
      },
      {
       "B": [
+       24,
+       0
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       19,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       26,
+       0
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       15,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       38,
+       0
+      ],
+      "A": [
+       11,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       8,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       7,
+       0
+      ]
+     },
+     {
+      "B": [
        30,
+       0
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       5,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       38,
+       0
+      ],
+      "A": [
+       5,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       38,
+       0
+      ],
+      "A": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       25,
        0
       ],
       "D": [
@@ -7837,246 +8023,36 @@
        0
       ],
       "A": [
-       11,
-       0
-      ],
-      "C": [
-       6,
+       9,
        0
       ]
      },
      {
       "B": [
-       31,
+       24,
        0
       ],
       "D": [
-       38,
+       36,
        0
       ],
       "A": [
-       10,
-       0
-      ],
-      "C": [
-       7,
+       8,
        0
       ]
      },
      {
       "B": [
-       28,
+       22,
        0
       ],
       "D": [
-       38,
-       0
-      ],
-      "A": [
-       12,
-       0
-      ],
-      "C": [
-       6,
-       0
-      ]
-     },
-     {
-      "B": [
-       29,
-       0
-      ],
-      "D": [
-       39,
-       0
-      ],
-      "A": [
-       10,
-       0
-      ],
-      "C": [
-       6,
-       0
-      ]
-     },
-     {
-      "B": [
-       29,
-       0
-      ],
-      "D": [
-       40,
-       0
-      ],
-      "A": [
-       7,
-       0
-      ],
-      "C": [
-       5,
-       0
-      ]
-     },
-     {
-      "B": [
-       30,
-       0
-      ],
-      "D": [
-       38,
-       0
-      ],
-      "A": [
-       6,
-       0
-      ],
-      "C": [
-       5,
-       0
-      ]
-     },
-     {
-      "B": [
-       31,
-       0
-      ],
-      "D": [
-       39,
-       0
-      ],
-      "A": [
-       5,
-       0
-      ],
-      "C": [
-       4,
-       0
-      ]
-     },
-     {
-      "B": [
-       32,
-       0
-      ],
-      "D": [
-       37,
-       0
-      ],
-      "A": [
-       6,
-       0
-      ],
-      "C": [
-       3,
-       0
-      ]
-     },
-     {
-      "B": [
-       33,
-       0
-      ],
-      "D": [
-       37,
-       0
-      ],
-      "A": [
-       6,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "B": [
-       31,
-       0
-      ],
-      "D": [
-       40,
-       0
-      ],
-      "A": [
-       7,
-       0
-      ],
-      "C": [
-       2,
-       0
-      ]
-     },
-     {
-      "B": [
-       28,
-       0
-      ],
-      "D": [
-       37,
-       0
-      ],
-      "A": [
-       6,
-       0
-      ],
-      "C": [
-       4,
-       0
-      ]
-     },
-     {
-      "B": [
-       26,
-       0
-      ],
-      "D": [
-       37,
+       36,
        0
       ],
       "A": [
        9,
-       0
-      ],
-      "C": [
-       4,
-       0
-      ]
-     },
-     {
-      "B": [
-       26,
-       0
-      ],
-      "D": [
-       34,
-       0
-      ],
-      "A": [
-       9,
-       0
-      ],
-      "C": [
-       3,
-       0
-      ]
-     },
-     {
-      "B": [
-       25,
-       0
-      ],
-      "D": [
-       37,
-       0
-      ],
-      "A": [
-       10,
-       0
-      ],
-      "C": [
-       2,
-       0
+       1
       ]
      }
     ]
@@ -8085,84 +8061,92 @@
  },
  "decisions": [
   {
-   "minute": 68910.6529506057,
+   "minute": 68910.69177097546,
+   "ticket_idx": 60600,
+   "agent_id": "D10",
+   "value": 1.378,
+   "reason": "P2 refund, Hindi, waiting 3 min; breach risk 0.86 -> 0.05 if served now; cross-skill job (1.6x slower) to rescue a ticket in danger",
+   "ticket_id": "T060601"
+  },
+  {
+   "minute": 68911.04641200264,
+   "ticket_idx": 60579,
+   "agent_id": "D09",
+   "value": 0.486,
+   "reason": "P2 missing item, English, waiting 9 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060580"
+  },
+  {
+   "minute": 68911.38745823159,
+   "ticket_idx": 60580,
+   "agent_id": "C05",
+   "value": 0.49,
+   "reason": "P2 missing item, English, waiting 9 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060581"
+  },
+  {
+   "minute": 68912.06594679509,
+   "ticket_idx": 60592,
+   "agent_id": "B09",
+   "value": 1.628,
+   "reason": "P1 payment failure, English, waiting 7 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060593"
+  },
+  {
+   "minute": 68912.27364135644,
    "ticket_idx": 60589,
    "agent_id": "A04",
-   "value": 0.628,
-   "reason": "P2 late delivery, English, waiting 6 min; low risk - served in turn (fairness by waiting time)",
+   "value": 0.674,
+   "reason": "P2 late delivery, English, waiting 7 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060590"
   },
   {
-   "minute": 68910.97453135654,
+   "minute": 68912.36829964042,
+   "ticket_idx": 60588,
+   "agent_id": "C04",
+   "value": 0.505,
+   "reason": "P2 wrong item, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060589"
+  },
+  {
+   "minute": 68912.81180311737,
+   "ticket_idx": 60585,
+   "agent_id": "C08",
+   "value": 0.485,
+   "reason": "P2 missing item, English, waiting 9 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060586"
+  },
+  {
+   "minute": 68913.17216445116,
    "ticket_idx": 60593,
-   "agent_id": "B07",
-   "value": 1.343,
-   "reason": "P1 payment failure, English, waiting 5 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "agent_id": "B10",
+   "value": 1.686,
+   "reason": "P1 payment failure, English, waiting 7 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
    "ticket_id": "T060594"
   },
   {
-   "minute": 68911.69126897183,
+   "minute": 68913.96208467432,
+   "ticket_idx": 60605,
+   "agent_id": "A08",
+   "value": 1.582,
+   "reason": "P1 late delivery, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060606"
+  },
+  {
+   "minute": 68915.01801500881,
    "ticket_idx": 60590,
-   "agent_id": "C08",
-   "value": 0.452,
-   "reason": "P2 missing item, English, waiting 7 min; low risk - served in turn (fairness by waiting time)",
+   "agent_id": "D09",
+   "value": 0.518,
+   "reason": "P2 missing item, English, waiting 10 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060591"
   },
   {
-   "minute": 68911.80108405741,
-   "ticket_idx": 60534,
-   "agent_id": "D05",
-   "value": 0.432,
-   "reason": "P3 app bug, English, waiting 34 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060535"
-  },
-  {
-   "minute": 68912.64312389746,
-   "ticket_idx": 60547,
-   "agent_id": "D09",
-   "value": 0.393,
-   "reason": "P3 account, English, waiting 24 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060548"
-  },
-  {
-   "minute": 68913.05815934633,
-   "ticket_idx": 60586,
-   "agent_id": "C04",
-   "value": 0.473,
-   "reason": "P2 wrong item, Hindi, waiting 9 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060587"
-  },
-  {
-   "minute": 68913.83766766106,
-   "ticket_idx": 60594,
-   "agent_id": "B10",
-   "value": 0.605,
-   "reason": "P2 refund, English, waiting 8 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
-   "ticket_id": "T060595"
-  },
-  {
-   "minute": 68913.94945974105,
-   "ticket_idx": 60540,
-   "agent_id": "A05",
-   "value": 1.368,
-   "reason": "P2 late delivery, Hindi, waiting 30 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060541"
-  },
-  {
-   "minute": 68914.77083166421,
+   "minute": 68915.21863799014,
    "ticket_idx": 60609,
-   "agent_id": "A07",
-   "value": 1.455,
+   "agent_id": "C06",
+   "value": 1.079,
    "reason": "P1 missing item, Hindi, waiting 0 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060610"
-  },
-  {
-   "minute": 68915.40278480206,
-   "ticket_idx": 60610,
-   "agent_id": "D09",
-   "value": 0.516,
-   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060611"
   },
   {
    "minute": 68915.86571231253,
@@ -8173,164 +8157,180 @@
    "ticket_id": "T060603"
   },
   {
-   "minute": 68916.13371097366,
-   "ticket_idx": 60613,
-   "agent_id": "D06",
-   "value": 0.477,
-   "reason": "P3 account, Hindi, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060614"
-  },
-  {
-   "minute": 68917.51231023646,
-   "ticket_idx": 60617,
-   "agent_id": "C06",
-   "value": 0.469,
-   "reason": "P2 wrong item, Hindi, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060618"
-  },
-  {
-   "minute": 68917.70445820507,
-   "ticket_idx": 60603,
-   "agent_id": "A05",
-   "value": 2.074,
-   "reason": "P1 late delivery, Hindi, waiting 5 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060604"
-  },
-  {
-   "minute": 68918.31869274769,
-   "ticket_idx": 60619,
-   "agent_id": "C05",
-   "value": 0.482,
-   "reason": "P2 missing item, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060620"
-  },
-  {
-   "minute": 68919.55133574328,
-   "ticket_idx": 60621,
-   "agent_id": "D09",
-   "value": 0.503,
-   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060622"
-  },
-  {
-   "minute": 68920.52062907632,
-   "ticket_idx": 60464,
-   "agent_id": "D05",
-   "value": 0.407,
-   "reason": "P3 account, English, waiting 83 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060465"
-  },
-  {
-   "minute": 68920.82987554856,
-   "ticket_idx": 60605,
-   "agent_id": "A08",
-   "value": 2.725,
-   "reason": "P1 late delivery, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060606"
-  },
-  {
-   "minute": 68921.13111572938,
-   "ticket_idx": 60627,
-   "agent_id": "D06",
-   "value": 0.507,
-   "reason": "P2 missing item, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060628"
-  },
-  {
-   "minute": 68921.32489842732,
-   "ticket_idx": 60624,
-   "agent_id": "C08",
-   "value": 0.212,
-   "reason": "P3 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060625"
-  },
-  {
-   "minute": 68922.0308372595,
-   "ticket_idx": 60607,
-   "agent_id": "A04",
-   "value": 1.954,
-   "reason": "P1 late delivery, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060608"
-  },
-  {
-   "minute": 68922.55256028548,
-   "ticket_idx": 60630,
-   "agent_id": "C09",
-   "value": 0.708,
-   "reason": "P2 wrong item, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060631"
-  },
-  {
-   "minute": 68923.50303832036,
-   "ticket_idx": 60628,
-   "agent_id": "D05",
-   "value": 0.523,
-   "reason": "P2 app bug, English, waiting 2 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060629"
-  },
-  {
-   "minute": 68923.70636256837,
-   "ticket_idx": 60623,
-   "agent_id": "C04",
-   "value": 0.601,
-   "reason": "P1 payment failure, English, waiting 4 min; breach risk 0.61 -> 0.05 if served now; cross-skill job (1.6x slower) to rescue a ticket in danger",
-   "ticket_id": "T060624"
-  },
-  {
-   "minute": 68923.81285870897,
-   "ticket_idx": 60478,
-   "agent_id": "D07",
-   "value": 0.393,
-   "reason": "P3 account, English, waiting 78 min; low risk - served in turn (fairness by waiting time)",
-   "ticket_id": "T060479"
-  },
-  {
-   "minute": 68924.31333300938,
+   "minute": 68916.92283209956,
    "ticket_idx": 60608,
    "agent_id": "B09",
-   "value": 2.467,
-   "reason": "P1 payment failure, English, waiting 10 min; breach risk 0.37 -> 0.05 if served now; rare-skill agent, no rare work is more urgent",
+   "value": 0.902,
+   "reason": "P1 payment failure, English, waiting 2 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
    "ticket_id": "T060609"
   },
   {
-   "minute": 68924.31430812838,
-   "ticket_idx": 60615,
+   "minute": 68918.2589092085,
+   "ticket_idx": 60610,
+   "agent_id": "D07",
+   "value": 0.408,
+   "reason": "P2 missing item, English, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060611"
+  },
+  {
+   "minute": 68918.34775430875,
+   "ticket_idx": 60607,
+   "agent_id": "A08",
+   "value": 1.366,
+   "reason": "P1 late delivery, English, waiting 5 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060608"
+  },
+  {
+   "minute": 68918.58842834189,
+   "ticket_idx": 60586,
+   "agent_id": "C04",
+   "value": 0.579,
+   "reason": "P2 wrong item, Hindi, waiting 14 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060587"
+  },
+  {
+   "minute": 68919.75244888349,
+   "ticket_idx": 60464,
+   "agent_id": "D05",
+   "value": 0.405,
+   "reason": "P3 account, English, waiting 82 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060465"
+  },
+  {
+   "minute": 68919.79346155723,
+   "ticket_idx": 60619,
+   "agent_id": "C05",
+   "value": 0.511,
+   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060620"
+  },
+  {
+   "minute": 68921.36294212681,
+   "ticket_idx": 60603,
    "agent_id": "A07",
-   "value": 1.899,
-   "reason": "P1 late delivery, English, waiting 8 min; low risk - served in turn (fairness by waiting time)",
+   "value": 2.949,
+   "reason": "P1 late delivery, Hindi, waiting 8 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060604"
+  },
+  {
+   "minute": 68921.51931541316,
+   "ticket_idx": 60615,
+   "agent_id": "A08",
+   "value": 1.441,
+   "reason": "P1 late delivery, English, waiting 5 min; low risk - served in turn (fairness by waiting time)",
    "ticket_id": "T060616"
+  },
+  {
+   "minute": 68922.40746014971,
+   "ticket_idx": 60628,
+   "agent_id": "D07",
+   "value": 0.501,
+   "reason": "P2 app bug, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060629"
+  },
+  {
+   "minute": 68922.54711811023,
+   "ticket_idx": 60621,
+   "agent_id": "C09",
+   "value": 0.401,
+   "reason": "P2 missing item, English, waiting 4 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060622"
+  },
+  {
+   "minute": 68922.73485812753,
+   "ticket_idx": 60478,
+   "agent_id": "D05",
+   "value": 0.391,
+   "reason": "P3 account, English, waiting 77 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060479"
+  },
+  {
+   "minute": 68923.09236796222,
+   "ticket_idx": 60622,
+   "agent_id": "A05",
+   "value": 1.317,
+   "reason": "P1 late delivery, English, waiting 4 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060623"
+  },
+  {
+   "minute": 68923.18833270636,
+   "ticket_idx": 60567,
+   "agent_id": "D10",
+   "value": 0.411,
+   "reason": "P3 restaurant partner, Hindi, waiting 28 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060568"
+  },
+  {
+   "minute": 68923.65152801025,
+   "ticket_idx": 60570,
+   "agent_id": "A04",
+   "value": 0.832,
+   "reason": "P2 late delivery, English, waiting 26 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060571"
+  },
+  {
+   "minute": 68924.30572121702,
+   "ticket_idx": 60623,
+   "agent_id": "B07",
+   "value": 1.8,
+   "reason": "P1 payment failure, English, waiting 5 min; breach risk 0.37 -> 0.05 if served now; rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060624"
+  },
+  {
+   "minute": 68924.6516444643,
+   "ticket_idx": 60630,
+   "agent_id": "D09",
+   "value": 0.534,
+   "reason": "P2 wrong item, English, waiting 2 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060631"
+  },
+  {
+   "minute": 68924.76211445431,
+   "ticket_idx": 60617,
+   "agent_id": "C06",
+   "value": 0.454,
+   "reason": "P2 wrong item, Hindi, waiting 7 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060618"
+  },
+  {
+   "minute": 68924.82559149523,
+   "ticket_idx": 60627,
+   "agent_id": "C08",
+   "value": 0.417,
+   "reason": "P2 missing item, English, waiting 4 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060628"
   }
  ],
  "solver": [
   {
-   "solves": 20168,
+   "solves": 20171,
    "fallbacks": 0,
-   "median_ms": 0.07340000593103468,
-   "max_ms": 1.0418000165373087
+   "median_ms": 0.07510001887567341,
+   "max_ms": 1.5252000011969358
   },
   {
-   "solves": 20246,
+   "solves": 20221,
    "fallbacks": 0,
    "median_ms": 0.06829999620094895,
-   "max_ms": 1.3763999741058797
+   "max_ms": 1.2495999981183559
   },
   {
-   "solves": 20192,
+   "solves": 20196,
    "fallbacks": 0,
-   "median_ms": 0.06690001464448869,
-   "max_ms": 1.7918999947141856
+   "median_ms": 0.06809999467805028,
+   "max_ms": 1.5222000074572861
   },
   {
-   "solves": 20205,
+   "solves": 20216,
    "fallbacks": 0,
-   "median_ms": 0.07330000516958535,
-   "max_ms": 1.078699977369979
+   "median_ms": 0.07420001202262938,
+   "max_ms": 1.0497999901417643
   },
   {
-   "solves": 20177,
+   "solves": 20166,
    "fallbacks": 0,
-   "median_ms": 0.06459999713115394,
-   "max_ms": 2.2431999968830496
+   "median_ms": 0.06580000626854599,
+   "max_ms": 1.375499996356666
   }
  ],
  "weights": {
@@ -8358,6 +8358,7 @@
   "max_late_min": 480,
   "aging_lost": 0.2,
   "guard_queue_limit": 150,
-  "mismatch_cost": null
+  "mismatch_cost": null,
+  "roster_margin_min": 10
  }
 }

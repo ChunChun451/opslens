@@ -308,7 +308,12 @@ now" and show the drop. Same code run on UCI → real-data AUC.
   breaches** (decision-focused selection), never on test days.
 - *(18 Oct)* v4 — the cross-skill cost in breach-probability units (`mismatch_cost`) — was tested
   on validation days with a pre-registered rule and **not adopted** (gain not clearly above zero
-  under the corrected simulator). v3 is shipped; v4 stays available as an option.
+  under the corrected simulator).
+- *(18 Oct)* **v5 (shipped): roster-aware rescue.** If nobody trained on the ticket's category who
+  speaks its language is on shift and the published schedule brings none before deadline − 10 min
+  (`roster_margin_min`), a cross-skill job is the only rescue and pays no mismatch penalty. Adopted
+  after a pre-registered confirmation on 20 fresh seeds (validation: −0.17 [−0.20, −0.13]); test
+  days 2.21% → 2.05%. Cost: more cross-skill work, so later late customers under overload.
 
 **`staffing.py`** — from the forecast's upper (P80) band, compute needed agents per skill per
 hour with **Erlang C** (wait target from config, ρ ≤ 0.85 cap). Propose **budget-neutral**
@@ -496,7 +501,7 @@ opslens/                     (C:\dev\opslens)
 | M8 | 22 Oct | `make eval`: ablations, sensitivity, stress, speed/scale, (challengers); `NUMBERS.md` | One command reproduces every number |
 | P1 | 16–18 Oct | *(added 16 Oct)* Fix-at-source playbooks (`playbooks.py`), measured on test days; challenger arena | Each playbook's tickets prevented / breaches avoided with CI in `results.json`; arena rule applied |
 | C2 | 16–18 Oct | *(Claude 2, Sneha's Claude, PR #1, merged 18 Oct)* Review; Baselines C/D; lateness; Ask OpsLens; floor map + cold open; sealed world; official `make eval` | 0 of 3,744 existing numbers moved; 122 tests pass |
-| P2 | 18 Oct | *(Claude 1)* Breach diagnosis; v4 tested (not adopted); proven physical floor; simulator fairness fix; all numbers regenerated; new sealed world | Floor 1.31%, OpsLens captures 78% (new world 77%); 161 tests pass |
+| P2 | 18 Oct | *(Claude 1)* Breach diagnosis; v4 tested (not adopted); proven physical floor; simulator fairness fix; v5 roster-aware rescue (confirmed, shipped); all numbers regenerated; new sealed worlds | Test 2.05%, floor 1.31%, OpsLens captures 83%; 162 tests pass |
 | — | 22 Oct | **Model + weight freeze** | No model changes after this |
 | U1 | 18–22 Oct | *(parallel session)* UI shell on fixture results: layout, all tabs, charts, replay player, story-mode skeleton | Every tab renders from `fixture_results.json` with the FIXTURE banner |
 | M9 | 23–24 Oct | Server + wire every tab to real results; click-to-evidence; Accept/Override log | Full flow works on generated data |

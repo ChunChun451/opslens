@@ -19,14 +19,14 @@
  ],
  "floor_breach_pct_mean": 1.3054569653948533,
  "captured_pct": [
-  83.14883148831488,
-  75.60283687943262,
-  74.4268077601411,
-  77.5635407537248,
-  80.4270462633452
+  86.10086100861007,
+  80.70921985815602,
+  78.30687830687832,
+  80.28045574057845,
+  87.36654804270464
  ],
- "captured_pct_mean": 78.23381262899173,
- "captured_pct_std": 3.5648375844965225,
- "opslens_above_floor_points": 0.9094942324755992,
+ "captured_pct_mean": 82.5527925913855,
+ "captured_pct_std": 3.9481354566439406,
+ "opslens_above_floor_points": 0.7409050576752443,
  "definition": "unavoidable = R*(i) > SLA under both rosters (opslens/floor.py, exact per ticket); captured = (D - OpsLens) / (D - floor) per seed"
 }

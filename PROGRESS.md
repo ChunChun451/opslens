@@ -374,3 +374,12 @@ the k-th piece of real work uses draw k. Off-shift starts now raise. Every numbe
 
 **Open:** UI copy that says "21 vs 7" is read from results (now 24 vs 6) — check the cold open.
 TabPFN-3 still waits for its licence key. M12 rehearsal with the updated DEMO_SCRIPT.
+
+**P2 update — v5 shipped (18 Oct, evening).** v5 (roster-aware cross-skill rescue) failed to separate
+from luck in its 5-seed design run, so it was NOT shipped then; a new pre-registered confirmation on
+20 fresh seeds (validation days) passed: −0.17 [−0.20, −0.13]. Test days, run once: **2.05%**
+(v3 2.21%), −3.46 [−4.77, −2.15] vs industry; floor 1.31% → **83% ± 4 captured**. Hindi 3.53% →
+2.72%. New sealed world (seed 6262, after the v5 freeze, run once, local classifier because the
+Gemini daily quota ran out): OpsLens 2.20% vs industry 5.84%, least slack + rescue 3.11%, floor 1.31%,
+81% ± 4. Cost: under +25% volume (validation) late customers get later; reopens 4.44%. Not below 2.0%
+on test, and we did not tune to get there.

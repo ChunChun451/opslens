@@ -54,8 +54,8 @@ wait at utilisation 0.8.
 **Q8. What are common random numbers and why do they matter?**
 All luck is drawn once per seed, by ticket number. Ticket 812 takes the same base time under
 FIFO and under OpsLens. So the difference between policies comes from decisions, not luck.
-That is why our paired confidence intervals are narrow: OpsLens vs priority-first is −4.55
-points, 95% CI [−5.81, −3.29], with only 5 seeds.
+That is why our paired confidence intervals are narrow: OpsLens vs priority-first is −4.72
+points, 95% CI [−5.98, −3.46], with only 5 seeds.
 
 **Q9. Is your baseline a strawman?**
 No. Baseline B (priority first) already cuts breaches from 13.1% to 6.8% on the test days. Agents
@@ -164,32 +164,32 @@ busier-than-expected days, and we weight hours with real overload 3×.
 ## M7 — Optimiser and the OpsLens policy
 
 **Q26. What is the headline result?**
-On 14 held-out days, 5 seeds, same tickets and luck for every policy: SLA breaches 2.21% with
+On 14 held-out days, 5 seeds, same tickets and luck for every policy: SLA breaches 2.05% with
 OpsLens vs 5.51% for industry-standard skills routing (with our AI triage), 5.38% for an "SLA due"
-sort, 6.77% priority-first and 13.08% FIFO. OpsLens − industry standard: −3.29 points, 95% CI
-[−4.60, −1.98]. On a new world generated afterwards and run once: 2.50% vs 6.56%.
+sort, 6.77% priority-first and 13.08% FIFO. OpsLens − industry standard: −3.46 points, 95% CI
+[−4.77, −2.15]. On a new world generated after v5 was frozen, run once: 2.20% vs 5.84%.
 
 **Q27. (Attack) Does OpsLens cut breaches by abandoning tickets that are already late?**
 Partly, by design, and we measured the cost. Once a ticket has missed its SLA, OpsLens serves
 tickets that can still be saved first; a guard brings a late ticket back 8 hours past its SLA.
-Late customers are late by 233 min on average (FIFO 211, priority-first 328). Total minutes past
-SLA per 100 tickets: 544 vs 2,256 for priority-first and 1,432 for industry standard.
+Late customers are late by 224 min on average (FIFO 211, priority-first 328). Total minutes past
+SLA per 100 tickets: 483 vs 2,256 for priority-first and 1,432 for industry standard.
 
 **Q28. Why a min-cost flow and not a simple sorted queue?**
 When several agents are free, the best choice for one agent depends on the others: the only
 Hindi refund agent should take the Hindi refund, not the English one anyone can take. The flow
 optimises all free agents together in 0.07 ms per decision, 0.06 s for 5,000 tickets × 500
-agents. Honestly, greedy with the same values ties it (2.22% vs 2.21%): the values are the engine.
+agents. Honestly, greedy with the same values ties it (2.03% vs 2.05%): the values are the engine.
 
 **Q29. (Attack) You tuned the weights until your policy won.**
 Weights were chosen on validation days 36–42 only (v3: 2.13% vs 5.94% for priority-first). But
 the test days were looked at three times, because v1 and v2 failed a stress test there. So we
-generated a new world afterwards (seed 5151) and ran it once: OpsLens 2.50% vs "SLA due" 6.18%.
+generated new worlds afterwards and ran each once; for v5 (seed 6262): OpsLens 2.20% vs "SLA due" 5.55%.
 
 **Q30. What does OpsLens do worse?**
-Reopens rise from 3.93% to 4.41% (+0.47 points, CI [+0.37, +0.57]), because OpsLens sometimes asks
+Reopens rise from 3.93% to 4.44% (+0.50 points, CI [+0.41, +0.59]), because OpsLens sometimes asks
 an agent to rescue a ticket outside their training (1.6× slower, more reopens), only when the
-rescue value is at least 0.5. And late customers wait slightly longer than under FIFO (233 vs
+rescue value is at least 0.5. And late customers wait slightly longer than under FIFO (224 vs
 211 min late on average), the price of saving the tickets that can still make it.
 
 ---
@@ -198,16 +198,16 @@ rescue value is at least 0.5. And late customers wait slightly longer than under
 
 **Q31. (Attack) You changed the policy after seeing test results. Isn't that cheating?**
 We say it openly: the test days were run three times. v1 failed the +25% volume stress test
-(51.7% vs 29.1% for priority-first), v2 still lost (40.5%), v3 wins (10.7% vs 28.9% today). Each new version
+(51.7% vs 29.1% for priority-first), v2 still lost (40.5%), v3 won (10.7%); v5 today: 10.5% vs 28.9% for priority-first. Each new version
 was designed and chosen on validation days only, and all three test results are kept in
 results.json. The lesson: a stress test is a release gate.
 
 **Q32. Which part of OpsLens actually creates the gain?**
-The risk model. Switching it off raises breaches from 2.21% to 4.19% (+1.98, 95% CI [+1.49,
-+2.46]). The classifier adds +0.14 [+0.01, +0.27]. Staffing, scarcity and the min-cost flow are
+The risk model. Switching it off raises breaches from 2.05% to 4.19% (+2.15, 95% CI [+1.66,
++2.63]). The classifier adds +0.14 [+0.01, +0.27]. Staffing, scarcity and the min-cost flow are
 within noise on these days — we report that rather than hide it.
 
-**Q32b. (Attack) Greedy matches your OR-Tools solver (2.22% vs 2.21%). Why keep min-cost flow?**
+**Q32b. (Attack) Greedy matches your OR-Tools solver (2.03% vs 2.05%). Why keep min-cost flow?**
 Because the gain was never the solver: it is the value each pair gets (risk-based rescue +
 aging), which greedy also uses. Decisions happen the moment an agent frees up, so usually one
 agent is free and there is nothing to coordinate. The flow costs 0.07 ms and guarantees the best
@@ -215,7 +215,7 @@ joint choice at shift starts and at scale (5,000 × 500 in 0.06 s).
 
 **Q33. What happens on a really bad day?**
 With 25% more tickets (on top of a sale day and an unseen surge), FIFO breaches 53.6%,
-priority-first 28.9%, OpsLens 10.7%. With 10% of agents absent: 20.2%, 9.8% and 3.1%. In a
+priority-first 28.9%, OpsLens 10.5%. With 10% of agents absent: 20.2%, 9.8% and 2.9%. In a
 crisis OpsLens pauses its fairness guard to protect what can still be saved.
 
 **Q34. How do I know every number in your deck is real?**
@@ -266,8 +266,8 @@ two named agents to cross-train. Each one was replayed on the 14 held-out days.
 
 **Q41. What do those actions actually save?**
 On today's priority-first floor, all six together: 163 fewer breaches in two weeks (95% CI 125 to
-201). With OpsLens: 61 fewer (CI 51 to 71). Together, 881 fewer than priority-first today, out of
-1,220. The biggest single one: cross-training two Hindi speakers, −79 and −50.
+201). With OpsLens: 38 fewer (CI 25 to 51). Together, 889 fewer than priority-first today, out of
+1,220. The biggest single one: cross-training two Hindi speakers, −79 and −34.
 
 **Q42. (Attack) "Saves 30% of tickets" — you made that number up.**
 Some inputs are guesses, and we label them: 30% of customers skip a ticket after a status banner,
@@ -277,7 +277,7 @@ breaches saved). Everything else is measured: which tickets, which agents, which
 **Q43. Why do most playbooks barely help under OpsLens?**
 Because OpsLens already absorbs those symptoms: its classifier fixes the phone-menu routing, so
 the menu fix saves 46 breaches under priority-first but only 3 under OpsLens. Cross-training still
-helps (−50) because it adds capacity where no routing can help. We show both columns on purpose.
+helps (−34) because it adds capacity where no routing can help. We show both columns on purpose.
 
 **Q44. Is the LLM finally doing something?**
 It drafts the request to each owner team, from facts it can only cite by key, like the brief. It
@@ -291,8 +291,8 @@ until we passed the cluster number as a key too.
 **Q45. Is OpsLens the best possible? How would you even know?**
 We computed the physical floor: tickets that breach even with unlimited agents and perfect routing
 (their own work outlasts the SLA, or nobody on shift speaks their language). On the test days it is
-1.31%. OpsLens (2.21%) captures 78% ± 4 of everything possible over industry routing; on a new
-world, 77% ± 2.
+1.31%. OpsLens (2.05%) captures 83% ± 4 of everything possible over industry routing; on a new
+world generated after v5 was frozen, 81% ± 4.
 
 **Q46. (Attack) Your "floor" is just another simulation you can tune.**
 It is not a simulation: it is computed exactly per ticket, and a proof shows no legal policy can beat
@@ -306,4 +306,15 @@ the roster and luck (1.23–1.38% across our five seeds). On your export we woul
 **Q48. Did you find anything wrong while building it?**
 Yes, in our own simulator: a transfer used to change a ticket's work-time draw, so policies with
 many transfers did not see exactly the same luck. We fixed it and regenerated every number (OpsLens
-2.20% → 2.21%). A promising v4 then lost its significance, so by our pre-registered rule we kept v3.
+v3 moved by only 0.01 points). A promising v4 then lost its significance, so our rule rejected it.
+
+**Q49. What is v5, and how do you know it is not luck?**
+The floor showed tickets nobody trained can reach before their deadline (Hindi refunds at night).
+v5 lets an untrained agent who speaks the language rescue them. The first test (5 seeds) could not
+separate it from luck, so we did not ship it; a new pre-registered test on 20 fresh seeds did:
+−0.17 points [−0.20, −0.13]. Test days: 2.21% → 2.05%.
+
+**Q50. (Attack) What does v5 cost?**
+Cross-skill work is 1.6× slower and reopens more (4.44% vs 3.93% for the baselines). Under +25%
+volume on validation days, already-late customers got later and the slowest 1% waited longer. On
+the test days the slowest 1% did not wait longer (728 min, as before). We report it rather than hide it.

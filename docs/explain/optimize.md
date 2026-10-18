@@ -38,6 +38,29 @@ We kept that result, designed v2 (aging in SLA units, guard after lateness) and 
 validation days only**, at normal volume and +25% volume: v2 2.22% / 12.82% vs Baseline B
 5.94% / 16.55% and v1 3.75% / 28.43%. Then we ran the test days once.
 
+## v5 (18 Oct, shipped): rescue across skills when nobody trained can come in time
+**The problem.** A Hindi refund at 23:40 with a 4-hour SLA. Nobody trained on refunds who speaks
+Hindi works until 09:00, but a Hindi-speaking app agent is on shift. Waiting means a certain breach.
+v3 still charged the cross-skill penalty (2.0), which is more than a P2 can be worth — so the ticket
+waited ~11 hours. We found this with the breach diagnosis behind the proven floor (`floor.md`).
+
+**The rule.** If no agent trained on the ticket's category who speaks its language is on shift now,
+and the published schedule brings none before (deadline − 10 min), a cross-skill job is the only
+rescue — so it is not charged the penalty. Everything else is v3. It uses who is on shift now and
+the published schedule; never future absences or luck.
+
+**How it was chosen (validation days 36–42 only).**
+1. A design run with 5 seeds chose margin 10, but its gain (−0.11, CI [−0.27, +0.04]) could not be
+   told apart from luck. By our rule: not adopted.
+2. A NEW experiment, written and committed before running: one candidate, 20 seeds never used
+   before. Result: breaches −0.17 points [−0.20, −0.13], Hindi customers −0.69, late minutes per 100
+   tickets −57. At +25% volume: breaches −0.08 [−0.16, −0.00]. Adopted.
+3. **The cost, said openly:** under +25% volume the extra cross-skill jobs (1.6× slower) make the
+   already-late customers later (+173 late minutes per 100 tickets), and the slowest 1% wait longer
+   (P99 +12 min at normal load, +74 min at +25%).
+
+(v4 — a cheaper cross-skill price for every ticket — was tested first and not adopted.)
+
 ## Worked example (Saturday 17 Oct, 18:00–24:00, test day 48)
 Breaches that evening add up to **7** with OpsLens, **26** with priority-first and **83** with
 FIFO; the queue peaks at 89 tickets vs 141 and 132. A typical decision at 20:30: agent B09
