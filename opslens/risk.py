@@ -118,7 +118,9 @@ def reason_text(feature: str, row: pd.Series) -> str:
         "queue_team": lambda: f"{v:.0f} Team {team} tickets waiting",
         "queue_team_language": lambda: f"{v:.0f} Team {team} tickets waiting in this language",
         "queue_total": lambda: f"{v:.0f} tickets waiting on the floor",
-        "capable_on_shift": lambda: (f"only {v:.0f} agents on shift can serve "
+        "capable_on_shift": lambda: (("no agent on shift can serve " if round(v) == 0 else
+                                      "1 agent on shift can serve " if round(v) == 1 else
+                                      f"only {v:.0f} agents on shift can serve ") +
                                      f"{NAMES.get(row['language'], row['language'])} "
                                      f"{str(row['category_pred']).replace('_', ' ')}"),
         "on_shift_team": lambda: f"{v:.0f} Team {team} agents on shift",

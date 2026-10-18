@@ -25,7 +25,7 @@ const BREACH = "turnaround.breach_pct";
 // Each step: the tab to open, a function returning the id of the element to outline, a title,
 // a function writing the text, and optionally something to start (the replay).
 const STEPS = [
-  { tab: "overview", target: () => "ov-headline", title: "The problem", body: problemText },
+  { tab: "overview", target: () => (document.getElementById("ov-mission") ? "ov-mission" : "ov-headline"), title: "The problem", body: problemText },
   { tab: "compare", target: () => "replay", title: "One busy Saturday, three ways", body: replayText, enter: startReplay },
   { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
@@ -130,22 +130,23 @@ function diffText(baseline, kpi, unit) {
 
 function problemText() {
   if (!state.results.sim) return "The simulator results are not in the results file yet.";
-  return `Helpdesk tools tell you a ticket is already late. On the held-out test days a
-    first-come-first-served floor (${escapeHtml(shortLabel("baseline_a"))}) breaches
-    ${ev(breachPath("baseline_a"), "pct")} of SLAs, and priority-first (${escapeHtml(shortLabel("baseline_b"))})
-    ${ev(breachPath("baseline_b"), "pct")}. OpsLens: ${ev(breachPath("opslens"), "pct")}, with the same tickets and
-    the same agents. Click any number to see where it comes from.`;
+  // Lead with the strongest baseline: industry-standard skills routing if it was run.
+  const best = state.results.sim.policies.baseline_d ? "baseline_d" : "baseline_b";
+  return `Helpdesk tools tell you a ticket is already late. Here is a held-out Saturday dinner peak,
+    replayed with the same tickets, agents and luck. On all held-out days the industry standard
+    (${escapeHtml(shortLabel(best))}: skills-based routing with AI triage) misses
+    ${ev(breachPath(best), "pct")} of SLAs. OpsLens: ${ev(breachPath("opslens"), "pct")}.
+    Only the decisions differ. Click any number to see where it comes from.`;
 }
 
 function replayText() {
   const replay = state.results.sim && state.results.sim.replay;
   if (!replay) return "No replay in the results file yet.";
   const last = replay.times.length - 1;
+  const lanes = Object.keys(replay.series).map((k) =>
+    `${escapeHtml(shortLabel(k))} ${ev(`sim.replay.series.${k}.breached_cum[${last}]`, "int")}`).join(", ");
   return `${evText("sim.replay.title")}: the same tickets and the same luck for every policy;
-    only the decisions differ. Breaches by the end of the evening:
-    ${escapeHtml(shortLabel("baseline_a"))} ${ev(`sim.replay.series.baseline_a.breached_cum[${last}]`, "int")},
-    ${escapeHtml(shortLabel("baseline_b"))} ${ev(`sim.replay.series.baseline_b.breached_cum[${last}]`, "int")},
-    OpsLens ${ev(`sim.replay.series.opslens.breached_cum[${last}]`, "int")}.`;
+    only the decisions differ. Breaches by the end of the evening: ${lanes}.`;
 }
 
 // The pattern the story shows: the strongest skill-gap card (Hindi refunds wait for the few
@@ -225,16 +226,18 @@ function ticketText() {
 function impactText() {
   const r = state.results;
   if (!r.sim) return "The simulator results are not in the results file yet.";
+  const best = r.sim.policies.baseline_d ? "baseline_d" : "baseline_b";
   const hindi = r.sim.policies.opslens.kpis["segment.hindi_breach_pct"]
-    ? ` Hindi tickets: ${diffText("baseline_b", "segment.hindi_breach_pct", "pts")}.` : "";
+    ? ` Hindi tickets: ${diffText(best, "segment.hindi_breach_pct", "pts")}.` : "";
   return `Doing this for every waiting ticket, all day, over all held-out days: breaches
-    ${diffText("baseline_b", BREACH, "pts")} against ${escapeHtml(shortLabel("baseline_b"))}, and
+    ${diffText(best, BREACH, "pts")} against ${escapeHtml(shortLabel(best))}, and
     ${diffText("baseline_a", BREACH, "pts")} against ${escapeHtml(shortLabel("baseline_a"))}.${hindi}
     Every row of this table is a paired comparison over the same seeds.`;
 }
 
 function yourTurnText() {
-  return `Change the staffing or the volume and re-run the simulator on a held-out day. Or open
-    Patterns and press <strong>Plant a problem</strong>: we hide a problem in fresh data and
-    OpsLens has to find it without being told where it is.`;
+  return `Your turn. Type a question in <strong>Ask OpsLens</strong> at the top, in English or Hinglish
+    ("What if Team C loses 2 agents on Saturday?"): the LLM only understands the question, the simulator
+    answers it. Or change the staffing here, or open Patterns and press <strong>Plant a problem</strong>:
+    we hide a problem in fresh data and OpsLens has to find it without being told where it is.`;
 }

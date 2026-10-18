@@ -35,7 +35,7 @@ PARTS = ROOT / "eval" / "parts"
 STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
-         ("playbooks", "eval/run_playbooks.py")]
+         ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py")]
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -183,6 +183,11 @@ def assemble(timings: dict[str, float]) -> dict:
     if (PARTS / "playbooks.json").exists():
         pb = part("playbooks")
         results["playbooks"] = {k: pb[k] for k in ("test_days", "seeds", "playbooks", "all", "opslens_all_vs_baseline_b", "base")}
+    if (PARTS / "baseline_c.json").exists():
+        results["baseline_c"] = with_means(part("baseline_c"))
+    # Not a STEP: run once, after the freeze (eval/run_sealed_world.py); kept as a part file.
+    if (PARTS / "sealed_world.json").exists():
+        results["sealed_world"] = with_means(part("sealed_world"))
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
@@ -191,13 +196,24 @@ def assemble(timings: dict[str, float]) -> dict:
     return results
 
 
+def with_means(section: dict) -> dict:
+    """Add {policy: {kpi: mean over seeds}} next to each per_seed block, so the dashboard can
+    point every number at a path in results.json (click-to-evidence)."""
+    for block in section.values():
+        if isinstance(block, dict) and "per_seed" in block:
+            block["means"] = {p: {k: sum(s[k] for s in runs) / len(runs) for k in runs[0]}
+                              for p, runs in block["per_seed"].items()}
+    return section
+
+
 def make_brief(r: dict) -> dict:
     """LLM brief with number keys (opslens/brief.py); template if the LLM is unavailable."""
     from opslens.brief import write_brief
     from opslens.llm.client import build_client
 
     try:
-        client = build_client()
+        # Stronger model first: the brief is written once here, never live (config/providers.yaml).
+        client = build_client(["gemini_brief", "gemini", "groq"])
     except Exception:  # no keys / no network: the template is always available
         client = None
     return write_brief(r, client)
@@ -236,9 +252,11 @@ def numbers_md(r: dict) -> str:
         f"Data: {r['meta']['n_tickets']:,} tickets over {r['meta']['days']} days; train days {r['meta']['train_days']}, "
         f"validation {r['meta']['validation_days']}, test {r['meta']['test_days']}. Simulator seeds {r['sim']['seeds']}.", "",
         "## Baseline vs OpsLens (test days, mean ± std over seeds)", "",
-        "| KPI | Baseline A (FIFO) | Baseline B (priority) | OpsLens | OpsLens − B (95% CI) |",
-        "|---|---|---|---|---|",
+        "| KPI | Baseline A (FIFO) | Baseline B (priority) | Industry standard (skills routing) | OpsLens "
+        "| OpsLens − industry standard (95% CI) | OpsLens − B (95% CI) |",
+        "|---|---|---|---|---|---|---|",
     ]
+    has_d = "baseline_d" in pol
     for name, label in [("turnaround.breach_pct", "SLA breach %"), ("turnaround.p90_resolution_min", "P90 resolution (min)"),
                         ("turnaround.mean_wait_min", "Mean wait (min)"), ("turnaround.max_backlog", "Max backlog (tickets)"),
                         ("productivity.transfers_per_100", "Transfers per 100"), ("productivity.tickets_per_agent_hour", "Tickets per agent-hour"),
@@ -246,9 +264,12 @@ def numbers_md(r: dict) -> str:
                         ("quality.load_fairness_std", "Load fairness (std of utilisation)"),
                         ("segment.p1_breach_pct", "P1 breach %"), ("segment.hindi_breach_pct", "Hindi customers' breach %")]:
         c = ci[("baseline_b", name)]
+        d = ci.get(("baseline_d", name)) if has_d else None
+        d_mean = f"{fmt(k('baseline_d', name)['mean'])} ± {fmt(k('baseline_d', name)['std'])}" if has_d else "–"
+        d_diff = f"{d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}]" if d else "–"
         lines.append(f"| {label} | {fmt(k('baseline_a', name)['mean'])} ± {fmt(k('baseline_a', name)['std'])} | "
-                     f"{fmt(k('baseline_b', name)['mean'])} ± {fmt(k('baseline_b', name)['std'])} | "
-                     f"**{fmt(k('opslens', name)['mean'])}** ± {fmt(k('opslens', name)['std'])} | "
+                     f"{fmt(k('baseline_b', name)['mean'])} ± {fmt(k('baseline_b', name)['std'])} | {d_mean} | "
+                     f"**{fmt(k('opslens', name)['mean'])}** ± {fmt(k('opslens', name)['std'])} | {d_diff} | "
                      f"{c['mean_diff']:+.2f} [{c['ci_low']:+.2f}, {c['ci_high']:+.2f}] |")
     c_a = ci[("baseline_a", "turnaround.breach_pct")]
     lines += ["", f"OpsLens − Baseline A, breach %: {c_a['mean_diff']:+.2f} [{c_a['ci_low']:+.2f}, {c_a['ci_high']:+.2f}].", "",
@@ -287,7 +308,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + sealed_world_md(r) + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -321,6 +342,57 @@ def playbooks_md(r: dict) -> list[str]:
               f"(of {base_b:.0f}), breach % {cell(h['breach_pct'])} points.",
               "- Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; "
               "see `playbooks[].sensitivity` in results.json."]
+    return lines
+
+
+def baseline_c_md(r: dict) -> list[str]:
+    """Baseline C ("SLA due") and lateness, test days. Empty if eval/run_baseline_c.py has not run."""
+    c = r.get("baseline_c")
+    if not c:
+        return []
+    test = c["test"]
+    names = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)",
+             "baseline_c": "Baseline C (SLA due)", "opslens": "OpsLens"}
+    if "baseline_d" in test["per_seed"]:
+        names = {**{k: v for k, v in names.items() if k != "opslens"},
+                 "baseline_d": "Industry standard (skills routing)", "opslens": "OpsLens"}
+    rows = [("turnaround.breach_pct", "SLA breach %"), ("segment.p1_breach_pct", "P1 breach %"),
+            ("quality.mean_minutes_late", "Minutes late, mean over breached tickets"),
+            ("quality.late_minutes_per_100", "Minutes late per 100 tickets (all customers)"),
+            ("quality.p99_wait_min", "P99 wait (min)")]
+    lines = ["", "## A stronger baseline: the \"SLA due\" sort, and how late the late customers are (test days)", "",
+             "| KPI | " + " | ".join(names.values()) + " | OpsLens − C (95% CI) |", "|" + "---|" * (len(names) + 2)]
+    for key, label in rows:
+        means = [sum(s[key] for s in test["per_seed"][p]) / len(test["per_seed"][p]) for p in names]
+        d = test["opslens_minus_c"][key]
+        lines.append(f"| {label} | " + " | ".join(fmt(m) for m in means)
+                     + f" | {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}] |")
+    lines += ["", "- Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days."]
+    if "opslens_minus_d" in test:
+        d = test["opslens_minus_d"]["turnaround.breach_pct"]
+        lines.append(f"- OpsLens − industry standard, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}].")
+    return lines
+
+
+def sealed_world_md(r: dict) -> list[str]:
+    """The world generated after the freeze, evaluated once (eval/run_sealed_world.py)."""
+    s = r.get("sealed_world")
+    if not s:
+        return []
+    names = {"baseline_a": "Baseline A (FIFO)", "baseline_b": "Baseline B (priority)",
+             "baseline_c": "Baseline C (SLA due)", "opslens": "OpsLens"}
+    per = s["test"]["per_seed"]
+
+    def mean(p: str, key: str) -> float:
+        return sum(x[key] for x in per[p]) / len(per[p])
+
+    d = s["test"]["opslens_minus_c"]["turnaround.breach_pct"]
+    lines = ["", f"## Sealed second world (data seed {s['data_seed']}, generated after the freeze, run once)", "",
+             "| KPI | " + " | ".join(names.values()) + " |", "|---|---|---|---|---|"]
+    for key, label in (("turnaround.breach_pct", "SLA breach %"), ("quality.late_minutes_per_100", "Minutes late per 100 tickets")):
+        lines.append(f"| {label} | " + " | ".join(fmt(mean(p, key)) for p in names) + " |")
+    lines += ["", f"- OpsLens − Baseline C, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}]. "
+              f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}. Weights unchanged."]
     return lines
 
 

@@ -1,24 +1,24 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-16T10:54:19 (commit 3844c6a). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-17T15:07:28 (commit 4dfa6ec). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
 ## Baseline vs OpsLens (test days, mean ± std over seeds)
 
-| KPI | Baseline A (FIFO) | Baseline B (priority) | OpsLens | OpsLens − B (95% CI) |
-|---|---|---|---|---|
-| SLA breach % | 13.11 ± 2.23 | 6.82 ± 1.34 | **2.20** ± 0.32 | -4.62 [-6.01, -3.23] |
-| P90 resolution (min) | 184.78 ± 35.79 | 198.45 ± 44.15 | **140.51** ± 30.65 | -57.94 [-75.51, -40.37] |
-| Mean wait (min) | 64.52 ± 14.02 | 68.15 ± 16.38 | **44.76** ± 12.77 | -23.39 [-29.63, -17.15] |
-| Max backlog (tickets) | 227.40 ± 48.59 | 233.80 ± 52.21 | **200.60** ± 74.04 | -33.20 [-92.44, +26.04] |
-| Transfers per 100 | 4.66 ± 0.03 | 4.59 ± 0.04 | **0.97** ± 0.02 | -3.62 [-3.66, -3.59] |
-| Tickets per agent-hour | 5.29 ± 0.10 | 5.29 ± 0.10 | **5.30** ± 0.10 | +0.00 [-0.00, +0.01] |
-| Reopen rate % | 3.93 ± 0.15 | 3.93 ± 0.15 | **4.40** ± 0.18 | +0.47 [+0.39, +0.55] |
-| P99 wait (min) | 816.27 ± 100.16 | 1,007.37 ± 149.90 | **727.81** ± 188.95 | -279.57 [-407.33, -151.80] |
-| Load fairness (std of utilisation) | 0.12 ± 0.01 | 0.12 ± 0.01 | **0.13** ± 0.01 | +0.01 [+0.00, +0.01] |
-| P1 breach % | 27.34 ± 4.46 | 9.13 ± 1.52 | **4.89** ± 0.32 | -4.24 [-5.81, -2.68] |
-| Hindi customers' breach % | 22.11 ± 3.28 | 16.18 ± 2.98 | **3.46** ± 0.64 | -12.72 [-15.91, -9.53] |
+| KPI | Baseline A (FIFO) | Baseline B (priority) | Industry standard (skills routing) | OpsLens | OpsLens − industry standard (95% CI) | OpsLens − B (95% CI) |
+|---|---|---|---|---|---|---|
+| SLA breach % | 13.11 ± 2.23 | 6.82 ± 1.34 | 5.51 ± 1.45 | **2.20** ± 0.32 | -3.31 [-4.79, -1.84] | -4.62 [-6.01, -3.23] |
+| P90 resolution (min) | 184.78 ± 35.79 | 198.45 ± 44.15 | 202.70 ± 56.74 | **140.51** ± 30.65 | -62.20 [-95.79, -28.60] | -57.94 [-75.51, -40.37] |
+| Mean wait (min) | 64.52 ± 14.02 | 68.15 ± 16.38 | 65.67 ± 17.45 | **44.76** ± 12.77 | -20.91 [-27.38, -14.44] | -23.39 [-29.63, -17.15] |
+| Max backlog (tickets) | 227.40 ± 48.59 | 233.80 ± 52.21 | 221.60 ± 46.95 | **200.60** ± 74.04 | -21.00 [-82.82, +40.82] | -33.20 [-92.44, +26.04] |
+| Transfers per 100 | 4.66 ± 0.03 | 4.59 ± 0.04 | 1.02 ± 0.01 | **0.97** ± 0.02 | -0.06 [-0.08, -0.03] | -3.62 [-3.66, -3.59] |
+| Tickets per agent-hour | 5.29 ± 0.10 | 5.29 ± 0.10 | 5.29 ± 0.10 | **5.30** ± 0.10 | +0.00 [-0.00, +0.01] | +0.00 [-0.00, +0.01] |
+| Reopen rate % | 3.93 ± 0.15 | 3.93 ± 0.15 | 3.93 ± 0.15 | **4.40** ± 0.18 | +0.47 [+0.39, +0.55] | +0.47 [+0.39, +0.55] |
+| P99 wait (min) | 816.27 ± 100.16 | 1,007.37 ± 149.90 | 947.99 ± 213.24 | **727.81** ± 188.95 | -220.19 [-306.02, -134.35] | -279.57 [-407.33, -151.80] |
+| Load fairness (std of utilisation) | 0.12 ± 0.01 | 0.12 ± 0.01 | 0.14 ± 0.00 | **0.13** ± 0.01 | -0.01 [-0.02, -0.00] | +0.01 [+0.00, +0.01] |
+| P1 breach % | 27.34 ± 4.46 | 9.13 ± 1.52 | 7.55 ± 1.19 | **4.89** ± 0.32 | -2.66 [-3.81, -1.51] | -4.24 [-5.81, -2.68] |
+| Hindi customers' breach % | 22.11 ± 3.28 | 16.18 ± 2.98 | 13.35 ± 2.81 | **3.46** ± 0.64 | -9.89 [-12.82, -6.96] | -12.72 [-15.91, -9.53] |
 
 OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 
@@ -69,6 +69,28 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 - WAPE 0.305 vs same-hour-last-week 0.415 (Poisson floor 0.280).
 - Conformal coverage: 80% range 79.2%, 90% range 90.0%.
 
+## A stronger baseline: the "SLA due" sort, and how late the late customers are (test days)
+
+| KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | Industry standard (skills routing) | OpsLens | OpsLens − C (95% CI) |
+|---|---|---|---|---|---|---|
+| SLA breach % | 13.11 | 6.82 | 5.40 | 5.51 | 2.20 | -3.20 [-3.93, -2.46] |
+| P1 breach % | 27.34 | 9.13 | 8.94 | 7.55 | 4.89 | -4.05 [-5.67, -2.44] |
+| Minutes late, mean over breached tickets | 212.65 | 328.03 | 765.89 | 268.53 | 229.85 | -536.04 [-687.99, -384.09] |
+| Minutes late per 100 tickets (all customers) | 2,820.08 | 2,281.67 | 4,189.41 | 1,477.02 | 528.93 | -3660.48 [-4916.26, -2404.70] |
+| P99 wait (min) | 816.27 | 1,007.37 | 1,434.88 | 947.99 | 727.81 | -707.08 [-1085.48, -328.68] |
+
+- Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days.
+- OpsLens − industry standard, breach %: -3.31 [-4.79, -1.84].
+
+## Sealed second world (data seed 4242, generated after the freeze, run once)
+
+| KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | OpsLens |
+|---|---|---|---|---|
+| SLA breach % | 15.22 | 8.21 | 6.13 | 3.07 |
+| Minutes late per 100 tickets | 3,433.60 | 2,989.54 | 5,326.21 | 893.19 |
+
+- OpsLens − Baseline C, breach %: -3.06 [-3.67, -2.45]. Retrained risk AUC 0.970. Classifier: cascade (local + LLM). Weights unchanged.
+
 ## Fix-at-source playbooks (test days, change vs the same policy without it)
 
 | Playbook | Owner | Tickets prevented | Breaches: priority-first | Breaches: OpsLens | Agent-hours (OpsLens) |
@@ -91,6 +113,6 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 
 ## Speed
 
-- Optimiser per decision: median 0.08 ms, max 5.9 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.049 s.
-- Full evaluation pipeline: 38.0 min.
+- Optimiser per decision: median 0.06 ms, max 0.9 ms.
+- Scale test: 5,000 tickets × 500 agents solved in 0.07 s.
+- Full evaluation pipeline: 55.9 min.

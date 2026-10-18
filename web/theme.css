@@ -1,0 +1,1026 @@
+/*
+  OpsLens design v2 (Claude 2, 17 Oct) — loaded AFTER styles.css, so everything here wins.
+
+  Why a separate file: styles.css is the component library; this file is the "skin". Reverting
+  the look is one line in index.html, and a reviewer sees the whole redesign in one place.
+
+  Direction: premium light UI (projectors wash out dark pages, CLAUDE.md §8), with ONE dark
+  "mission control" band on the Overview for the live floor. Inter type (vendored, works with
+  Wi-Fi off), quiet greys, one confident accent for OpsLens, soft layered depth, motion that
+  explains (staggered page entry, count-up numbers), never decorates.
+*/
+
+@font-face {
+  font-family: "Inter";
+  src: url("vendor/fonts/InterVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Inter", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --surface-3: #eff1f5;
+  --border: #e6e8ee;
+  --border-strong: #d5d9e2;
+
+  --ink: #0a0c10;
+  --ink-2: #353b48;
+  --muted: #6a7282;
+
+  --brand: #e5484d;
+  --blue: #3d5afe;
+  --blue-soft: #eef1ff;
+  --good: #11885a;
+  --good-soft: #e8f6ef;
+  --bad: #d93a42;
+  --bad-soft: #fdeeee;
+  --warn: #b26a00;
+  --warn-soft: #fff5e3;
+
+  --nav-bg: #fbfbfc;
+  --nav-ink: #4b5263;
+  --nav-active: #ffffff;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 1px rgba(10, 12, 16, 0.03), 0 2px 4px rgba(10, 12, 16, 0.03), 0 8px 24px -12px rgba(10, 12, 16, 0.08);
+  --shadow-hover: 0 1px 1px rgba(10, 12, 16, 0.04), 0 6px 12px rgba(10, 12, 16, 0.05), 0 18px 40px -16px rgba(10, 12, 16, 0.16);
+  --shadow-lg: 0 24px 64px -12px rgba(10, 12, 16, 0.25), 0 2px 8px rgba(10, 12, 16, 0.06);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --sidebar-w: 236px;
+  --topbar-h: 64px;
+}
+
+html {
+  font-size: 17.5px;
+}
+
+body {
+  font-feature-settings: "cv11", "ss01", "ss03"; /* Inter: straight 1, open digits — easier on a projector */
+  letter-spacing: -0.006em;
+  background:
+    radial-gradient(1200px 500px at 70% -200px, rgba(61, 90, 254, 0.07), transparent 70%),
+    var(--bg);
+}
+
+::selection {
+  background: rgba(61, 90, 254, 0.18);
+}
+
+/* ---- Frame: light sidebar, glass top bar ------------------------------------------------- */
+
+.sidebar {
+  background: var(--nav-bg);
+  border-right: 1px solid var(--border);
+}
+
+.brand-mark {
+  border-color: var(--ink);
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
+.brand-name {
+  color: var(--ink);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.brand-tag {
+  color: var(--muted);
+}
+
+.nav a {
+  color: var(--nav-ink);
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.nav a:hover {
+  background: rgba(10, 12, 16, 0.04);
+  color: var(--ink);
+}
+
+.nav a[aria-current="page"] {
+  background: var(--nav-active);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.06), 0 0 0 1px var(--border);
+}
+
+.nav a[aria-current="page"]::before {
+  left: auto;
+  right: 12px;
+  top: 50%;
+  bottom: auto;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 3px rgba(61, 90, 254, 0.15);
+}
+
+.nav a[aria-current="page"] .nav-icon {
+  color: var(--blue);
+}
+
+.sidebar-foot {
+  color: var(--muted);
+  border-top-color: var(--border);
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid rgba(10, 12, 16, 0.06);
+}
+
+/* ---- Type --------------------------------------------------------------------------------- */
+
+.page-title {
+  font-size: 2.1rem;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+}
+
+.page-sub {
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.card-title {
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.stat-value {
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.stat-value.xl {
+  font-size: 4.2rem;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.section-label {
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+}
+
+/* ---- Cards: soft depth, gentle lift ------------------------------------------------------- */
+
+.card {
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.25s var(--ease), transform 0.25s var(--ease), border-color 0.25s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-strong);
+}
+
+.grid {
+  gap: 18px;
+}
+
+/* ---- Buttons, pills, tables --------------------------------------------------------------- */
+
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform 0.12s var(--ease), box-shadow 0.2s, background-color 0.2s;
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.btn-primary:hover {
+  background: #1d2129;
+}
+
+.pill {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+table th {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+table tbody tr {
+  transition: background-color 0.15s;
+}
+
+table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+/* Clickable evidence numbers: quiet until hovered. */
+.ev {
+  border-radius: 6px;
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.ev:hover {
+  background: var(--blue-soft);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+/* ---- Motion: each page enters in a short stagger ------------------------------------------ */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.tab-panel:not([hidden]) > * {
+  animation: rise 0.55s var(--ease) both;
+}
+
+.tab-panel:not([hidden]) > *:nth-child(2) { animation-delay: 0.05s; }
+.tab-panel:not([hidden]) > *:nth-child(3) { animation-delay: 0.10s; }
+.tab-panel:not([hidden]) > *:nth-child(4) { animation-delay: 0.15s; }
+.tab-panel:not([hidden]) > *:nth-child(5) { animation-delay: 0.20s; }
+.tab-panel:not([hidden]) > *:nth-child(n+6) { animation-delay: 0.25s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-panel:not([hidden]) > * { animation: none; }
+  .card, .btn { transition: none; }
+}
+
+/* ---- Ask OpsLens: the command bar is the centre of the top bar ----------------------------- */
+
+.ask-form {
+  height: 42px;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--border);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.04);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.ask-form:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(61, 90, 254, 0.14);
+}
+
+.ask-panel {
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  animation: rise 0.25s var(--ease) both;
+}
+
+/* ---- Proof strip -------------------------------------------------------------------------- */
+
+.proof {
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
+  padding: 18px 20px 16px;
+}
+
+.proof::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), #8b5cf6);
+}
+
+.proof-a {
+  font-size: 2rem;
+  letter-spacing: -0.045em;
+}
+
+/* ---- Mission control: the dark live-floor band on the Overview (tabs/overview.js) ---------- */
+
+.mission {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: 28px;
+  padding: 28px 30px;
+  border-radius: 20px;
+  color: #e9ecf5;
+  background:
+    radial-gradient(700px 300px at 85% -40%, rgba(61, 90, 254, 0.45), transparent 70%),
+    radial-gradient(500px 260px at -10% 120%, rgba(229, 72, 77, 0.22), transparent 70%),
+    #0b0e17;
+  box-shadow: var(--shadow-lg);
+  isolation: isolate;
+}
+
+.mission::after {
+  /* faint grid, like an ops console */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, black, transparent 90%);
+}
+
+.mission-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9aa6c4;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5a5f;
+  box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.6);
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0.55); }
+  70% { box-shadow: 0 0 0 9px rgba(255, 90, 95, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 90, 95, 0); }
+}
+
+.mission h2 {
+  margin-top: 14px;
+  font-size: 2.05rem;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  color: #fff;
+}
+
+.mission h2 span {
+  background: linear-gradient(90deg, #8ea2ff, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.mission-sub {
+  margin-top: 10px;
+  color: #a9b3cc;
+  font-size: 0.86rem;
+  max-width: 40ch;
+}
+
+.mission-clock {
+  margin-top: 22px;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.mission-score {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.mission-score > div {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mission-score .k {
+  font-size: 0.7rem;
+  color: #9aa6c4;
+}
+
+.mission-score .v {
+  margin-top: 2px;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-score .ours .v { color: #9fb0ff; }
+.mission-score .theirs .v { color: #ff9a9e; }
+
+.mission-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mission .btn {
+  background: #fff;
+  color: var(--ink);
+  border-color: #fff;
+}
+
+.mission .btn.ghost {
+  background: transparent;
+  color: #cfd6ea;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.mission .ev,
+.mission .ev:hover {
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mission-floors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mission-lane-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: #fff;
+}
+
+.mission-lane-title small {
+  font-weight: 500;
+  color: #9aa6c4;
+}
+
+.mission .floor {
+  margin-top: 0;
+  gap: 8px;
+}
+
+.mission .floor-team {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.mission .floor-name,
+.mission .floor .muted {
+  color: #8d98b4;
+}
+
+.mission .floor-name b {
+  color: #e9ecf5;
+}
+
+.mission .tile.busy { background: #5b74ff; box-shadow: 0 0 10px rgba(91, 116, 255, 0.55); }
+.mission .tile.cross { background: #f5a524; box-shadow: 0 0 10px rgba(245, 165, 36, 0.5); }
+.mission .tile.wrong { background: #ff5a5f; box-shadow: 0 0 10px rgba(255, 90, 95, 0.55); }
+.mission .tile.idle { background: transparent; border-color: #3ddc97; }
+.mission .dot { background: #56607a; }
+.mission .dot.late { background: #ff5a5f; box-shadow: 0 0 6px rgba(255, 90, 95, 0.7); }
+
+.mission .floor-legend {
+  grid-column: 1 / -1;
+  margin-top: 0;
+  color: #8d98b4;
+}
+
+.mission-progress {
+  grid-column: 1 / -1;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.mission-progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #5b74ff, #c4b5fd);
+  transition: width 0.3s linear;
+}
+
+@media (max-width: 1100px) {
+  .mission {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tiles and dots ease in instead of blinking between frames. */
+.tile,
+.dot {
+  transition: background-color 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s;
+}
+
+/* ---- Form controls: no raw browser defaults on stage ------------------------------------- */
+
+select,
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background-color: var(--surface);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.04);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(61, 90, 254, 0.14);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue) var(--fill, 50%), var(--surface-3) var(--fill, 50%));
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--blue);
+  box-shadow: 0 2px 6px rgba(10, 12, 16, 0.18);
+  transition: transform 0.12s var(--ease);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+
+input[type="range"]::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--blue);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--blue);
+}
+
+/* Bars in charts-as-HTML (cbar) get a soft track and rounded ends. */
+.cbar-track {
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cbar-fill {
+  border-radius: 999px;
+  transition: width 0.8s var(--ease);
+}
+
+/* OpsLens row in comparison tables. */
+tr.is-ours td {
+  background: var(--blue-soft);
+}
+
+tr.is-ours td:first-child {
+  box-shadow: inset 3px 0 0 var(--blue);
+}
+
+/* =============================================================================================
+   Design v3 — "Every ticket is a promise" (Claude 2, 17 Oct, with the frontend-design guide).
+   Palette from the subject: indigo night (the dinner rush), saffron (promises kept / attention),
+   chilli (missed promises), electric indigo (OpsLens). Bricolage Grotesque for headlines,
+   Inter for reading and numbers. One bold moment (the cold open, js/intro.js); everything
+   else calm. This block overrides v2 above where they differ.
+   ============================================================================================= */
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("vendor/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: "Bricolage Grotesque", "Inter", "Segoe UI", system-ui, sans-serif;
+  --night: #141238;
+  --night-2: #1d1a4d;
+  --saffron: #f2a007;
+  --saffron-soft: #fff4dc;
+  --chilli: #d7263d;
+  --bg: #f3f5fa;
+  --ink: #12162b;
+  --blue: #4b4bf5;
+  --blue-soft: #ececff;
+  --bad: #d7263d;
+  --bad-soft: #fde9ec;
+}
+
+/* Headlines carry the personality; body stays quiet. */
+.page-title,
+.card-title,
+.mission h2 {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 100;
+}
+
+.page-title {
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+/* Restraint: the cold open is the one orchestrated moment, so pages no longer stagger in and
+   cards no longer lift on hover (both read as generated defaults). */
+.tab-panel:not([hidden]) > * {
+  animation: none;
+}
+
+.card:hover {
+  box-shadow: var(--shadow);
+  border-color: var(--border);
+}
+
+/* Labels in sentence case, no tracking: they inform, they do not shout. */
+.section-label,
+table th {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.74rem;
+}
+
+.mission-eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.82rem;
+}
+
+/* The OpsLens hero band: indigo night instead of generic near-black. */
+.mission {
+  background:
+    radial-gradient(800px 340px at 90% -30%, rgba(75, 75, 245, 0.55), transparent 70%),
+    var(--night);
+}
+
+.mission h2 span {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: #fff;
+}
+
+.mission-score .theirs .v { color: #ff8a97; }
+.mission-score .ours .v { color: var(--saffron); }
+.mission .tile.busy { background: #7b7bff; box-shadow: none; }
+.mission .tile.cross { background: var(--saffron); box-shadow: none; }
+.mission .tile.wrong { background: var(--chilli); box-shadow: none; }
+.mission .dot.late { background: #ff4d61; box-shadow: none; }
+.mission-progress > i { background: var(--saffron); }
+
+.proof::before {
+  background: var(--saffron);
+}
+
+/* ---- Side menu: replay the cold open ------------------------------------------------------ */
+
+.intro-replay {
+  margin: 0 12px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.intro-replay svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--saffron);
+}
+
+.intro-replay:hover {
+  border-color: var(--saffron);
+}
+
+/* ---- The cold open (js/intro.js) ---------------------------------------------------------- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  color: #eef0ff;
+  background:
+    radial-gradient(1200px 700px at 50% 120%, rgba(75, 75, 245, 0.35), transparent 70%),
+    radial-gradient(900px 500px at 50% -20%, rgba(242, 160, 7, 0.10), transparent 70%),
+    var(--night);
+  transition: opacity 0.45s ease;
+}
+
+.intro.leaving {
+  opacity: 0;
+}
+
+body.intro-open {
+  overflow: hidden;
+}
+
+.intro-skip {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: #c9cdf2;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.intro-skip:hover,
+.intro-skip:focus-visible {
+  border-color: var(--saffron);
+  color: #fff;
+}
+
+.intro-stage {
+  width: min(1180px, calc(100vw - 48px));
+  text-align: center;
+}
+
+.intro-line {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+#il-2 {
+  margin-top: 6px;
+  color: #b9bde8;
+  font-weight: 400;
+}
+
+.intro-line.in,
+.intro-skies.in,
+.intro-end.in {
+  opacity: 1;
+  transform: none;
+}
+
+.intro-skies {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease, filter 0.6s ease;
+}
+
+.intro-skies.dim {
+  filter: blur(2px) brightness(0.45);
+}
+
+.sky {
+  margin: 0;
+}
+
+.sky figcaption {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.sky.ours figcaption {
+  color: var(--saffron);
+}
+
+.sky svg {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sky .d {
+  transition: fill 0.25s ease, opacity 0.25s ease, r 0.25s ease;
+}
+
+.sky .d.off { fill: #ffffff; opacity: 0.04; }
+.sky .d.wait { fill: #dfe2ff; opacity: 0.85; }
+.sky .d.late { fill: #ff4d61; opacity: 1; }
+
+.sky-count {
+  margin-top: 10px;
+  color: #b9bde8;
+  font-size: 0.95rem;
+}
+
+.sky-count b {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  margin-right: 6px;
+}
+
+.sky.theirs .sky-count b { color: #ff8a97; }
+.sky.ours .sky-count b { color: var(--saffron); }
+
+.intro-clock {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.intro-end {
+  position: relative;
+  margin-top: -340px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  pointer-events: none;
+}
+
+.intro-end.in {
+  pointer-events: auto;
+}
+
+.intro-big {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11vw, 9rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.intro-big .t { color: #ff8a97; }
+.intro-big .o { color: var(--saffron); }
+
+.intro-big .vs {
+  margin: 0 0.25em;
+  font-size: 0.32em;
+  font-weight: 500;
+  color: #8e93c9;
+  vertical-align: middle;
+}
+
+.intro-claim {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.8vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.intro-small {
+  max-width: 62ch;
+  margin: 12px auto 0;
+  color: #a9add9;
+  font-size: 0.9rem;
+}
+
+.intro-actions {
+  margin-top: 26px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.intro .btn {
+  padding: 12px 26px;
+  font-size: 1rem;
+}
+
+.intro .intro-go {
+  background: var(--saffron);
+  border-color: var(--saffron);
+  color: var(--night);
+}
+
+.intro .btn.ghost {
+  background: transparent;
+  color: #dfe2ff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 760px) {
+  .intro-skies {
+    grid-template-columns: 1fr;
+  }
+  .intro-end {
+    margin-top: 24px;
+  }
+}
+
+/* Visible keyboard focus everywhere (the dashboard is driven live on stage). */
+:focus-visible {
+  outline: 3px solid var(--saffron);
+  outline-offset: 2px;
+}
+
+/* Cold open: the end card sits centred over the dimmed night, whatever the screen size. */
+.intro-stage {
+  position: relative;
+}
+
+.intro-end {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  margin-top: 0;
+  transform: translateY(-40%);
+}
+
+.intro-end.in {
+  transform: translateY(-50%);
+}
+
+.intro-skies.dim {
+  filter: blur(4px) brightness(0.3);
+}
+
+@media (max-width: 760px) {
+  .intro-end {
+    position: static;
+    transform: none;
+  }
+  .intro-end.in {
+    transform: none;
+  }
+}

@@ -1,9 +1,10 @@
 {
- "classification": 132.3,
- "patterns": 14.8,
- "risk": 92.2,
- "forecast": 10.0,
- "opslens": 132.2,
- "ablations": 796.3,
- "playbooks": 1102.0
+ "classification": 861.9,
+ "patterns": 11.3,
+ "risk": 73.1,
+ "forecast": 6.2,
+ "opslens": 120.7,
+ "ablations": 937.7,
+ "playbooks": 1163.6,
+ "baseline_c": 181.0
 }

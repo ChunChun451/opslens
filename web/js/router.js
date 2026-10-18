@@ -32,14 +32,14 @@ const ICONS = {
 
 export const TABS = [
   { id: "overview", label: "Overview", module: overview },
-  { id: "patterns", label: "Patterns", module: patterns },
-  { id: "forecast", label: "Forecast", module: forecast },
-  { id: "atrisk", label: "At-risk tickets", module: atrisk },
-  { id: "recommendations", label: "Recommendations", module: recommendations },
-  { id: "compare", label: "Baseline vs OpsLens", module: compare },
-  { id: "whatif", label: "What-if", module: whatif },
+  { id: "patterns", label: "Recurring problems", module: patterns },
+  { id: "forecast", label: "Next 48 hours", module: forecast },
+  { id: "atrisk", label: "Tickets at risk", module: atrisk },
+  { id: "recommendations", label: "What to do", module: recommendations },
+  { id: "compare", label: "Side by side", module: compare },
+  { id: "whatif", label: "Try a what-if", module: whatif },
   { id: "tested", label: "How we tested", module: tested },
-  { id: "upload", label: "Upload data", module: upload },
+  { id: "upload", label: "Use your own data", module: upload },
 ];
 
 const rendered = new Set();

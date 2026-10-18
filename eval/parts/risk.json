@@ -113,7 +113,7 @@
     {
      "feature": "capable_on_shift",
      "contribution": 0.165,
-     "text": "only 0 agents on shift can serve Hindi payment failure \u2014 17% of the push"
+     "text": "no agent on shift can serve Hindi payment failure \u2014 17% of the push"
     },
     {
      "feature": "priority",
@@ -166,7 +166,7 @@
     {
      "feature": "capable_on_shift",
      "contribution": 0.396,
-     "text": "only 0 agents on shift can serve Hindi refund \u2014 40% of the push"
+     "text": "no agent on shift can serve Hindi refund \u2014 40% of the push"
     },
     {
      "feature": "time_left_min",
@@ -195,7 +195,7 @@
     {
      "feature": "capable_on_shift",
      "contribution": 0.384,
-     "text": "only 0 agents on shift can serve Hindi payment failure \u2014 38% of the push"
+     "text": "no agent on shift can serve Hindi payment failure \u2014 38% of the push"
     },
     {
      "feature": "language",
@@ -224,7 +224,7 @@
     {
      "feature": "capable_on_shift",
      "contribution": 0.384,
-     "text": "only 0 agents on shift can serve Hindi refund \u2014 38% of the push"
+     "text": "no agent on shift can serve Hindi refund \u2014 38% of the push"
     },
     {
      "feature": "language",
@@ -253,7 +253,7 @@
     {
      "feature": "capable_on_shift",
      "contribution": 0.393,
-     "text": "only 0 agents on shift can serve Hindi refund \u2014 39% of the push"
+     "text": "no agent on shift can serve Hindi refund \u2014 39% of the push"
     },
     {
      "feature": "language",
@@ -311,7 +311,7 @@
     {
      "feature": "capable_on_shift",
      "contribution": 0.394,
-     "text": "only 0 agents on shift can serve Hindi payment failure \u2014 39% of the push"
+     "text": "no agent on shift can serve Hindi payment failure \u2014 39% of the push"
     },
     {
      "feature": "language",

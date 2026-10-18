@@ -111,8 +111,19 @@ export function policyKeys() {
   return sim ? Object.keys(sim.policies) : [];
 }
 
-// "Baseline A (FIFO)" for "baseline_a"; falls back to the key itself.
+// Plain names a non-technical judge understands at once (design v3). The results file keeps
+// its own labels ("Baseline A (FIFO)"); the evidence popovers still show those paths.
+const PLAIN_NAMES = {
+  baseline_a: "First come, first served",
+  baseline_b: "Urgent first",
+  baseline_c: "Due time first",
+  baseline_d: "Industry standard",
+  opslens: "OpsLens",
+};
+
+// "First come, first served" for "baseline_a"; falls back to the results' label, then the key.
 export function policyLabel(key) {
+  if (PLAIN_NAMES[key]) return PLAIN_NAMES[key];
   const sim = state.results && state.results.sim;
   if (sim && sim.policies[key]) {
     return sim.policies[key].label;

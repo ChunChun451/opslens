@@ -41,6 +41,7 @@ import pandas as pd
 FINISH, REOPEN, ARRIVAL, DECIDE = 0, 1, 2, 3
 MINUTES_PER_DAY = 1440
 SNAPSHOT_EVERY_MIN = 15
+FLOOR_EVERY_MIN = 5
 
 
 # ---- Static inputs ---------------------------------------------------------------------------
@@ -171,6 +172,7 @@ class TicketState:
     handled_min: float = 0.0
     mismatch_used: bool = False
     last_agent: str = ""
+    working_cross: bool = False  # the current piece of work is a deliberate cross-skill job
 
 
 @dataclass
@@ -300,6 +302,7 @@ class SimResult:
     agent_busy_minutes: dict[str, float]
     agent_available_minutes: dict[str, float]
     decisions: int
+    floor: list[dict] = field(default_factory=list)  # floor-map frames (only if asked for)
 
 
 # ---- The simulation loop ---------------------------------------------------------------------
@@ -313,6 +316,7 @@ def simulate(
     decide_every_min: float = 2.0,  # periodic tick (shift starts); events trigger decisions at once
     drain_min: float = 2 * MINUTES_PER_DAY,
     seed_label: str = "",
+    floor_window: tuple[float, float] | None = None,
 ) -> SimResult:
     """Run `policy` on tickets created in [start_min, end_min); report those created after
     `metric_start_min` (earlier ones are warm-up). After `end_min` no new tickets arrive and
@@ -340,6 +344,10 @@ def simulate(
     snapshots: list[dict] = []
     next_snapshot = math.ceil(start_min / SNAPSHOT_EVERY_MIN) * SNAPSHOT_EVERY_MIN
     decisions = 0
+    # Floor map for the dashboard replay: every FLOOR_EVERY_MIN inside `floor_window`, what each
+    # agent is doing and each team's queue. Recording only, it never changes a decision.
+    floor: list[dict] = []
+    next_floor = floor_window[0] if floor_window else math.inf
 
     while heap:
         now, kind, _, payload = heapq.heappop(heap)
@@ -348,6 +356,9 @@ def simulate(
         while next_snapshot <= now:
             snapshots.append(_snapshot(world, tickets, state.waiting, next_snapshot))
             next_snapshot += SNAPSHOT_EVERY_MIN
+        while next_floor <= now and next_floor <= floor_window[1]:
+            floor.append(floor_snapshot(state, next_floor))
+            next_floor += FLOOR_EVERY_MIN
 
         if kind == DECIDE:
             decide_pending.discard(now)
@@ -384,8 +395,10 @@ def simulate(
             seq += 1
             decide_pending.add(now)
 
-    return _collect(world, tickets, agent_states, snapshots, policy.name, seed_label,
-                    metric_start, end_min, decisions)
+    result = _collect(world, tickets, agent_states, snapshots, policy.name, seed_label,
+                      metric_start, end_min, decisions)
+    result.floor = floor
+    return result
 
 
 def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignment) -> int:
@@ -408,6 +421,7 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
     t.attempts += 1
     ast.busy += 1
     t.last_agent = a.agent_id
+    t.working_cross = a.deliberate_cross_skill
 
     true_cat = world.true_category[i]
     base = float(world.base_handle_min[i, attempt])
@@ -458,6 +472,37 @@ def _snapshot(world: World, tickets: list[TicketState], waiting: dict[int, Ticke
     return {"minute": at, "waiting": len(waiting), "waiting_breached": breached_open}
 
 
+def floor_snapshot(state: SimState, at: float) -> dict:
+    """One floor-map frame: each agent's status and each team's queue at minute `at`.
+
+    Agent status: "off" (not on shift or absent), "idle", "busy" (own skill), "cross"
+    (a deliberate cross-skill job) or "wrong" (opened a misrouted ticket, about to transfer).
+    Queues are counted by the team that owns the ticket's TRUE category, split into tickets that
+    can still make their SLA and tickets already past it.
+    Example: {"minute": 47220, "agents": {"B03": "busy", ...}, "queues": {"B": [12, 3], ...}}
+    """
+    world, tickets = state.world, state.tickets
+    status = {}
+    for k, agent in enumerate(world.agents):
+        status[agent.agent_id] = "idle" if state.shift_end(k, at) is not None else "off"
+    by_id = {a.agent_id: a for a in world.agents}
+    for i in state.in_work:
+        t = tickets[i]
+        if t.working_cross:
+            status[t.last_agent] = "cross"
+        elif world.true_category[i] not in by_id[t.last_agent].skills:
+            status[t.last_agent] = "wrong"
+        else:
+            status[t.last_agent] = "busy"
+    team_of = {cat: a.team for a in world.agents for cat in a.team_skills}
+    queues: dict[str, list[int]] = {}
+    for i in state.waiting:
+        team = team_of.get(world.true_category[i], "?")
+        late = at > world.created_min[i] + world.sla_min[i]
+        queues.setdefault(team, [0, 0])[1 if late else 0] += 1
+    return {"minute": at, "agents": status, "queues": queues}
+
+
 def _collect(world, tickets, agent_states, snapshots, policy_name, seed_label,
              metric_start, end_min, decisions) -> SimResult:
     rows = []
@@ -483,6 +528,7 @@ def _collect(world, tickets, agent_states, snapshots, policy_name, seed_label,
             "mismatch_used": t.mismatch_used,
             "last_agent": t.last_agent,
             "breached": bool(breached),
+            "sla_min": float(world.sla_min[i]),
             "priority": world.priority[i],
             "tier": world.tier[i],
             "language": world.language[i],

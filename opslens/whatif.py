@@ -25,13 +25,13 @@ import numpy as np
 import pandas as pd
 
 from opslens.impact import summarize
-from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b
+from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_d
 from opslens.simulate import MINUTES_PER_DAY, Agent, simulate
 from opslens.world import build_world, day_bounds
 
 SHOW = ["turnaround.breach_pct", "turnaround.p90_resolution_min", "turnaround.mean_wait_min",
         "turnaround.max_backlog", "productivity.transfers_per_100", "quality.p99_wait_min",
-        "quality.mean_utilisation", "tickets"]
+        "quality.mean_utilisation", "quality.late_minutes_per_100", "tickets"]
 MAX_VOLUME, MIN_VOLUME, MAX_DELTA = 2.0, 0.5, 5
 
 
@@ -85,9 +85,11 @@ def run_whatif(request: dict, tickets: pd.DataFrame, agents: list[Agent], preds:
     warm, _ = day_bounds(day - 1, day - 1)
     start, end = day_bounds(day, day)
     answers = {}
-    for key in ("baseline_a", "baseline_b", "opslens"):
+    for key in ("baseline_a", "baseline_b", "baseline_d", "opslens"):
         if key == "opslens":
             policy = OpsLensPolicy(world, p, risk_model, weights, OpsLensSettings())
+        elif key == "baseline_d":
+            policy = baseline_d(world, p)  # industry standard, with the same AI triage
         else:
             policy = baseline_a() if key == "baseline_a" else baseline_b()
         k = summarize(simulate(world, policy, warm, end, metric_start_min=start))

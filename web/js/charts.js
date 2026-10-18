@@ -19,10 +19,14 @@ export const GRID = "#edf1f5";
 export const ALERT = "#c22b33"; // used only for the "bottleneck" label on the forecast
 
 // One colour + line style per policy. The colour follows the policy everywhere.
+// Design v2: OpsLens is the only vivid colour; baselines step back but stay distinguishable
+// (and keep their dash patterns, so colour is never the only cue).
 export const POLICY_STYLE = {
-  opslens: { color: "#2a78d6", dash: [] },
-  baseline_a: { color: "#eb6834", dash: [10, 6] },
-  baseline_b: { color: "#1baf7a", dash: [3, 4] },
+  opslens: { color: "#3d5afe", dash: [] },
+  baseline_a: { color: "#f08a4b", dash: [10, 6] },
+  baseline_b: { color: "#8b95a8", dash: [3, 4] },
+  baseline_c: { color: "#a78bfa", dash: [6, 3] },
+  baseline_d: { color: "#e0a100", dash: [2, 2] },
 };
 const OTHER_STYLE = { color: "#6b6e75", dash: [6, 3] };
 
@@ -36,7 +40,7 @@ export const SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"];
 // Calm defaults that match the cards: light grid, no axis borders, muted ticks, round
 // legend markers. Chart is the global from vendor/chart.umd.js.
 export function setChartDefaults() {
-  Chart.defaults.font.family = '"Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif';
+  Chart.defaults.font.family = '"Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif'; // Inter: web/theme.css
   Chart.defaults.font.size = 14;
   Chart.defaults.color = INK_SOFT;
   Chart.defaults.borderColor = GRID;

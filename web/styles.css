@@ -1789,3 +1789,309 @@ dialog.wide {
   color: var(--muted);
   font-size: 1.2rem;
 }
+
+/* ---- Ask OpsLens (web/js/ask.js) ----------------------------------------------------------
+   The command bar sits in the middle of the top bar: the one place a judge types. The answer
+   opens as a panel under it; the "How I answered" list shows the LLM chose the tool and the
+   engine made the numbers. */
+
+.topbar .status {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.ask-form {
+  flex: 1 1 420px;
+  max-width: 620px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+}
+
+.ask-form:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px var(--blue-soft);
+  background: var(--surface);
+}
+
+.ask-form svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.ask-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.ask-form kbd {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.ask-panel {
+  position: fixed;
+  top: calc(var(--topbar-h) + 8px);
+  left: 50%;
+  transform: translateX(-30%);
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--topbar-h) - 32px);
+  overflow: auto;
+  z-index: 60;
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.9rem;
+}
+
+body.has-fixture .ask-panel {
+  top: calc(var(--banner-h) + var(--topbar-h) + 8px);
+}
+
+.ask-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.ask-close {
+  border: 0;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ask-example {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 6px 0;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font: inherit;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.ask-example:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.ask-lines p {
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.ask-wait {
+  color: var(--muted);
+}
+
+.ask-table {
+  width: 100%;
+  margin: 12px 0 4px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.ask-table th,
+.ask-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.ask-table .num {
+  text-align: right;
+}
+
+.ask-trace {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--ink-2);
+}
+
+.ask-trace summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ask-trace ol {
+  margin: 8px 0 6px 18px;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  word-break: break-word;
+}
+
+.ask-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 1100px) {
+  .topbar .hint {
+    display: none;
+  }
+}
+
+/* ---- Floor map in the replay (web/js/floormap.js) ----------------------------------------
+   One row per team: agent tiles, then the queue as dots. Colours always have a legend. */
+
+.floor {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.floor-team {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.floor-name {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.floor-name b {
+  color: var(--ink);
+}
+
+.floor-agents,
+.floor-queue {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  min-height: 14px;
+  align-items: center;
+}
+
+.floor-queue {
+  margin-top: 5px;
+}
+
+.floor .muted {
+  font-size: 0.7rem;
+}
+
+.tile {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.tile.busy { background: var(--blue); }
+.tile.cross { background: #e09a2b; }
+.tile.wrong { background: var(--bad); }
+.tile.idle { background: var(--surface); border: 1.5px solid var(--good); }
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa7b8;
+}
+
+.dot.late {
+  background: var(--bad);
+}
+
+.floor-queue .more {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.floor-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.floor-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- Proof strip on the Overview (tabs/overview.js::proofStrip) ------------------------- */
+
+.proof {
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.proof-q {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
+.proof-a {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 650;
+  margin: 6px 0 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.proof-a .muted {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.proof-s {
+  font-size: 0.74rem;
+  color: var(--muted);
+}

@@ -32,7 +32,8 @@ SYSTEM = (
     "You write a short daily brief for the head of a food-delivery support floor. "
     "Use ONLY the facts given. Never write a number yourself, in digits or in words: refer to every "
     "number as {{key}} exactly as listed, and use each key only with the meaning described next to it. "
-    "3 to 4 sentences, plain words, no bullet points. "
+    "3 to 4 sentences, plain words, no bullet points, written for a busy floor manager; never repeat a phrase. Each value already carries its unit; do not add "
+    "units or words like 'respectively', and name the method or group next to every value. "
     'Reply with JSON only: {"brief": "..."}'
 )
 
@@ -48,25 +49,30 @@ def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
     cards = r["patterns"]["cards"]
     top = cards[0] if cards else None
     facts = {
-        "opslens_breach": (f"{kpi('opslens', 'turnaround.breach_pct'):.1f}%", "SLA breaches with OpsLens on the test days",
+        "opslens_breach": (f"{kpi('opslens', 'turnaround.breach_pct'):.1f}%", "share of tickets that missed their SLA with OpsLens on the held-out test days",
                            p.format("opslens", "turnaround.breach_pct")),
-        "priority_breach": (f"{kpi('baseline_b', 'turnaround.breach_pct'):.1f}%", "SLA breaches with priority-first routing",
+        "priority_breach": (f"{kpi('baseline_b', 'turnaround.breach_pct'):.1f}%", "share of tickets that missed their SLA with priority-first routing",
                             p.format("baseline_b", "turnaround.breach_pct")),
-        "fifo_breach": (f"{kpi('baseline_a', 'turnaround.breach_pct'):.1f}%", "SLA breaches with first-in-first-out routing",
+        "fifo_breach": (f"{kpi('baseline_a', 'turnaround.breach_pct'):.1f}%", "share of tickets that missed their SLA with first-in-first-out routing",
                         p.format("baseline_a", "turnaround.breach_pct")),
-        "opslens_p90": (f"{kpi('opslens', 'turnaround.p90_resolution_min'):.0f} min", "time within which 90% of tickets are resolved, OpsLens",
+        "opslens_p90": (f"{kpi('opslens', 'turnaround.p90_resolution_min'):.0f} min", "time by which the large majority of tickets are resolved with OpsLens (describe it that way, never as 'speed')",
                         p.format("opslens", "turnaround.p90_resolution_min")),
         "priority_p90": (f"{kpi('baseline_b', 'turnaround.p90_resolution_min'):.0f} min", "the same for priority-first routing",
                          p.format("baseline_b", "turnaround.p90_resolution_min")),
     }
     if top:
         issue = re.sub(r"\s+", " ", re.sub(r"[\d.]+\s*×?", "", top["title"])).strip()  # the title without its numbers
-        facts["top_issue_tickets"] = (f"{top['affected_tickets']:,}",
+        facts["top_issue_tickets"] = (f"{top['affected_tickets']:,} tickets",
                                       f"how many tickets belong to the top issue group ({issue})",
                                       "patterns.cards[0].affected_tickets")
-        facts["top_issue_value"] = (f"{top['value']:g}", f"the top issue's {top['metric']}", "patterns.cards[0].value")
-        facts["top_issue_normal"] = (f"{top['comparison_value']:g}", f"the same measure for comparable tickets",
-                                     "patterns.cards[0].comparison_value")
+        # The unit travels with the value ("13.0 transfers per 100 tickets"), so the LLM cannot
+        # drop it (it once wrote "13.01 transfers").
+        # Descriptions never contain digits ("per 100 tickets" lives in the value only): a digit in
+        # the menu invites the LLM to copy it, and the check then rejects the whole brief.
+        facts["top_issue_value"] = (f"{top['value']:.1f} {top['metric']}", "the top issue group's rate (the value carries its unit)",
+                                    "patterns.cards[0].value")
+        facts["top_issue_normal"] = (f"{top['comparison_value']:.1f} {top['metric']}",
+                                     "the same rate for comparable tickets", "patterns.cards[0].comparison_value")
     return facts
 
 
@@ -92,8 +98,8 @@ def template_brief(facts: dict[str, tuple[str, str, str]]) -> str:
             f"{v['priority_breach']} for priority-first and {v['fifo_breach']} for first-in-first-out routing. "
             f"90% of tickets were resolved within {v['opslens_p90']} (priority-first: {v['priority_p90']}).")
     if "top_issue_tickets" in facts:
-        text += (f" The top issue to fix covers {v['top_issue_tickets']} tickets: its {facts['top_issue_value'][1].split(chr(39) + 's ', 1)[-1]} "
-                 f"is {v['top_issue_value']} against {v['top_issue_normal']} for comparable tickets.")
+        text += (f" The top issue to fix covers {v['top_issue_tickets']}: "
+                 f"{v['top_issue_value']} against {v['top_issue_normal']} for comparable tickets.")
     return text
 
 

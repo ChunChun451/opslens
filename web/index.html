@@ -16,6 +16,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpsLens</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Design v2 skin (Claude 2): Inter, refined palette, motion, the Overview's live floor. -->
+  <link rel="stylesheet" href="theme.css">
   <!-- Chart.js 4.5.0, downloaded once and kept in the repo (works offline). -->
   <script src="vendor/chart.umd.js"></script>
   <script type="module" src="app.js"></script>
@@ -36,12 +38,22 @@
         </div>
       </div>
       <nav id="tab-nav" class="nav" aria-label="Dashboard sections"></nav>
+      <button type="button" class="intro-replay" id="intro-replay" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Replay the night
+      </button>
       <div class="sidebar-foot">Team SoyaChaap · Deviathon 2.0</div>
     </aside>
 
     <div class="main">
       <header class="topbar">
         <div id="data-source" class="status"></div>
+        <!-- Ask OpsLens (web/js/ask.js): plain-words questions, answered by the engine. -->
+        <form id="ask-form" class="ask-form" role="search" autocomplete="off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/></svg>
+          <input id="ask-input" type="text" placeholder="Ask OpsLens… e.g. what if Team C loses 2 agents on Saturday?"
+                 aria-label="Ask OpsLens a question" maxlength="300">
+          <kbd>/</kbd>
+        </form>
         <div class="topbar-actions">
           <span class="hint">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
@@ -61,6 +73,12 @@
 
   <!-- Click-to-evidence popover. evidence.js fills and positions it. -->
   <div id="evidence-popover" class="evidence-popover" role="dialog" aria-label="Evidence" hidden></div>
+
+  <!-- Cold open: one Saturday night on two floors (web/js/intro.js). -->
+  <div id="intro" class="intro" role="dialog" aria-label="Introduction: one Saturday night" hidden></div>
+
+  <!-- Ask OpsLens answer panel. ask.js fills it. -->
+  <div id="ask-panel" class="ask-panel" role="dialog" aria-label="Ask OpsLens answer" hidden></div>
 
   <!-- Story mode card. story.js fills it. -->
   <div id="story-card" class="story-card" role="dialog" aria-label="Story mode" hidden></div>

@@ -79,6 +79,10 @@ class Replay(Strict):
     step_min: float
     times: list[str]  # "18:00", "18:15", ...
     series: dict[str, ReplaySeries]  # policy key -> series
+    # Floor map (eval/run_opslens.py::floor_frames): agents, 5-min times, a status letter per
+    # agent per frame, and each team's queue [can still make SLA, already late]. Optional so
+    # older results still validate.
+    floor: dict[str, dict[str, Any]] | None = None
 
 
 class SimSection(Strict):
@@ -282,6 +286,14 @@ class PlaybooksSection(Strict):
     base: dict[str, Any]
 
 
+class BaselineCSection(Strict):
+    """Baseline C, the "SLA due" sort a helpdesk already has, vs A, B and OpsLens, plus how late
+    the late customers are (eval/run_baseline_c.py; Claude 2 review). Validation first, then test."""
+
+    validation: dict[str, Any]
+    test: dict[str, Any]
+
+
 class Results(Strict):
     meta: Meta
     sim: SimSection | None = None
@@ -296,6 +308,10 @@ class Results(Strict):
     speed: SpeedSection | None = None
     brief: Brief | None = None
     playbooks: PlaybooksSection | None = None
+    baseline_c: BaselineCSection | None = None
+    # A second world generated after the policy freeze (eval/run_sealed_world.py): data seed,
+    # classifier used, retrained risk AUC, and A/B/C/OpsLens on its test days, run once.
+    sealed_world: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

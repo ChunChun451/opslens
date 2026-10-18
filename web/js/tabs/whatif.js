@@ -162,7 +162,26 @@ function answerHtml(answer) {
       <thead><tr><th>KPI</th>${header}</tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
-    <p class="card-foot">Bold = best on that row. Shaded column = the policy you picked.</p>`;
+    <p class="card-foot">Bold = best on that row. Shaded column = the policy you picked.</p>
+    ${tradeOffNote(answer.all_policies)}`;
+}
+
+// Under heavy overload OpsLens saves the tickets that can still make their SLA first, so it
+// can have fewer breaches but more total minutes late than a baseline. Say so plainly when
+// the judge's scenario shows it, instead of letting them find it (Claude 2 review, 17 Oct).
+function tradeOffNote(all) {
+  const other = all.baseline_d ? "baseline_d" : "baseline_b";
+  const o = all.opslens;
+  const b = all[other];
+  const late = "quality.late_minutes_per_100";
+  if (!o || !b || o[late] === undefined || !(o[late] > b[late] && o["turnaround.breach_pct"] < b["turnaround.breach_pct"])) {
+    return "";
+  }
+  return `<div class="callout warn" style="margin-top: 12px"><strong>The trade-off, in plain words.</strong>
+    On this overloaded day OpsLens misses fewer SLAs than ${escapeHtml(shortLabel(other))}, but customers who are
+    already late wait longer in total: in a crisis it serves tickets that can still be saved first, and a guard
+    brings late ones back after 8 hours. Over the 14 held-out days it is lower on both
+    (see How we tested → Baselines).</div>`;
 }
 
 // Which policy is best on this KPI (a comparison only; no new number is shown).

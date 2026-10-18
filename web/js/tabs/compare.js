@@ -24,8 +24,11 @@ export function render(section) {
     section.innerHTML = head + missing("The simulator comparison", "M7");
     return;
   }
+  // The replay comes first: watching the same evening on three floors is the most convincing
+  // (and most memorable) view; the averages below back it up.
   section.innerHTML = `${head}
-    <div class="grid cols-2 stretch">
+    ${sim.replay ? replayHtml() : card({ body: `<p class="muted">No replay in the results file yet.</p>` })}
+    <div class="grid cols-2 stretch" style="margin-top: 20px">
       ${card({ title: "SLA breach rate", sub: "Mean over seeds, whiskers = ± one standard deviation", body: `<div class="chart sm"><canvas id="cmp-breach"></canvas></div>` })}
       ${card({ title: "P90 resolution time", sub: "Minutes; 90% of tickets are resolved faster", body: `<div class="chart sm"><canvas id="cmp-p90"></canvas></div>` })}
     </div>
@@ -34,8 +37,7 @@ export function render(section) {
       title: "Every KPI, under the problem statement's three headings",
       sub: "Mean ± standard deviation over seeds. Differences are paired over seeds with their 95% CI: green = clearly better, red = clearly worse, grey = the CI includes zero.",
       body: kpiTable(sim),
-    })}
-    ${sim.replay ? replayHtml() : card({ body: `<p class="muted">No replay in the results file yet.</p>` })}`;
+    })}`;
 
   kpiBarChart("cmp-breach", "turnaround.breach_pct");
   kpiBarChart("cmp-p90", "turnaround.p90_resolution_min");
