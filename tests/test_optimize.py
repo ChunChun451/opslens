@@ -81,6 +81,31 @@ def test_v4_prices_cross_skill_in_risk_units() -> None:
     assert v4.loc["T000000", "wait_min"] == 0 and not v4.loc["T000000", "breached"]
 
 
+def test_v5_rescues_cross_skill_only_when_no_trained_agent_comes_in_time() -> None:
+    # Hindi P2 refund at minute 0, work 20 min, SLA 60, rescue 0.9; a Hindi app agent is on shift all day.
+    w = {**WEIGHTS, "new_ticket_rescue": 0.9, "roster_margin_min": 15}
+
+    def trained_from(start_min):
+        return Agent("hi_refund", "hi_refund", "B", frozenset({"refund"}), frozenset({"refund"}),
+                     frozenset({"en", "hi"}), shift_start_min=start_min, shift_minutes=480, days_off=frozenset())
+
+    def run(world, weights):
+        policy = OpsLensPolicy(world, {}, None, weights, OpsLensSettings(use_risk=False))
+        return simulate(world, policy, 0, 300, decide_every_min=1).tickets.set_index("ticket_id").loc["T000000"]
+
+    late = make_world([0], [20], [agent("hi_app", {"app_bug"}, ("en", "hi")), trained_from(600)], language=["hi"],
+                      true_cat=["refund"], sla=60)
+    # Trained agent only at minute 600, after the deadline: v5 sends the Hindi app agent at once (32 min).
+    assert run(late, w)["wait_min"] == 0 and not run(late, w)["breached"]
+    # v3 (no roster check) charges the flat penalty, waits ~43 min, then 32 min of work: breach.
+    assert run(late, WEIGHTS | {"new_ticket_rescue": 0.9})["breached"]
+    soon = make_world([0], [20], [agent("hi_app", {"app_bug"}, ("en", "hi")), trained_from(20)], language=["hi"],
+                      true_cat=["refund"], sla=60)
+    # A trained agent arrives at minute 20 (before 60 − 15): v5 waits for them, exactly like v3.
+    row = run(soon, w)
+    assert row["wait_min"] == 20 and row["last_agent"] == "hi_refund" and not row["breached"]
+
+
 def test_rare_agent_is_never_idle_with_only_common_work() -> None:
     # Only a Hindi+refund agent (rare pair) is on shift; only English refunds are waiting.
     world = make_world([0, 0], [10, 10], [agent("kavita", {"refund"}, ("en", "hi"))], language=["en", "en"])

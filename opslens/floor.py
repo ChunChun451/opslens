@@ -41,16 +41,18 @@ import math
 from opslens.simulate import MINUTES_PER_DAY, World
 
 
-def shift_intervals(world: World, agent_idx: int, first_day: int, last_day: int) -> list[tuple[float, float]]:
-    """[start, end) minutes of every shift the agent actually works on days first_day..last_day
-    (0-based day index), with days off, absences and staffing-plan overrides, like shift_end_if_on."""
+def shift_intervals(world: World, agent_idx: int, first_day: int, last_day: int,
+                    with_absences: bool = True) -> list[tuple[float, float]]:
+    """[start, end) minutes of every shift the agent works on days first_day..last_day (0-based day
+    index), with days off and staffing-plan overrides, like shift_end_if_on. `with_absences=False`
+    gives the published schedule only — what a policy may know in advance (OpsLens v5)."""
     agent = world.agents[agent_idx]
     out = []
     for day in range(max(first_day, 0), last_day + 1):
         start_min, days_off = agent.schedule_on(day)
         if (world.first_weekday + day) % 7 in days_off:
             continue
-        if day < world.absent.shape[1] and world.absent[agent_idx, day]:
+        if with_absences and day < world.absent.shape[1] and world.absent[agent_idx, day]:
             continue
         start = day * MINUTES_PER_DAY + start_min
         out.append((float(start), float(start + agent.shift_minutes)))

@@ -1,0 +1,128 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "rows": [
+  {
+   "variant": "v3",
+   "normal turnaround.breach_pct": 2.0331618067467123,
+   "normal segment.p1_breach_pct": 4.591770084911823,
+   "normal segment.hindi_breach_pct": 2.9686697483307656,
+   "normal quality.late_minutes_per_100": 364.5062870246151,
+   "normal quality.p99_wait_min": 575.8105941099288,
+   "normal quality.reopen_rate_pct": 4.4665523156089195,
+   "normal breach_vs_v3": {
+    "mean_diff": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.0,
+    "n": 5
+   },
+   "+25% volume turnaround.breach_pct": 5.92734925427761,
+   "+25% volume segment.p1_breach_pct": 6.169544740973313,
+   "+25% volume segment.hindi_breach_pct": 9.603633360858794,
+   "+25% volume quality.late_minutes_per_100": 5577.74647798219,
+   "+25% volume quality.p99_wait_min": 1892.3491744821954,
+   "+25% volume quality.reopen_rate_pct": 4.7579833470582855,
+   "+25% volume breach_vs_v3": {
+    "mean_diff": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.0,
+    "n": 5
+   }
+  },
+  {
+   "variant": "v5 margin 10",
+   "normal turnaround.breach_pct": 1.921097770154374,
+   "normal segment.p1_breach_pct": 4.624428478118877,
+   "normal segment.hindi_breach_pct": 2.383153569594248,
+   "normal quality.late_minutes_per_100": 315.81759233818485,
+   "normal quality.p99_wait_min": 581.3924077164603,
+   "normal quality.reopen_rate_pct": 4.516866781017724,
+   "normal breach_vs_v3": {
+    "mean_diff": -0.11206403659233857,
+    "ci_low": -0.2670572825124151,
+    "ci_high": 0.042929209327738,
+    "n": 5
+   },
+   "+25% volume turnaround.breach_pct": 5.795589715435996,
+   "+25% volume segment.p1_breach_pct": 6.143380429094715,
+   "+25% volume segment.hindi_breach_pct": 8.51362510322048,
+   "+25% volume quality.late_minutes_per_100": 5846.398881145417,
+   "+25% volume quality.p99_wait_min": 1979.0568134643465,
+   "+25% volume quality.reopen_rate_pct": 4.790923231768689,
+   "+25% volume breach_vs_v3": {
+    "mean_diff": -0.1317595388416141,
+    "ci_low": -0.31834379964515147,
+    "ci_high": 0.054824721961923256,
+    "n": 5
+   }
+  },
+  {
+   "variant": "v5 margin 20",
+   "normal turnaround.breach_pct": 1.9485420240137223,
+   "normal segment.p1_breach_pct": 4.657086871325931,
+   "normal segment.hindi_breach_pct": 2.393425783256292,
+   "normal quality.late_minutes_per_100": 319.65363950507975,
+   "normal quality.p99_wait_min": 590.4481449324442,
+   "normal quality.reopen_rate_pct": 4.523727844482561,
+   "normal breach_vs_v3": {
+    "mean_diff": -0.08461978273299038,
+    "ci_low": -0.27338230688419063,
+    "ci_high": 0.10414274141820988,
+    "n": 5
+   },
+   "+25% volume turnaround.breach_pct": 5.788269741055906,
+   "+25% volume segment.p1_breach_pct": 6.132914704343276,
+   "+25% volume segment.hindi_breach_pct": 8.37324525185797,
+   "+25% volume quality.late_minutes_per_100": 5854.796638187728,
+   "+25% volume quality.p99_wait_min": 1943.415554500735,
+   "+25% volume quality.reopen_rate_pct": 4.800073199743801,
+   "+25% volume breach_vs_v3": {
+    "mean_diff": -0.13907951322170362,
+    "ci_low": -0.3425041333234085,
+    "ci_high": 0.06434510688000128,
+    "n": 5
+   }
+  },
+  {
+   "variant": "v5 margin 30",
+   "normal turnaround.breach_pct": 1.9325328759291023,
+   "normal segment.p1_breach_pct": 4.604833442194645,
+   "normal segment.hindi_breach_pct": 2.3831535695942474,
+   "normal quality.late_minutes_per_100": 317.78210924200346,
+   "normal quality.p99_wait_min": 588.0221166317331,
+   "normal quality.reopen_rate_pct": 4.514579759862778,
+   "normal breach_vs_v3": {
+    "mean_diff": -0.10062893081761012,
+    "ci_low": -0.28826706175515826,
+    "ci_high": 0.08700920011993801,
+    "n": 5
+   },
+   "+25% volume turnaround.breach_pct": 5.812059657791197,
+   "+25% volume segment.p1_breach_pct": 6.19570905285191,
+   "+25% volume segment.hindi_breach_pct": 8.662262592898431,
+   "+25% volume quality.late_minutes_per_100": 5872.528027636765,
+   "+25% volume quality.p99_wait_min": 1970.1077444699338,
+   "+25% volume quality.reopen_rate_pct": 4.785433250983621,
+   "+25% volume breach_vs_v3": {
+    "mean_diff": -0.11528959648641238,
+    "ci_low": -0.3459434427395461,
+    "ci_high": 0.11536424976672133,
+    "n": 5
+   }
+  }
+ ],
+ "decision": {
+  "chosen": "v5 margin 10",
+  "adopt_v5": false,
+  "rule": "lowest normal breach among v5 margins not worse than v3 at +25% volume and on late minutes per 100; adopt only if the paired 95% CI vs v3 is entirely below 0"
+ }
+}

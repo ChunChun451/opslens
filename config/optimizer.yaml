@@ -38,3 +38,8 @@ guard_queue_limit: 150
 # paired 95% CI [-0.21, +0.05]: not clearly better, so the pre-registered rule keeps v3
 # (eval/run_design_v4.py, eval/parts/design_v4.json). Set mismatch_cost: 0.8 to run v4.
 mismatch_cost: null
+# v5 (roster-aware cross-skill rescue, 18 Oct; under test on validation days): when nobody trained on
+# the ticket's category who speaks its language is on shift and the published schedule brings none
+# before deadline − roster_margin_min, a cross-skill job is the only rescue, so it is not charged the
+# mismatch penalty. null = off (v3). Decided by eval/run_design_v5.py.
+roster_margin_min: null

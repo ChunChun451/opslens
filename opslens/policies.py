@@ -25,6 +25,7 @@ Baseline A gives B03 T1 (oldest in Team B's queue). Baseline B gives B03 T2 (P1 
 
 from __future__ import annotations
 
+import bisect
 import math
 from dataclasses import dataclass
 from typing import Callable
@@ -36,7 +37,8 @@ from opslens.classify import TEAM_OF
 from opslens.features import WAITING_COLUMNS, QueueSnapshot, capability_table, features_for_snapshot
 from opslens.optimize import Candidate, SolveStats, solve, ticket_value, top_k, urgency_impact
 from opslens.risk import risk_if_assigned_now
-from opslens.simulate import AgentView, Assignment, SimState, TicketView, World
+from opslens.floor import shift_intervals
+from opslens.simulate import MINUTES_PER_DAY, AgentView, Assignment, SimState, TicketView, World
 
 PRIORITY_RANK = {"P1": 0, "P2": 1, "P3": 2}
 SCARCITY_FLOOR = 0.01  # a rare-skill agent still takes common work rather than sit idle
@@ -445,6 +447,9 @@ class OpsLensPolicy:
         self.rescue: dict[int, float] = {}
         self.risk_wait: dict[int, float] = {}  # P(breach) if the ticket keeps waiting (for the reason text)
         self.pressure: dict[tuple[str, str], float] = {}
+        self.only_cross: dict[int, bool] = {}  # v5: tickets only a cross-skill job can still save
+        self._schedule: dict[tuple[str, str], list[float]] = {}
+        self._roster_checked = -1e9
         self.last_refresh = -1e9
         self.stats = SolveStats()
         counts: dict[tuple[str, str], int] = {}
@@ -509,6 +514,25 @@ class OpsLensPolicy:
         # Rare work waiting per capable agent on shift: how precious each rare skill is right now.
         self.pressure = {pair: n / max(1, capable.get(pair, 0)) for pair, n in need.items()}
 
+    def only_cross_skill_can_save(self, t: TicketView, on_shift: list[dict], now: float) -> bool:
+        """v5: nobody trained on the ticket's category who speaks its language is on shift now, and
+        the published schedule brings no such agent before deadline − margin. Waiting then means a
+        breach, so a cross-skill job is the only rescue and is not charged the mismatch penalty.
+        Uses only who is on shift now and the published schedule (never future absences or luck).
+        Example: Hindi refund due 02:30, 23:40 now, the next Hindi refund agent starts 09:00 → True."""
+        lang, cat = t.language, self.category(t)
+        if any(lang in a["languages"] and cat in a["skills"] for a in on_shift):
+            return False
+        starts = self._schedule.get((lang, cat))
+        if starts is None:  # every scheduled shift start of trained agents who speak the language
+            last_day = int(self.world.created_min.max() // MINUTES_PER_DAY) + 3
+            starts = sorted(iv[0] for k, a in enumerate(self.world.agents) if lang in a.languages and cat in a.skills
+                            for iv in shift_intervals(self.world, k, 0, last_day, with_absences=False))
+            self._schedule[(lang, cat)] = starts
+        k = bisect.bisect_right(starts, now)
+        next_start = starts[k] if k < len(starts) else math.inf
+        return next_start > t.sla_deadline_min - self.w["roster_margin_min"]
+
     # -- decision ------------------------------------------------------------------------------
 
     def decide(self, state: SimState, now: float) -> list[Assignment]:
@@ -523,6 +547,11 @@ class OpsLensPolicy:
                 self.refresh(state, now)
         elif self.settings.use_scarcity and now - self.last_refresh >= self.w["risk_refresh_min"]:
             self.refresh_pressure_only(state, now, waiting)
+        if self.w.get("roster_margin_min") is not None and now - self._roster_checked >= self.w["risk_refresh_min"]:
+            self._roster_checked = now  # v5, on the same cadence as the risk scores
+            on_shift = [{"languages": set(a.languages), "skills": set(a.skills)}
+                        for k, a in enumerate(self.world.agents) if state.shift_end(k, now) is not None]
+            self.only_cross = {t.idx: self.only_cross_skill_can_save(t, on_shift, now) for t in waiting}
         candidates = self.candidates(free, waiting, now)
         slots = {a.agent_id: a.free_slots for a in free}
         if self.settings.use_optimizer:
@@ -570,7 +599,9 @@ class OpsLensPolicy:
                     continue  # cross-skill work (1.6x slower) only to save a ticket that is in real danger
                 value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, self.w,
                                      sla_min=t.sla_deadline_min - t.created_min, guard_on=guard_on)
-                if not skilled and self.w.get("mismatch_cost") is not None:
+                if not skilled and self.only_cross.get(t.idx, False):
+                    pass  # v5: only a cross-skill job can still save it, so no mismatch penalty
+                elif not skilled and self.w.get("mismatch_cost") is not None:
                     # v4: the cost of a cross-skill job (1.6x slower, ~4x the reopens) in breach-
                     # probability units, scaled like the ticket's own value. A flat penalty (v3) cost a
                     # P2 twice what it cost a P1, so savable P2s at night never got a rescue.
