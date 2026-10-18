@@ -312,6 +312,12 @@ class Results(Strict):
     # A second world generated after the policy freeze (eval/run_sealed_world.py): data seed,
     # classifier used, retrained risk AUC, and A/B/C/OpsLens on its test days, run once.
     sealed_world: dict[str, Any] | None = None
+    # The published scheduling rules (least slack first, generalized c-mu) and a clairvoyant
+    # ceiling vs OpsLens: validation, gate, then test (eval/run_best_baselines.py, added 18 Oct).
+    best_baselines: dict[str, Any] | None = None
+    # The sealed world run a second time with Baseline D and those rules (they were added after
+    # the first sealed run, which stays in `sealed_world`).
+    sealed_world_rerun: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

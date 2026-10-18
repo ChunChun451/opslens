@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-17T15:07:28 (commit 4dfa6ec). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-18T18:05:55 (commit 883fb4b). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -82,6 +82,30 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 - Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days.
 - OpsLens − industry standard, breach %: -3.31 [-4.79, -1.84].
 
+## The strongest published rules and a clairvoyant ceiling (test days)
+
+| KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant ceiling* | Clairvoyant + staffing* |
+|---|---|---|---|---|---|---|---|
+| SLA breach % | 5.40 | 5.51 | 3.96 | 5.30 | 2.20 | 3.81 | 3.81 |
+| P1 breach % | 8.94 | 7.55 | 7.00 | 7.97 | 4.89 | 6.71 | 6.83 |
+| Minutes late, mean over breached tickets | 765.89 | 268.53 | 881.01 | 239.94 | 229.85 | 876.45 | 833.21 |
+| Minutes late per 100 tickets | 4,189.41 | 1,477.02 | 3,525.96 | 1,255.00 | 528.93 | 3,380.06 | 3,247.22 |
+| P99 wait (min) | 1,434.88 | 947.99 | 1,378.51 | 910.30 | 727.81 | 1,373.25 | 1,456.91 |
+
+*Not implementable: knows each ticket's true category and true handle time. Not the optimum either (the true optimum for this many tickets cannot be computed).
+
+| OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) |
+|---|---|---|
+| C: SLA due (EDF) | -3.20 [-3.93, -2.46] | -3660 [-4916, -2405] |
+| D: industry standard | -3.31 [-4.79, -1.84] | -948 [-1357, -540] |
+| Least slack first | -1.75 [-2.07, -1.44] | -2997 [-4196, -1798] |
+| Generalized c-mu | -3.10 [-4.50, -1.69] | -726 [-1132, -320] |
+| Clairvoyant ceiling* | -1.61 [-1.89, -1.33] | -2851 [-3962, -1740] |
+| Clairvoyant + staffing* | -1.61 [-1.79, -1.43] | -2718 [-4286, -1151] |
+
+- What perfect information buys the best rule (clairvoyant − least slack), breach %: -0.14 [-0.27, -0.01].
+- Chosen on validation days 36-42 only: c-mu tau 0.25, beta 1.0 (of 8 shapes; lowest validation breach %, ties broken by fewer late minutes per 100). Validation breach %: OpsLens 2.13, least slack 3.69, c-mu 4.34 → gate passed; test days run once.
+
 ## Sealed second world (data seed 4242, generated after the freeze, run once)
 
 | KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | OpsLens |
@@ -114,5 +138,5 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 ## Speed
 
 - Optimiser per decision: median 0.06 ms, max 0.9 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.07 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.057 s.
 - Full evaluation pipeline: 55.9 min.
