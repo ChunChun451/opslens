@@ -37,7 +37,7 @@ STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/ru
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
-         ("best_baselines", "eval/run_best_baselines.py")]
+         ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py")]
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -178,8 +178,13 @@ def assemble(timings: dict[str, float]) -> dict:
                                               "the +25% volume test on the test days (it lands on a sale day and a surge)."),
             "design_v2": part("design_v2") if (PARTS / "design_v2.json").exists() else {},
             "design_v3": part("design_v3") if (PARTS / "design_v3.json").exists() else {},
-            "test_runs_note": ("The test days were run three times in total: v1, v2 and v3 (current). Each new version "
-                               "was designed and chosen on validation days only; all three test results are kept here."),
+            "v3_record": version_record("v3", "flat cross-skill penalty: a savable P2 with no trained agent on shift "
+                                              "(e.g. Hindi refunds at night) was never rescued. Won every test, but v4 "
+                                              "fixes the penalty's units (chosen on validation days)."),
+            "design_v4": part("design_v4") if (PARTS / "design_v4.json").exists() else {},
+            "test_runs_note": ("The test days were run four times in total: v1, v2, v3 and v4 (current). Each new version "
+                               "was designed and chosen on validation days only; all four test results are kept here. "
+                               "v4 was also checked once on a new sealed world generated after it was frozen."),
         },
     }
     if (PARTS / "playbooks.json").exists():

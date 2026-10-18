@@ -1,0 +1,8362 @@
+{
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "test_days": [
+  43,
+  56
+ ],
+ "policies": {
+  "baseline_a": {
+   "key": "baseline_a",
+   "label": "Baseline A (FIFO)",
+   "kpis": {
+    "turnaround.breach_pct": {
+     "mean": 13.105590062111798,
+     "std": 2.2317945877871277
+    },
+    "turnaround.mean_resolution_min": {
+     "mean": 80.66395388398823,
+     "std": 14.409369477912392
+    },
+    "turnaround.p90_resolution_min": {
+     "mean": 184.78233959284967,
+     "std": 35.78630072698356
+    },
+    "turnaround.mean_wait_min": {
+     "mean": 64.51861159104809,
+     "std": 14.015111747080566
+    },
+    "turnaround.max_backlog": {
+     "mean": 227.4,
+     "std": 48.59320940213766
+    },
+    "productivity.tickets_per_agent_hour": {
+     "mean": 5.2934648822597,
+     "std": 0.09834598997064835
+    },
+    "productivity.transfers_per_100": {
+     "mean": 4.655057675244011,
+     "std": 0.026769117981692802
+    },
+    "productivity.busy_agent_hours": {
+     "mean": 2961.705928475604,
+     "std": 9.909098556498632
+    },
+    "quality.reopen_rate_pct": {
+     "mean": 3.9341171251109137,
+     "std": 0.14842381042947025
+    },
+    "quality.p99_wait_min": {
+     "mean": 816.2688135730474,
+     "std": 100.16236330382633
+    },
+    "quality.mean_utilisation": {
+     "mean": 0.8693159809244435,
+     "std": 0.017385537176687203
+    },
+    "quality.load_fairness_std": {
+     "mean": 0.11887778253884333,
+     "std": 0.006660459946909708
+    },
+    "segment.p1_breach_pct": {
+     "mean": 27.340751491694885,
+     "std": 4.459863612035111
+    },
+    "segment.gold_breach_pct": {
+     "mean": 12.403951701427003,
+     "std": 2.3819949943300105
+    },
+    "segment.hindi_breach_pct": {
+     "mean": 22.114849481406527,
+     "std": 3.279209654651855
+    }
+   },
+   "per_seed": [
+    {
+     "turnaround.breach_pct": 14.074977817213844,
+     "turnaround.mean_resolution_min": 92.53813624289806,
+     "turnaround.p90_resolution_min": 213.03732553840672,
+     "turnaround.mean_wait_min": 75.61393225435833,
+     "turnaround.max_backlog": 246.0,
+     "productivity.tickets_per_agent_hour": 5.371462615430444,
+     "productivity.transfers_per_100": 4.697204968944099,
+     "productivity.busy_agent_hours": 2968.369521011799,
+     "quality.reopen_rate_pct": 3.7877107364685005,
+     "quality.p99_wait_min": 962.1215932590876,
+     "quality.mean_utilisation": 0.8827315088957306,
+     "quality.load_fairness_std": 0.11199305369533283,
+     "quality.mean_minutes_late": 247.55878503438038,
+     "quality.p90_minutes_late": 699.5394836543849,
+     "quality.late_minutes_per_100": 3484.384407815314,
+     "segment.p1_breach_pct": 28.68892114175133,
+     "segment.gold_breach_pct": 13.31869740212221,
+     "segment.hindi_breach_pct": 23.27346319251202,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 12.372448979591837,
+     "turnaround.mean_resolution_min": 74.75151316258373,
+     "turnaround.p90_resolution_min": 168.1906313332074,
+     "turnaround.mean_wait_min": 58.48055614028236,
+     "turnaround.max_backlog": 225.0,
+     "productivity.tickets_per_agent_hour": 5.258675998833479,
+     "productivity.transfers_per_100": 4.636202307009761,
+     "productivity.busy_agent_hours": 2963.735300139638,
+     "quality.reopen_rate_pct": 4.098269742679681,
+     "quality.p99_wait_min": 767.4220308690421,
+     "quality.mean_utilisation": 0.8634408368362229,
+     "quality.load_fairness_std": 0.11324172837636579,
+     "quality.mean_minutes_late": 213.74364594378014,
+     "quality.p90_minutes_late": 623.5039557565615,
+     "quality.late_minutes_per_100": 2644.5323541513617,
+     "segment.p1_breach_pct": 26.382841477181103,
+     "segment.gold_breach_pct": 11.708744968898646,
+     "segment.hindi_breach_pct": 21.097900328864153,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 11.579414374445431,
+     "turnaround.mean_resolution_min": 66.97744268462596,
+     "turnaround.p90_resolution_min": 153.83309505859577,
+     "turnaround.mean_wait_min": 51.11213939347212,
+     "turnaround.max_backlog": 149.0,
+     "productivity.tickets_per_agent_hour": 5.195044655718813,
+     "productivity.transfers_per_100": 4.630656610470275,
+     "productivity.busy_agent_hours": 2969.4024504444815,
+     "quality.reopen_rate_pct": 4.042812777284827,
+     "quality.p99_wait_min": 706.8779894802848,
+     "quality.mean_utilisation": 0.8559285147315375,
+     "quality.load_fairness_std": 0.12334269098478697,
+     "quality.mean_minutes_late": 166.42328995345764,
+     "quality.p90_minutes_late": 508.75560887948376,
+     "quality.late_minutes_per_100": 1927.084235929567,
+     "segment.p1_breach_pct": 24.866956942428644,
+     "segment.gold_breach_pct": 10.281741675814123,
+     "segment.hindi_breach_pct": 19.352390589425752,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 16.5150842945874,
+     "turnaround.mean_resolution_min": 99.31501561427632,
+     "turnaround.p90_resolution_min": 232.5381703867255,
+     "turnaround.mean_wait_min": 83.03791880062602,
+     "turnaround.max_backlog": 281.0,
+     "productivity.tickets_per_agent_hour": 5.421527360192424,
+     "productivity.transfers_per_100": 4.647293700088731,
+     "productivity.busy_agent_hours": 2962.1914804064677,
+     "quality.reopen_rate_pct": 3.970718722271517,
+     "quality.p99_wait_min": 869.5139114342977,
+     "quality.mean_utilisation": 0.8922172029513632,
+     "quality.load_fairness_std": 0.11811519040384975,
+     "quality.mean_minutes_late": 227.798252163824,
+     "quality.p90_minutes_late": 626.213736713183,
+     "quality.late_minutes_per_100": 3762.10733664523,
+     "segment.p1_breach_pct": 34.236413481696495,
+     "segment.gold_breach_pct": 16.09952433223564,
+     "segment.hindi_breach_pct": 27.27042752339995,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 10.986024844720497,
+     "turnaround.mean_resolution_min": 69.7376617155571,
+     "turnaround.p90_resolution_min": 156.31247564731308,
+     "turnaround.mean_wait_min": 54.34851136650167,
+     "turnaround.max_backlog": 236.0,
+     "productivity.tickets_per_agent_hour": 5.220613781123335,
+     "productivity.transfers_per_100": 4.663930789707187,
+     "productivity.busy_agent_hours": 2944.8308903756347,
+     "quality.reopen_rate_pct": 3.771073646850044,
+     "quality.p99_wait_min": 775.4085428225245,
+     "quality.mean_utilisation": 0.8522618412073637,
+     "quality.load_fairness_std": 0.12769624923388137,
+     "quality.mean_minutes_late": 207.7469442054292,
+     "quality.p90_minutes_late": 560.46305424397,
+     "quality.late_minutes_per_100": 2282.313090455608,
+     "segment.p1_breach_pct": 22.528624415416868,
+     "segment.gold_breach_pct": 10.611050128064397,
+     "segment.hindi_breach_pct": 19.580065772830764,
+     "tickets": 18032.0
+    }
+   ]
+  },
+  "baseline_b": {
+   "key": "baseline_b",
+   "label": "Baseline B (priority)",
+   "kpis": {
+    "turnaround.breach_pct": {
+     "mean": 6.8189884649511985,
+     "std": 1.3384019002037393
+    },
+    "turnaround.mean_resolution_min": {
+     "mean": 84.63128805525498,
+     "std": 16.758654978855215
+    },
+    "turnaround.p90_resolution_min": {
+     "mean": 198.4469636694069,
+     "std": 44.15131428765304
+    },
+    "turnaround.mean_wait_min": {
+     "mean": 68.15284244253583,
+     "std": 16.376636068837005
+    },
+    "turnaround.max_backlog": {
+     "mean": 233.8,
+     "std": 52.213025194868756
+    },
+    "productivity.tickets_per_agent_hour": {
+     "mean": 5.2934648822597,
+     "std": 0.09834598997064835
+    },
+    "productivity.transfers_per_100": {
+     "mean": 4.5940550133096725,
+     "std": 0.03814052543045544
+    },
+    "productivity.busy_agent_hours": {
+     "mean": 2960.724660951431,
+     "std": 10.057342174230572
+    },
+    "quality.reopen_rate_pct": {
+     "mean": 3.9341171251109137,
+     "std": 0.14842381042947025
+    },
+    "quality.p99_wait_min": {
+     "mean": 1007.3719271247717,
+     "std": 149.8975044916385
+    },
+    "quality.mean_utilisation": {
+     "mean": 0.8690453948395609,
+     "std": 0.017460124331143138
+    },
+    "quality.load_fairness_std": {
+     "mean": 0.12375883894624455,
+     "std": 0.005306545693971793
+    },
+    "segment.p1_breach_pct": {
+     "mean": 9.130785357200452,
+     "std": 1.5185584777544558
+    },
+    "segment.gold_breach_pct": {
+     "mean": 6.710574460300036,
+     "std": 1.6984933535187459
+    },
+    "segment.hindi_breach_pct": {
+     "mean": 16.180116367315964,
+     "std": 2.975659064910048
+    }
+   },
+   "per_seed": [
+    {
+     "turnaround.breach_pct": 7.264862466725821,
+     "turnaround.mean_resolution_min": 96.76077539699354,
+     "turnaround.p90_resolution_min": 219.75748078496957,
+     "turnaround.mean_wait_min": 79.62923147144367,
+     "turnaround.max_backlog": 248.0,
+     "productivity.tickets_per_agent_hour": 5.371462615430444,
+     "productivity.transfers_per_100": 4.647293700088731,
+     "productivity.busy_agent_hours": 2967.758870252831,
+     "quality.reopen_rate_pct": 3.7877107364685005,
+     "quality.p99_wait_min": 1144.6342575720143,
+     "quality.mean_utilisation": 0.8823920800632244,
+     "quality.load_fairness_std": 0.11698304792347979,
+     "quality.mean_minutes_late": 387.50165928242575,
+     "quality.p90_minutes_late": 898.4643896222566,
+     "quality.late_minutes_per_100": 2815.146260314872,
+     "segment.p1_breach_pct": 9.111433639735527,
+     "segment.gold_breach_pct": 6.805708013172337,
+     "segment.hindi_breach_pct": 17.227422210979004,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 6.377551020408164,
+     "turnaround.mean_resolution_min": 77.09565016026342,
+     "turnaround.p90_resolution_min": 176.2868301316237,
+     "turnaround.mean_wait_min": 60.65091779390274,
+     "turnaround.max_backlog": 221.0,
+     "productivity.tickets_per_agent_hour": 5.258675998833479,
+     "productivity.transfers_per_100": 4.54192546583851,
+     "productivity.busy_agent_hours": 2962.7667098332045,
+     "quality.reopen_rate_pct": 4.098269742679681,
+     "quality.p99_wait_min": 968.4856866054542,
+     "quality.mean_utilisation": 0.8634555307517042,
+     "quality.load_fairness_std": 0.11977086841116777,
+     "quality.mean_minutes_late": 320.6940405288342,
+     "quality.p90_minutes_late": 664.831981493999,
+     "quality.late_minutes_per_100": 2045.242605413483,
+     "segment.p1_breach_pct": 9.433962264150944,
+     "segment.gold_breach_pct": 6.366630076838639,
+     "segment.hindi_breach_pct": 14.824184163926132,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 5.517968056787933,
+     "turnaround.mean_resolution_min": 70.50655760617539,
+     "turnaround.p90_resolution_min": 170.2980432641183,
+     "turnaround.mean_wait_min": 54.29324708287117,
+     "turnaround.max_backlog": 156.0,
+     "productivity.tickets_per_agent_hour": 5.195044655718813,
+     "productivity.transfers_per_100": 4.602928127772849,
+     "productivity.busy_agent_hours": 2967.8131317254274,
+     "quality.reopen_rate_pct": 4.042812777284827,
+     "quality.p99_wait_min": 848.2155024167073,
+     "quality.mean_utilisation": 0.8554789348197719,
+     "quality.load_fairness_std": 0.12754440104020062,
+     "quality.mean_minutes_late": 260.91152478746415,
+     "quality.p90_minutes_late": 600.2290811046988,
+     "quality.late_minutes_per_100": 1439.7014594250597,
+     "segment.p1_breach_pct": 7.7245605547492335,
+     "segment.gold_breach_pct": 5.049396267837541,
+     "segment.hindi_breach_pct": 13.458133063496078,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 8.923025732031943,
+     "turnaround.mean_resolution_min": 107.76208872909334,
+     "turnaround.p90_resolution_min": 266.04672768401207,
+     "turnaround.mean_wait_min": 91.03759517869605,
+     "turnaround.max_backlog": 300.0,
+     "productivity.tickets_per_agent_hour": 5.421527360192424,
+     "productivity.transfers_per_100": 4.597382431233362,
+     "productivity.busy_agent_hours": 2961.863327143645,
+     "quality.reopen_rate_pct": 3.970718722271517,
+     "quality.p99_wait_min": 1183.2716616846708,
+     "quality.mean_utilisation": 0.8920638712116821,
+     "quality.load_fairness_std": 0.12478376116936821,
+     "quality.mean_minutes_late": 369.01612119255253,
+     "quality.p90_minutes_late": 841.7915496211705,
+     "quality.late_minutes_per_100": 3292.740344935764,
+     "segment.p1_breach_pct": 11.498145460409612,
+     "segment.gold_breach_pct": 9.51335528723015,
+     "segment.hindi_breach_pct": 20.8955223880597,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 6.01153504880213,
+     "turnaround.mean_resolution_min": 71.03136838374922,
+     "turnaround.p90_resolution_min": 159.8457364823108,
+     "turnaround.mean_wait_min": 55.15322068576549,
+     "turnaround.max_backlog": 244.0,
+     "productivity.tickets_per_agent_hour": 5.220613781123335,
+     "productivity.transfers_per_100": 4.580745341614907,
+     "productivity.busy_agent_hours": 2943.4212658020483,
+     "quality.reopen_rate_pct": 3.771073646850044,
+     "quality.p99_wait_min": 892.2525273450119,
+     "quality.mean_utilisation": 0.8518365573514212,
+     "quality.load_fairness_std": 0.12971211618700634,
+     "quality.mean_minutes_late": 302.00429329937714,
+     "quality.p90_minutes_late": 755.6260455025318,
+     "quality.late_minutes_per_100": 1815.5093940579236,
+     "segment.p1_breach_pct": 7.885824866956942,
+     "segment.gold_breach_pct": 5.817782656421515,
+     "segment.hindi_breach_pct": 14.495320010118897,
+     "tickets": 18032.0
+    }
+   ]
+  },
+  "baseline_d": {
+   "key": "baseline_d",
+   "label": "Industry standard (skills routing)",
+   "kpis": {
+    "turnaround.breach_pct": {
+     "mean": 5.5146406388642415,
+     "std": 1.446436306721135
+    },
+    "turnaround.mean_resolution_min": {
+     "mean": 80.14294228214939,
+     "std": 17.686493085817496
+    },
+    "turnaround.p90_resolution_min": {
+     "mean": 202.70324749336342,
+     "std": 56.74183971958513
+    },
+    "turnaround.mean_wait_min": {
+     "mean": 65.67243606212976,
+     "std": 17.448788500430446
+    },
+    "turnaround.max_backlog": {
+     "mean": 221.6,
+     "std": 46.949973375924294
+    },
+    "productivity.tickets_per_agent_hour": {
+     "mean": 5.2934648822597,
+     "std": 0.09834598997064835
+    },
+    "productivity.transfers_per_100": {
+     "mean": 1.0248447204968945,
+     "std": 0.007230703643747359
+    },
+    "productivity.busy_agent_hours": {
+     "mean": 2913.4885160292415,
+     "std": 9.99860924743261
+    },
+    "quality.reopen_rate_pct": {
+     "mean": 3.9341171251109137,
+     "std": 0.14842381042947025
+    },
+    "quality.p99_wait_min": {
+     "mean": 947.9923491236771,
+     "std": 213.24400818355906
+    },
+    "quality.mean_utilisation": {
+     "mean": 0.8553347185302822,
+     "std": 0.016941614802409452
+    },
+    "quality.load_fairness_std": {
+     "mean": 0.14192408894671077,
+     "std": 0.0029671925899468423
+    },
+    "segment.p1_breach_pct": {
+     "mean": 7.547169811320755,
+     "std": 1.1919931025124992
+    },
+    "segment.gold_breach_pct": {
+     "mean": 5.429930479326748,
+     "std": 1.670076154735879
+    },
+    "segment.hindi_breach_pct": {
+     "mean": 13.34682519605363,
+     "std": 2.8093382350836738
+    }
+   },
+   "per_seed": [
+    {
+     "turnaround.breach_pct": 5.773070097604259,
+     "turnaround.mean_resolution_min": 88.7704344357491,
+     "turnaround.p90_resolution_min": 218.48748351936226,
+     "turnaround.mean_wait_min": 74.04768385731181,
+     "turnaround.max_backlog": 227.0,
+     "productivity.tickets_per_agent_hour": 5.371462615430444,
+     "productivity.transfers_per_100": 1.0259538598047915,
+     "productivity.busy_agent_hours": 2917.1522729317057,
+     "quality.reopen_rate_pct": 3.7877107364685005,
+     "quality.p99_wait_min": 1067.9580753145465,
+     "quality.mean_utilisation": 0.8679115323080133,
+     "quality.load_fairness_std": 0.14100253445660482,
+     "quality.mean_minutes_late": 321.8127452715065,
+     "quality.p90_minutes_late": 824.9662831086316,
+     "quality.late_minutes_per_100": 1857.8475367548704,
+     "segment.p1_breach_pct": 7.256894049346879,
+     "segment.gold_breach_pct": 5.598243688254665,
+     "segment.hindi_breach_pct": 14.09056412850999,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 5.251774622892635,
+     "turnaround.mean_resolution_min": 70.62478907068196,
+     "turnaround.p90_resolution_min": 178.0694301297822,
+     "turnaround.mean_wait_min": 56.13921356617402,
+     "turnaround.max_backlog": 215.0,
+     "productivity.tickets_per_agent_hour": 5.258675998833479,
+     "productivity.transfers_per_100": 1.0204081632653061,
+     "productivity.busy_agent_hours": 2913.114762148957,
+     "quality.reopen_rate_pct": 4.098269742679681,
+     "quality.p99_wait_min": 783.5362246679651,
+     "quality.mean_utilisation": 0.8487853830554531,
+     "quality.load_fairness_std": 0.1378736754938251,
+     "quality.mean_minutes_late": 205.8947217831463,
+     "quality.p90_minutes_late": 535.44921556357,
+     "quality.late_minutes_per_100": 1081.3126748482673,
+     "segment.p1_breach_pct": 7.885824866956942,
+     "segment.gold_breach_pct": 4.976216611781925,
+     "segment.hindi_breach_pct": 12.522135087275487,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 4.2979148181011535,
+     "turnaround.mean_resolution_min": 66.49229323387583,
+     "turnaround.p90_resolution_min": 167.9130727341755,
+     "turnaround.mean_wait_min": 52.1320259016719,
+     "turnaround.max_backlog": 150.0,
+     "productivity.tickets_per_agent_hour": 5.195044655718813,
+     "productivity.transfers_per_100": 1.0314995563442768,
+     "productivity.busy_agent_hours": 2924.810437778882,
+     "quality.reopen_rate_pct": 4.042812777284827,
+     "quality.p99_wait_min": 782.4016984003767,
+     "quality.mean_utilisation": 0.8431815542157949,
+     "quality.load_fairness_std": 0.14377924686775725,
+     "quality.mean_minutes_late": 250.2863838435518,
+     "quality.p90_minutes_late": 599.0504405891262,
+     "quality.late_minutes_per_100": 1075.7095578901544,
+     "segment.p1_breach_pct": 6.418319625866796,
+     "segment.gold_breach_pct": 3.8785217709476765,
+     "segment.hindi_breach_pct": 10.650139134834303,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 7.858251996450755,
+     "turnaround.mean_resolution_min": 107.34039110693193,
+     "turnaround.p90_resolution_min": 294.7371128176397,
+     "turnaround.mean_wait_min": 92.58498464225431,
+     "turnaround.max_backlog": 280.0,
+     "productivity.tickets_per_agent_hour": 5.421527360192424,
+     "productivity.transfers_per_100": 1.0148624667258208,
+     "productivity.busy_agent_hours": 2914.882721919127,
+     "quality.reopen_rate_pct": 3.970718722271517,
+     "quality.p99_wait_min": 1266.3016577779235,
+     "quality.mean_utilisation": 0.8781528366680504,
+     "quality.load_fairness_std": 0.14128443204120783,
+     "quality.mean_minutes_late": 256.82944768620666,
+     "quality.p90_minutes_late": 614.5669282422928,
+     "quality.late_minutes_per_100": 2018.2305200274782,
+     "segment.p1_breach_pct": 9.433962264150944,
+     "segment.gold_breach_pct": 8.196121478229053,
+     "segment.hindi_breach_pct": 17.83455603339236,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 4.392191659272405,
+     "turnaround.mean_resolution_min": 67.48680356350813,
+     "turnaround.p90_resolution_min": 154.30913826585743,
+     "turnaround.mean_wait_min": 53.45827234323676,
+     "turnaround.max_backlog": 236.0,
+     "productivity.tickets_per_agent_hour": 5.220613781123335,
+     "productivity.transfers_per_100": 1.0314995563442768,
+     "productivity.busy_agent_hours": 2897.482385367535,
+     "quality.reopen_rate_pct": 3.771073646850044,
+     "quality.p99_wait_min": 839.7640894575733,
+     "quality.mean_utilisation": 0.8386422864040994,
+     "quality.load_fairness_std": 0.14568055587415882,
+     "quality.mean_minutes_late": 307.81614460819634,
+     "quality.p90_minutes_late": 748.9301103549645,
+     "quality.late_minutes_per_100": 1351.987502937508,
+     "segment.p1_breach_pct": 6.7408482502822125,
+     "segment.gold_breach_pct": 4.500548847420418,
+     "segment.hindi_breach_pct": 11.63673159625601,
+     "tickets": 18032.0
+    }
+   ]
+  },
+  "opslens": {
+   "key": "opslens",
+   "label": "OpsLens",
+   "kpis": {
+    "turnaround.breach_pct": {
+     "mean": 2.2005323868677906,
+     "std": 0.32177945426767895
+    },
+    "turnaround.mean_resolution_min": {
+     "mean": 61.25084554739128,
+     "std": 13.985341091931568
+    },
+    "turnaround.p90_resolution_min": {
+     "mean": 140.50762711516273,
+     "std": 30.64544248103611
+    },
+    "turnaround.mean_wait_min": {
+     "mean": 44.763262213804595,
+     "std": 12.774485545101074
+    },
+    "turnaround.max_backlog": {
+     "mean": 200.6,
+     "std": 74.04255533137683
+    },
+    "productivity.tickets_per_agent_hour": {
+     "mean": 5.296232606469611,
+     "std": 0.09731145946177727
+    },
+    "productivity.transfers_per_100": {
+     "mean": 0.9693877551020407,
+     "std": 0.016357454751278436
+    },
+    "productivity.busy_agent_hours": {
+     "mean": 2993.5183854328825,
+     "std": 15.931688630895504
+    },
+    "quality.reopen_rate_pct": {
+     "mean": 4.404392191659272,
+     "std": 0.18357009476873185
+    },
+    "quality.p99_wait_min": {
+     "mean": 727.8063915516635,
+     "std": 188.95221675008156
+    },
+    "quality.mean_utilisation": {
+     "mean": 0.8794316873311215,
+     "std": 0.01971915286361248
+    },
+    "quality.load_fairness_std": {
+     "mean": 0.1321925531669499,
+     "std": 0.008256852921276824
+    },
+    "segment.p1_breach_pct": {
+     "mean": 4.886308659893566,
+     "std": 0.3241372559626153
+    },
+    "segment.gold_breach_pct": {
+     "mean": 1.8294914013904133,
+     "std": 0.24545202826561902
+    },
+    "segment.hindi_breach_pct": {
+     "mean": 3.4606627877561342,
+     "std": 0.6393249358615345
+    }
+   },
+   "per_seed": [
+    {
+     "turnaround.breach_pct": 2.001996450754215,
+     "turnaround.mean_resolution_min": 65.41983298936546,
+     "turnaround.p90_resolution_min": 156.5007083979799,
+     "turnaround.mean_wait_min": 49.01932532670299,
+     "turnaround.max_backlog": 201.0,
+     "productivity.tickets_per_agent_hour": 5.371462615430444,
+     "productivity.transfers_per_100": 0.9704968944099378,
+     "productivity.busy_agent_hours": 3005.333218478923,
+     "quality.reopen_rate_pct": 4.259094942324756,
+     "quality.p99_wait_min": 748.0732924972846,
+     "quality.mean_utilisation": 0.8939141516601318,
+     "quality.load_fairness_std": 0.12228015341019965,
+     "quality.mean_minutes_late": 214.55717555102711,
+     "quality.p90_minutes_late": 496.6670567724359,
+     "quality.late_minutes_per_100": 429.5427039370053,
+     "segment.p1_breach_pct": 4.612159329140461,
+     "segment.gold_breach_pct": 1.8660812294182216,
+     "segment.hindi_breach_pct": 3.2127498102706804,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 2.362466725820763,
+     "turnaround.mean_resolution_min": 55.97559850826715,
+     "turnaround.p90_resolution_min": 130.5694625389056,
+     "turnaround.mean_wait_min": 39.267770634534436,
+     "turnaround.max_backlog": 221.0,
+     "productivity.tickets_per_agent_hour": 5.272514619883041,
+     "productivity.transfers_per_100": 0.942768411712511,
+     "productivity.busy_agent_hours": 2990.000361491405,
+     "quality.reopen_rate_pct": 4.619565217391304,
+     "quality.p99_wait_min": 627.1117516369784,
+     "quality.mean_utilisation": 0.8740007147092627,
+     "quality.load_fairness_std": 0.13172201890155116,
+     "quality.mean_minutes_late": 219.00621637794305,
+     "quality.p90_minutes_late": 504.11533207682805,
+     "quality.late_minutes_per_100": 517.3948989407927,
+     "segment.p1_breach_pct": 5.128205128205128,
+     "segment.gold_breach_pct": 1.9392608854738382,
+     "segment.hindi_breach_pct": 3.895775360485707,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 2.0629991126885536,
+     "turnaround.mean_resolution_min": 52.671756596630416,
+     "turnaround.p90_resolution_min": 119.80021393004715,
+     "turnaround.mean_wait_min": 36.877205133749314,
+     "turnaround.max_backlog": 132.0,
+     "productivity.tickets_per_agent_hour": 5.195044655718813,
+     "productivity.transfers_per_100": 0.9704968944099378,
+     "productivity.busy_agent_hours": 2998.17053467704,
+     "quality.reopen_rate_pct": 4.447648624667258,
+     "quality.p99_wait_min": 626.7367423368073,
+     "quality.mean_utilisation": 0.8642910307037267,
+     "quality.load_fairness_std": 0.13975875363296225,
+     "quality.mean_minutes_late": 161.8803809483734,
+     "quality.p90_minutes_late": 451.7867632203489,
+     "quality.late_minutes_per_100": 333.9590822581794,
+     "segment.p1_breach_pct": 4.77342364134817,
+     "segment.gold_breach_pct": 1.4270032930845227,
+     "segment.hindi_breach_pct": 3.136858082469011,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 2.684117125110914,
+     "turnaround.mean_resolution_min": 83.65265731074557,
+     "turnaround.p90_resolution_min": 185.6880827033222,
+     "turnaround.mean_wait_min": 65.14700816871091,
+     "turnaround.max_backlog": 313.0,
+     "productivity.tickets_per_agent_hour": 5.421527360192424,
+     "productivity.transfers_per_100": 0.9871339840283939,
+     "productivity.busy_agent_hours": 3006.5096169367926,
+     "quality.reopen_rate_pct": 4.519742679680568,
+     "quality.p99_wait_min": 1048.3113457611503,
+     "quality.mean_utilisation": 0.9055886503929035,
+     "quality.load_fairness_std": 0.1260839050532265,
+     "quality.mean_minutes_late": 399.03760123281177,
+     "quality.p90_minutes_late": 1089.9768019856942,
+     "quality.late_minutes_per_100": 1071.06365903217,
+     "segment.p1_breach_pct": 5.321722302854378,
+     "segment.gold_breach_pct": 2.0856201975850714,
+     "segment.hindi_breach_pct": 4.325828484695168,
+     "tickets": 18032.0
+    },
+    {
+     "turnaround.breach_pct": 1.8910825199645074,
+     "turnaround.mean_resolution_min": 48.534382331947825,
+     "turnaround.p90_resolution_min": 109.97966800555876,
+     "turnaround.mean_wait_min": 33.50500180532532,
+     "turnaround.max_backlog": 136.0,
+     "productivity.tickets_per_agent_hour": 5.220613781123335,
+     "productivity.transfers_per_100": 0.9760425909494232,
+     "productivity.busy_agent_hours": 2967.578195580252,
+     "quality.reopen_rate_pct": 4.175909494232475,
+     "quality.p99_wait_min": 588.7988255260972,
+     "quality.mean_utilisation": 0.8593638891895832,
+     "quality.load_fairness_std": 0.14111793483680984,
+     "quality.mean_minutes_late": 154.76973512577874,
+     "quality.p90_minutes_late": 403.2209448091744,
+     "quality.late_minutes_per_100": 292.682340715897,
+     "segment.p1_breach_pct": 4.596032897919691,
+     "segment.gold_breach_pct": 1.8294914013904133,
+     "segment.hindi_breach_pct": 2.732102200860106,
+     "tickets": 18032.0
+    }
+   ]
+  }
+ },
+ "comparisons": [
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "turnaround.breach_pct",
+   "mean_diff": -10.905057675244013,
+   "ci_low": -13.382627757958344,
+   "ci_high": -8.427487592529681,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "turnaround.mean_resolution_min",
+   "mean_diff": -19.413108336596952,
+   "ci_low": -25.716971135846446,
+   "ci_high": -13.109245537347459,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "turnaround.p90_resolution_min",
+   "mean_diff": -44.27471247768697,
+   "ci_low": -55.21066172122659,
+   "ci_high": -33.33876323414734,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "turnaround.mean_wait_min",
+   "mean_diff": -19.755349377243505,
+   "ci_low": -25.383343714794638,
+   "ci_high": -14.127355039692372,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "turnaround.max_backlog",
+   "mean_diff": -26.8,
+   "ci_low": -88.13264018970648,
+   "ci_high": 34.532640189706484,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "productivity.tickets_per_agent_hour",
+   "mean_diff": 0.002767724209912359,
+   "ci_low": -0.004915478196804348,
+   "ci_high": 0.010450926616629067,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "productivity.transfers_per_100",
+   "mean_diff": -3.68566992014197,
+   "ci_low": -3.719955887025768,
+   "ci_high": -3.651383953258172,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "productivity.busy_agent_hours",
+   "mean_diff": 31.8124569572783,
+   "ci_low": 20.969234655048897,
+   "ci_high": 42.65567925950771,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "quality.reopen_rate_pct",
+   "mean_diff": 0.4702750665483584,
+   "ci_low": 0.3884647808573471,
+   "ci_high": 0.5520853522393696,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "quality.p99_wait_min",
+   "mean_diff": -88.4624220213838,
+   "ci_low": -284.3524287868996,
+   "ci_high": 107.427584744132,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "quality.mean_utilisation",
+   "mean_diff": 0.010115706406677982,
+   "ci_low": 0.007068971792762411,
+   "ci_high": 0.013162441020593552,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "quality.load_fairness_std",
+   "mean_diff": 0.013314770628106543,
+   "ci_low": 0.00797289454417794,
+   "ci_high": 0.018656646712035145,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "segment.p1_breach_pct",
+   "mean_diff": -22.454442831801323,
+   "ci_low": -27.715211724640252,
+   "ci_high": -17.193673938962394,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "segment.gold_breach_pct",
+   "mean_diff": -10.57446030003659,
+   "ci_low": -13.30997258072901,
+   "ci_high": -7.838948019344169,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_a",
+   "kpi": "segment.hindi_breach_pct",
+   "mean_diff": -18.654186693650395,
+   "ci_low": -22.1492971921753,
+   "ci_high": -15.15907619512549,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "turnaround.breach_pct",
+   "mean_diff": -4.618456078083407,
+   "ci_low": -6.007413179585875,
+   "ci_high": -3.22949897658094,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "turnaround.mean_resolution_min",
+   "mean_diff": -23.380442507863698,
+   "ci_low": -29.60465873246942,
+   "ci_high": -17.156226283257975,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "turnaround.p90_resolution_min",
+   "mean_diff": -57.939336554244164,
+   "ci_low": -75.50541540735132,
+   "ci_high": -40.37325770113701,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "turnaround.mean_wait_min",
+   "mean_diff": -23.38958022873123,
+   "ci_low": -29.631859707477215,
+   "ci_high": -17.147300749985245,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "turnaround.max_backlog",
+   "mean_diff": -33.2,
+   "ci_low": -92.43622354471964,
+   "ci_high": 26.03622354471964,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "productivity.tickets_per_agent_hour",
+   "mean_diff": 0.002767724209912359,
+   "ci_low": -0.004915478196804348,
+   "ci_high": 0.010450926616629067,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "productivity.transfers_per_100",
+   "mean_diff": -3.624667258207631,
+   "ci_low": -3.664097322278424,
+   "ci_high": -3.585237194136838,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "productivity.busy_agent_hours",
+   "mean_diff": 32.79372448145123,
+   "ci_low": 22.504122524883915,
+   "ci_high": 43.083326438018545,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "quality.reopen_rate_pct",
+   "mean_diff": 0.4702750665483584,
+   "ci_low": 0.3884647808573471,
+   "ci_high": 0.5520853522393696,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "quality.p99_wait_min",
+   "mean_diff": -279.56553557310815,
+   "ci_low": -407.3272921663341,
+   "ci_high": -151.80377897988222,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "quality.mean_utilisation",
+   "mean_diff": 0.0103862924915608,
+   "ci_low": 0.007486927577797487,
+   "ci_high": 0.013285657405324114,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "quality.load_fairness_std",
+   "mean_diff": 0.008433714220705338,
+   "ci_low": 0.0023446757842115733,
+   "ci_high": 0.014522752657199102,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "segment.p1_breach_pct",
+   "mean_diff": -4.244476697306887,
+   "ci_low": -5.813008200464724,
+   "ci_high": -2.675945194149049,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "segment.gold_breach_pct",
+   "mean_diff": -4.881083058909622,
+   "ci_low": -6.751136663222737,
+   "ci_high": -3.0110294545965077,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_b",
+   "kpi": "segment.hindi_breach_pct",
+   "mean_diff": -12.719453579559827,
+   "ci_low": -15.907350336887788,
+   "ci_high": -9.531556822231867,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "turnaround.breach_pct",
+   "mean_diff": -3.3141082519964504,
+   "ci_low": -4.792780533717838,
+   "ci_high": -1.8354359702750627,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "turnaround.mean_resolution_min",
+   "mean_diff": -18.892096734758105,
+   "ci_low": -24.668679021591615,
+   "ci_high": -13.115514447924598,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "turnaround.p90_resolution_min",
+   "mean_diff": -62.19562037820068,
+   "ci_low": -95.78849707229905,
+   "ci_high": -28.602743684102307,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "turnaround.mean_wait_min",
+   "mean_diff": -20.909173848325167,
+   "ci_low": -27.383317608995696,
+   "ci_high": -14.435030087654638,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "turnaround.max_backlog",
+   "mean_diff": -21.0,
+   "ci_low": -82.82445548486456,
+   "ci_high": 40.824455484864565,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "productivity.tickets_per_agent_hour",
+   "mean_diff": 0.002767724209912359,
+   "ci_low": -0.004915478196804348,
+   "ci_high": 0.010450926616629067,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "productivity.transfers_per_100",
+   "mean_diff": -0.055456965394853654,
+   "ci_low": -0.0777662277325987,
+   "ci_high": -0.03314770305710861,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "productivity.busy_agent_hours",
+   "mean_diff": 80.02986940364117,
+   "ci_low": 68.35104115040265,
+   "ci_high": 91.70869765687969,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "quality.reopen_rate_pct",
+   "mean_diff": 0.4702750665483584,
+   "ci_low": 0.3884647808573471,
+   "ci_high": 0.5520853522393696,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "quality.p99_wait_min",
+   "mean_diff": -220.18595757201348,
+   "ci_low": -306.01898169949277,
+   "ci_high": -134.35293344453416,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "quality.mean_utilisation",
+   "mean_diff": 0.024096968800839315,
+   "ci_low": 0.020354598991307916,
+   "ci_high": 0.027839338610370714,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "quality.load_fairness_std",
+   "mean_diff": -0.00973153577976088,
+   "ci_low": -0.018126225530634713,
+   "ci_high": -0.00133684602888705,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "segment.p1_breach_pct",
+   "mean_diff": -2.660861151427189,
+   "ci_low": -3.8078919935328317,
+   "ci_high": -1.5138303093215468,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "segment.gold_breach_pct",
+   "mean_diff": -3.600439077936334,
+   "ci_low": -5.443820715658587,
+   "ci_high": -1.7570574402140804,
+   "n": 5
+  },
+  {
+   "policy": "opslens",
+   "baseline": "baseline_d",
+   "kpi": "segment.hindi_breach_pct",
+   "mean_diff": -9.886162408297494,
+   "ci_low": -12.816613216704352,
+   "ci_high": -6.955711599890636,
+   "n": 5
+  }
+ ],
+ "replay": {
+  "title": "Saturday 17 Oct, 18:00-24:00",
+  "day": 48,
+  "step_min": 15.0,
+  "times": [
+   "18:00",
+   "18:15",
+   "18:30",
+   "18:45",
+   "19:00",
+   "19:15",
+   "19:30",
+   "19:45",
+   "20:00",
+   "20:15",
+   "20:30",
+   "20:45",
+   "21:00",
+   "21:15",
+   "21:30",
+   "21:45",
+   "22:00",
+   "22:15",
+   "22:30",
+   "22:45",
+   "23:00",
+   "23:15",
+   "23:30",
+   "23:45",
+   "00:00"
+  ],
+  "series": {
+   "baseline_a": {
+    "waiting": [
+     53,
+     47,
+     48,
+     45,
+     46,
+     49,
+     53,
+     59,
+     52,
+     60,
+     66,
+     74,
+     86,
+     104,
+     111,
+     122,
+     128,
+     129,
+     125,
+     132,
+     132,
+     123,
+     120,
+     114,
+     110
+    ],
+    "breached_cum": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     2,
+     6,
+     9,
+     10,
+     10,
+     11,
+     15,
+     17,
+     18,
+     21,
+     21,
+     29,
+     36,
+     42,
+     46,
+     53,
+     61,
+     65,
+     75,
+     83
+    ]
+   },
+   "baseline_b": {
+    "waiting": [
+     57,
+     53,
+     53,
+     56,
+     56,
+     56,
+     61,
+     68,
+     66,
+     72,
+     84,
+     94,
+     105,
+     119,
+     124,
+     130,
+     140,
+     138,
+     131,
+     135,
+     141,
+     136,
+     130,
+     120,
+     117
+    ],
+    "breached_cum": [
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     3,
+     5,
+     6,
+     7,
+     7,
+     10,
+     11,
+     12,
+     13,
+     13,
+     16,
+     16,
+     17,
+     19,
+     19,
+     22,
+     23,
+     25,
+     26
+    ]
+   },
+   "baseline_d": {
+    "waiting": [
+     55,
+     47,
+     49,
+     50,
+     46,
+     45,
+     51,
+     60,
+     59,
+     63,
+     73,
+     82,
+     97,
+     106,
+     113,
+     121,
+     125,
+     124,
+     118,
+     124,
+     135,
+     126,
+     121,
+     119,
+     111
+    ],
+    "breached_cum": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     4,
+     4,
+     4,
+     4,
+     7,
+     8,
+     9,
+     10,
+     10,
+     13,
+     13,
+     14,
+     15,
+     15,
+     17,
+     18,
+     20,
+     21
+    ]
+   },
+   "opslens": {
+    "waiting": [
+     27,
+     22,
+     20,
+     23,
+     21,
+     23,
+     23,
+     31,
+     25,
+     31,
+     38,
+     47,
+     62,
+     75,
+     82,
+     84,
+     87,
+     84,
+     78,
+     82,
+     89,
+     86,
+     83,
+     79,
+     73
+    ],
+    "breached_cum": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     1,
+     2,
+     2,
+     2,
+     2,
+     2,
+     2,
+     4,
+     4,
+     5,
+     5,
+     6,
+     7,
+     7,
+     7,
+     7
+    ]
+   }
+  },
+  "floor": {
+   "baseline_a": {
+    "agents": [
+     {
+      "id": "A01",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A02",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A03",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A04",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A05",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A06",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A07",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A08",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A09",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     },
+     {
+      "id": "B01",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B02",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B03",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B04",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B05",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B06",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B07",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B08",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B09",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B10",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B11",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C01",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C02",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C03",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C04",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C05",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C06",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C07",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C08",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C09",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D01",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D02",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D03",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D04",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D05",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D06",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D07",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D08",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D09",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D10",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D11",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     }
+    ],
+    "times": [
+     "18:00",
+     "18:05",
+     "18:10",
+     "18:15",
+     "18:20",
+     "18:25",
+     "18:30",
+     "18:35",
+     "18:40",
+     "18:45",
+     "18:50",
+     "18:55",
+     "19:00",
+     "19:05",
+     "19:10",
+     "19:15",
+     "19:20",
+     "19:25",
+     "19:30",
+     "19:35",
+     "19:40",
+     "19:45",
+     "19:50",
+     "19:55",
+     "20:00",
+     "20:05",
+     "20:10",
+     "20:15",
+     "20:20",
+     "20:25",
+     "20:30",
+     "20:35",
+     "20:40",
+     "20:45",
+     "20:50",
+     "20:55",
+     "21:00",
+     "21:05",
+     "21:10",
+     "21:15",
+     "21:20",
+     "21:25",
+     "21:30",
+     "21:35",
+     "21:40",
+     "21:45",
+     "21:50",
+     "21:55",
+     "22:00",
+     "22:05",
+     "22:10",
+     "22:15",
+     "22:20",
+     "22:25",
+     "22:30",
+     "22:35",
+     "22:40",
+     "22:45",
+     "22:50",
+     "22:55",
+     "23:00",
+     "23:05",
+     "23:10",
+     "23:15",
+     "23:20",
+     "23:25",
+     "23:30",
+     "23:35",
+     "23:40",
+     "23:45",
+     "23:50",
+     "23:55",
+     "00:00"
+    ],
+    "status": [
+     "oooiboibobooooobobbooooioioiioooobbbobbo",
+     "oooiboiiobooooobobbooooboboiioooobbbobbo",
+     "oooiiobbobooooobobbooooboiobioooobbbobbo",
+     "oooiioiiobooooobobbooooboioiboooobbbobbo",
+     "ooobboiiobooooobobbooooioboiwoooobbbobbo",
+     "ooobiobiobooooobobbooooboiobioooobbbobbo",
+     "oooiiobiobooooobobbooooboiobwoooobbbobbo",
+     "ooobbobbobooooobobboooowobobioooobbbobbo",
+     "ooobiobbobooooobobbooooiobobboooobbbobbo",
+     "oooiioiiobooooowobbooooboioiboooobwbobbo",
+     "oooiboiioboooooboibooooboboiioooobbbobbo",
+     "oooibobboboooooioibooooboioiioooobbbobbo",
+     "oooibobioboooooioibooooboioiioooobbbobbo",
+     "ooobbobboboooooioiiooooboiobioooobbbobbo",
+     "ooobbobboooooooiobiooooboioiboooobbbobbo",
+     "ooobbobboooooooioiioooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobwoooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooowbobbooooooobobboooobobobboooobbwobbo",
+     "ooobbobboooooooboiioooobobobboooobbbobbo",
+     "ooobbobboooooooboiboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobwoooooooboiboooobobobboooobbbobbo",
+     "ooowiobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobboooooooboiboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbwobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobowobboooobbbobbo",
+     "oooobobbooooooobobboooooobobwoooobbbobbo",
+     "oooobobbooooooobobboooooowobboooobwbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobowbooooooobobboooooobobbooooobwobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobowbooooobbobbo",
+     "oooobobbooooooobobboooooowobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbioooooobobbiooooobobbooooobwobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooowobbooooobbobbo",
+     "oooobobbboooooobobbbooooowobwooooobbobbo",
+     "oooobobbboooooowobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooowobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobowwooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooooobbboooooobobbbooooobobbooooobbobbo",
+     "oooooobbboooooobobbbooooobobbooooobbobbo",
+     "oooooobbboooooobobbbooooobobwooooobbobbo",
+     "oooooobbboooooobobbbooooobobbooooobbobbo",
+     "oooooobbboooooobobbbooooowobboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobwbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobowboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo"
+    ],
+    "queues": [
+     {
+      "D": [
+       42,
+       1
+      ],
+      "B": [
+       10,
+       0
+      ]
+     },
+     {
+      "D": [
+       39,
+       1
+      ],
+      "B": [
+       10,
+       0
+      ]
+     },
+     {
+      "D": [
+       37,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       38,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       39,
+       0
+      ],
+      "B": [
+       9,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       39,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       38,
+       0
+      ],
+      "B": [
+       7,
+       0
+      ],
+      "A": [
+       3,
+       0
+      ]
+     },
+     {
+      "D": [
+       36,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       36,
+       0
+      ],
+      "B": [
+       5,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       38,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       41,
+       0
+      ],
+      "B": [
+       4,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       40,
+       0
+      ],
+      "B": [
+       4,
+       1
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       37,
+       0
+      ],
+      "B": [
+       5,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       36,
+       0
+      ],
+      "B": [
+       6,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       34,
+       1
+      ],
+      "B": [
+       7,
+       0
+      ],
+      "A": [
+       9,
+       1
+      ]
+     },
+     {
+      "D": [
+       32,
+       1
+      ],
+      "B": [
+       7,
+       0
+      ],
+      "A": [
+       6,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       32,
+       2
+      ],
+      "B": [
+       7,
+       2
+      ],
+      "A": [
+       7,
+       1
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "D": [
+       30,
+       2
+      ],
+      "B": [
+       7,
+       2
+      ],
+      "A": [
+       7,
+       1
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       10,
+       2
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "A": [
+       4,
+       2
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "D": [
+       32,
+       1
+      ],
+      "A": [
+       2,
+       2
+      ],
+      "B": [
+       9,
+       2
+      ]
+     },
+     {
+      "A": [
+       4,
+       3
+      ],
+      "D": [
+       32,
+       1
+      ],
+      "B": [
+       9,
+       2
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       6,
+       3
+      ],
+      "D": [
+       33,
+       1
+      ],
+      "B": [
+       9,
+       3
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       3
+      ],
+      "B": [
+       10,
+       3
+      ],
+      "D": [
+       33,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       3
+      ],
+      "B": [
+       9,
+       3
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       3,
+       3
+      ],
+      "B": [
+       10,
+       3
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       3
+      ],
+      "B": [
+       10,
+       3
+      ],
+      "D": [
+       28,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       3
+      ],
+      "B": [
+       11,
+       3
+      ],
+      "D": [
+       27,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       3
+      ],
+      "B": [
+       15,
+       3
+      ],
+      "D": [
+       28,
+       0
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       3
+      ],
+      "B": [
+       14,
+       3
+      ],
+      "D": [
+       29,
+       0
+      ],
+      "C": [
+       6,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       3
+      ],
+      "B": [
+       17,
+       3
+      ],
+      "D": [
+       26,
+       0
+      ],
+      "C": [
+       11,
+       0
+      ]
+     },
+     {
+      "A": [
+       6,
+       3
+      ],
+      "B": [
+       20,
+       3
+      ],
+      "D": [
+       23,
+       0
+      ],
+      "C": [
+       11,
+       0
+      ]
+     },
+     {
+      "A": [
+       7,
+       3
+      ],
+      "B": [
+       23,
+       4
+      ],
+      "D": [
+       20,
+       0
+      ],
+      "C": [
+       11,
+       0
+      ]
+     },
+     {
+      "A": [
+       7,
+       4
+      ],
+      "B": [
+       27,
+       4
+      ],
+      "D": [
+       18,
+       0
+      ],
+      "C": [
+       13,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       4
+      ],
+      "B": [
+       27,
+       4
+      ],
+      "D": [
+       17,
+       2
+      ],
+      "C": [
+       16,
+       0
+      ]
+     },
+     {
+      "A": [
+       7,
+       4
+      ],
+      "B": [
+       30,
+       4
+      ],
+      "D": [
+       14,
+       2
+      ],
+      "C": [
+       14,
+       0
+      ]
+     },
+     {
+      "A": [
+       8,
+       5
+      ],
+      "B": [
+       33,
+       4
+      ],
+      "D": [
+       18,
+       0
+      ],
+      "C": [
+       15,
+       0
+      ]
+     },
+     {
+      "A": [
+       10,
+       5
+      ],
+      "B": [
+       32,
+       4
+      ],
+      "D": [
+       20,
+       0
+      ],
+      "C": [
+       15,
+       0
+      ]
+     },
+     {
+      "A": [
+       11,
+       5
+      ],
+      "B": [
+       34,
+       5
+      ],
+      "D": [
+       19,
+       0
+      ],
+      "C": [
+       16,
+       0
+      ]
+     },
+     {
+      "A": [
+       12,
+       5
+      ],
+      "B": [
+       35,
+       5
+      ],
+      "D": [
+       19,
+       0
+      ],
+      "C": [
+       21,
+       0
+      ]
+     },
+     {
+      "A": [
+       16,
+       5
+      ],
+      "B": [
+       36,
+       5
+      ],
+      "D": [
+       18,
+       0
+      ],
+      "C": [
+       24,
+       0
+      ]
+     },
+     {
+      "A": [
+       15,
+       5
+      ],
+      "B": [
+       37,
+       5
+      ],
+      "D": [
+       20,
+       1
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "A": [
+       12,
+       5
+      ],
+      "B": [
+       38,
+       6
+      ],
+      "D": [
+       22,
+       0
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "A": [
+       15,
+       5
+      ],
+      "B": [
+       35,
+       7
+      ],
+      "D": [
+       23,
+       0
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "A": [
+       18,
+       5
+      ],
+      "B": [
+       37,
+       7
+      ],
+      "D": [
+       24,
+       0
+      ],
+      "C": [
+       31,
+       0
+      ]
+     },
+     {
+      "A": [
+       22,
+       5
+      ],
+      "B": [
+       39,
+       6
+      ],
+      "D": [
+       23,
+       0
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "A": [
+       21,
+       5
+      ],
+      "B": [
+       41,
+       6
+      ],
+      "D": [
+       22,
+       0
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "A": [
+       19,
+       5
+      ],
+      "B": [
+       40,
+       7
+      ],
+      "D": [
+       22,
+       0
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "A": [
+       17,
+       5
+      ],
+      "B": [
+       42,
+       8
+      ],
+      "D": [
+       24,
+       0
+      ],
+      "C": [
+       28,
+       0
+      ]
+     },
+     {
+      "A": [
+       15,
+       5
+      ],
+      "B": [
+       47,
+       10
+      ],
+      "D": [
+       24,
+       0
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       9
+      ],
+      "A": [
+       17,
+       4
+      ],
+      "D": [
+       26,
+       0
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "B": [
+       45,
+       9
+      ],
+      "A": [
+       21,
+       4
+      ],
+      "D": [
+       25,
+       0
+      ],
+      "C": [
+       24,
+       0
+      ]
+     },
+     {
+      "B": [
+       45,
+       9
+      ],
+      "A": [
+       21,
+       4
+      ],
+      "C": [
+       22,
+       2
+      ],
+      "D": [
+       26,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       9
+      ],
+      "A": [
+       22,
+       3
+      ],
+      "C": [
+       23,
+       2
+      ],
+      "D": [
+       27,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       8
+      ],
+      "A": [
+       24,
+       2
+      ],
+      "C": [
+       23,
+       2
+      ],
+      "D": [
+       25,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       8
+      ],
+      "A": [
+       20,
+       2
+      ],
+      "D": [
+       30,
+       0
+      ],
+      "C": [
+       20,
+       2
+      ]
+     },
+     {
+      "B": [
+       44,
+       8
+      ],
+      "A": [
+       20,
+       2
+      ],
+      "D": [
+       31,
+       0
+      ],
+      "C": [
+       21,
+       2
+      ]
+     },
+     {
+      "B": [
+       41,
+       9
+      ],
+      "D": [
+       30,
+       1
+      ],
+      "C": [
+       24,
+       1
+      ],
+      "A": [
+       17,
+       1
+      ]
+     },
+     {
+      "B": [
+       44,
+       10
+      ],
+      "D": [
+       30,
+       1
+      ],
+      "C": [
+       28,
+       0
+      ],
+      "A": [
+       18,
+       1
+      ]
+     },
+     {
+      "B": [
+       46,
+       10
+      ],
+      "C": [
+       27,
+       1
+      ],
+      "A": [
+       17,
+       1
+      ],
+      "D": [
+       29,
+       1
+      ]
+     },
+     {
+      "B": [
+       45,
+       10
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "C": [
+       26,
+       3
+      ],
+      "A": [
+       15,
+       0
+      ]
+     },
+     {
+      "B": [
+       42,
+       12
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "C": [
+       27,
+       2
+      ],
+      "A": [
+       16,
+       0
+      ]
+     },
+     {
+      "B": [
+       39,
+       11
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "C": [
+       25,
+       2
+      ],
+      "A": [
+       18,
+       0
+      ]
+     },
+     {
+      "B": [
+       39,
+       12
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "C": [
+       25,
+       2
+      ],
+      "A": [
+       19,
+       0
+      ]
+     },
+     {
+      "B": [
+       42,
+       11
+      ],
+      "D": [
+       28,
+       2
+      ],
+      "C": [
+       23,
+       1
+      ],
+      "A": [
+       16,
+       0
+      ]
+     },
+     {
+      "B": [
+       41,
+       10
+      ],
+      "D": [
+       28,
+       2
+      ],
+      "C": [
+       21,
+       4
+      ],
+      "A": [
+       16,
+       0
+      ]
+     },
+     {
+      "B": [
+       45,
+       10
+      ],
+      "D": [
+       28,
+       2
+      ],
+      "C": [
+       20,
+       3
+      ],
+      "A": [
+       12,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       11
+      ],
+      "D": [
+       29,
+       2
+      ],
+      "C": [
+       20,
+       1
+      ],
+      "A": [
+       13,
+       0
+      ]
+     },
+     {
+      "B": [
+       45,
+       11
+      ],
+      "D": [
+       28,
+       2
+      ],
+      "C": [
+       20,
+       1
+      ],
+      "A": [
+       13,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       12
+      ],
+      "D": [
+       30,
+       1
+      ],
+      "C": [
+       18,
+       2
+      ],
+      "A": [
+       14,
+       0
+      ]
+     },
+     {
+      "B": [
+       41,
+       13
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "C": [
+       16,
+       1
+      ],
+      "A": [
+       13,
+       0
+      ]
+     },
+     {
+      "B": [
+       41,
+       14
+      ],
+      "D": [
+       26,
+       2
+      ],
+      "C": [
+       15,
+       1
+      ],
+      "A": [
+       14,
+       0
+      ]
+     },
+     {
+      "B": [
+       39,
+       14
+      ],
+      "D": [
+       26,
+       2
+      ],
+      "C": [
+       13,
+       3
+      ],
+      "A": [
+       12,
+       0
+      ]
+     },
+     {
+      "B": [
+       40,
+       14
+      ],
+      "D": [
+       27,
+       2
+      ],
+      "C": [
+       12,
+       4
+      ],
+      "A": [
+       11,
+       0
+      ]
+     }
+    ]
+   },
+   "baseline_b": {
+    "agents": [
+     {
+      "id": "A01",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A02",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A03",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A04",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A05",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A06",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A07",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A08",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A09",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     },
+     {
+      "id": "B01",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B02",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B03",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B04",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B05",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B06",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B07",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B08",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B09",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B10",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B11",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C01",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C02",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C03",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C04",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C05",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C06",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C07",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C08",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C09",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D01",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D02",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D03",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D04",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D05",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D06",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D07",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D08",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D09",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D10",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D11",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     }
+    ],
+    "times": [
+     "18:00",
+     "18:05",
+     "18:10",
+     "18:15",
+     "18:20",
+     "18:25",
+     "18:30",
+     "18:35",
+     "18:40",
+     "18:45",
+     "18:50",
+     "18:55",
+     "19:00",
+     "19:05",
+     "19:10",
+     "19:15",
+     "19:20",
+     "19:25",
+     "19:30",
+     "19:35",
+     "19:40",
+     "19:45",
+     "19:50",
+     "19:55",
+     "20:00",
+     "20:05",
+     "20:10",
+     "20:15",
+     "20:20",
+     "20:25",
+     "20:30",
+     "20:35",
+     "20:40",
+     "20:45",
+     "20:50",
+     "20:55",
+     "21:00",
+     "21:05",
+     "21:10",
+     "21:15",
+     "21:20",
+     "21:25",
+     "21:30",
+     "21:35",
+     "21:40",
+     "21:45",
+     "21:50",
+     "21:55",
+     "22:00",
+     "22:05",
+     "22:10",
+     "22:15",
+     "22:20",
+     "22:25",
+     "22:30",
+     "22:35",
+     "22:40",
+     "22:45",
+     "22:50",
+     "22:55",
+     "23:00",
+     "23:05",
+     "23:10",
+     "23:15",
+     "23:20",
+     "23:25",
+     "23:30",
+     "23:35",
+     "23:40",
+     "23:45",
+     "23:50",
+     "23:55",
+     "00:00"
+    ],
+    "status": [
+     "oooiboibobooooobobbooooioioiioooobbbobbo",
+     "oooiboiioboooooiobbooooiobobboooobbbobbo",
+     "oooiiobboboooooioibooooboioiboooobbbobbo",
+     "oooiboiioboooooioiiooooioioiioooobbbobbo",
+     "ooobiobiobooooobobbooooioboiwoooobbbobbo",
+     "ooobioiboboooooiobiooooboiobioooobbbobbo",
+     "oooiioibobooooobobbooooboiobwoooobbbobbo",
+     "ooobbobbobooooobobboooobobobioooobbbobbo",
+     "ooobiobbobooooobobbooooboiobboooobbbobbo",
+     "oooiioiiobooooobowbooooioboiboooobbbobbo",
+     "oooiboiioboooooiobbooooboboiioooobbbobbo",
+     "oooibobboboooooioibooooioboiioooobbbobbo",
+     "oooibobioboooooioibooooioboiioooobbbowbo",
+     "ooobbobboboooooboiiooooiobobioooobbbobbo",
+     "ooobbobbobooooobobiooooioboiboooobbbobbo",
+     "ooobbobboboooooboiioooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobwbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobwobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobboooooooioiioooobobobboooobbbobbo",
+     "ooobbobboooooooboiioooobobobboooobbbobbo",
+     "ooobwobbooooooobobboooobobobboooobbbobbo",
+     "ooowbobbooooooobobioooobobobboooobbbobbo",
+     "oooiiobiooooooobobboooobobobboooobbbobbo",
+     "ooobbobiooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobioooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobowboooobbbobwo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobwbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooowobwoooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooowobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "oooobobbooooooobobboooobobobbooooobbowbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbowbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobowbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooowobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobwioooooobobbiooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooowobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobowbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooowobbbooooowobbooooobbobwo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobowboooooobobbo",
+     "oooooobbboooooobobbbooooobowboooooobobbo",
+     "oooooobbboooooobobbbooooobowboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobwoooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobwoooooobobbo",
+     "oooooobbboooooobobbbooooobobwoooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobwoooooobobwo",
+     "oooooobbboooooobobbbooooobobboooooobobbo"
+    ],
+    "queues": [
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       45,
+       0
+      ]
+     },
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       41,
+       0
+      ]
+     },
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       41,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       38,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       38,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       40,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       12,
+       1
+      ],
+      "D": [
+       40,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       12,
+       1
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       1
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "A": [
+       9,
+       1
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       6,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       15,
+       1
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       8,
+       1
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       31,
+       0
+      ],
+      "A": [
+       6,
+       1
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       17,
+       1
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       3,
+       2
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       17,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       3,
+       2
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       18,
+       1
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       3,
+       3
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       18,
+       2
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       5,
+       4
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       19,
+       2
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       4,
+       3
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       17,
+       3
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       4,
+       3
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       18,
+       3
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       3,
+       3
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       18,
+       3
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       5,
+       3
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       18,
+       4
+      ],
+      "D": [
+       31,
+       0
+      ],
+      "A": [
+       5,
+       3
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       21,
+       4
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       3,
+       3
+      ],
+      "C": [
+       9,
+       0
+      ]
+     },
+     {
+      "B": [
+       22,
+       4
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "A": [
+       6,
+       3
+      ],
+      "C": [
+       8,
+       0
+      ]
+     },
+     {
+      "B": [
+       24,
+       4
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "A": [
+       5,
+       3
+      ],
+      "C": [
+       15,
+       0
+      ]
+     },
+     {
+      "B": [
+       25,
+       4
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       6,
+       3
+      ],
+      "C": [
+       14,
+       0
+      ]
+     },
+     {
+      "B": [
+       28,
+       5
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "A": [
+       5,
+       3
+      ],
+      "C": [
+       16,
+       0
+      ]
+     },
+     {
+      "B": [
+       32,
+       5
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       5,
+       4
+      ],
+      "C": [
+       16,
+       0
+      ]
+     },
+     {
+      "B": [
+       33,
+       5
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       3,
+       4
+      ],
+      "C": [
+       21,
+       0
+      ]
+     },
+     {
+      "B": [
+       36,
+       5
+      ],
+      "D": [
+       25,
+       1
+      ],
+      "A": [
+       6,
+       4
+      ],
+      "C": [
+       19,
+       0
+      ]
+     },
+     {
+      "B": [
+       40,
+       5
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       7,
+       5
+      ],
+      "C": [
+       18,
+       0
+      ]
+     },
+     {
+      "B": [
+       41,
+       5
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       9,
+       5
+      ],
+      "C": [
+       16,
+       0
+      ]
+     },
+     {
+      "B": [
+       42,
+       6
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "A": [
+       10,
+       5
+      ],
+      "C": [
+       19,
+       0
+      ]
+     },
+     {
+      "B": [
+       42,
+       6
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       13,
+       5
+      ],
+      "C": [
+       22,
+       0
+      ]
+     },
+     {
+      "B": [
+       41,
+       6
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       24,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       6
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       6
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "A": [
+       12,
+       5
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       7
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       13,
+       5
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       7
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       30,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       7
+      ],
+      "D": [
+       26,
+       1
+      ],
+      "A": [
+       20,
+       5
+      ],
+      "C": [
+       28,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       7
+      ],
+      "D": [
+       26,
+       1
+      ],
+      "A": [
+       18,
+       5
+      ],
+      "C": [
+       26,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       8
+      ],
+      "D": [
+       25,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "B": [
+       50,
+       8
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       14,
+       5
+      ],
+      "C": [
+       30,
+       0
+      ]
+     },
+     {
+      "B": [
+       54,
+       9
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       14,
+       5
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       9
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       14,
+       4
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       9
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       20,
+       3
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       9
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       21,
+       2
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       9
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "A": [
+       21,
+       2
+      ],
+      "C": [
+       30,
+       0
+      ]
+     },
+     {
+      "B": [
+       48,
+       9
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       23,
+       1
+      ],
+      "C": [
+       28,
+       0
+      ]
+     },
+     {
+      "B": [
+       45,
+       9
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       22,
+       0
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "B": [
+       45,
+       9
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       22,
+       0
+      ],
+      "C": [
+       28,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       10
+      ],
+      "D": [
+       26,
+       1
+      ],
+      "A": [
+       19,
+       0
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       10
+      ],
+      "D": [
+       26,
+       1
+      ],
+      "A": [
+       19,
+       0
+      ],
+      "C": [
+       30,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       10
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       31,
+       0
+      ]
+     },
+     {
+      "B": [
+       50,
+       10
+      ],
+      "D": [
+       27,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       31,
+       0
+      ]
+     },
+     {
+      "B": [
+       50,
+       10
+      ],
+      "D": [
+       29,
+       1
+      ],
+      "A": [
+       20,
+       0
+      ],
+      "C": [
+       31,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       10
+      ],
+      "D": [
+       28,
+       1
+      ],
+      "A": [
+       21,
+       0
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       48,
+       11
+      ],
+      "D": [
+       30,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       29,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       12
+      ],
+      "D": [
+       32,
+       1
+      ],
+      "A": [
+       15,
+       0
+      ],
+      "C": [
+       27,
+       0
+      ]
+     },
+     {
+      "B": [
+       48,
+       12
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "A": [
+       12,
+       0
+      ],
+      "C": [
+       28,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       12
+      ],
+      "D": [
+       32,
+       1
+      ],
+      "A": [
+       11,
+       0
+      ],
+      "C": [
+       25,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       13
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "A": [
+       11,
+       0
+      ],
+      "C": [
+       23,
+       0
+      ]
+     },
+     {
+      "B": [
+       50,
+       13
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "A": [
+       12,
+       0
+      ],
+      "C": [
+       22,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       14
+      ],
+      "D": [
+       33,
+       1
+      ],
+      "A": [
+       9,
+       0
+      ],
+      "C": [
+       20,
+       0
+      ]
+     },
+     {
+      "B": [
+       46,
+       15
+      ],
+      "D": [
+       31,
+       1
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "C": [
+       20,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       16
+      ],
+      "D": [
+       30,
+       1
+      ],
+      "A": [
+       11,
+       0
+      ],
+      "C": [
+       20,
+       0
+      ]
+     },
+     {
+      "B": [
+       39,
+       16
+      ],
+      "D": [
+       30,
+       1
+      ],
+      "A": [
+       10,
+       0
+      ],
+      "C": [
+       18,
+       0
+      ]
+     },
+     {
+      "B": [
+       41,
+       16
+      ],
+      "D": [
+       32,
+       1
+      ],
+      "A": [
+       10,
+       0
+      ],
+      "C": [
+       17,
+       0
+      ]
+     }
+    ]
+   },
+   "baseline_d": {
+    "agents": [
+     {
+      "id": "A01",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A02",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A03",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A04",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A05",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A06",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A07",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A08",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A09",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     },
+     {
+      "id": "B01",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B02",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B03",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B04",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B05",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B06",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B07",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B08",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B09",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B10",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B11",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C01",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C02",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C03",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C04",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C05",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C06",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C07",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C08",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C09",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D01",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D02",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D03",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D04",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D05",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D06",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D07",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D08",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D09",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D10",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D11",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     }
+    ],
+    "times": [
+     "18:00",
+     "18:05",
+     "18:10",
+     "18:15",
+     "18:20",
+     "18:25",
+     "18:30",
+     "18:35",
+     "18:40",
+     "18:45",
+     "18:50",
+     "18:55",
+     "19:00",
+     "19:05",
+     "19:10",
+     "19:15",
+     "19:20",
+     "19:25",
+     "19:30",
+     "19:35",
+     "19:40",
+     "19:45",
+     "19:50",
+     "19:55",
+     "20:00",
+     "20:05",
+     "20:10",
+     "20:15",
+     "20:20",
+     "20:25",
+     "20:30",
+     "20:35",
+     "20:40",
+     "20:45",
+     "20:50",
+     "20:55",
+     "21:00",
+     "21:05",
+     "21:10",
+     "21:15",
+     "21:20",
+     "21:25",
+     "21:30",
+     "21:35",
+     "21:40",
+     "21:45",
+     "21:50",
+     "21:55",
+     "22:00",
+     "22:05",
+     "22:10",
+     "22:15",
+     "22:20",
+     "22:25",
+     "22:30",
+     "22:35",
+     "22:40",
+     "22:45",
+     "22:50",
+     "22:55",
+     "23:00",
+     "23:05",
+     "23:10",
+     "23:15",
+     "23:20",
+     "23:25",
+     "23:30",
+     "23:35",
+     "23:40",
+     "23:45",
+     "23:50",
+     "23:55",
+     "00:00"
+    ],
+    "status": [
+     "oooiiobbobooooobobbooooioioiioooobbbobbo",
+     "oooiiobiobooooobobbooooioiobboooobbbobbo",
+     "oooiioibobooooobobbooooioboiioooobbbobbo",
+     "oooiioiiobooooobobbooooboioiioooobbbobbo",
+     "ooobiobiobooooobobbooooioioiboooobbbobbo",
+     "ooobboiiobooooobobbooooiobobioooobbbobbo",
+     "oooibobiobooooobobbooooiobobioooobbbobbo",
+     "ooobbobbobooooobobbooooboiobioooobbbobbo",
+     "oooibobbobooooobobbooooboiobboooobbbobbo",
+     "oooiioiiobooooobobbooooioboiboooobbbobbo",
+     "ooobioiiobooooobobbooooboboiioooobbbobbo",
+     "ooobbobiobooooobobbooooioboiioooobbbobbo",
+     "ooobiobiobooooobobbooooioboiioooobbbowbo",
+     "ooobbobbobooooobobbooooiobobioooobbbobbo",
+     "ooobbobbobooooobobbooooioboiboooobbbobbo",
+     "ooobbobboboooooiobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobioooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobboooooooioiioooobobobboooobbbobbo",
+     "ooobbobboooooooboiiooooiobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "oooiioiiooooooobobbooooboboiboooobbbobbo",
+     "oooibobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobbooooboiobboooobbbobbo",
+     "ooobbobbooooooobobwoooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "ooobbobbooooooobobboooobobobboooobbbobbo",
+     "oooobobbooooooobobboooobobobbooooobbobbo",
+     "oooobobbooooooobobboooobobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobwobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobbooooobbobbo",
+     "oooobobbooooooobobboooooobobiooooobbobbo",
+     "oooobobbooooooobobbooooooiobiooooobbobbo",
+     "oooobobbooooooobobbooooooboibooooobbobbo",
+     "oooobobbooooooobobboooooobobiooooobbobbo",
+     "oooobobbioooooobobbiooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobiooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbboooooiobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooowobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbboooooboibooooobbobbo",
+     "oooobobbboooooobobbbooooobobiooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobbooooobbobbo",
+     "oooobobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbbooooobobboooooobobbo",
+     "oooooobbboooooobobbboooooioiioooooobobbo",
+     "oooooobbboooooobobbboooooiobioooooobobbo",
+     "oooooobbboooooobobbboooooiobioooooobobbo",
+     "oooooobbboooooobobbboooooioiioooooobobbo",
+     "oooooobbboooooobobbboooooioiioooooobobbo",
+     "oooooobbboooooobobbboooooioiboooooobobbo",
+     "oooooobbboooooobobbboooooiobioooooobobbo",
+     "oooooobbboooooobobbboooooboiioooooobobbo",
+     "oooooobbboooooobobbboooooiobioooooobobbo",
+     "oooooobbboooooobobbbooooooobioooooobobbo"
+    ],
+    "queues": [
+     {
+      "B": [
+       16,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ]
+     },
+     {
+      "D": [
+       35,
+       0
+      ],
+      "B": [
+       15,
+       0
+      ]
+     },
+     {
+      "D": [
+       36,
+       0
+      ],
+      "B": [
+       14,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       34,
+       0
+      ],
+      "B": [
+       12,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       35,
+       0
+      ],
+      "B": [
+       14,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       36,
+       0
+      ],
+      "B": [
+       13,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       11,
+       0
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       11,
+       0
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       10,
+       0
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       9,
+       0
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       8,
+       0
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       9,
+       0
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       10,
+       0
+      ],
+      "D": [
+       29,
+       0
+      ],
+      "A": [
+       9,
+       1
+      ]
+     },
+     {
+      "B": [
+       9,
+       0
+      ],
+      "D": [
+       27,
+       0
+      ],
+      "A": [
+       7,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       11,
+       0
+      ],
+      "D": [
+       30,
+       0
+      ],
+      "A": [
+       9,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       10,
+       0
+      ],
+      "D": [
+       31,
+       0
+      ],
+      "A": [
+       7,
+       1
+      ]
+     },
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       5,
+       2
+      ]
+     },
+     {
+      "B": [
+       12,
+       0
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       2,
+       2
+      ]
+     },
+     {
+      "B": [
+       13,
+       0
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "A": [
+       4,
+       3
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       13,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       6,
+       4
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       4,
+       3
+      ]
+     },
+     {
+      "B": [
+       13,
+       1
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       3,
+       3
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       3,
+       3
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       5,
+       3
+      ]
+     },
+     {
+      "B": [
+       14,
+       1
+      ],
+      "D": [
+       33,
+       0
+      ],
+      "A": [
+       5,
+       3
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       18,
+       1
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       4,
+       3
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       17,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       5,
+       3
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       20,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       4,
+       3
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "B": [
+       23,
+       1
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       7,
+       3
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       24,
+       2
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       8,
+       3
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       29,
+       2
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       10,
+       4
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       30,
+       2
+      ],
+      "D": [
+       35,
+       1
+      ],
+      "A": [
+       5,
+       4
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       35,
+       2
+      ],
+      "D": [
+       34,
+       1
+      ],
+      "A": [
+       7,
+       4
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       37,
+       2
+      ],
+      "D": [
+       38,
+       1
+      ],
+      "A": [
+       8,
+       5
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       39,
+       2
+      ],
+      "D": [
+       39,
+       1
+      ],
+      "A": [
+       10,
+       5
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       39,
+       3
+      ],
+      "D": [
+       38,
+       1
+      ],
+      "A": [
+       12,
+       5
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       40,
+       3
+      ],
+      "D": [
+       39,
+       1
+      ],
+      "A": [
+       14,
+       5
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       40,
+       3
+      ],
+      "D": [
+       38,
+       1
+      ],
+      "A": [
+       14,
+       5
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       42,
+       3
+      ],
+      "D": [
+       40,
+       1
+      ],
+      "A": [
+       17,
+       5
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       3
+      ],
+      "D": [
+       43,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       4
+      ],
+      "D": [
+       42,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       4
+      ],
+      "D": [
+       42,
+       1
+      ],
+      "A": [
+       20,
+       5
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       43,
+       4
+      ],
+      "D": [
+       43,
+       1
+      ],
+      "A": [
+       21,
+       5
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       4
+      ],
+      "D": [
+       42,
+       1
+      ],
+      "A": [
+       21,
+       5
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       44,
+       5
+      ],
+      "D": [
+       40,
+       1
+      ],
+      "A": [
+       17,
+       5
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       48,
+       5
+      ],
+      "D": [
+       43,
+       1
+      ],
+      "A": [
+       16,
+       5
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       53,
+       6
+      ],
+      "D": [
+       43,
+       1
+      ],
+      "A": [
+       15,
+       5
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       6
+      ],
+      "D": [
+       44,
+       1
+      ],
+      "A": [
+       15,
+       3
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       6
+      ],
+      "D": [
+       43,
+       1
+      ],
+      "A": [
+       21,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       50,
+       6
+      ],
+      "D": [
+       44,
+       1
+      ],
+      "A": [
+       22,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       49,
+       6
+      ],
+      "D": [
+       45,
+       1
+      ],
+      "A": [
+       21,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       6
+      ],
+      "D": [
+       43,
+       1
+      ],
+      "A": [
+       21,
+       0
+      ]
+     },
+     {
+      "B": [
+       46,
+       6
+      ],
+      "D": [
+       45,
+       1
+      ],
+      "A": [
+       20,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       6
+      ],
+      "D": [
+       47,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ]
+     },
+     {
+      "B": [
+       47,
+       7
+      ],
+      "D": [
+       47,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ]
+     },
+     {
+      "B": [
+       50,
+       7
+      ],
+      "D": [
+       47,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       52,
+       7
+      ],
+      "D": [
+       49,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       54,
+       7
+      ],
+      "D": [
+       50,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       54,
+       7
+      ],
+      "D": [
+       51,
+       1
+      ],
+      "A": [
+       20,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       54,
+       7
+      ],
+      "D": [
+       49,
+       1
+      ],
+      "A": [
+       19,
+       0
+      ]
+     },
+     {
+      "B": [
+       52,
+       8
+      ],
+      "D": [
+       50,
+       1
+      ],
+      "A": [
+       18,
+       0
+      ]
+     },
+     {
+      "B": [
+       53,
+       8
+      ],
+      "D": [
+       50,
+       1
+      ],
+      "A": [
+       14,
+       0
+      ]
+     },
+     {
+      "B": [
+       53,
+       8
+      ],
+      "D": [
+       51,
+       1
+      ],
+      "A": [
+       12,
+       0
+      ]
+     },
+     {
+      "B": [
+       55,
+       8
+      ],
+      "A": [
+       9,
+       0
+      ],
+      "D": [
+       51,
+       1
+      ]
+     },
+     {
+      "B": [
+       53,
+       9
+      ],
+      "A": [
+       8,
+       0
+      ],
+      "D": [
+       50,
+       1
+      ]
+     },
+     {
+      "B": [
+       54,
+       9
+      ],
+      "A": [
+       8,
+       0
+      ],
+      "D": [
+       49,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       53,
+       10
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "D": [
+       52,
+       1
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       51,
+       11
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "D": [
+       49,
+       1
+      ]
+     },
+     {
+      "B": [
+       49,
+       12
+      ],
+      "A": [
+       9,
+       0
+      ],
+      "D": [
+       46,
+       1
+      ]
+     },
+     {
+      "B": [
+       47,
+       12
+      ],
+      "A": [
+       10,
+       0
+      ],
+      "D": [
+       45,
+       1
+      ]
+     },
+     {
+      "B": [
+       45,
+       12
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "D": [
+       46,
+       1
+      ]
+     }
+    ]
+   },
+   "opslens": {
+    "agents": [
+     {
+      "id": "A01",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A02",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A03",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A04",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A05",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A06",
+      "team": "A",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "A07",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "A08",
+      "team": "A",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "A09",
+      "team": "A",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     },
+     {
+      "id": "B01",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B02",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B03",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B04",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B05",
+      "team": "B",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "B06",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B07",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B08",
+      "team": "B",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "B09",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B10",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "B11",
+      "team": "B",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C01",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C02",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C03",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "C04",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C05",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C06",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C07",
+      "team": "C",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "C08",
+      "team": "C",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "C09",
+      "team": "C",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D01",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D02",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D03",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D04",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D05",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D06",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D07",
+      "team": "D",
+      "languages": [
+       "en",
+       "other"
+      ]
+     },
+     {
+      "id": "D08",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D09",
+      "team": "D",
+      "languages": [
+       "en"
+      ]
+     },
+     {
+      "id": "D10",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi"
+      ]
+     },
+     {
+      "id": "D11",
+      "team": "D",
+      "languages": [
+       "en",
+       "hi",
+       "other"
+      ]
+     }
+    ],
+    "times": [
+     "18:00",
+     "18:05",
+     "18:10",
+     "18:15",
+     "18:20",
+     "18:25",
+     "18:30",
+     "18:35",
+     "18:40",
+     "18:45",
+     "18:50",
+     "18:55",
+     "19:00",
+     "19:05",
+     "19:10",
+     "19:15",
+     "19:20",
+     "19:25",
+     "19:30",
+     "19:35",
+     "19:40",
+     "19:45",
+     "19:50",
+     "19:55",
+     "20:00",
+     "20:05",
+     "20:10",
+     "20:15",
+     "20:20",
+     "20:25",
+     "20:30",
+     "20:35",
+     "20:40",
+     "20:45",
+     "20:50",
+     "20:55",
+     "21:00",
+     "21:05",
+     "21:10",
+     "21:15",
+     "21:20",
+     "21:25",
+     "21:30",
+     "21:35",
+     "21:40",
+     "21:45",
+     "21:50",
+     "21:55",
+     "22:00",
+     "22:05",
+     "22:10",
+     "22:15",
+     "22:20",
+     "22:25",
+     "22:30",
+     "22:35",
+     "22:40",
+     "22:45",
+     "22:50",
+     "22:55",
+     "23:00",
+     "23:05",
+     "23:10",
+     "23:15",
+     "23:20",
+     "23:25",
+     "23:30",
+     "23:35",
+     "23:40",
+     "23:45",
+     "23:50",
+     "23:55",
+     "00:00"
+    ],
+    "status": [
+     "ooobioiboiooooobobbooooiiioiioooobbbobbo",
+     "oooiioiboiooooobobiooooiiiobboooobbbobbo",
+     "ooobboiioioooooiobxoooobiioiioooobbbobbo",
+     "oooiboiioboooooioixooooiiioiioooobbbobbo",
+     "ooobiobiobooooobobbooooiiioxboooobbbobbo",
+     "ooobioiboboooooioiboooobiboxioooobbbobbo",
+     "ooobioibobooooobobboooobiboiioooobbbobbo",
+     "ooobbobbobooooobobbooooiibobxoooobbbobbo",
+     "oooibobbobooooobobboooobibobxoooobbbobbo",
+     "oooiioiiobooooobobxoooobiiobioooobbbobbo",
+     "ooobioiiobooooobobxooooiixobboooobbbobbo",
+     "ooobbobioboooooiobiooooiixobioooobbbobbo",
+     "ooobiobioboooooiobiooooiixobioooobbbobbo",
+     "ooobbobboboooooioibooooxixobboooobbbobbo",
+     "ooobbobboboooooiobbooooxbiobioooobbbobwo",
+     "ooobbobboboooooboibooooxbboxboooobbbobbo",
+     "ooobbobbooooooobobbooooxbboxboooobbbobbo",
+     "ooobbobbooooooobobbooooxbboxboooobbbobbo",
+     "ooobbobbooooooobobbooooxbbobboooobbbobbo",
+     "ooobxobbooooooobobbooooxbxobboooobbbobbo",
+     "ooobxobboooooooioixooooxbxobboooobbbobbo",
+     "ooobxobboooooooboixoooobixobboooobbbobbo",
+     "ooobbobbooooooobobbooooxbboxboooobbbobbo",
+     "ooobbobboooooooxobbooooxbboxboooobbbobbo",
+     "ooobbobboooooooxobbooooxbboxboooobbbobbo",
+     "ooobbobboooooooxobbooooxbboxboooobwbobbo",
+     "ooobbobboooooooxobbooooxbboxboooobbbobbo",
+     "ooobbobbooooooobobboooobbbobboooobbbobbo",
+     "ooobbobbooooooobobbooooibbobboooobbbobbo",
+     "ooobbobbooooooobobboooobbbobboooobbbobbo",
+     "ooobbobbooooooobobboooobbbobboooobxbobbo",
+     "ooobbobbooooooobobboooobbbobboooobxbobbo",
+     "ooobbobbooooooobobboooobbbobboooobbbobbo",
+     "ooobbobbooooooobobboooobbbobboooobbbobbo",
+     "ooobbobbooooooobobboooobbboxboooobbbobbo",
+     "ooobbobbooooooobobboooobbboxbooooxbbobbo",
+     "ooobbobbooooooobobwoooobbbobbooooxbbobbo",
+     "oooobobbooooooobobbooooobxoxbooooxbboxbo",
+     "oooobobbooooooobobbooooobxoxbooooobboxbo",
+     "oooobobbooooooobobbooooobboxbooooobboxbo",
+     "oooobobbooooooobobbooooobboxbooooobboxbo",
+     "oooobobbooooooobobbooooobboxbooooobbobwo",
+     "oooobobbooooooobobbooooobboxbooooobbobbo",
+     "oooobobbooooooobobbooooobboxboooooxbobxo",
+     "oooobobbooooooobobbooooobxoxxoooooxxobxo",
+     "oooobobbooooooobobbooooobxoxxooooobxobxo",
+     "oooobobbooooooobobboooooiboxbooooobbobxo",
+     "oooobobbooooooobobboooooxboxbooooobbobxo",
+     "oooobobbioooooobobbiooooxboxbooooobbobxo",
+     "oooobowbboooooobobbbooooxboxiooooobbobbo",
+     "oooobobbboooooobobbboooobboxbooooobbobbo",
+     "oooobobbboooooobobbboooobbobbooooobbobbo",
+     "oooobobbboooooobobbboooobbobwooooobbobxo",
+     "oooobobbboooooobobbboooobbobbooooobbobxo",
+     "oooobobbboooooobobbboooobboxbooooobbobxo",
+     "oooobobbboooooobobbboooobboxbooooobbobxo",
+     "oooobobbboooooobobbbooooxbobbooooobbobbo",
+     "oooobobbboooooobobbbooooxbobbooooobbobbo",
+     "oooobobbboooooobobbbooooxbobboooooxbobbo",
+     "oooobobbboooooobobbbooooxbobboooooxbobbo",
+     "oooobobbboooooobobbbooooxbobboooooxbobbo",
+     "oooooobbboooooobobbbooooobobxoooooxbobbo",
+     "oooooobbboooooobobbboooooxobxoooooxbobbo",
+     "oooooobbboooooobobbboooooxoxxoooooobobbo",
+     "oooooobbboooooobobbboooooxoxxoooooobobbo",
+     "ooooooxbboooooobobbboooooxoxxoooooobobbo",
+     "ooooooxbboooooobobbboooooxoxboooooobobbo",
+     "ooooooxbboooooobobbboooooxobboooooobobbo",
+     "oooooobbboooooobobbboooooxobioooooobobbo",
+     "oooooobbboooooobobbboooooxoxboooooobobbo",
+     "oooooobbboooooobobbboooooxoxboooooobobbo",
+     "oooooobbboooooobobbboooooxoxboooooobobbo",
+     "oooooobbboooooobobbboooooxoxboooooobobbo"
+    ],
+    "queues": [
+     {
+      "D": [
+       27,
+       0
+      ]
+     },
+     {
+      "D": [
+       23,
+       0
+      ]
+     },
+     {
+      "D": [
+       23,
+       0
+      ]
+     },
+     {
+      "D": [
+       22,
+       0
+      ]
+     },
+     {
+      "D": [
+       21,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       20,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       17,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       18,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       19,
+       0
+      ],
+      "A": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       21,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       22,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       22,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       18,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       17,
+       0
+      ],
+      "A": [
+       1,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       16,
+       0
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       15,
+       0
+      ],
+      "A": [
+       5,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "D": [
+       16,
+       0
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       15,
+       0
+      ],
+      "A": [
+       5,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       16,
+       0
+      ],
+      "A": [
+       3,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       16,
+       0
+      ],
+      "A": [
+       3,
+       0
+      ],
+      "B": [
+       1,
+       0
+      ]
+     },
+     {
+      "D": [
+       17,
+       0
+      ],
+      "A": [
+       6,
+       0
+      ],
+      "B": [
+       2,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "D": [
+       18,
+       0
+      ],
+      "A": [
+       7,
+       1
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       6,
+       2
+      ],
+      "D": [
+       17,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       1
+      ],
+      "D": [
+       17,
+       0
+      ],
+      "B": [
+       3,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       1,
+       1
+      ],
+      "D": [
+       19,
+       0
+      ],
+      "B": [
+       4,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       1
+      ],
+      "D": [
+       18,
+       0
+      ],
+      "B": [
+       4,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       1
+      ],
+      "D": [
+       17,
+       0
+      ],
+      "B": [
+       5,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "A": [
+       4,
+       1
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       5,
+       1
+      ],
+      "D": [
+       17,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       6,
+       1
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "B": [
+       8,
+       0
+      ],
+      "C": [
+       6,
+       0
+      ]
+     },
+     {
+      "A": [
+       8,
+       1
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "B": [
+       11,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       9,
+       1
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "B": [
+       14,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "A": [
+       10,
+       1
+      ],
+      "B": [
+       18,
+       0
+      ],
+      "D": [
+       14,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       7,
+       1
+      ],
+      "B": [
+       19,
+       0
+      ],
+      "D": [
+       15,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       9,
+       1
+      ],
+      "B": [
+       23,
+       0
+      ],
+      "D": [
+       16,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       10,
+       1
+      ],
+      "B": [
+       26,
+       0
+      ],
+      "D": [
+       18,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       12,
+       1
+      ],
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       21,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "A": [
+       15,
+       1
+      ],
+      "B": [
+       25,
+       0
+      ],
+      "D": [
+       19,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "A": [
+       16,
+       1
+      ],
+      "B": [
+       26,
+       0
+      ],
+      "D": [
+       20,
+       0
+      ],
+      "C": [
+       6,
+       0
+      ]
+     },
+     {
+      "A": [
+       19,
+       1
+      ],
+      "B": [
+       27,
+       0
+      ],
+      "D": [
+       21,
+       0
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "A": [
+       20,
+       1
+      ],
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       24,
+       0
+      ],
+      "C": [
+       8,
+       0
+      ]
+     },
+     {
+      "A": [
+       17,
+       1
+      ],
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       26,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       20,
+       1
+      ],
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       26,
+       0
+      ],
+      "C": [
+       6,
+       0
+      ]
+     },
+     {
+      "A": [
+       23,
+       1
+      ],
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       27,
+       0
+      ],
+      "C": [
+       8,
+       0
+      ]
+     },
+     {
+      "A": [
+       21,
+       1
+      ],
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       29,
+       0
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "A": [
+       19,
+       1
+      ],
+      "B": [
+       30,
+       0
+      ],
+      "D": [
+       28,
+       0
+      ],
+      "C": [
+       6,
+       0
+      ]
+     },
+     {
+      "A": [
+       16,
+       1
+      ],
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       27,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "A": [
+       14,
+       1
+      ],
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       30,
+       0
+      ],
+      "C": [
+       7,
+       0
+      ]
+     },
+     {
+      "A": [
+       14,
+       1
+      ],
+      "B": [
+       35,
+       0
+      ],
+      "D": [
+       31,
+       0
+      ],
+      "C": [
+       6,
+       0
+      ]
+     },
+     {
+      "B": [
+       33,
+       0
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       13,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       32,
+       0
+      ],
+      "D": [
+       30,
+       0
+      ],
+      "A": [
+       18,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       33,
+       0
+      ],
+      "D": [
+       30,
+       0
+      ],
+      "A": [
+       18,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       32,
+       0
+      ],
+      "A": [
+       18,
+       1
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       30,
+       0
+      ],
+      "D": [
+       31,
+       0
+      ],
+      "A": [
+       20,
+       1
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       24,
+       0
+      ],
+      "D": [
+       34,
+       0
+      ],
+      "A": [
+       16,
+       1
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       26,
+       0
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       17,
+       0
+      ],
+      "C": [
+       1,
+       0
+      ]
+     },
+     {
+      "B": [
+       25,
+       0
+      ],
+      "D": [
+       35,
+       0
+      ],
+      "A": [
+       15,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       14,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       30,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       12,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       13,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       41,
+       0
+      ],
+      "A": [
+       13,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       40,
+       0
+      ],
+      "A": [
+       14,
+       0
+      ],
+      "C": [
+       4,
+       0
+      ]
+     },
+     {
+      "B": [
+       28,
+       0
+      ],
+      "D": [
+       40,
+       0
+      ],
+      "A": [
+       12,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       29,
+       0
+      ],
+      "D": [
+       42,
+       0
+      ],
+      "A": [
+       10,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       30,
+       0
+      ],
+      "D": [
+       41,
+       0
+      ],
+      "A": [
+       8,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       31,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       8,
+       0
+      ],
+      "C": [
+       5,
+       0
+      ]
+     },
+     {
+      "B": [
+       32,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       9,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       33,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       10,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       32,
+       0
+      ],
+      "D": [
+       41,
+       0
+      ],
+      "A": [
+       9,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       30,
+       0
+      ],
+      "D": [
+       39,
+       0
+      ],
+      "A": [
+       7,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       26,
+       0
+      ],
+      "D": [
+       38,
+       0
+      ],
+      "A": [
+       9,
+       0
+      ],
+      "C": [
+       3,
+       0
+      ]
+     },
+     {
+      "B": [
+       25,
+       0
+      ],
+      "D": [
+       36,
+       0
+      ],
+      "A": [
+       10,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     },
+     {
+      "B": [
+       23,
+       0
+      ],
+      "D": [
+       37,
+       0
+      ],
+      "A": [
+       11,
+       0
+      ],
+      "C": [
+       2,
+       0
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "decisions": [
+  {
+   "minute": 68910.12475644522,
+   "ticket_idx": 60585,
+   "agent_id": "D09",
+   "value": 0.433,
+   "reason": "P2 missing item, English, waiting 6 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060586"
+  },
+  {
+   "minute": 68910.99513014352,
+   "ticket_idx": 60602,
+   "agent_id": "C09",
+   "value": 0.476,
+   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060603"
+  },
+  {
+   "minute": 68912.85454548214,
+   "ticket_idx": 60541,
+   "agent_id": "A07",
+   "value": 0.885,
+   "reason": "P2 late delivery, Hindi, waiting 29 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060542"
+  },
+  {
+   "minute": 68913.70768018044,
+   "ticket_idx": 60605,
+   "agent_id": "A08",
+   "value": 1.522,
+   "reason": "P1 late delivery, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060606"
+  },
+  {
+   "minute": 68914.29243874861,
+   "ticket_idx": 60593,
+   "agent_id": "B09",
+   "value": 1.861,
+   "reason": "P1 payment failure, English, waiting 9 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060594"
+  },
+  {
+   "minute": 68915.05847729252,
+   "ticket_idx": 60609,
+   "agent_id": "D06",
+   "value": 1.525,
+   "reason": "P1 missing item, Hindi, waiting 0 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060610"
+  },
+  {
+   "minute": 68915.86571231253,
+   "ticket_idx": 60590,
+   "agent_id": "C04",
+   "value": 0.535,
+   "reason": "P2 missing item, English, waiting 11 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060591"
+  },
+  {
+   "minute": 68915.91975184785,
+   "ticket_idx": 60586,
+   "agent_id": "C08",
+   "value": 0.528,
+   "reason": "P2 wrong item, Hindi, waiting 12 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060587"
+  },
+  {
+   "minute": 68915.99659497985,
+   "ticket_idx": 60608,
+   "agent_id": "B10",
+   "value": 0.754,
+   "reason": "P1 payment failure, English, waiting 1 min; breach risk 0.20 -> 0.03 if served now; rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060609"
+  },
+  {
+   "minute": 68916.15753893314,
+   "ticket_idx": 60603,
+   "agent_id": "A07",
+   "value": 1.704,
+   "reason": "P1 late delivery, Hindi, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060604"
+  },
+  {
+   "minute": 68916.43049949786,
+   "ticket_idx": 60534,
+   "agent_id": "D07",
+   "value": 0.447,
+   "reason": "P3 app bug, English, waiting 38 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060535"
+  },
+  {
+   "minute": 68917.42830364441,
+   "ticket_idx": 60610,
+   "agent_id": "C05",
+   "value": 0.391,
+   "reason": "P2 missing item, English, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060611"
+  },
+  {
+   "minute": 68917.42941633445,
+   "ticket_idx": 60424,
+   "agent_id": "D05",
+   "value": 0.444,
+   "reason": "P3 restaurant partner, English, waiting 110 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060425"
+  },
+  {
+   "minute": 68918.09334981487,
+   "ticket_idx": 60607,
+   "agent_id": "A08",
+   "value": 1.326,
+   "reason": "P1 late delivery, English, waiting 4 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060608"
+  },
+  {
+   "minute": 68918.31869274769,
+   "ticket_idx": 60619,
+   "agent_id": "C09",
+   "value": 0.482,
+   "reason": "P2 missing item, English, waiting 0 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060620"
+  },
+  {
+   "minute": 68919.38952618095,
+   "ticket_idx": 60615,
+   "agent_id": "A05",
+   "value": 1.091,
+   "reason": "P1 late delivery, English, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060616"
+  },
+  {
+   "minute": 68920.29699030923,
+   "ticket_idx": 60617,
+   "agent_id": "C06",
+   "value": 0.367,
+   "reason": "P2 wrong item, Hindi, waiting 3 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060618"
+  },
+  {
+   "minute": 68920.36207238639,
+   "ticket_idx": 60622,
+   "agent_id": "A04",
+   "value": 0.874,
+   "reason": "P1 late delivery, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060623"
+  },
+  {
+   "minute": 68921.26491091927,
+   "ticket_idx": 60573,
+   "agent_id": "A08",
+   "value": 0.802,
+   "reason": "P2 late delivery, English, waiting 22 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060574"
+  },
+  {
+   "minute": 68921.57685458563,
+   "ticket_idx": 60627,
+   "agent_id": "C05",
+   "value": 0.517,
+   "reason": "P2 missing item, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060628"
+  },
+  {
+   "minute": 68921.90061670034,
+   "ticket_idx": 60623,
+   "agent_id": "B07",
+   "value": 1.311,
+   "reason": "P1 payment failure, English, waiting 2 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060624"
+  },
+  {
+   "minute": 68922.13854482309,
+   "ticket_idx": 60628,
+   "agent_id": "D09",
+   "value": 0.495,
+   "reason": "P2 app bug, English, waiting 1 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060629"
+  },
+  {
+   "minute": 68922.67649037058,
+   "ticket_idx": 60595,
+   "agent_id": "A04",
+   "value": 0.641,
+   "reason": "P2 late delivery, English, waiting 17 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060596"
+  },
+  {
+   "minute": 68924.515703904,
+   "ticket_idx": 60594,
+   "agent_id": "B10",
+   "value": 0.921,
+   "reason": "P2 refund, English, waiting 19 min; low risk - served in turn (fairness by waiting time); rare-skill agent, no rare work is more urgent",
+   "ticket_id": "T060595"
+  },
+  {
+   "minute": 68924.60195375669,
+   "ticket_idx": 60630,
+   "agent_id": "D06",
+   "value": 0.533,
+   "reason": "P2 wrong item, English, waiting 2 min; low risk - served in turn (fairness by waiting time)",
+   "ticket_id": "T060631"
+  }
+ ],
+ "solver": [
+  {
+   "solves": 20173,
+   "fallbacks": 0,
+   "median_ms": 0.06320000102277845,
+   "max_ms": 0.8625999980722554
+  },
+  {
+   "solves": 20234,
+   "fallbacks": 0,
+   "median_ms": 0.058099998568650335,
+   "max_ms": 0.8711000045877881
+  },
+  {
+   "solves": 20194,
+   "fallbacks": 0,
+   "median_ms": 0.05570000212173909,
+   "max_ms": 0.6833000006736256
+  },
+  {
+   "solves": 20201,
+   "fallbacks": 0,
+   "median_ms": 0.06040000153006986,
+   "max_ms": 0.6575000006705523
+  },
+  {
+   "solves": 20180,
+   "fallbacks": 0,
+   "median_ms": 0.05300000339047983,
+   "max_ms": 0.5970000056549907
+  }
+ ],
+ "weights": {
+  "urgency_weight": {
+   "P1": 3.0,
+   "P2": 1.5,
+   "P3": 1.0
+  },
+  "gold_weight": 1.5,
+  "order_value_weight": 0.1,
+  "rescue_floor": 0.2,
+  "aging_per_hour": 1.0,
+  "mismatch_penalty": 2.0,
+  "cross_skill_min_rescue": 0.5,
+  "scarcity_weight": 0.3,
+  "max_wait_min": 240,
+  "starvation_bonus": 50.0,
+  "risk_refresh_min": 3,
+  "new_ticket_rescue": 0.3,
+  "top_k_per_agent": 30,
+  "time_budget_s": 1.0,
+  "aging_in_sla_units": true,
+  "aging_per_sla": 3.0,
+  "aging_cap": 1.0,
+  "max_late_min": 480,
+  "aging_lost": 0.2,
+  "guard_queue_limit": 150
+ }
+}
