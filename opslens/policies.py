@@ -9,6 +9,9 @@ Baselines (the status quo we must beat):
 
 Both are fair, realistic floors: language is always respected, agents never take tickets
 outside their skills on purpose, and longest-idle agents choose first.
+Baselines C (SLA due) and D (industry-standard skills routing) follow; then the strongest rules
+from the scheduling literature (least slack first, generalized c-mu) and a clairvoyant ceiling
+that is NOT implementable (added 18 Oct; docs/explain/baselines.md).
 
 **OpsLens** (bottom of this file): routes by the classifier's category, values each ticket by
 how much serving it NOW cuts its breach risk (risk model), protects rare skills, and assigns
@@ -21,6 +24,7 @@ Baseline A gives B03 T1 (oldest in Team B's queue). Baseline B gives B03 T2 (P1 
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Callable
 
@@ -175,6 +179,175 @@ class SkillsRoutingPolicy:
 def baseline_d(world: World, predicted: dict[str, str]) -> SkillsRoutingPolicy:
     """Industry-standard skills-based routing with AI triage."""
     return SkillsRoutingPolicy(world, predicted)
+
+
+# ---- The strongest published rules (added 18 Oct) --------------------------------------------
+# "Industry standard" (D) is a helpdesk default. These are the rules the scheduling literature
+# says are best for deadlines and delay costs. Same routing as D (one queue, any agent with the
+# skill and the language, our classifier, no deliberate cross-skill jobs); only the ORDER of the
+# queue differs. Each one is re-sorted at every decision because the order depends on the clock.
+
+def expected_handle_minutes(history: pd.DataFrame, first_weekday_date: str, last_day: int = 35) -> dict:
+    """Mean minutes of work per (category, channel), from history days 1..last_day only.
+
+    Only first attempts that resolved without a reopen are used, so the number is "how long a
+    skilled agent works on this kind of ticket". The history was produced by Baseline A, which
+    never makes deliberate cross-skill jobs, so these are skilled-agent times.
+    Returns {(category, channel): minutes, category: minutes} (the category key is the fallback).
+
+    Example (our history): 4,239 refund chats on days 1-35, mean 9.99 min → {("refund", "chat"): 9.99, ...}.
+    """
+    start = pd.Timestamp(first_weekday_date)
+    created = pd.to_datetime(history["created_at"])
+    train = history[(created < start + pd.Timedelta(days=last_day)) & (history["reopens"] == 0)
+                    & history["resolution_min"].notna()]
+    out: dict = {}
+    for (cat, channel), minutes in train.groupby(["final_category", "channel"])["handled_min"].mean().items():
+        out[(cat, channel)] = float(minutes)
+    for cat, minutes in train.groupby("final_category")["handled_min"].mean().items():
+        out[cat] = float(minutes)
+    return out
+
+
+class RankedSkillsPolicy:
+    """Shared part of the published rules: D's skills routing with a different queue order.
+
+    `rank(t, now)` returns a sort key (smaller = served first). The longest-idle free agent takes
+    the first ticket in that order they have the skill and language for, exactly as in D.
+    """
+
+    name = "ranked skills routing"
+
+    def __init__(self, world: World, predicted: dict[str, str], handle: dict) -> None:
+        self.world = world
+        self.pred = [predicted.get(tid) or sel for tid, sel in zip(world.ticket_ids, world.selected_category)]
+        self.handle = handle
+
+    def category(self, t: TicketView) -> str:
+        return t.known_category or self.pred[t.idx]
+
+    def expected_handle(self, t: TicketView) -> float:
+        cat = self.category(t)
+        return self.handle.get((cat, t.channel)) or self.handle.get(cat) or 8.0
+
+    def rank(self, t: TicketView, now: float, state: SimState) -> tuple:
+        raise NotImplementedError
+
+    def decide(self, state: SimState, now: float) -> list[Assignment]:
+        free = state.free_agents(now)
+        if not free:
+            return []
+        queue = sorted(state.waiting_tickets(), key=lambda t: self.rank(t, now, state))
+        taken: set[int] = set()
+        out: list[Assignment] = []
+        for agent in free:
+            for _ in range(agent.free_slots):
+                pick = next((t for t in queue if t.idx not in taken and t.language in agent.languages
+                             and self.category(t) in agent.skills), None)
+                if pick is None:
+                    break
+                taken.add(pick.idx)
+                out.append(Assignment(pick.idx, agent.agent_id, self.category(pick), reason=self.name))
+        return out
+
+
+class LeastSlackPolicy(RankedSkillsPolicy):
+    """Least slack first, hopeless tickets last (size-aware deadline scheduling).
+
+    slack = SLA deadline − now − expected handle time of the ticket's (predicted category,
+    channel), the expected time measured on history days 1-35. A ticket with slack < 0 can no
+    longer make its SLA even if an agent starts now, so it goes after every ticket that can
+    (most-late first among those, like Baseline C). This is the classic "minimum slack" rule
+    (Conway, Maxwell & Miller, Theory of Scheduling, 1967) with the hopeless-job deferral that
+    deadline schedulers use under overload; Niyama (arXiv 2503.22562, 2025) finds this hybrid of
+    deadline and job size beats plain earliest-deadline-first when load is high.
+
+    Example at 20:00 (all chat): T1 P1 refund due 20:12 (expected 9.99 min) → slack 2.0;
+    T2 P2 late_delivery due 20:05 (expected 6.74) → slack −1.7, hopeless; T3 P1 app_bug due 20:20
+    (expected 12.66) → slack 7.3. Order: T1, T3, then T2. Plain EDF would serve T2 first and
+    miss it anyway, and then T1 too.
+    """
+
+    def __init__(self, world: World, predicted: dict[str, str], handle: dict, name: str = "Least slack first") -> None:
+        super().__init__(world, predicted, handle)
+        self.name = name
+
+    def slack(self, t: TicketView, now: float, state: SimState) -> float:
+        return t.sla_deadline_min - now - self.expected_handle(t)
+
+    def rank(self, t: TicketView, now: float, state: SimState) -> tuple:
+        s = self.slack(t, now, state)
+        return (s < 0, s, t.idx)
+
+
+class GeneralizedCMuPolicy(RankedSkillsPolicy):
+    """Generalized c-mu rule with a smooth delay cost around each ticket's SLA.
+
+    Van Mieghem (1995, "Dynamic scheduling with convex delay costs: the generalized c-mu rule",
+    Annals of Applied Probability) proves that, in heavy traffic, the job to serve next is the one
+    with the largest C'(age) × mu: the marginal delay cost at its current age, times its service
+    rate. Mandelbaum & Stolyar (2004, Operations Research) extend it to many servers with
+    different skills: a free agent takes the job with the largest C'(age) × mu among those it
+    can serve. The theorem needs a convex cost, so we use a smoothed "minutes past SLA" cost:
+
+        C(age) = w · tau·S · softplus((age − S) / (tau·S))        (convex, ≈ w · max(0, age − S))
+        C'(age) = w · sigmoid((age − S) / (tau·S))
+        index  = C'(age) / expected handle time                    (mu = 1 / expected handle)
+
+    S = the ticket's SLA, tau = how soft the corner at the deadline is (in SLA lengths), and
+    w = S^(−beta): beta 0 counts every late minute alike; beta 1 counts lateness in SLA lengths
+    (a P1 minute weighs 24 P3 minutes). tau and beta are chosen on validation days 36-42 only.
+
+    Example (tau 0.25, beta 1) at 20:00, chat: T1 P1 refund created 19:15 (age 45 of S 60,
+    expected 9.99 min): (1/60) · sigmoid(−15/15) / 9.99 = (1/60) · 0.269 / 9.99 = 0.000449.
+    T2 P2 refund created 16:30 (age 210 of 240): (1/240) · sigmoid(−30/60) / 9.99 = 0.000157.
+    T1 first. Unlike EDF, a ticket past its SLA keeps the HIGHEST marginal cost: c-mu never
+    gives up on a late customer — the opposite choice of least-slack-first.
+    """
+
+    def __init__(self, world: World, predicted: dict[str, str], handle: dict, tau: float, beta: float,
+                 name: str = "Generalized c-mu") -> None:
+        super().__init__(world, predicted, handle)
+        self.tau, self.beta, self.name = tau, beta, name
+
+    def index(self, t: TicketView, now: float) -> float:
+        sla = t.sla_deadline_min - t.created_min
+        x = (now - t.created_min - sla) / (self.tau * sla)
+        marginal_cost = sla ** (-self.beta) / (1.0 + math.exp(-x))
+        return float(marginal_cost / self.expected_handle(t))
+
+    def rank(self, t: TicketView, now: float, state: SimState) -> tuple:
+        return (-self.index(t, now), t.idx)
+
+
+class ClairvoyantSlackPolicy(LeastSlackPolicy):
+    """NOT IMPLEMENTABLE — a ceiling. Least slack first with perfect knowledge.
+
+    It reads two things no real floor can know: each ticket's TRUE category (so it never
+    misroutes, never transfers) and its TRUE handle time for the next attempt (this seed's
+    luck draw, as the simulator will use it). Everything else is LeastSlackPolicy. It shows how
+    much a simple rule could gain from perfect information. It is not the optimum: the best
+    possible schedule for 18,032 tickets in the test fortnight, 40 agents and random reopens is a huge
+    stochastic scheduling problem that nobody can compute exactly.
+
+    Example at 20:00: T1 P1 refund due 20:12, its true next attempt takes 14.0 min → slack −2.0:
+    hopeless (least-slack-first, expecting 9.99 min, would try and fail). T3 due 20:20, true
+    time 4.0 → slack 16.0. Order: T3, then T1.
+    """
+
+    def __init__(self, world: World, name: str = "Clairvoyant ceiling (not implementable)") -> None:
+        super().__init__(world, {}, {}, name=name)
+
+    def category(self, t: TicketView) -> str:
+        return self.world.true_category[t.idx]
+
+    def slack(self, t: TicketView, now: float, state: SimState) -> float:
+        w = self.world
+        attempt = min(state.tickets[t.idx].attempts, w.base_handle_min.shape[1] - 1)
+        minutes = float(w.base_handle_min[t.idx, attempt])
+        if t.reopens > 0:
+            minutes *= w.reopen_handle_factor
+        return t.sla_deadline_min - now - minutes
 
 
 # ---- OpsLens ---------------------------------------------------------------------------------

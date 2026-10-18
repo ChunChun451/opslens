@@ -35,6 +35,8 @@ from opslens.config import load_config  # noqa: E402
 from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
 from opslens.playbooks import apply_scenario  # noqa: E402
 from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d  # noqa: E402
+from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy,  # noqa: E402
+                              expected_handle_minutes)
 from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
 from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
 
@@ -84,6 +86,8 @@ def run_one(job: dict) -> dict:
         policy = baseline_c()
     elif job["policy"] == "baseline_d":
         policy = baseline_d(world, dict(zip(preds.ticket_id, preds.pred_final)))
+    elif job["policy"] in PUBLISHED_RULES:  # eval/run_best_baselines.py
+        policy = published_rule(job, world, dict(zip(preds.ticket_id, preds.pred_final)))
     else:
         weights = {**load_config("optimizer"), **job.get("weights", {})}
         log_window = None
@@ -107,6 +111,23 @@ def run_one(job: dict) -> dict:
         out["solver"] = {"solves": policy.stats.solves, "fallbacks": policy.stats.fallbacks,
                          "median_ms": float(np.median(ms)), "max_ms": float(np.max(ms))}
     return out
+
+
+PUBLISHED_RULES = {"least_slack", "gen_cmu", "clairvoyant"}
+
+
+def published_rule(job: dict, world, predicted: dict[str, str]):
+    """The rules from the scheduling literature (opslens/policies.py, added 18 Oct). Expected
+    handle times come from this world's history, days 1-35 only."""
+    history = pd.read_csv(GENERATED / "history.csv",
+                          usecols=["created_at", "final_category", "channel", "handled_min", "reopens", "resolution_min"])
+    handle = expected_handle_minutes(history, load_config("calendar")["start_date"], last_day=35)
+    if job["policy"] == "least_slack":
+        return LeastSlackPolicy(world, predicted, handle)
+    if job["policy"] == "gen_cmu":
+        params = job["params"]
+        return GeneralizedCMuPolicy(world, predicted, handle, tau=params["tau"], beta=params["beta"])
+    return ClairvoyantSlackPolicy(world)
 
 
 def boost_volume(tickets: pd.DataFrame, preds: pd.DataFrame, share: float, first_day: int,

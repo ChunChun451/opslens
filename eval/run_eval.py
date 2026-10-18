@@ -3,6 +3,7 @@
 Run:  mingw32-make eval            (or .venv/Scripts/python.exe eval/run_eval.py)
       ... run_eval.py --assemble   (only rebuild results.json + NUMBERS.md from eval/parts/)
       ... run_eval.py --blind      (also re-run the 35-minute blind recall test)
+      ... --assemble --keep-brief  (reuse the brief already in results.json, no LLM call)
 
 Steps (each writes eval/parts/<name>.json):
   classification → patterns → risk → forecast → opslens (test-day comparison) → ablations
@@ -35,7 +36,8 @@ PARTS = ROOT / "eval" / "parts"
 STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
-         ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py")]
+         ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
+         ("best_baselines", "eval/run_best_baselines.py")]
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -188,10 +190,20 @@ def assemble(timings: dict[str, float]) -> dict:
     # Not a STEP: run once, after the freeze (eval/run_sealed_world.py); kept as a part file.
     if (PARTS / "sealed_world.json").exists():
         results["sealed_world"] = with_means(part("sealed_world"))
+    # The published scheduling rules and the clairvoyant ceiling (eval/run_best_baselines.py),
+    # and the sealed world run again with them (baselines added after the first sealed run).
+    if (PARTS / "best_baselines.json").exists():
+        results["best_baselines"] = with_perfect_info(with_means(part("best_baselines")))
+    if (PARTS / "sealed_world_rerun.json").exists():
+        results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
-    results["brief"] = make_brief(results)
+    old = ROOT / "eval" / "results.json"
+    if "--keep-brief" in sys.argv and old.exists():
+        results["brief"] = json.loads(old.read_text(encoding="utf-8"))["brief"]
+    else:
+        results["brief"] = make_brief(results)
     Results.model_validate(results)  # fails loudly if anything drifted from the contract
     return results
 
@@ -203,6 +215,20 @@ def with_means(section: dict) -> dict:
         if isinstance(block, dict) and "per_seed" in block:
             block["means"] = {p: {k: sum(s[k] for s in runs) / len(runs) for k in runs[0]}
                               for p, runs in block["per_seed"].items()}
+    return section
+
+
+def with_perfect_info(section: dict) -> dict:
+    """What perfect information buys a sorting rule: clairvoyant − least slack, paired by seed
+    (the two differ only in knowing the true category and handle time)."""
+    from opslens.impact import paired_ci
+
+    for block in section.values():
+        if isinstance(block, dict) and "clairvoyant" in block.get("per_seed", {}):
+            per = block["per_seed"]
+            block["clairvoyant_minus_least_slack"] = {
+                k: paired_ci([r[k] for r in per["clairvoyant"]], [r[k] for r in per["least_slack"]])
+                for k in ("turnaround.breach_pct", "quality.late_minutes_per_100")}
     return section
 
 
@@ -308,7 +334,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + sealed_world_md(r) + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -371,6 +397,74 @@ def baseline_c_md(r: dict) -> list[str]:
     if "opslens_minus_d" in test:
         d = test["opslens_minus_d"]["turnaround.breach_pct"]
         lines.append(f"- OpsLens − industry standard, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}].")
+    return lines
+
+
+BEST_NAMES = {"baseline_c": "C: SLA due (EDF)", "baseline_d": "D: industry standard",
+              "least_slack": "Least slack first", "gen_cmu": "Generalized c-mu", "opslens": "OpsLens",
+              "clairvoyant": "Clairvoyant ceiling*", "clairvoyant_staffed": "Clairvoyant + staffing*"}
+BEST_ROWS = [("turnaround.breach_pct", "SLA breach %"), ("segment.p1_breach_pct", "P1 breach %"),
+             ("quality.mean_minutes_late", "Minutes late, mean over breached tickets"),
+             ("quality.late_minutes_per_100", "Minutes late per 100 tickets"), ("quality.p99_wait_min", "P99 wait (min)")]
+
+
+def best_table(block: dict, names: dict) -> list[str]:
+    """KPI rows (means over seeds) for the policies in `names`, plus OpsLens − each (breach %)."""
+    names = {k: v for k, v in names.items() if k in block["means"]}
+    lines = ["| KPI | " + " | ".join(names.values()) + " |", "|" + "---|" * (len(names) + 1)]
+    for key, label in BEST_ROWS:
+        lines.append(f"| {label} | " + " | ".join(fmt(block["means"][p][key]) for p in names) + " |")
+    return lines
+
+
+def ci_text(d: dict, nd: int = 2) -> str:
+    return f"{d['mean_diff']:+.{nd}f} [{d['ci_low']:+.{nd}f}, {d['ci_high']:+.{nd}f}]"
+
+
+def best_baselines_md(r: dict) -> list[str]:
+    """The strongest published rules and the clairvoyant ceiling (eval/run_best_baselines.py)."""
+    b = r.get("best_baselines")
+    if not b or "test" not in b:
+        return []
+    v, t = b["validation"], b["test"]
+    lines = ["", "## The strongest published rules and a clairvoyant ceiling (test days)", ""]
+    lines += best_table(t, BEST_NAMES)
+    lines += ["", "*Not implementable: knows each ticket's true category and true handle time. Not the optimum either "
+              "(the true optimum for this many tickets cannot be computed).", "",
+              "| OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) |", "|---|---|---|"]
+    for k, label in BEST_NAMES.items():
+        if k in t["opslens_minus"]:
+            d = t["opslens_minus"][k]
+            lines.append(f"| {label} | {ci_text(d['turnaround.breach_pct'])} | {ci_text(d['quality.late_minutes_per_100'], 0)} |")
+    pi = t["clairvoyant_minus_least_slack"]["turnaround.breach_pct"]
+    lines += ["", f"- What perfect information buys the best rule (clairvoyant − least slack), breach %: {ci_text(pi)}."]
+    c = v["cmu_chosen"]
+    lines += [f"- Chosen on validation days {v['days'][0]}-{v['days'][1]} only: c-mu tau {c['tau']}, beta {c['beta']} "
+              f"(of {len(v['cmu_grid'])} shapes; {v['cmu_rule']}). Validation breach %: OpsLens "
+              f"{fmt(v['gate']['opslens_breach_pct'])}, least slack {fmt(v['means']['least_slack']['turnaround.breach_pct'])}, "
+              f"c-mu {fmt(v['means']['gen_cmu']['turnaround.breach_pct'])} → gate {'passed' if v['gate']['passed'] else 'FAILED'}; "
+              "test days run once."]
+    return lines
+
+
+def sealed_rerun_md(r: dict) -> list[str]:
+    """The sealed world run again with Baseline D and the published rules."""
+    s = r.get("sealed_world_rerun")
+    if not s or not s.get("best_baselines_test"):
+        return []
+    t = s["best_baselines_test"]
+    lines = ["", f"## Sealed world re-run with every baseline (data seed {s['data_seed']})", ""]
+    lines += best_table(t, BEST_NAMES)
+    lines += ["", f"- OpsLens − D, breach %: {ci_text(t['opslens_minus']['baseline_d']['turnaround.breach_pct'])}; "
+              f"− least slack {ci_text(t['opslens_minus']['least_slack']['turnaround.breach_pct'])}; "
+              f"− c-mu {ci_text(t['opslens_minus']['gen_cmu']['turnaround.breach_pct'])}. "
+              f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}.",
+              "- Baselines were added after the first sealed run, so this world was run a second time (the first run is "
+              "kept above, unchanged). OpsLens weights and the c-mu shape are frozen; nothing was chosen on this world."]
+    same = s.get("same_as_first_run") or {}
+    if same:
+        verdict = "identical to" if all(same.values()) else "NOT identical to"
+        lines.append(f"- Policies in both runs ({', '.join(same)}): per-seed results {verdict} the first run.")
     return lines
 
 
