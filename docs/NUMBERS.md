@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-18T18:26:45 (commit 896bc1f). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-18T19:11:17 (commit 55b5f7d). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -82,9 +82,9 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 - Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days.
 - OpsLens − industry standard, breach %: -3.31 [-4.79, -1.84].
 
-## The strongest published rules and a clairvoyant ceiling (test days)
+## The strongest published rules, and what perfect information buys them (test days)
 
-| KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant ceiling* | Clairvoyant + staffing* |
+| KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant least slack* | Clairvoyant least slack + staffing* |
 |---|---|---|---|---|---|---|---|
 | SLA breach % | 5.40 | 5.51 | 3.96 | 5.30 | 2.20 | 3.81 | 3.81 |
 | P1 breach % | 8.94 | 7.55 | 7.00 | 7.97 | 4.89 | 6.71 | 6.83 |
@@ -100,11 +100,30 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 | D: industry standard | -3.31 [-4.79, -1.84] | -948 [-1357, -540] |
 | Least slack first | -1.75 [-2.07, -1.44] | -2997 [-4196, -1798] |
 | Generalized c-mu | -3.10 [-4.50, -1.69] | -726 [-1132, -320] |
-| Clairvoyant ceiling* | -1.61 [-1.89, -1.33] | -2851 [-3962, -1740] |
-| Clairvoyant + staffing* | -1.61 [-1.79, -1.43] | -2718 [-4286, -1151] |
+| Clairvoyant least slack* | -1.61 [-1.89, -1.33] | -2851 [-3962, -1740] |
+| Clairvoyant least slack + staffing* | -1.61 [-1.79, -1.43] | -2718 [-4286, -1151] |
 
 - What perfect information buys the best rule (clairvoyant − least slack), breach %: -0.14 [-0.27, -0.01].
 - Chosen on validation days 36-42 only: c-mu tau 0.25, beta 1.0 (of 8 shapes; lowest validation breach %, ties broken by fewer late minutes per 100). Validation breach %: OpsLens 2.13, least slack 3.69, c-mu 4.34 → gate passed; test days run once.
+
+### Least slack + cross-skill rescue (the same freedom as OpsLens)
+
+| KPI | Least slack first | Least slack + cross-skill rescue | OpsLens |
+|---|---|---|---|
+| SLA breach % | 3.96 | 2.98 | 2.20 |
+| P1 breach % | 7.00 | 5.44 | 4.89 |
+| Minutes late, mean over breached tickets | 881.01 | 645.63 | 229.85 |
+| Minutes late per 100 tickets | 3,525.96 | 1,960.33 | 528.93 |
+| P99 wait (min) | 1,378.51 | 927.64 | 727.81 |
+| Reopen rate % | 3.93 | 4.09 | 4.40 |
+
+| OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) | Reopen rate % (95% CI) |
+|---|---|---|---|
+| Least slack + cross-skill rescue | -0.78 [-0.99, -0.56] | -1431 [-2057, -805] | +0.31 [+0.22, +0.40] |
+| Least slack first | -1.75 [-2.07, -1.44] | -2997 [-4196, -1798] | +0.47 [+0.39, +0.55] |
+
+- What the rescue buys least slack (rescue − plain), breach %: -0.98 [-1.16, -0.80].
+- Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. Threshold chosen on validation days 36-42 only (lowest validation breach %, ties broken by fewer late minutes per 100): 30 min. Validation breach %: 10 min 3.26%, 20 min 2.99%, 30 min 2.82%, 60 min 3.35%, 120 min 3.19%, 240 min 2.90%; OpsLens 2.13 → gate passed; test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: yes.
 
 ## Sealed second world (data seed 4242, generated after the freeze, run once)
 
@@ -117,7 +136,7 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 
 ## Sealed world re-run with every baseline (data seed 4242)
 
-| KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant ceiling* | Clairvoyant + staffing* |
+| KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant least slack* | Clairvoyant least slack + staffing* |
 |---|---|---|---|---|---|---|---|
 | SLA breach % | 6.13 | 6.34 | 4.21 | 6.12 | 3.07 | 4.00 | 3.68 |
 | P1 breach % | 9.94 | 7.57 | 7.21 | 8.75 | 5.34 | 6.84 | 6.27 |
@@ -127,6 +146,19 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 
 - OpsLens − D, breach %: -3.27 [-4.45, -2.10]; − least slack -1.15 [-1.35, -0.94]; − c-mu -3.06 [-4.40, -1.71]. Retrained risk AUC 0.970. Classifier: cascade (local + LLM).
 - Baselines were added after the first sealed run, so this world was run a second time (the first run is kept above, unchanged). OpsLens weights and the c-mu shape are frozen; nothing was chosen on this world.
+
+Least slack + cross-skill rescue (added after the re-run; this world built a third time, only this rule run beside OpsLens and plain least slack):
+
+| KPI | Least slack first | Least slack + cross-skill rescue | OpsLens |
+|---|---|---|---|
+| SLA breach % | 4.21 | 3.35 | 3.07 |
+| P1 breach % | 7.21 | 5.84 | 5.34 |
+| Minutes late, mean over breached tickets | 1,064.46 | 726.62 | 283.71 |
+| Minutes late per 100 tickets | 4,559.95 | 2,525.42 | 893.19 |
+| P99 wait (min) | 1,672.73 | 1,064.51 | 744.04 |
+| Reopen rate % | 3.93 | 4.05 | 4.29 |
+
+- OpsLens − least slack + rescue: breach % -0.28 [-0.40, -0.16], late minutes per 100 -1632 [-2767, -498], reopen rate % +0.24 [+0.16, +0.32]. OpsLens and plain least slack reproduced the re-run exactly: yes.
 - Policies in both runs (baseline_a, baseline_b, baseline_c, opslens): per-seed results identical to the first run.
 
 ## Fix-at-source playbooks (test days, change vs the same policy without it)
@@ -152,5 +184,5 @@ OpsLens − Baseline A, breach %: -10.91 [-13.38, -8.43].
 ## Speed
 
 - Optimiser per decision: median 0.06 ms, max 0.9 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.05 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.063 s.
 - Full evaluation pipeline: 55.9 min.

@@ -10,8 +10,9 @@ Baselines (the status quo we must beat):
 Both are fair, realistic floors: language is always respected, agents never take tickets
 outside their skills on purpose, and longest-idle agents choose first.
 Baselines C (SLA due) and D (industry-standard skills routing) follow; then the strongest rules
-from the scheduling literature (least slack first, generalized c-mu) and a clairvoyant ceiling
-that is NOT implementable (added 18 Oct; docs/explain/baselines.md).
+from the scheduling literature (least slack first, generalized c-mu), least slack with a
+rule-based cross-skill rescue (the freedom OpsLens has), and clairvoyant least slack, which is NOT
+implementable: what perfect information buys the best simple rule (added 18 Oct; docs/explain/baselines.md).
 
 **OpsLens** (bottom of this file): routes by the classifier's category, values each ticket by
 how much serving it NOW cuts its breach risk (risk model), protects rare skills, and assigns
@@ -320,13 +321,74 @@ class GeneralizedCMuPolicy(RankedSkillsPolicy):
         return (-self.index(t, now), t.idx)
 
 
+class LeastSlackRescuePolicy(LeastSlackPolicy):
+    """Least slack first + a rule-based cross-skill rescue (added 18 Oct).
+
+    OpsLens may give a ticket to an agent without the skill (1.6x slower, reopen chance 15%
+    instead of 4%) when the risk model says the ticket is in real danger. The published rules
+    above never do that, so a judge can say the comparison is rigged. This rule gets the same
+    freedom, decided by a plain rule instead of a model:
+
+    1. every free agent first takes a ticket exactly as in LeastSlackPolicy (skilled work only);
+    2. then, most urgent first, a waiting ticket is RESCUED by a free agent who speaks its
+       language but lacks the skill, when
+       - no skilled agent was free for it (step 1 already used every skilled free agent),
+       - it is in danger: slack = deadline − now − expected handle < `threshold_min`, and
+       - it can still make it the slow way: deadline − now − 1.6 × expected handle ≥ 0
+         (rescuing a ticket that will be late anyway only burns a slow job and a reopen risk).
+       The longest-idle such agent takes it, marked deliberate_cross_skill=True.
+    `threshold_min` is the rule's only parameter, chosen on validation days 36-42 only.
+
+    Example at 20:00, threshold 30, chat: T1 P1 refund due 20:25 (expected 9.99) → slack 15.0
+    (< 30, in danger), slow-way slack 25 − 16.0 = 9.0 ≥ 0 → savable. Every refund agent is busy;
+    free agent A09 (late_delivery team, English) takes T1 as a cross-skill rescue. T2 P1 refund
+    due 20:12 → slow-way slack 12 − 16.0 = −4.0: not rescued, it waits for a refund agent.
+    """
+
+    def __init__(self, world: World, predicted: dict[str, str], handle: dict, threshold_min: float,
+                 name: str = "Least slack + cross-skill rescue") -> None:
+        super().__init__(world, predicted, handle, name=name)
+        self.threshold_min = threshold_min
+
+    def rescue_candidate(self, t: TicketView, now: float, state: SimState) -> bool:
+        """In danger, yet still savable by a 1.6x slower agent."""
+        in_danger = self.slack(t, now, state) < self.threshold_min
+        slow_slack = t.sla_deadline_min - now - self.world.mismatch_factor * self.expected_handle(t)
+        return in_danger and slow_slack >= 0
+
+    def decide(self, state: SimState, now: float) -> list[Assignment]:
+        out = super().decide(state, now)  # step 1: skilled work, least slack first
+        taken = {a.ticket_idx for a in out}
+        slots = {a.agent_id: a.free_slots for a in state.free_agents(now)}  # longest-idle first
+        for a in out:
+            slots[a.agent_id] -= 1
+        left = [a for a in state.free_agents(now) if slots[a.agent_id] > 0]
+        if not left:
+            return out
+        queue = sorted(state.waiting_tickets(), key=lambda t: self.rank(t, now, state))
+        for t in queue:
+            if t.idx in taken or not self.rescue_candidate(t, now, state):
+                continue
+            # Every agent still free after step 1 has no skilled work they can take, so any one of
+            # them who speaks the language is a cross-skill helper.
+            agent = next((a for a in left if slots[a.agent_id] > 0 and t.language in a.languages), None)
+            if agent is None:
+                continue
+            slots[agent.agent_id] -= 1
+            taken.add(t.idx)
+            out.append(Assignment(t.idx, agent.agent_id, self.category(t), deliberate_cross_skill=True,
+                                  reason=f"{self.name}: cross-skill rescue, slack {self.slack(t, now, state):.0f} min"))
+        return out
+
+
 class ClairvoyantSlackPolicy(LeastSlackPolicy):
-    """NOT IMPLEMENTABLE — a ceiling. Least slack first with perfect knowledge.
+    """NOT IMPLEMENTABLE — clairvoyant least slack. Least slack first with perfect knowledge.
 
     It reads two things no real floor can know: each ticket's TRUE category (so it never
     misroutes, never transfers) and its TRUE handle time for the next attempt (this seed's
     luck draw, as the simulator will use it). Everything else is LeastSlackPolicy. It shows how
-    much a simple rule could gain from perfect information. It is not the optimum: the best
+    much a simple rule could gain from perfect information. It is not an upper bound (OpsLens
+    beats it) and not the optimum: the best
     possible schedule for 18,032 tickets in the test fortnight, 40 agents and random reopens is a huge
     stochastic scheduling problem that nobody can compute exactly.
 
@@ -335,7 +397,7 @@ class ClairvoyantSlackPolicy(LeastSlackPolicy):
     time 4.0 → slack 16.0. Order: T3, then T1.
     """
 
-    def __init__(self, world: World, name: str = "Clairvoyant ceiling (not implementable)") -> None:
+    def __init__(self, world: World, name: str = "Clairvoyant least slack (not implementable)") -> None:
         super().__init__(world, {}, {}, name=name)
 
     def category(self, t: TicketView) -> str:

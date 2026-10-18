@@ -36,7 +36,7 @@ from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
 from opslens.playbooks import apply_scenario  # noqa: E402
 from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d  # noqa: E402
 from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy,  # noqa: E402
-                              expected_handle_minutes)
+                              LeastSlackRescuePolicy, expected_handle_minutes)
 from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
 from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
 
@@ -113,7 +113,7 @@ def run_one(job: dict) -> dict:
     return out
 
 
-PUBLISHED_RULES = {"least_slack", "gen_cmu", "clairvoyant"}
+PUBLISHED_RULES = {"least_slack", "least_slack_rescue", "gen_cmu", "clairvoyant"}
 
 
 def published_rule(job: dict, world, predicted: dict[str, str]):
@@ -124,6 +124,8 @@ def published_rule(job: dict, world, predicted: dict[str, str]):
     handle = expected_handle_minutes(history, load_config("calendar")["start_date"], last_day=35)
     if job["policy"] == "least_slack":
         return LeastSlackPolicy(world, predicted, handle)
+    if job["policy"] == "least_slack_rescue":  # the same freedom as OpsLens: cross-skill rescues
+        return LeastSlackRescuePolicy(world, predicted, handle, threshold_min=job["params"]["threshold_min"])
     if job["policy"] == "gen_cmu":
         params = job["params"]
         return GeneralizedCMuPolicy(world, predicted, handle, tau=params["tau"], beta=params["beta"])
