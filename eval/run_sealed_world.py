@@ -22,6 +22,13 @@ Re-run (18 Oct, GitHub issue #5): baselines were added after the first sealed ru
 world is run again with Baseline D and the published rules (eval/run_best_baselines.py):
     .venv/Scripts/python.exe eval/run_sealed_world.py --seed 4242 --rerun
 It writes eval/parts/sealed_world_rerun.json and leaves the first run (sealed_world.json) as it was.
+
+Rescue (18 Oct): least slack + cross-skill rescue was added after the re-run, so the same world is
+built a third time and ONLY that rule runs, beside OpsLens and plain least slack (threshold chosen
+on the main world's validation days):
+    .venv/Scripts/python.exe eval/run_sealed_world.py --seed 4242 --rescue
+It adds `rescue_test` to eval/parts/sealed_world_rerun.json and checks that OpsLens and plain least
+slack reproduce the re-run's per-seed results; nothing else in the file changes.
 """
 
 from __future__ import annotations
@@ -66,6 +73,7 @@ def main() -> int:
     seed = int(sys.argv[sys.argv.index("--seed") + 1]) if "--seed" in sys.argv else 4242
     no_llm = ["--no-llm"] if "--no-llm" in sys.argv else []
     rerun = "--rerun" in sys.argv
+    rescue = "--rescue" in sys.argv
     with tempfile.TemporaryDirectory(prefix="opslens_sealed_") as tmp:
         dest = Path(tmp) / "repo"
         copy_repo(dest)
@@ -75,6 +83,10 @@ def main() -> int:
         run(dest, "eval/run_classification.py", *no_llm)
         run(dest, "eval/run_risk.py")
         run(dest, "eval/run_forecast.py")
+        if rescue:
+            run(dest, "eval/run_best_baselines.py", "--rescue", "--test-only")
+            add_rescue(json.loads((dest / "eval" / "parts" / "best_baselines.json").read_text(encoding="utf-8")))
+            return 0
         run(dest, "eval/run_baseline_c.py", "--test-only")
         out = json.loads((dest / "eval" / "parts" / "baseline_c.json").read_text(encoding="utf-8"))
         risk = json.loads((dest / "eval" / "parts" / "risk.json").read_text(encoding="utf-8"))
@@ -98,6 +110,21 @@ def main() -> int:
     return 0
 
 
+def add_rescue(best: dict) -> None:
+    """Put the sealed world's rescue test into sealed_world_rerun.json, with a reproduction check."""
+    path = ROOT / "eval" / "parts" / "sealed_world_rerun.json"
+    rerun = json.loads(path.read_text(encoding="utf-8"))
+    test = best["rescue"]["test"]
+    stored = rerun["best_baselines_test"]["per_seed"]
+    test["reproduced"] = {k: test["per_seed"][k] == stored[k] for k in ("opslens", "least_slack")}
+    test["note"] = ("Least slack + cross-skill rescue was added after the re-run; this world was built a third "
+                    "time (same seed) and only this rule ran beside OpsLens and plain least slack. Threshold "
+                    "chosen on the main world's validation days.")
+    rerun["rescue_test"] = test
+    path.write_text(json.dumps(rerun, indent=1, default=float), encoding="utf-8")
+    print(f"added rescue_test to eval/parts/sealed_world_rerun.json; reproduced: {test['reproduced']}")
+
+
 def same_as_first_run(rerun: dict) -> dict[str, bool]:
     """Per policy in both runs: are the per-seed KPIs of the re-run identical to the first run?"""
     first_path = ROOT / "eval" / "parts" / "sealed_world.json"
@@ -108,7 +135,7 @@ def same_as_first_run(rerun: dict) -> dict[str, bool]:
 
 
 RERUN_NOTE = ("Re-run on 18 Oct 2026 because baselines were added AFTER the first sealed run: Baseline D (industry "
-              "standard) and the published rules (least slack first, generalized c-mu, clairvoyant ceiling). Same "
+              "standard) and the published rules (least slack first, generalized c-mu, clairvoyant least slack). Same "
               "data seed, same frozen OpsLens weights, routine retraining as in the first run. The first run is kept "
               "unchanged in sealed_world; the LLM part of the classifier can answer differently on a re-run, so "
               "OpsLens and A/B/C can move slightly between the two runs.")

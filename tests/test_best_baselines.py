@@ -1,12 +1,12 @@
-"""The published rules (least slack first, generalized c-mu) and the clairvoyant ceiling.
+"""The published rules (least slack first, generalized c-mu) and clairvoyant least slack.
 Tiny hand-computed cases: one agent busy with T0 until minute 30, the rest wait."""
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy, baseline_c,
-                              expected_handle_minutes)
+from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy,
+                              LeastSlackRescuePolicy, baseline_c, expected_handle_minutes)
 from opslens.simulate import TicketView, simulate
 from tests.test_simulate import agent, by_id, make_world
 
@@ -36,6 +36,50 @@ def test_least_slack_uses_the_expected_handle_time() -> None:
     out = by_id(simulate(world, LeastSlackPolicy(world, {}, handle), 0, 200, decide_every_min=1))
     assert out.loc["T000002", "resolved_min"] == 55
     assert out.loc["T000001", "resolved_min"] == 65
+
+
+def test_rescue_sends_a_savable_ticket_to_a_free_cross_skill_agent() -> None:
+    # X (refund) is busy with T0 until 30; Y (late_delivery) is free. At minute 1, threshold 30:
+    # T2 due 13: slack 2 (in danger) but the slow way 12 − 16 < 0 → not rescued.
+    # T1 due 36: slack 25 < 30 and slow way 35 − 16 = 19 ≥ 0 → Y rescues it, 1-17 (10 × 1.6).
+    # T3 due 601: slack 590, not in danger → waits for X.
+    # At 30 X serves T3 (savable) 30-40, then T2 (hopeless) 40-50. One breach: T2.
+    # Plain least slack: T3 30-40, then the hopeless ones most-late first: T2 40-50, T1 50-60.
+    world = make_world([0, 1, 1, 1], [30, 10, 10, 10],
+                       [agent("X", "B", {"refund"}), agent("Y", "A", {"late_delivery"})])
+    world.sla_min = np.array([600.0, 35.0, 12.0, 600.0])
+    rescue = by_id(simulate(world, LeastSlackRescuePolicy(world, {}, HANDLE, threshold_min=30), 0, 200,
+                            decide_every_min=1))
+    lsf = by_id(simulate(world, LeastSlackPolicy(world, {}, HANDLE), 0, 200, decide_every_min=1))
+    assert rescue["resolved_min"].tolist() == [30, 17, 50, 40]
+    assert rescue["mismatch_used"].tolist() == [False, True, False, False]
+    assert rescue["breached"].sum() == 1
+    assert lsf["resolved_min"].tolist() == [30, 60, 50, 40]
+    assert lsf["breached"].sum() == 2
+    # Threshold 20: at minute 1 T1's slack 25 is not below it. The rule waits until minute 7
+    # (slack 36 − 7 − 10 = 19 < 20, slow way 29 − 16 = 13 ≥ 0): Y rescues it 7-23.
+    strict = by_id(simulate(world, LeastSlackRescuePolicy(world, {}, HANDLE, threshold_min=20), 0, 200,
+                            decide_every_min=1))
+    assert strict["resolved_min"].tolist() == [30, 23, 50, 40]
+
+
+def test_rescue_never_beats_a_free_skilled_agent_or_the_language() -> None:
+    # Y (late_delivery) has been idle longest, but Z (refund) is free too: Z takes the refund,
+    # skilled, even though it is in danger (slack 5).
+    world = make_world([0], [10], [agent("Y", "A", {"late_delivery"}), agent("Z", "B", {"refund"})])
+    world.sla_min = np.array([15.0])
+    out = by_id(simulate(world, LeastSlackRescuePolicy(world, {}, HANDLE, threshold_min=30), 0, 200,
+                         decide_every_min=1))
+    assert out["resolved_min"].tolist() == [10]
+    assert out["mismatch_used"].tolist() == [False]
+    # A Hindi refund in danger while X (refund, Hindi) is busy: Y speaks only English, so no rescue.
+    world = make_world([0, 1], [30, 10], [agent("X", "B", {"refund"}, langs={"en", "hi"}),
+                                          agent("Y", "A", {"late_delivery"})], language=["en", "hi"])
+    world.sla_min = np.array([600.0, 35.0])
+    out = by_id(simulate(world, LeastSlackRescuePolicy(world, {}, HANDLE, threshold_min=30), 0, 200,
+                         decide_every_min=1))
+    assert out["resolved_min"].tolist() == [30, 40]
+    assert out["mismatch_used"].tolist() == [False, False]
 
 
 def test_cmu_index_matches_the_docstring_example() -> None:

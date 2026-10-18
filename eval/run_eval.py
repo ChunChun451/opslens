@@ -190,10 +190,12 @@ def assemble(timings: dict[str, float]) -> dict:
     # Not a STEP: run once, after the freeze (eval/run_sealed_world.py); kept as a part file.
     if (PARTS / "sealed_world.json").exists():
         results["sealed_world"] = with_means(part("sealed_world"))
-    # The published scheduling rules and the clairvoyant ceiling (eval/run_best_baselines.py),
+    # The published scheduling rules and clairvoyant least slack (eval/run_best_baselines.py),
     # and the sealed world run again with them (baselines added after the first sealed run).
     if (PARTS / "best_baselines.json").exists():
         results["best_baselines"] = with_perfect_info(with_means(part("best_baselines")))
+        if "rescue" in results["best_baselines"]:  # least slack + cross-skill rescue (nested)
+            with_means(results["best_baselines"]["rescue"])
     if (PARTS / "sealed_world_rerun.json").exists():
         results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
     # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
@@ -402,7 +404,7 @@ def baseline_c_md(r: dict) -> list[str]:
 
 BEST_NAMES = {"baseline_c": "C: SLA due (EDF)", "baseline_d": "D: industry standard",
               "least_slack": "Least slack first", "gen_cmu": "Generalized c-mu", "opslens": "OpsLens",
-              "clairvoyant": "Clairvoyant ceiling*", "clairvoyant_staffed": "Clairvoyant + staffing*"}
+              "clairvoyant": "Clairvoyant least slack*", "clairvoyant_staffed": "Clairvoyant least slack + staffing*"}
 BEST_ROWS = [("turnaround.breach_pct", "SLA breach %"), ("segment.p1_breach_pct", "P1 breach %"),
              ("quality.mean_minutes_late", "Minutes late, mean over breached tickets"),
              ("quality.late_minutes_per_100", "Minutes late per 100 tickets"), ("quality.p99_wait_min", "P99 wait (min)")]
@@ -422,12 +424,12 @@ def ci_text(d: dict, nd: int = 2) -> str:
 
 
 def best_baselines_md(r: dict) -> list[str]:
-    """The strongest published rules and the clairvoyant ceiling (eval/run_best_baselines.py)."""
+    """The strongest published rules and clairvoyant least slack (eval/run_best_baselines.py)."""
     b = r.get("best_baselines")
     if not b or "test" not in b:
         return []
     v, t = b["validation"], b["test"]
-    lines = ["", "## The strongest published rules and a clairvoyant ceiling (test days)", ""]
+    lines = ["", "## The strongest published rules, and what perfect information buys them (test days)", ""]
     lines += best_table(t, BEST_NAMES)
     lines += ["", "*Not implementable: knows each ticket's true category and true handle time. Not the optimum either "
               "(the true optimum for this many tickets cannot be computed).", "",
@@ -444,6 +446,37 @@ def best_baselines_md(r: dict) -> list[str]:
               f"{fmt(v['gate']['opslens_breach_pct'])}, least slack {fmt(v['means']['least_slack']['turnaround.breach_pct'])}, "
               f"c-mu {fmt(v['means']['gen_cmu']['turnaround.breach_pct'])} → gate {'passed' if v['gate']['passed'] else 'FAILED'}; "
               "test days run once."]
+    return lines + rescue_md(b.get("rescue"))
+
+
+RESCUE_NAMES = {"least_slack": "Least slack first", "least_slack_rescue": "Least slack + cross-skill rescue",
+                "opslens": "OpsLens"}
+
+
+def rescue_md(rescue: dict | None) -> list[str]:
+    """Least slack with a rule-based cross-skill rescue: the freedom OpsLens has (added 18 Oct)."""
+    if not rescue or "test" not in rescue:
+        return []
+    v, t = rescue["validation"], rescue["test"]
+    lines = ["", "### Least slack + cross-skill rescue (the same freedom as OpsLens)", ""]
+    lines += best_table(t, RESCUE_NAMES)
+    lines.append("| Reopen rate % | " + " | ".join(fmt(t["means"][p]["quality.reopen_rate_pct"]) for p in RESCUE_NAMES) + " |")
+    lines += ["", "| OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) | Reopen rate % (95% CI) |",
+              "|---|---|---|---|"]
+    for k in ("least_slack_rescue", "least_slack"):
+        d = t["opslens_minus"][k]
+        lines.append(f"| {RESCUE_NAMES[k]} | {ci_text(d['turnaround.breach_pct'])} | "
+                     f"{ci_text(d['quality.late_minutes_per_100'], 0)} | {ci_text(d['quality.reopen_rate_pct'])} |")
+    gain = t["rescue_minus_least_slack"]["turnaround.breach_pct"]
+    grid = ", ".join(f"{g['threshold_min']} min {fmt(g['breach_pct'])}%" for g in v["grid"])
+    lines += ["", f"- What the rescue buys least slack (rescue − plain), breach %: {ci_text(gain)}.",
+              f"- Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower "
+              f"job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. "
+              f"Threshold chosen on validation days {v['days'][0]}-{v['days'][1]} only ({v['rule']}): "
+              f"{v['threshold_chosen']} min. Validation breach %: {grid}; OpsLens "
+              f"{fmt(v['gate']['opslens_breach_pct'])} → gate {'passed' if v['gate']['passed'] else 'FAILED'}; "
+              "test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: "
+              f"{'yes' if t['reproduced'] and all(t['reproduced'].values()) else 'NO'}."]
     return lines
 
 
@@ -461,6 +494,17 @@ def sealed_rerun_md(r: dict) -> list[str]:
               f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}.",
               "- Baselines were added after the first sealed run, so this world was run a second time (the first run is "
               "kept above, unchanged). OpsLens weights and the c-mu shape are frozen; nothing was chosen on this world."]
+    rt = s.get("rescue_test")
+    if rt:
+        lines += ["", "Least slack + cross-skill rescue (added after the re-run; this world built a third time, only this "
+                  "rule run beside OpsLens and plain least slack):", ""]
+        lines += best_table(rt, RESCUE_NAMES)
+        lines.append("| Reopen rate % | " + " | ".join(fmt(rt["means"][p]["quality.reopen_rate_pct"]) for p in RESCUE_NAMES) + " |")
+        d = rt["opslens_minus"]["least_slack_rescue"]
+        lines += ["", f"- OpsLens − least slack + rescue: breach % {ci_text(d['turnaround.breach_pct'])}, late minutes per "
+                  f"100 {ci_text(d['quality.late_minutes_per_100'], 0)}, reopen rate % {ci_text(d['quality.reopen_rate_pct'])}. "
+                  f"OpsLens and plain least slack reproduced the re-run exactly: "
+                  f"{'yes' if rt['reproduced'] and all(rt['reproduced'].values()) else 'NO'}."]
     same = s.get("same_as_first_run") or {}
     if same:
         verdict = "identical to" if all(same.values()) else "NOT identical to"
