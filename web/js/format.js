@@ -60,6 +60,7 @@ export function fmtSigned(value, unit = "num", bare = false) {
     return fmt(value, unit, bare);
   }
   const text = fmt(Math.abs(value), unit, bare);
+  if (!/[1-9]/.test(text)) return text; // rounds to zero: "0", never "−0"
   if (value > 0) return "+" + text;
   if (value < 0) return MINUS + text;
   return text;

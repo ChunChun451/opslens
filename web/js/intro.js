@@ -32,7 +32,7 @@ export function initIntro() {
   let seen = false;
   try { seen = sessionStorage.getItem(SEEN_KEY) === "1"; } catch { /* private mode: play it */ }
   const onOverview = !location.hash || location.hash === "#overview";
-  if (!seen && onOverview) play(false);
+  if (!seen && onOverview && state.world === "food") play(false); // the cold open is the food floor
 }
 
 // The strongest baseline with a recorded floor, and its plain name.

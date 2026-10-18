@@ -12,7 +12,7 @@ const NUMBER = /[−-]?\d[\d,]*(?:\.\d+)?/;
 
 export function initMotion() {
   document.addEventListener("tab-shown", (event) => {
-    const panel = document.getElementById("tab-" + event.detail);
+    const panel = document.getElementById("view-" + event.detail); // the view just shown (router.js)
     if (panel) countUp(panel);
   });
 }

@@ -1024,3 +1024,126 @@ body.intro-open {
     transform: none;
   }
 }
+
+/* ---- Plan v3 (19 Oct): world switch, sub-tabs, Your plan, real-desk views ----------------- */
+
+.world-switch {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.world-switch button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.world-switch button span { font-weight: 400; opacity: 0.75; margin-left: 4px; }
+.world-switch button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+body[data-world="real"] .intro-replay { display: none; }
+
+.subnav { display: flex; gap: 6px; margin: 0 0 18px; flex-wrap: wrap; }
+.subnav button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.subnav button[aria-current="true"] { color: var(--ink); border-color: var(--ink); }
+
+#plan-button .count {
+  display: inline-block;
+  min-width: 20px;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 20px;
+  text-align: center;
+}
+.plan-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(440px, 100vw);
+  overflow-y: auto;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  z-index: 60;
+}
+.plan-head { display: flex; justify-content: space-between; align-items: center; }
+.plan-head h3 { margin: 0; font-size: 1.25rem; }
+.plan-panel h4 { margin: 18px 0 8px; }
+.plan-item { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; }
+.plan-item-head { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.plan-effects { margin: 8px 0 4px; padding-left: 18px; }
+.plan-result h5 { margin: 14px 0 6px; }
+.plan-table { width: 100%; font-size: 0.85rem; }
+#plan-simulate { margin-top: 6px; width: 100%; }
+.plan-decision { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.link-btn { border: 0; background: none; color: var(--blue); font: inherit; cursor: pointer; padding: 0 4px; }
+.pill.good { background: var(--good-soft); color: var(--good); border-color: transparent; }
+
+.share-bar { display: flex; height: 18px; border-radius: 999px; overflow: hidden; margin: 6px 0 12px; }
+.share-seg { display: block; }
+.share-legend { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; }
+.share-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+.seg-0 { background: var(--blue); }
+.seg-1 { background: var(--saffron, #f2a007); }
+.seg-2 { background: #9aa3b5; }
+.seg-3 { background: var(--chilli, #d7263d); }
+.seg-4 { background: #4caf8e; }
+
+.risk-list { margin-top: 12px; }
+.risk-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.risk-p { font-size: 1.4rem; font-weight: 700; }
+.reasons { margin: 6px 0 0; padding-left: 18px; }
+tr.hot td { background: var(--bad-soft); }
+.action-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.action-item:first-child { border-top: 0; }
+.action-title { font-weight: 600; }
+.lead { font-size: 1.05rem; }
+
+@media (max-width: 900px) {
+  .world-switch button span { display: none; }
+}
+
+/* Plan v3: keep the top bar on one line — the status gives way first, then the switch labels. */
+.topbar { min-width: 0; gap: 12px; }
+.topbar .ask-form { flex: 1 1 160px; min-width: 120px; }
+.topbar .topbar-actions { flex-shrink: 0; display: flex; gap: 8px; }
+@media (max-width: 1400px) { .topbar .status { display: none; } }
+@media (max-width: 1100px) { #story-button { display: none; } }
+.stat-card { padding: 18px 20px; }

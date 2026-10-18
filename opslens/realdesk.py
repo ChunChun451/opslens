@@ -72,7 +72,7 @@ def problem_cards(incidents: pd.DataFrame, states: pd.DataFrame, history: np.nda
                       "process", "SLA missed (%)", miss_w, miss_n, "incidents that never waited", int(waited.sum()), len(h),
                       {"waits": "user, vendor or another fix"},
                       f"Waiting for the user is {share.get('waiting for the user', 0):.0f}% of all open time. "
-                      "Remind the user automatically and close or pause stale waits.", h[waited].head(3)))
+                      "Remind the user automatically and close or pause stale waits.", h[waited & h["breached"]].head(3)))
     new_share = float(share.get("waiting to be picked up", 0))
     picked_late = st.get("waiting to be picked up", 0) > 8
     cards.append(card("R2", f"{new_share:.0f}% of all open time is spent waiting for someone to pick the incident up",
@@ -80,7 +80,7 @@ def problem_cards(incidents: pd.DataFrame, states: pd.DataFrame, history: np.nda
                       h.loc[~picked_late, "breached"].mean() * 100, "incidents picked up within 8 h",
                       int(picked_late.sum()), len(h), {"waited_to_be_picked_up_h": ">8"},
                       "Staff the teams where incidents queue longest at the hours they arrive (see next week's forecast).",
-                      h[picked_late].head(3)))
+                      h[picked_late & h["breached"]].head(3)))
     by = h.groupby("final_category").agg(n=("breached", "size"), miss=("breached", "mean"), bounced=("transfers", lambda s: (s > 0).mean()))
     by = by[by["n"] >= 200]
     worst = (by["n"] * by["miss"] * by["bounced"]).sort_values(ascending=False).index[0]
@@ -91,7 +91,7 @@ def problem_cards(incidents: pd.DataFrame, states: pd.DataFrame, history: np.nda
                       h.loc[seg & ~bounced, "breached"].mean() * 100, f"{worst} incidents that stayed with one team",
                       int(seg.sum()), len(h), {"category": worst},
                       f"Agree a single owning team for {worst}, or route it there directly when OpsLens is sure.",
-                      h[bounced].head(3)))
+                      h[bounced & h["breached"]].head(3)))
     return cards
 
 
@@ -153,7 +153,7 @@ def at_risk_examples(booster, X: pd.DataFrame, feats: pd.DataFrame, p: np.ndarra
         pos = np.clip(contrib[row], 0, None)
         reasons = [{"text": REASON[names[j]](feats.iloc[i][names[j]]), "share": round(float(pos[j] / pos.sum()), 2)}
                    for j in np.argsort(-contrib[row])[:3] if contrib[row, j] > 0]
-        out.append({"ticket_id": str(feats.index[i]), "risk": round(float(p[i]), 3), "missed_sla": bool(feats.iloc[i]["breached"]),
+        out.append({"ticket_id": str(feats.iloc[i]["ticket_id"]), "risk": round(float(p[i]), 3), "missed_sla": bool(feats.iloc[i]["breached"]),
                     "priority": str(feats.iloc[i]["priority_raw"]), "team_now": str(feats.iloc[i]["team_now"]), "reasons": reasons})
     return out
 

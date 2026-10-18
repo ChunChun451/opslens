@@ -18,7 +18,31 @@ export const state = {
   plant: null, // POST /api/plant
   upload: null, // POST /api/upload
   staticServer: false, // true when served by `python -m http.server` (no API at all)
+  // Plan v3 (19 Oct): which world the dashboard shows — "food" (simulated food-delivery floor)
+  // or "real" (the public UCI ServiceNow service desk) — and the manager's plan: the
+  // recommendations they accepted or overrode. Both are remembered in this browser only.
+  world: readStored("opslens-world", "food"),
+  plan: readStored("opslens-plan", {}),
+  planimpact: null, // POST /api/plan/impact (live simulation of the accepted plan)
 };
+
+// localStorage can be missing or blocked (private windows); the dashboard must still work.
+function readStored(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
+  } catch (error) {
+    return fallback;
+  }
+}
+
+export function store(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    // Not remembered — fine for a demo.
+  }
+}
 
 // Try the real server first (M9 adds GET /api/results). When it is not there, use the
 // fixture file.
@@ -90,6 +114,7 @@ export const LIVE_SOURCES = {
   whatif: "POST /api/whatif (live simulation)",
   plant: "POST /api/plant (live detection on fresh data)",
   upload: "POST /api/upload (live analysis of the uploaded file)",
+  planimpact: "POST /api/plan/impact (live simulation of your plan)",
 };
 
 export function liveSource(path) {
