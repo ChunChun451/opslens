@@ -301,3 +301,42 @@ was reviewed (only web/ and docs/explain/web.md, no hard-coded numbers) and merg
   `.venv-challengers/Scripts/python.exe eval/challengers/run_risk_arena.py` and
   `.venv/Scripts/python.exe eval/run_eval.py --assemble`.
 - DEMO_SCRIPT: decide where the playbooks appear in the 7 minutes. M12 rehearsal.
+
+---
+
+## C2 — Claude 2's review merged (PR #1, 16–18 Oct 2026)
+
+**Who:** Claude 2 (Sneha's Claude Code) worked on branch `claude2/review` in the private repo
+ChunChun451/opslens; Claude 1 reviewed (PR comment), the owner approved, merged as `cbca9fa`.
+
+**Built by Claude 2** (full findings: `docs/collab/REVIEW.md`, log: `docs/collab/CLAUDE_2_LOG.md`)
+- Baseline C ("SLA due") and Baseline D (industry-standard skills routing with our AI triage);
+  no weights, validation first, then test once. D is now the lead comparison.
+- Lateness KPIs (minutes past SLA): the measured answer to "do you abandon late tickets?".
+- Ask OpsLens (`opslens/ask.py`, `POST /api/ask`): LLM routes, engine answers, grounding check,
+  offline keyword rules. Owner approved it on 18 Oct (amends the CLAUDE.md non-goal).
+- Floor map in the replay; design v3 with a cold open ("21 vs 7 missed promises").
+- Sealed second world (seed 4242, generated after the freeze, run once).
+- Official `make eval` on Sneha's laptop: 0 of 3,744 existing numbers moved (Claude 1 checked).
+
+**Key numbers (test days 43-56, 5 seeds)**
+- Breach %: OpsLens 2.20 vs D 5.51 (−3.31 [−4.79, −1.84]), C 5.40 (−3.20 [−3.93, −2.46]),
+  B 6.82, A 13.11.
+- Minutes past SLA per 100 tickets: OpsLens 529, D 1,477, B 2,282, A 2,820, C 4,189.
+- Sealed world: OpsLens 3.07% vs C 6.13% (−3.06 [−3.67, −2.45]); retrained risk AUC 0.970.
+- Saturday replay 18-24h, missed promises: D 21, OpsLens 7 (A 83, B 26).
+
+**Fixed by Claude 1 after the merge (18 Oct)**
+- JUDGE_QA Q26–Q30 quoted policy v1 (5.08%, P99 474, a 240-min guard): rewritten from v3
+  results. Also 53.6% → 53.5% (double rounding), 0.321 → 0.323 (stale), and a B-vs-A interval
+  that results.json never contained.
+- New `tests/test_doc_numbers.py`: numbers in JUDGE_QA and DEMO_SCRIPT must exist in the
+  current results (measured limit: about 45% of random one-decimal numbers match by chance).
+- CLAUDE.md updated (baselines, ask.py, lateness, sealed world, cold open, non-goal amended).
+- DEMO_SCRIPT rewritten around the cold open.
+
+**Open issues** (also posted on PR #1)
+- Sealed world lacks Baseline D (re-run with D; OpsLens stays frozen).
+- Ask OpsLens sends the question to Groq without `mask_pii()`.
+- Confirm `gemini-3.8-flash` in `make ping`.
+- TabPFN-3 still waits for the licence key. M12 rehearsal.

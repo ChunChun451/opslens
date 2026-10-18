@@ -34,7 +34,8 @@ runs that human floor.
    two baselines, ablations, stress tests, confidence intervals.
 2. **Trust** — every number clicks through to its evidence; the LLM never writes a digit;
    tests prove no future data leaks into features; recall is tested on random blind plants.
-3. **Touch it** — What-if panel and Plant-a-problem, live, on the judges' own ideas.
+3. **Touch it** — What-if panel, Plant-a-problem and **Ask OpsLens** (plain-words questions,
+   Hinglish too, answered by the engine), live, on the judges' own ideas.
 
 ---
 
@@ -113,7 +114,7 @@ is itself a git repo, and OneDrive would sync the venv and data). Python 3.12 ve
 | Recommend actions | Optimised assignment + Erlang-C staffing moves (budget-neutral) | Simulator: breach %, P90 time vs 2 baselines, 5 seeds, paired 95% CI |
 | Explain decisions | TreeSHAP reasons per ticket, evidence per finding, reason per assignment, "what would reduce this risk" | Click-through on any number in the UI |
 | Measure impact | Simulator + ablations + stress tests + impact translation | `docs/NUMBERS.md`, generated from results |
-| Baseline vs proposed | Baseline A (FIFO per team), Baseline B (priority then oldest), OpsLens | Same tickets, common random numbers, held-out days |
+| Baseline vs proposed | Baseline A (FIFO per team), B (priority then oldest), C ("SLA due" sort), D (industry-standard skills routing with our AI triage), OpsLens | Same tickets, common random numbers, held-out days; plus a **sealed second world** generated after the freeze, run once |
 
 The PS asks for impact on **"turnaround time, productivity, and service quality"**.
 `impact.py` reports exactly under those three headings (section 6).
@@ -132,7 +133,9 @@ The PS asks for impact on **"turnaround time, productivity, and service quality"
 - LLM via the `openai` SDK against OpenAI-compatible endpoints:
   main = Gemini Flash-Lite free tier `gemini-3.1-flash-lite` (verified 15 Oct),
   fallback = Groq free tier `qwen/qwen3.8-27b` (verified 15 Oct; `llama-3.1-8b-instant` is retired),
-  tests = `mock` provider. Third-party reports of free limits disagree — **verify base URLs,
+  tests = `mock` provider. Two extra entries (added 17 Oct by Claude 2): `gemini_brief`
+  (`gemini-3.8-flash`, writes the brief once per `make eval`) and `groq_route` (Ask OpsLens
+  routing, separate pacing). Third-party reports of free limits disagree — **verify base URLs,
   model names and limits in our own accounts on day 1**; store them in `config/providers.yaml`.
 - Frontend: plain HTML + vanilla JS + CSS; Chart.js bundled in `web/vendor/`
   (**the demo must work with Wi-Fi off**)
@@ -314,6 +317,11 @@ measures each move's effect.
 Baseline A: each free agent takes the oldest ticket in their team's queue, then helps with
 extra skills if their own queue is empty (routes by `selected_category`).
 Baseline B: same, but highest priority first, then oldest.
+Baseline C *(added 17 Oct)*: same team queues, earliest SLA deadline first, already-late tickets
+after the savable ones (the "SLA due" view every helpdesk has).
+Baseline D *(added 17 Oct)*: the industry standard: one queue (priority, then SLA due, then age),
+skills-based routing to any capable agent, intent from OUR classifier (AI triage). C and D have
+no weights: they ran on validation days first, then once on test days. D is the lead comparison.
 OpsLens: predicted category + risk + optimiser (+ staffing changes applied to the schedule).
 Ablation variants are flags on the OpsLens policy.
 
@@ -335,7 +343,8 @@ policy) and return KPIs in a few seconds. Powers the What-if panel.
 **`impact.py`** — per policy, under the PS headings:
 **Turnaround** (breach %, mean and P90 resolution time, max backlog),
 **Productivity** (tickets per agent-hour, agent-hours saved, transfers avoided),
-**Service quality** (reopen rate, max wait, load fairness).
+**Service quality** (reopen rate, max wait, load fairness, and **lateness**: minutes past SLA,
+mean over breached tickets and per 100 tickets, which shows whether late customers are abandoned).
 Paired differences vs each baseline with 95% CI over seeds. Optional ₹ view with an explicit,
 configurable cost-per-breach assumption (`config/impact.yaml`, always labelled as an assumption).
 
@@ -354,6 +363,13 @@ CI. Any effect size that is a business guess (e.g. how many app-bug tickets a st
 deflects) lives in `config/playbooks.yaml`, is labelled an assumption and gets a sensitivity
 range. The LLM drafts the action text (partner notice, IVR wording, banner) under the same
 no-digit rule as `brief.py`.
+
+**`ask.py`** *(added 17 Oct by Claude 2; owner approved 18 Oct)* — **Ask OpsLens**: a manager
+types a question in plain words (or Hinglish). The LLM only **routes** it to ONE engine tool
+(what-if, plant, explain ticket, fix first, top problems, headline) with arguments; a grounding
+check rejects any argument number the user did not type; our code runs the tool and writes every
+number. Keyword rules answer when the LLM is offline. This is a tool router, not a chatbot
+(section 9). Served by `POST /api/ask`.
 
 ---
 
@@ -379,12 +395,23 @@ no-digit rule as `brief.py`.
     only if it wins by > 2% on the main metric **and** fits the latency budget; otherwise
     report it and keep LightGBM.
 12. Simulator validation: Erlang C match (from the test suite).
+13. *(added 17 Oct)* Baselines C and D (`eval/run_baseline_c.py`) and lateness KPIs, validation
+    then test.
+14. *(added 17 Oct)* **Sealed second world** (`eval/run_sealed_world.py`): new generator seed,
+    routine retraining, frozen weights, run once — the answer to "you looked at the test days
+    three times".
+15. *(added 18 Oct)* `tests/test_doc_numbers.py`: every number in JUDGE_QA and DEMO_SCRIPT must
+    exist in the CURRENT results (history records of v1/v2 only on lines that name them).
 
 ---
 
 ## 8. Dashboard (`web/`, served by `server/app.py`)
 
 Clean, light, large text for a projector; red accent used sparingly; OpsLens brand only.
+*(Design v3 by Claude 2, 17 Oct: "Every ticket is a promise".)* The app opens on a **cold open**:
+Saturday dinner, the industry standard vs OpsLens as two animated floors, ending on the missed
+promises of each (from `sim.replay`). An **Ask OpsLens** bar sits in the top bar. The replay has a
+**floor map** (agent tiles and team queues, recorded in the same runs).
 Tabs:
 1. **Overview** — breach %, backlog, top 3 issues, today's brief.
 2. **Patterns** — evidence cards with example tickets. **Plant-a-problem** button.
@@ -405,7 +432,8 @@ or Plant-a-problem). Every number is clickable to its evidence.
 
 ## 9. Non-goals (do not build)
 Login/auth, real helpdesk integration, deep learning in the product, mobile app, cloud
-deployment, a free-form chatbot. Instead write `docs/PRODUCTION.md`: helpdesk API integration,
+deployment, a free-form chatbot (Ask OpsLens is allowed because it only routes to engine tools
+and never writes a number; owner decision 18 Oct). Instead write `docs/PRODUCTION.md`: helpdesk API integration,
 scale to millions of tickets/day (partition by team/language), agent overrides tracked as a
 signal, weekly retraining with drift checks, PII handling, how OpsLens sits behind an AI
 first-line (escalated tickets only).
@@ -427,6 +455,7 @@ opslens/                     (C:\dev\opslens)
     results_schema.py
     privacy.py ingest.py classify.py patterns.py features.py forecast.py
     risk.py optimize.py staffing.py policies.py simulate.py whatif.py impact.py brief.py
+    playbooks.py ask.py
   server/app.py
   web/      index.html app.js styles.css vendor/chart.umd.js
   eval/     run_eval.py results.json fixture_results.json challengers/(optional)
@@ -452,6 +481,7 @@ opslens/                     (C:\dev\opslens)
 | M7 | 21 Oct | Optimiser (scarcity, starvation guard) + OpsLens policy + weight choice on validation days | OpsLens vs A/B on test days, 5 seeds, paired CI printed |
 | M8 | 22 Oct | `make eval`: ablations, sensitivity, stress, speed/scale, (challengers); `NUMBERS.md` | One command reproduces every number |
 | P1 | 16–18 Oct | *(added 16 Oct)* Fix-at-source playbooks (`playbooks.py`), measured on test days; challenger arena | Each playbook's tickets prevented / breaches avoided with CI in `results.json`; arena rule applied |
+| C2 | 16–18 Oct | *(Claude 2, Sneha's Claude, PR #1, merged 18 Oct)* Review; Baselines C/D; lateness; Ask OpsLens; floor map + cold open; sealed world; official `make eval` | 0 of 3,744 existing numbers moved; 122 tests pass |
 | — | 22 Oct | **Model + weight freeze** | No model changes after this |
 | U1 | 18–22 Oct | *(parallel session)* UI shell on fixture results: layout, all tabs, charts, replay player, story-mode skeleton | Every tab renders from `fixture_results.json` with the FIXTURE banner |
 | M9 | 23–24 Oct | Server + wire every tab to real results; click-to-evidence; Accept/Override log | Full flow works on generated data |

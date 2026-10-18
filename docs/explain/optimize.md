@@ -57,7 +57,7 @@ in turn; rare-skill agent, no rare work is more urgent".
 | Reopen rate % | 3.93 | 3.93 | 4.40 |
 OpsLens − Baseline B: breach **−4.62 points, 95% CI [−6.01, −3.23]**; P90 −58 min; P99 −280 min.
 OpsLens − Baseline A: breach **−10.91 [−13.38, −8.43]**.
-Solver: median 0.08 ms per decision, no fallbacks. 5,000 tickets × 500 agents: 0.047 s (numbers: `docs/NUMBERS.md`).
+Solver: median 0.06 ms per decision, no fallbacks. 5,000 tickets × 500 agents: 0.07 s (numbers: `docs/NUMBERS.md`).
 Ablations and stress tests: `docs/NUMBERS.md`.
 
 ## Weaknesses
