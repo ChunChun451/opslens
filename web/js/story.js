@@ -15,7 +15,7 @@
 import { state } from "./data.js";
 import { shortLabel } from "./ui.js";
 import { ev, evText } from "./evidence.js";
-import { showTab } from "./router.js";
+import { showTab, setWorld } from "./router.js";
 import { startReplay, pauseReplay } from "./replay.js";
 import { escapeHtml, prettyKey } from "./format.js";
 import { CAUSE_LABELS } from "./tabs/patterns.js";
@@ -37,7 +37,8 @@ let step = -1; // -1 = story mode is off
 let highlighted = null;
 
 export function initStory() {
-  document.getElementById("story-button").addEventListener("click", () => goTo(0));
+  // The story is told on the food-delivery floor (its steps point at that world's screens).
+  document.getElementById("story-button").addEventListener("click", () => { setWorld("food"); syncSwitch(); goTo(0); });
   document.getElementById("story-card").addEventListener("click", (event) => {
     if (event.target.closest("#story-next")) next();
     if (event.target.closest("#story-back")) goTo(Math.max(0, step - 1));
@@ -51,6 +52,10 @@ export function initStory() {
     if (event.key === "ArrowRight") next();
     if (event.key === "ArrowLeft") goTo(Math.max(0, step - 1));
   });
+}
+
+function syncSwitch() {
+  document.querySelectorAll(".world-switch [data-world]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.world === state.world)));
 }
 
 function next() {
