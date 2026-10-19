@@ -115,9 +115,11 @@ export const risks = { render(section) {
 
 // ---- Actions: what should we do? -------------------------------------------------------------
 
-export const actions = { render(section) {
+// The real desk's recommendations as plan items (web/js/plan.js). Also registered at start-up
+// (app.js), so Your plan can describe them before the Actions screen has been opened.
+export function realPlanItems() {
   const d = state.results[R];
-  if (!d) return missingData(section);
+  if (!d) return [];
   const ew = `${R}.early_warning`;
   const triage = { id: "rd-triage", world: "real", title: "Look at the riskiest 20% of new incidents first", owner: "Service desk lead",
     effects: [{ label: "Share of all SLA misses in that 20%, OpsLens score", path: `${ew}.caught_top20_opslens_pct`, unit: "pct" },
@@ -127,6 +129,14 @@ export const actions = { render(section) {
     effects: [{ label: c.metric + " in this group", path: `${R}.cards[${i}].value`, unit: "pct" },
               { label: c.comparison_text, path: `${R}.cards[${i}].comparison_value`, unit: "pct" }],
     note: "Evidence, not a measured effect: an event log cannot replay what would have happened after the change." }));
+  return [triage, ...fixes];
+}
+
+export const actions = { render(section) {
+  const d = state.results[R];
+  if (!d) return missingData(section);
+  const ew = `${R}.early_warning`;
+  const [triage, ...fixes] = realPlanItems();
   [triage, ...fixes].forEach(registerItem);
   const box = (item, evidence) => `<div class="action-item"><div>
       <div class="action-title">${escapeHtml(item.title)}</div><div class="small muted">${escapeHtml(item.owner)} · ${evidence}</div></div>

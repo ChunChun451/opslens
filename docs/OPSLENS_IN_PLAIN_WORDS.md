@@ -34,8 +34,9 @@ Same screens in both. Food is the star; the real desk is the proof that it works
    The tickets most likely to miss their deadline, with the reasons, and the hours or days when a
    team will be short of people.
 4. **Actions — "What should we do?"**
-   Recommendations, each with its evidence. **Accept** adds it to *Your plan* and shows what it
-   changes. **Override** says no and records why. Who takes which ticket is decided
+   Recommendations, each with its evidence and its measured effect alone (replayed on 14 days
+   OpsLens never saw). "No clear effect" means the 95% range includes zero: we cannot tell.
+   **Accept** adds it to *Your plan*. **Override** says no and records why. Who takes which ticket is decided
    automatically (nobody approves 1,100 tickets a day) — the screen only explains it.
 5. **Proof — "Does it actually work?"**
    OpsLens against today's methods, on days or months it never learned from. Includes the replay,
@@ -50,7 +51,7 @@ Same screens in both. Food is the star; the real desk is the proof that it works
 | Accept | The recommendation goes into *Your plan*, with its measured effect |
 | Override → a reason | The recommendation is refused, and the reason is kept |
 | Your plan | Opens the plan: what you accepted, what each changes, what you refused |
-| Simulate (in Your plan, food world) | Replays a whole day with your plan and without it, and shows the difference |
+| Simulate (in Your plan, food world) | Pick a held-out day; it replays that day with your plan and without it, three times with different luck (about 20 s), and shows the difference under turnaround, productivity and service quality. Green or red only when all three agree |
 | Any number | Shows where it comes from — every number on screen is computed, none typed in |
 | Ask OpsLens (top bar) | Ask in plain words or Hinglish ("what if Team C loses 2 agents on Saturday?") — the engine answers |
 | Story mode | A guided tour for the demo |

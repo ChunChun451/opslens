@@ -406,3 +406,21 @@ it asks for "a dashboard showing the expected impact of these interventions". Pl
 
 **Open:** merge the plan-impact session's branch (API + per-item effects for staffing moves) and
 wire its ids; story mode tour through the new screens; projector check at 1366×768.
+
+**Update (19 Oct, later): Your plan is real.** Merged the plan-impact branch (`opslens/plan.py`,
+`eval/run_plan_items.py` → `results.plan`, `POST /api/plan/impact`; review: 0 of 20,885 existing
+result values moved, only the date, commit and the re-measured scale timing; 173 tests pass).
+Dashboard wired: staffing moves use the plan's ids (`staff_43_B02`), every item shows its effect
+alone vs today's roster with nothing accepted, "no clear effect" when the 95% CI contains 0; the
+playbook card's OpsLens column now uses the same base as its priority-first column (it used the
+roster WITH the staffing moves — two different numbers for one button); Simulate picks any test day,
+warms the server up when the panel opens, colours a change only when all 3 seeds agree.
+Plan knows its items from results, not from screens already drawn (bug: after a reload on another
+screen the panel lost effects and Simulate). Projector check at 1366×768: tables fit.
+Numbers: all 18 together −48.8 [−63.1, −34.5] of 379.8 missed SLAs; cross-training alone −26.8
+[−39.0, −14.6]; 11 of 12 staffing moves alone: no clear effect, one clearly helps (−7.6
+[−15.0, −0.2]). Live: first Simulate ~30–40 s (workers start), a new plan ~18 s, a repeat at once.
+Docs: DEMO_SCRIPT step 4 + warm-up, JUDGE_QA Q41/Q43 aligned with the screen (Q43 had a stale
+"46"), Q56–Q58 added, plain-words guide.
+
+**Open:** story mode tour through the new screens; rehearsal (27 Oct).

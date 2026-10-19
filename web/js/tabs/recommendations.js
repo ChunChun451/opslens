@@ -14,7 +14,7 @@ import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, missing, initials } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
-import { planButtons, registerItem } from "../plan.js";
+import { planButtons, registerItem, planIndex, measured } from "../plan.js";
 
 // Assignments shown before "Show all" (a layout choice, not a result).
 const ASSIGNMENTS_SHOWN = 8;
@@ -28,9 +28,21 @@ export function render(section) {
     return;
   }
   section.innerHTML = `${head}
+    ${planLead()}
     ${playbooksCard()}
     ${staffingCard(rec)}
     ${assignmentsCard(rec)}`;
+}
+
+// The whole plan in one line: every recommendation accepted together, replayed on the held-out days
+// (its own run, not a sum of the single effects).
+function planLead() {
+  const plan = state.results.plan;
+  if (!plan || !plan.all_items) return "";
+  return `<p class="lead">Accept all ${plan.items.length} recommendations below and, over the 14 held-out days,
+    the customers who miss their SLA change by ${measured("plan.all_items.effect.breaches", "breaches", false)}
+    (${ev("plan.base_kpis.breaches.mean", "count")} without any of them). Each one alone is measured the same way, so
+    you can see which ones pay off and which do not.</p>`;
 }
 
 // Fix-at-source playbooks (added 16 Oct): an upstream action per evidence card, each replayed
@@ -43,6 +55,10 @@ function playbooksCard() {
   const item = (pb, i) => {
     const base = `playbooks.playbooks[${i}]`;
     const fx = (policy, kpi) => `${base}.effect.${policy}.vs_without.${kpi}`;
+    // OpsLens column: this fix alone on today's roster (results.plan), the same footing as the
+    // priority-first column and the same number Your plan shows. Older results: the playbook run.
+    const j = planIndex(pb.id);
+    const ops = (kpi, key, unit) => (j >= 0 ? measured(`plan.items[${j}].effect.${key}`, key, false) : diff(fx("opslens", kpi), unit));
     registerItem({ id: pb.id, world: "food", title: pb.title, owner: pb.owner, simulable: true,
       effects: [
         { label: "Missed SLAs over the 14 held-out days, with OpsLens", path: fx("opslens", "breaches") + ".mean_diff", unit: "int", signed: true },
@@ -61,10 +77,10 @@ function playbooksCard() {
         <div class="table-wrap"><table>
           <thead><tr><th>Measured on test days</th><th class="num">Priority-first</th><th class="num">OpsLens</th></tr></thead>
           <tbody>
-            <tr><td>Tickets</td><td class="num">${diff(fx("baseline_b", "tickets"), "int")}</td><td class="num">${diff(fx("opslens", "tickets"), "int")}</td></tr>
-            <tr><td>Customers who missed the SLA</td><td class="num">${diff(fx("baseline_b", "breaches"), "int")}</td><td class="num">${diff(fx("opslens", "breaches"), "int")}</td></tr>
-            <tr><td>Transfers</td><td class="num">${diff(fx("baseline_b", "transfers"), "int")}</td><td class="num">${diff(fx("opslens", "transfers"), "int")}</td></tr>
-            <tr><td>Agent-hours of work</td><td class="num">${diff(fx("baseline_b", "agent_hours"), "hours")}</td><td class="num">${diff(fx("opslens", "agent_hours"), "hours")}</td></tr>
+            <tr><td>Tickets</td><td class="num">${diff(fx("baseline_b", "tickets"), "count")}</td><td class="num">${ops("tickets", "tickets", "count")}</td></tr>
+            <tr><td>Customers who missed the SLA</td><td class="num">${diff(fx("baseline_b", "breaches"), "count")}</td><td class="num">${ops("breaches", "breaches", "count")}</td></tr>
+            <tr><td>Transfers</td><td class="num">${diff(fx("baseline_b", "transfers"), "count")}</td><td class="num">${ops("transfers", "transfers", "count")}</td></tr>
+            <tr><td>Agent-hours of work</td><td class="num">${diff(fx("baseline_b", "agent_hours"), "hours")}</td><td class="num">${ops("agent_hours", "busy_agent_hours", "hours")}</td></tr>
           </tbody></table></div>
         <ul class="small muted">${assumptions}</ul>
         ${planButtons(pb.id)}
@@ -74,11 +90,11 @@ function playbooksCard() {
   return card({
     id: "rec-playbooks",
     title: "Fix problems at their source",
-    sub: "Each problem OpsLens found gets an action for the team that can remove it, not just route it faster. Each action was replayed on the 14 held-out days (5 seeds, same tickets and luck); numbers are the change against the same floor without it, with a 95% interval.",
+    sub: "Each problem OpsLens found gets an action for the team that can remove it, not just route it faster. Each action was replayed alone on the 14 held-out days (5 seeds, same tickets and luck, today's roster); numbers are the change against the same floor without it, with a 95% interval.",
     body: `<div class="grid cols-2">${pbs.playbooks.map(item).join("")}</div>
-      <p><strong>All together:</strong> customers who missed the SLA change by ${diff(all("baseline_b"), "int")} under priority-first
-        and ${diff(all("opslens"), "int")} under OpsLens. OpsLens with every playbook vs priority-first today:
-        ${diff("playbooks.opslens_all_vs_baseline_b.breaches", "int")}.</p>`,
+      <p><strong>All six fixes together</strong> under priority-first: ${diff(all("baseline_b"), "count")} customers who missed the SLA.
+        OpsLens with every fix and this week's staffing, against priority-first today:
+        ${diff("playbooks.opslens_all_vs_baseline_b.breaches", "count")}.</p>`,
   });
 }
 
@@ -159,10 +175,19 @@ function weeklyPlans(rec) {
   return k === rec.staffing_moves.length ? groups : null;
 }
 
+// results.plan lists the staffing moves first, in the same order as staffing_moves (same agent, same
+// week); the server only knows those ids ("staff_43_C02"), so a move without one cannot be planned.
+function movePlanId(m, i) {
+  const plan = state.results.plan;
+  const it = plan && plan.items && plan.items[i];
+  return it && it.kind === "staffing" && it.change.agent_id === m.agents[0] ? it.id : null;
+}
+
 function moveHtml(m, i) {
   const base = `recommendations.staffing_moves[${i}]`;
-  registerItem({ id: `move-${i}`, world: "food", title: m.text, owner: "Team lead", simulable: true,
-    note: "Its effect is measured together with the rest of your plan: press Simulate in Your plan." });
+  const id = movePlanId(m, i);
+  if (id) registerItem({ id, world: "food", title: m.text, owner: "Team lead", simulable: true });
+  const j = id ? planIndex(id) : -1;
   const effects = Object.keys(m.expected_effect).map((kpi) => {
     const unit = spreadUnit(kpiInfo(kpi).unit);
     return `${escapeHtml(kpiInfo(kpi).label)} ${ev(`${base}.expected_effect.${kpi}`, unit, { signed: true })}`;
@@ -171,7 +196,8 @@ function moveHtml(m, i) {
       <div>
         <div class="move-text">${evText(base + ".text")}</div>
         ${effects ? `<div class="small muted">Expected effect (simulated): ${effects}</div>` : ""}
+        ${j >= 0 ? `<div class="small">Alone, customers who miss the SLA over the 14 held-out days: ${measured(`plan.items[${j}].effect.breaches`, "breaches")}</div>` : ""}
       </div>
-      ${planButtons(`move-${i}`)}
+      ${id ? planButtons(id) : ""}
     </div>`;
 }

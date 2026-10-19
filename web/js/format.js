@@ -25,6 +25,7 @@ const UNIT_RULES = {
   frac_pct: { scale: 100, minDigits: 0, maxDigits: 1, suffix: "%" },
   min: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " min" },
   int: { scale: 1, minDigits: 0, maxDigits: 0, suffix: "" },
+  count: { scale: 1, minDigits: 1, maxDigits: 1, suffix: "" }, // a mean count over seeds: "23.7", "15.0"
   ratio: { scale: 1, minDigits: 2, maxDigits: 2, suffix: "" },
   hours: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " h" },
   sec: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " s" },

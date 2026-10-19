@@ -266,8 +266,9 @@ two named agents to cross-train. Each one was replayed on the 14 held-out days.
 
 **Q41. What do those actions actually save?**
 On today's priority-first floor, all six together: 163 fewer breaches in two weeks (95% CI 125 to
-201). With OpsLens: 38 fewer (CI 25 to 51). Together, 889 fewer than priority-first today, out of
-1,220. The biggest single one: cross-training two Hindi speakers, −79 and −34.
+201). OpsLens with every fix and the staffing changes: 889 fewer than priority-first today, out of
+1,220. The biggest single one: cross-training two Hindi speakers, −79.0 under priority-first and
+−26.8 under OpsLens (alone, today's roster, CI −39.0 to −14.6).
 
 **Q42. (Attack) "Saves 30% of tickets" — you made that number up.**
 Some inputs are guesses, and we label them: 30% of customers skip a ticket after a status banner,
@@ -276,8 +277,9 @@ breaches saved). Everything else is measured: which tickets, which agents, which
 
 **Q43. Why do most playbooks barely help under OpsLens?**
 Because OpsLens already absorbs those symptoms: its classifier fixes the phone-menu routing, so
-the menu fix saves 46 breaches under priority-first but only 3 under OpsLens. Cross-training still
-helps (−34) because it adds capacity where no routing can help. We show both columns on purpose.
+the menu fix saves 39.0 breaches under priority-first but only 2.0 under OpsLens (no clear effect).
+Cross-training still helps (−26.8) because it adds capacity where no routing can help. We show both
+columns on purpose.
 
 **Q44. Is the LLM finally doing something?**
 It drafts the request to each owner team, from facts it can only cite by key, like the brief. It
@@ -343,5 +345,20 @@ forecast; on our food floor it wins clearly. We show the real result on the Proo
 
 **Q55. What do Accept and Override actually do?**
 Accept puts a recommendation in Your plan with its measured effect, and Simulate replays a day with
-the whole plan. Example: cross-training two Hindi agents, 34 fewer missed SLAs over 14 held-out
-days with OpsLens. Override records why the manager said no.
+the whole plan, live. Example: cross-training two Hindi agents, 26.8 fewer missed SLAs over 14
+held-out days with OpsLens. Override records why the manager said no.
+
+**Q56. (Attack) Most of your staffing moves say "no clear effect". Why recommend them?**
+Because one move is one person for one week: small. Each is measured alone, so we show it: only
+Arjun N.'s day-off swap is clearly helpful (−7.6, CI −15.0 to −0.2). All 18 recommendations
+together: −48.8 (CI −63.1 to −34.5) of 379.8 missed SLAs. The manager can override the rest.
+
+**Q57. (Attack) Isn't "all together" just the single effects added up?**
+No. It is its own replay with every item in place: same 14 days, same 5 seeds, same luck. It is
+smaller than the sum because fixes overlap — cross-training and a Hindi-heavy staffing move help
+the same tickets. That is why Your plan simulates the plan instead of adding numbers.
+
+**Q58. How long does Simulate take, and is it the real engine?**
+The same simulator and OpsLens policy as every result: one test day, three seeds, without and
+with the plan, in parallel worker processes. About 20 seconds for a new plan; a plan simulated
+before comes back at once. It runs only on held-out days 43 to 56.

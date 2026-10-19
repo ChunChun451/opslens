@@ -7,9 +7,11 @@ Confirm the real time limit with the organisers; cut from the bottom of each ste
 
 ## Before going on stage (10 minutes before)
 1. `mingw32-make demo` → open http://localhost:8000/. Projector check at 1366×768, full screen.
-2. Top bar on **Food delivery**. Empty *Your plan* (open it; Undo anything left from rehearsal).
+2. Top bar on **Food delivery**.
 3. Wi-Fi: everything works offline except Ask OpsLens's free-form questions (phone hotspot).
-4. Warm up once: one What-if, one Simulate in *Your plan*. Backup video and charger ready.
+4. Warm up: one What-if. Then Accept "Cross-train 2 Hindi-speaking agents", open *Your plan*, keep
+   Saturday 17 Oct, press **Simulate** (about 30 s the first time), then Undo it. On stage the same
+   plan comes back at once. Do not restart the server after this. Backup video and charger ready.
 
 ## 0. Cold open (40 s) — it plays on its own
 Two floors, Saturday dinner, same agents, same complaints. It ends on 24 vs 6 missed promises.
@@ -31,10 +33,13 @@ Open **T060582**: a Hindi refund, "mera paisa wapas karo please", 0.997 chance o
 deadline. The reasons are listed. Giving it to a capable agent now: 0.29.
 
 ## 4. What to do — and what it changes (60 s) — Actions
-**Accept** "Cross-train 2 Hindi-speaking agents". Open **Your plan**: over the 14 held-out days
-it means 34 fewer missed deadlines with OpsLens, 79 fewer with today's urgent-first routing.
-Press **Simulate** to replay Saturday with the plan. **Override** another fix and pick a reason.
-**Jijnasu:** "The manager decides the big things; OpsLens handles the 1,100 small ones and explains each."
+Top line: accept all 18 recommendations and 48.8 fewer of 379.8 customers miss their deadline.
+**Accept** "Cross-train 2 Hindi-speaking agents": alone, 26.8 fewer missed deadlines over the 14
+held-out days with OpsLens (79.0 with today's urgent-first routing). Open **Your plan**, Saturday is
+picked, press **Simulate**: the whole day replayed with and without the plan, live. Then point at a
+staffing move marked "no clear effect" and **Override** it ("Not now").
+**Jijnasu:** "It even tells you which of its own ideas do not pay. The manager decides the big
+things; OpsLens handles the 1,100 small ones and explains each."
 
 ## 5. Real data (60 s) — switch to **IT service desk**
 **Sneha:** "Our food floor is simulated — no company publishes its complaints. So here is the same
@@ -62,4 +67,4 @@ data. OpsLens: every ticket is a promise — it helps you keep it."
 
 ## Practice questions (answers in docs/JUDGE_QA.md)
 Data is fake? · Why this public dataset? · Simulator rigged? · Tuned on test? · Abandoning late
-tickets? · What does Accept do? · Does it beat the real desk at routing? (no) · Where is the AI?
+tickets? · What does Accept do? · Does it beat the real desk at routing? (no) · "No clear effect" moves? · Where is the AI?

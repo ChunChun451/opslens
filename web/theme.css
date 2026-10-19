@@ -1082,7 +1082,7 @@ body[data-world="real"] .intro-replay { display: none; }
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(440px, 100vw);
+  width: min(560px, 100vw); /* wide enough for a 4-column without / with / change table */
   overflow-y: auto;
   background: var(--surface);
   border-left: 1px solid var(--border);
@@ -1167,3 +1167,11 @@ tr.hot td { background: var(--bad-soft); }
   padding-left: 8px;
   padding-right: 8px;
 }
+
+/* Your plan: the day picker and the coloured change column (only when every seed agrees). */
+.plan-sim { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.plan-sim select { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: inherit; }
+.plan-table td.delta-good .ev { color: var(--good); font-weight: 700; }
+.plan-table td.delta-bad .ev { color: var(--bad); font-weight: 700; }
+.plan-table th, .plan-table td { padding: 7px 8px; }
+.plan-table td:first-child { width: 42%; }

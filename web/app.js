@@ -11,6 +11,7 @@ import { initEvidence, ev, evText } from "./js/evidence.js";
 import { setChartDefaults } from "./js/charts.js";
 import { initTabs, setWorld } from "./js/router.js";
 import { initPlan } from "./js/plan.js";
+import { realPlanItems } from "./js/tabs/realdesk.js";
 import { initStory } from "./js/story.js";
 import { initAsk } from "./js/ask.js";
 import { initMotion, initSliderFill } from "./js/motion.js";
@@ -45,7 +46,7 @@ async function start() {
   initMotion(); // before the first tab is shown, so its numbers count up too
   initSliderFill();
   initTabs();
-  initPlan();
+  initPlan(realPlanItems());
   initStory();
   initAsk();
   initIntro(); // the cold open plays last, over the ready dashboard
