@@ -136,11 +136,11 @@ def report(out: dict) -> None:
         row = ft["results"][str(b)]
         print(f"  {b}%: " + ", ".join(f"{p} {row[p]['saved']} [{row[p]['ci_low']:.0f}, {row[p]['ci_high']:.0f}]" for p in FT.PICKERS))
     r = ft["rule"]
-    print(f"  rule at {r['budget']}%: OpsLens − {r['best_other']} = {r['diff']} [{r['ci_low']:.1f}, {r['ci_high']:.1f}] → "
+    print(f"  rule at {r['budget']}%: OpsLens - {r['best_other']} = {r['diff']} [{r['ci_low']:.1f}, {r['ci_high']:.1f}] -> "
           f"{'PASSED' if r['passed'] else 'NOT passed'}; busy weeks ahead {ft['busy_weeks_opslens_ahead_of_best_other']} of {pop['busy_weeks']}")
     rep = out["replication"]
     print(f"replication: {rep['replicated']} of {rep['of']}: " + "; ".join(
-        f"{c['id']} gap {c['learning']['gap']:.1f} → {c['test']['gap']:.1f} [{c['test']['ci_low']:.1f}, {c['test']['ci_high']:.1f}]"
+        f"{c['id']} gap {c['learning']['gap']:.1f} -> {c['test']['gap']:.1f} [{c['test']['ci_low']:.1f}, {c['test']['ci_high']:.1f}]"
         for c in rep["cards"]))
     fcand = out["forecast_candidates"]
     print(f"forecast candidates: check {fcand['wape_check']}, chose {fcand['chosen_on_check']}; test {fcand['wape_test']}")
