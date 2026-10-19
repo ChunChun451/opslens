@@ -38,6 +38,7 @@ STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/ru
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
          ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
+         ("realdesk", "eval/run_realdesk.py"),
          ("plan_items", "eval/run_plan_items.py")]  # needs forecast + playbooks (added 19 Oct)
 
 
@@ -215,6 +216,8 @@ def assemble(timings: dict[str, float]) -> dict:
         results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
     if (PARTS / "floor.json").exists():
         results["floor"] = part("floor")
+    if (PARTS / "realdesk.json").exists():  # the real public service desk (UCI), deliverable 1
+        results["realdesk"] = part("realdesk")
     # "Your plan" (eval/run_plan_items.py, added 19 Oct): each recommendation a manager can accept,
     # measured alone on the test days against OpsLens with nothing accepted.
     if (PARTS / "plan_items.json").exists():
@@ -363,7 +366,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -583,6 +586,29 @@ def sealed_world_md(r: dict) -> list[str]:
         lines.append(f"| {label} | " + " | ".join(fmt(mean(p, key)) for p in names) + " |")
     lines += ["", f"- OpsLens − Baseline C, breach %: {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}]. "
               f"Retrained risk AUC {fmt(s['risk_auc'], 3)}. Classifier: {s['classifier']}. Weights unchanged."]
+    return lines
+
+
+def realdesk_md(r: dict) -> list[str]:
+    """The real public service desk (eval/run_realdesk.py): every comparison on the test months."""
+    d = r.get("realdesk")
+    if not d:
+        return []
+    s, ew, fc, rt = d["summary"], d["early_warning"], d["forecast"], d["routing"]["test"]
+    lines = ["", "## The real public service desk (UCI ServiceNow log, CC BY 4.0)", "",
+             f"- {s['incidents']:,} incidents, {s['teams']} teams, {s['agents']} agents; {fmt(s['missed_sla_pct'], 1)}% missed their SLA, "
+             f"{fmt(s['passed_between_teams_pct'], 1)}% were passed between teams. Learning {s['learning_period'][0]} to "
+             f"{s['learning_period'][1]}; test {s['test_period'][0]} to {s['test_period'][1]} ({s['test_incidents']:,} incidents).",
+             "- Where open time goes: " + ", ".join(f"{k} {fmt(v, 1)}%" for k, v in s["open_time_share_pct"].items()) + "."]
+    lines += [f"- {c['title']}: {fmt(c['value'], 1)} vs {fmt(c['comparison_value'], 1)} ({c['comparison_text']})." for c in d["cards"]]
+    lines += ["", "| On the test months | OpsLens | What the desk used |", "|---|---|---|",
+              f"| SLA-miss warning 1 h after opening (AUC) | {fmt(ew['auc_opslens'], 3)} | priority field {fmt(ew['auc_priority'], 3)} |",
+              f"| Share of all SLA misses in the riskiest 20% | {fmt(ew['caught_top20_opslens_pct'], 1)}% | {fmt(ew['caught_top20_priority_pct'], 1)}% |",
+              f"| Daily new incidents per team (WAPE, lower is better) | {fmt(fc['wape_learned'], 3)} | same day last week {fmt(fc['wape_same_day_last_week'], 3)} |",
+              f"| Right team first time (OpsLens only when sure, {fmt(rt['sure_share_pct'], 0)}% of incidents) | "
+              f"{fmt(rt['opslens_sure_right_pct'], 1)}% | desk on the same incidents {fmt(rt['desk_on_same_right_pct'], 1)}% |",
+              "", f"- Not better than the desk: the forecast (check weeks chose {fc['chosen_on_check_weeks']}) and team routing "
+              f"(net {rt['net_first_time_right']:+d} incidents: {rt['fixed']} fixed, {rt['made_wrong']} made wrong). Reported, not claimed."]
     return lines
 
 

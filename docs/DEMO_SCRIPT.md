@@ -1,88 +1,65 @@
 # OpsLens — demo script (7 minutes + Q&A)
 
-For Sneha (story) and Jijnasu (laptop). Rewritten 18 Oct around the cold open (design v3, by
-Claude 2). Every number below is in `eval/results.json`; `tests/test_doc_numbers.py` fails if one
-is not. If `make eval` is re-run, run the tests and fix what they flag.
+For Sneha (story) and Jijnasu (laptop). Rewritten 19 Oct for Plan v3: six screens, two worlds,
+a real plan. Read `docs/OPSLENS_IN_PLAIN_WORDS.md` first. Every number below is in
+`eval/results.json`; `tests/test_doc_numbers.py` fails if one is not.
 Confirm the real time limit with the organisers; cut from the bottom of each step.
 
 ## Before going on stage (10 minutes before)
-1. `mingw32-make demo` → "OpsLens demo: real results …". Open http://localhost:8000/.
-2. Projector check at 1366×768, browser full screen. Reload once so the cold open plays from
-   the start when the judges look up (or use **Replay the night** at the bottom of the sidebar).
-3. **Wi-Fi:** the demo works fully offline. Only Ask OpsLens uses the internet (the LLM reads the
-   question). With a phone hotspot it understands anything, Hinglish included; without it, keyword
-   rules still answer the questions below. Decide which before going on.
-4. Warm the live endpoints once: one What-if (Saturday, no change) and one Ask OpsLens question.
-5. Backup video on the desktop and on a USB stick, and the charger.
+1. `mingw32-make demo` → open http://localhost:8000/. Projector check at 1366×768, full screen.
+2. Top bar on **Food delivery**. Empty *Your plan* (open it; Undo anything left from rehearsal).
+3. Wi-Fi: everything works offline except Ask OpsLens's free-form questions (phone hotspot).
+4. Warm up once: one What-if, one Simulate in *Your plan*. Backup video and charger ready.
 
-## 0. Cold open (40 s) — the app opens on it
-Let it play in silence for the first seconds: Saturday 17 Oct, dinner rush, two floors side by
-side. Left, the industry standard; right, OpsLens; a dot is a customer waiting, red means the
-promise was missed.
-**Sneha (as it ends on 24 vs 6):** "Every ticket is a promise to help a customer in time. Same
-people. Same tickets. Different decisions. On this one evening, 24 missed promises against 6."
-Click **See how**.
+## 0. Cold open (40 s) — it plays on its own
+Two floors, Saturday dinner, same agents, same complaints. It ends on 24 vs 6 missed promises.
+**Sneha:** "Every complaint is a promise to help a customer in time. Same people, same complaints,
+different decisions: 24 broken promises against 6." Click **See how**.
 
-## 1. The claim, and why you can believe it (45 s) — Overview
-**Jijnasu:** "That was one evening. Over 14 days OpsLens never saw, 2.05% of customers missed
-their SLA, against 5.51% with industry-standard skills routing — the way helpdesks route today,
-even with our AI triage added. 95% interval: −4.77 to −2.15 points."
-**Sneha:** "And it is not luck: we built a second world after we froze the system and ran it
-once. OpsLens 2.20%, the industry standard 5.84%. And we measured the physical limit — the breaches
-no one could prevent even with unlimited agents: OpsLens captures 83% of everything that is possible."
+## 1. Does it work? (45 s) — Proof
+**Jijnasu:** "That was one evening. Over 14 days OpsLens never saw, 2.05% of customers missed their
+deadline, against 5.51% with the industry-standard way of routing (95% interval −4.77 to −2.15
+points). Same agents, same hours."
 
-## 2. Nobody is abandoned (30 s) — Overview proof strip
-**Jijnasu:** "The obvious trick would be to give up on late customers. We measured it: minutes
-past the promise, per 100 tickets — 483 with OpsLens, 1,432 with the industry standard, 2,256 with
-urgent-first."
+## 2. Why it goes wrong (45 s) — Problems
+Open **Hindi × Team B wait 5.1× longer**: 336 vs 66 minutes, because only three agents speak
+Hindi and handle refunds, and none work at night. **Sneha:** "Nobody told OpsLens. It found it, with
+the proof and the example complaints."
 
-## 3. Why the floor fails (45 s) — Recurring problems
-Open **Hindi × Team B wait 5.1× longer**: 336 vs 66 min, cause *skill gap*, three masked example
-tickets.
-**Sneha:** "Nobody told OpsLens this. It found it — and on 20 sets of problems we hid at random,
-it found 57 of 60."
+## 3. What goes wrong next (40 s) — Risks
+Open **T060582**: a Hindi refund, "mera paisa wapas karo please", 0.997 chance of missing its
+deadline. The reasons are listed. Giving it to a capable agent now: 0.29.
 
-## 4. One ticket (40 s) — Tickets at risk
-Open **T060582** (third in the list): Hindi refund, "mera paisa wapas karo please", breach risk
-0.997. Reason: no agent on shift can serve a Hindi refund (40% of the push). "Assign now to a
-capable agent" → 0.29.
-**Jijnasu:** "We tested the same risk model on a real ServiceNow incident log: it ranks real SLA
-misses at 0.857, against 0.552 for the priority rule."
+## 4. What to do — and what it changes (60 s) — Actions
+**Accept** "Cross-train 2 Hindi-speaking agents". Open **Your plan**: over the 14 held-out days
+it means 34 fewer missed deadlines with OpsLens, 79 fewer with today's urgent-first routing.
+Press **Simulate** to replay Saturday with the plan. **Override** another fix and pick a reason.
+**Jijnasu:** "The manager decides the big things; OpsLens handles the 1,100 small ones and explains each."
 
-## 5. What to do about it (40 s) — What to do
-Show **Fix at the source → Cross-train 2 Hindi-speaking agents** only: 34 fewer missed SLAs in two
-weeks even with OpsLens running.
-**Sneha:** "We tested six upstream fixes. Most barely help once OpsLens runs the floor. This one
-does — so this is where to spend."
+## 5. Real data (60 s) — switch to **IT service desk**
+**Sneha:** "Our food floor is simulated — no company publishes its complaints. So here is the same
+engine on a real company's service desk, public data: 24,918 incidents, 36.6% missed their deadline."
+Overview → where the time goes. Risks → **its riskiest 20% hold 49.9% of all missed deadlines;
+the desk's own priority field, 24.6%.** **Jijnasu:** "And we show where it does not beat the real
+desk — Proof says so."
 
-## 6. Your turn (60 s) — Ask OpsLens (top bar)
-Hand the keyboard to a judge: *"What if Team C loses 2 agents on Saturday?"* — or in Hinglish,
-*"agar saturday ko refund wale 3 log kam ho jaye"*.
-**Jijnasu (pointing at the trace):** "The language model only understood the question. The
-simulator answered it — every number you see was computed just now, for every policy."
-If the judge prefers: **Plant-a-problem** on Recurring problems (hidden in fresh data, found or
-not, honestly). Time both in rehearsal; say the wait out loud ("simulating the whole day").
+## 6. Your turn (45 s) — back to Food delivery
+Hand the keyboard to a judge: Ask OpsLens "what if Team C loses 2 agents on Saturday?", or
+Proof → Try a what-if, or Problems → plant a problem.
 
-## 7. The honest box and close (30 s) — How we tested
-**Jijnasu:** "Our first version failed a stress test with 25% more tickets. We fixed it on
-validation days only and kept every failure on record. Today, with 25% more tickets: 10.5% against
-28.9% for urgent-first."
-**Sneha:** "Proven on days it never saw, on a world built after we froze it, on real ServiceNow
-data — and on your question, just now. OpsLens: every ticket is a promise; we help you keep it."
+## 7. Close (20 s)
+**Sneha:** "Tested on days it never saw, on a world built after we froze it, and on a real company's
+data. OpsLens: every ticket is a promise — it helps you keep it."
 
 ---
 
 ## If something breaks
-- Ask OpsLens slow or offline → use the example questions (keyword rules) or go to Try a what-if.
-- What-if / Plant failing → "the same numbers are in How we tested" and move on.
-- Server down → restart `mingw32-make demo` (10 s). Projector problem → play the backup video.
+- Simulate or Ask slow → "each action's measured effect is already in the plan" and move on.
+- Server down → restart `mingw32-make demo` (10 s). Projector problem → backup video.
 
 ## Backup video checklist (record on 27 Oct)
-- 1920×1080, browser full screen, `make demo` running, hotspot on for Ask OpsLens.
-- Follow steps 0–7 exactly (≈ 6 minutes), including one Ask OpsLens question.
-- Save as `opslens_demo.mp4` on the desktop and on a USB stick.
+1920×1080, full screen, steps 0–7 exactly (about 6 minutes), including one Accept → Simulate.
 
 ## Practice questions (answers in docs/JUDGE_QA.md)
-Data is fake? · Simulator rigged? · Leakage? · Tuned on test? (three looks, then a sealed world) ·
-Abandoning late tickets? (lateness, Q27) · Where is the AI? (Ask OpsLens, IVR routing) · Greedy
-ties your solver? (Q32b) · Why LightGBM? · Scale? · Privacy?
+Data is fake? · Why this public dataset? · Simulator rigged? · Tuned on test? · Abandoning late
+tickets? · What does Accept do? · Does it beat the real desk at routing? (no) · Where is the AI?

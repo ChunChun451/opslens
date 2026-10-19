@@ -324,6 +324,9 @@ class Results(Strict):
     # A NEW world (never-used seed) under the corrected simulator, run once: every baseline, the
     # published rules, the frozen OpsLens policy and the floor (eval/run_sealed_world.py --new).
     sealed_world_new: dict[str, Any] | None = None
+    # The real public service desk (UCI ServiceNow log, eval/run_realdesk.py, Plan v3): summary,
+    # evidence cards, early warning, team forecast, routing hints — all scored on later months.
+    realdesk: dict[str, Any] | None = None
     # "Your plan" (eval/run_plan_items.py, added 19 Oct): the recommendations a manager can accept
     # (staffing moves, playbooks), each measured alone on the test days vs OpsLens with nothing
     # accepted. The live endpoint POST /api/plan/impact reads its item catalogue from here.

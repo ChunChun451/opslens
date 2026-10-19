@@ -318,3 +318,30 @@ separate it from luck, so we did not ship it; a new pre-registered test on 20 fr
 Cross-skill work is 1.6× slower and reopens more (4.44% vs 3.93% for the baselines). Under +25%
 volume on validation days, already-late customers got later and the slowest 1% waited longer. On
 the test days the slowest 1% did not wait longer (728 min, as before). We report it rather than hide it.
+
+---
+
+## Plan v3: real public data and a real plan (19 Oct)
+
+**Q51. Why the UCI ServiceNow log as your public dataset?**
+It is the only public dataset we found with real teams, real agents, real hand-offs and a real SLA
+flag — what "distribute the workload" needs. A real company's service desk: 24,918 incidents, 70
+teams, 36.6% missed their SLA. Licence CC BY 4.0.
+
+**Q52. What does OpsLens do better than the real desk?**
+It warns which incidents will miss their SLA, one hour after they open: AUC 0.857 vs 0.552 for the
+desk's own priority field. Its riskiest 20% hold 49.9% of all misses; the priority field's, 24.6%.
+Learned on the first months, scored on later ones.
+
+**Q53. (Attack) Does it route incidents to the right team better than the real people?**
+No, and we say so. Overall the desk is right more often. Even when OpsLens is sure, it is right
+78.2% of the time vs 77.8% for the desk — no real gain. So we do not recommend it on that desk.
+
+**Q54. (Attack) Your forecast loses on the real data.**
+Yes: 0.365 vs 0.341 for "same day last week". Three months of history is too short for the learned
+forecast; on our food floor it wins clearly. We show the real result on the Proof screen.
+
+**Q55. What do Accept and Override actually do?**
+Accept puts a recommendation in Your plan with its measured effect, and Simulate replays a day with
+the whole plan. Example: cross-training two Hindi agents, 34 fewer missed SLAs over 14 held-out
+days with OpsLens. Override records why the manager said no.

@@ -46,6 +46,11 @@
 
     <div class="main">
       <header class="topbar">
+        <!-- Which data (Plan v3): the simulated food-delivery floor, or a real public service desk. -->
+        <div class="world-switch" role="group" aria-label="Which data to show">
+          <button type="button" data-world="food">Food delivery <span>simulated</span></button>
+          <button type="button" data-world="real">IT service desk <span>real, public</span></button>
+        </div>
         <div id="data-source" class="status"></div>
         <!-- Ask OpsLens (web/js/ask.js): plain-words questions, answered by the engine. -->
         <form id="ask-form" class="ask-form" role="search" autocomplete="off">
@@ -55,10 +60,9 @@
           <kbd>/</kbd>
         </form>
         <div class="topbar-actions">
-          <span class="hint">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
-            Click any number to see its source
-          </span>
+          <button id="plan-button" class="btn" type="button" aria-label="Your plan">
+            Your plan <span id="plan-count" class="count">0</span>
+          </button>
           <button id="story-button" class="btn btn-primary" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
             Story mode
@@ -79,6 +83,9 @@
 
   <!-- Ask OpsLens answer panel. ask.js fills it. -->
   <div id="ask-panel" class="ask-panel" role="dialog" aria-label="Ask OpsLens answer" hidden></div>
+
+  <!-- Your plan: accepted / overridden recommendations and their impact (web/js/plan.js). -->
+  <aside id="plan-panel" class="plan-panel" aria-label="Your plan" hidden></aside>
 
   <!-- Story mode card. story.js fills it. -->
   <div id="story-card" class="story-card" role="dialog" aria-label="Story mode" hidden></div>

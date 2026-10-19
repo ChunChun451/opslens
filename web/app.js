@@ -9,7 +9,8 @@
 import { loadResults, state } from "./js/data.js";
 import { initEvidence, ev, evText } from "./js/evidence.js";
 import { setChartDefaults } from "./js/charts.js";
-import { initTabs } from "./js/router.js";
+import { initTabs, setWorld } from "./js/router.js";
+import { initPlan } from "./js/plan.js";
 import { initStory } from "./js/story.js";
 import { initAsk } from "./js/ask.js";
 import { initMotion, initSliderFill } from "./js/motion.js";
@@ -35,23 +36,41 @@ async function start() {
   document.getElementById("fixture-banner").hidden = !isFixture;
   document.body.classList.toggle("has-fixture", isFixture);
 
-  // The status line: live or fixture, when the results were made, which days are held out.
-  const meta = state.results.meta;
-  document.getElementById("data-source").innerHTML = `
-    <span class="status-dot ${isFixture ? "fixture" : ""}"></span>
-    <strong>${isFixture ? "Fixture data" : "Live results"}</strong>
-    <span>· generated ${evText("meta.generated_at", fmtDateTime(meta.generated_at))}</span>
-    <span>· held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}</span>
-    <span title="${escapeHtml(state.source)}">· from <code>${escapeHtml(state.source)}</code></span>`;
+  showStatus(isFixture);
+  document.addEventListener("world-changed", () => showStatus(isFixture));
+  initWorldSwitch();
 
   setChartDefaults();
   initEvidence(); // before story mode, so Esc closes the popover first
   initMotion(); // before the first tab is shown, so its numbers count up too
   initSliderFill();
   initTabs();
+  initPlan();
   initStory();
   initAsk();
   initIntro(); // the cold open plays last, over the ready dashboard
+}
+
+// The status line: what this world's numbers are, and how they were tested.
+function showStatus(isFixture) {
+  const meta = state.results.meta;
+  const where = state.world === "real"
+    ? `<span>· real public data, scored on later months</span>`
+    : `<span>· simulated floor, held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}</span>`;
+  document.getElementById("data-source").innerHTML = `
+    <span class="status-dot ${isFixture ? "fixture" : ""}"></span>
+    <strong>${isFixture ? "Fixture data" : "Live results"}</strong>
+    <span>· ${evText("meta.generated_at", fmtDateTime(meta.generated_at))}</span>${where}`;
+}
+
+// The two-button switch in the top bar. The cold open and its replay button belong to the food world.
+function initWorldSwitch() {
+  const buttons = document.querySelectorAll(".world-switch [data-world]");
+  const paint = () => buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.world === state.world)));
+  buttons.forEach((b) => b.addEventListener("click", () => { setWorld(b.dataset.world); paint(); }));
+  paint();
+  document.body.dataset.world = state.world;
+  document.addEventListener("world-changed", () => { document.body.dataset.world = state.world; });
 }
 
 function showLoadError(error) {

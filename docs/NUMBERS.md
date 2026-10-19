@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-19T02:58:47 (commit eede459). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-19T12:38:23 (commit 8340e96). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -125,6 +125,23 @@ OpsLens − Baseline A, breach %: -11.03 [-13.48, -8.58].
 - What the rescue buys least slack (rescue − plain), breach %: -0.96 [-1.14, -0.77].
 - Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. Threshold chosen on validation days 36-42 only (lowest validation breach %, ties broken by fewer late minutes per 100): 30 min. Validation breach %: 10 min 3.22%, 20 min 2.97%, 30 min 2.81%, 60 min 3.27%, 120 min 3.18%, 240 min 2.98%; OpsLens 2.02 → gate passed; test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: yes.
 
+## The real public service desk (UCI ServiceNow log, CC BY 4.0)
+
+- 24,918 incidents, 70 teams, 234 agents; 36.6% missed their SLA, 45.6% were passed between teams. Learning 2016-02-29 to 2016-05-02; test 2016-05-02 to 2017-02-16 (7,476 incidents).
+- Where open time goes: being worked on 35.4%, waiting for a vendor 6.4%, waiting for another fix 2.5%, waiting for the user 31.4%, waiting to be picked up 24.3%.
+- Incidents that wait on someone outside the team miss their SLA 2.4× as often: 74.5 vs 31.2 (incidents that never waited).
+- 24% of all open time is spent waiting for someone to pick the incident up: 64.8 vs 33.1 (incidents picked up within 8 h).
+- Category 26: 57% of incidents are passed between teams: 58.2 vs 13.1 (Category 26 incidents that stayed with one team).
+
+| On the test months | OpsLens | What the desk used |
+|---|---|---|
+| SLA-miss warning 1 h after opening (AUC) | 0.857 | priority field 0.552 |
+| Share of all SLA misses in the riskiest 20% | 49.9% | 24.6% |
+| Daily new incidents per team (WAPE, lower is better) | 0.365 | same day last week 0.341 |
+| Right team first time (OpsLens only when sure, 54% of incidents) | 78.2% | desk on the same incidents 77.8% |
+
+- Not better than the desk: the forecast (check weeks chose learned (LightGBM)) and team routing (net +19 incidents: 319 fixed, 300 made wrong). Reported, not claimed.
+
 ## How close to perfect (test days)
 
 - Physical floor: 1.31% of tickets breach even with unlimited agents and perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).
@@ -224,5 +241,5 @@ Without the plan: breach 2.11%. Change with 95% CI over the seeds.
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.048 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.053 s.
 - Full evaluation pipeline: 48.5 min.
