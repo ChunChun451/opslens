@@ -1,6 +1,7 @@
 """Simulator tests: tiny hand-computed cases must match exactly; a big M/M/c run must match
 Erlang C; two policies on the same world must see the same luck (CRN)."""
 
+import dataclasses
 import math
 
 import numpy as np
@@ -58,6 +59,26 @@ def test_two_agents_three_tickets_fifo() -> None:
     assert out["resolution_min"].tolist() == [10, 10, 15]
     assert out["wait_min"].tolist() == [0, 0, 10]
     assert out["breached"].sum() == 0
+
+
+def test_two_chats_at_once_are_each_slower() -> None:
+    # One agent with 2 chat slots, slowdown 0.5 (Plan v4 W2). Three tickets at 0, 10 min each.
+    # T0 starts alone at 0 → 10 min, ends 10. T1 starts at 0 as the second chat → 15 min, ends 15.
+    # At 10 T0 ends; T2 starts while T1 is still open (two chats) → 15 min, ends 25.
+    two_slots = dataclasses.replace(agent("X", "B", {"refund"}), max_concurrent=2)
+    world = make_world([0, 0, 0], [10, 10, 10], [two_slots])
+    world.concurrency_slowdown = 0.5
+    out = by_id(simulate(world, baseline_a(), 0, 100, decide_every_min=1))
+    assert out["resolution_min"].tolist() == [10, 15, 25]
+
+
+def test_one_chat_per_agent_ignores_the_slowdown() -> None:
+    # The same case as the FIFO test above: with one chat per agent the slowdown never applies.
+    world = make_world([0, 0, 0], [10, 10, 5],
+                       [agent("X", "B", {"refund"}), agent("Y", "B", {"refund"})])
+    world.concurrency_slowdown = 0.5
+    out = by_id(simulate(world, baseline_a(), 0, 100, decide_every_min=1))
+    assert out["resolution_min"].tolist() == [10, 10, 15]
 
 
 def test_priority_policy_serves_p1_first() -> None:

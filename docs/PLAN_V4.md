@@ -79,7 +79,19 @@ pitch, the Proof screen and the README lead with.
 - **Rule (pre-registered):** we say "robust" only if OpsLens has the lowest missed-SLA rate in
   **≥ 27 of 30 worlds** and the median paired difference vs industry standard has a 95% CI below 0.
   We report every world, the worst three, and why OpsLens loses there.
-- **Output:** `eval/run_worlds.py` → `results.worlds`. Proof screen: "30 worlds we never designed".
+- **Amendment (19 Oct, committed before any world ran):** (1) with k chats per agent the volume is
+  also multiplied by k / (1 + s·(k−1)), so "volume ×0.7–1.4" means ×0.7–1.4 of today's LOAD (same
+  reason as the W2 amendment). (2) Ties: OpsLens counts as lowest if it is within 0.05 points of the
+  lowest (3 seeds cannot separate smaller gaps). (3) The planted problems are randomised through the
+  generator's own settings (day and size of each spike, which restaurant cluster, IVR error rate,
+  Team C weekend lift) rather than data/plant.py. (4) Classifier: local only in every world (30
+  worlds would exhaust the free LLM quota; the LLM moves accuracy by ~0.1 point). (5) A code check
+  runs on world seed 7000, which is NOT one of the 30 and is not reported as a result.
+  (6) Fix found by that code check, before any of the 30 worlds ran: "today's load" means work ÷
+  capacity, so the volume multiplier also accounts for team size, the handle-time scale and the
+  category mix's average handle time, not only chats per agent (eval/run_worlds.py load_factor).
+- **Output:** `eval/run_worlds.py` (+ `eval/run_world_compare.py` inside each world) →
+  `eval/parts/worlds/<seed>.json` → `results.worlds`. Proof screen: "30 worlds we never designed".
 - **Owner:** Claude 1 (this session). Touches: new eval file, generator overrides only (no default changes).
 
 ### W2 — Concurrency: agents with 2–3 chats at once (validity, optimisation)
@@ -92,7 +104,17 @@ pitch, the Proof screen and the README lead with.
   several slots?
 - **Rule:** "survives concurrency" only if OpsLens beats industry standard with CI < 0 in all four
   settings. If not: fix on validation days only, confirm on fresh seeds, or report the limit.
-- **Output:** `results.stress.concurrency`, `results.ablations_concurrency`.
+- **Amendment (19 Oct, committed before any run):** at the same headcount, k chats per agent RAISE
+  capacity (k = 2, s = 0.25 → each agent does 2 / 1.25 = 1.6× the work), so every policy drifts
+  towards 0% missed and the test says little. **Primary test: equal load** — volume × k / (1 + s·(k−1))
+  (×1.6, ×1.33, ×2.0, ×1.5 for (k, s) = (2, .25), (2, .5), (3, .25), (3, .5)), using the same
+  ticket-copying method as the +25% volume stress test. The four settings at today's volume are
+  reported too. Policies: first come (A), urgent first (B), SLA due (C), industry standard (D),
+  OpsLens; 5 seeds; test days once. The rule above applies to the equal-load test. The slowdown is
+  fixed when a chat starts (a chat started while the agent already has one open takes ×(1 + s)),
+  a stated simplification.
+- **Output:** `eval/run_concurrency.py` → `results.concurrency` (settings, KPIs per policy, paired CIs,
+  and the optimiser ablation at k = 3).
 - **Owner:** Claude 1. Touches: opslens/simulate.py (guarded), config, new eval file.
 
 ### W3 — The real desk: an outcome, not just a prediction (D1, D4, measure impact, recommend)

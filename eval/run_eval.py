@@ -36,6 +36,7 @@ PARTS = ROOT / "eval" / "parts"
 STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
+         ("concurrency", "eval/run_concurrency.py"),  # Plan v4 W2: agents with 2-3 chats at once
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
          ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
          ("realdesk", "eval/run_realdesk.py"),
@@ -222,6 +223,10 @@ def assemble(timings: dict[str, float]) -> dict:
     # measured alone on the test days against OpsLens with nothing accepted.
     if (PARTS / "plan_items.json").exists():
         results["plan"] = part("plan_items")
+    if (PARTS / "concurrency.json").exists():  # Plan v4 W2: agents with 2-3 chats at once
+        results["concurrency"] = part("concurrency")
+    if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
+        results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
         sealed = part("sealed_world_new")
         for key in ("test", "best_baselines_test", "rescue_test"):
@@ -366,7 +371,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + concurrency_md(r) + worlds_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -400,6 +405,46 @@ def playbooks_md(r: dict) -> list[str]:
               f"(of {base_b:.0f}), breach % {cell(h['breach_pct'])} points.",
               "- Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; "
               "see `playbooks[].sensitivity` in results.json."]
+    return lines
+
+
+def concurrency_md(r: dict) -> list[str]:
+    """Plan v4 W2: every policy when agents hold 2-3 chats at once (eval/run_concurrency.py)."""
+    c = r.get("concurrency")
+    if not c or c.get("smoke"):
+        return []
+    lines = ["", "## Agents with several chats at once (test days, 5 seeds)", "",
+             "A chat started while k-1 others are open takes x(1 + s(k-1)); s is an assumption. 'Equal load' raises",
+             "the volume by k/(1+s(k-1)) so the floor is as busy as today.", "",
+             "| Chats (k) | Slowdown (s) | Load | Volume | First come | Urgent first | SLA due | Industry std | OpsLens | OpsLens - industry [95% CI] |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
+    for row in c["settings"]:
+        p = {k: v["turnaround.breach_pct"]["mean"] for k, v in row["policies"].items()}
+        d = row["opslens_vs"]["baseline_d"]["turnaround.breach_pct"]
+        lines.append(f"| {row['k']} | {row['s']:.2f} | {row['load'].replace('_', ' ')} | x{row['volume_factor']:.2f} | "
+                     f"{p['baseline_a']:.2f}% | {p['baseline_b']:.2f}% | {p['baseline_c']:.2f}% | {p['baseline_d']:.2f}% | "
+                     f"{p['opslens']:.2f}% | {d['mean_diff']:+.2f} [{d['ci_low']:+.2f}, {d['ci_high']:+.2f}] |")
+    g = c["optimizer_ablation"]["greedy_minus_full"]
+    lines += ["", f"Pre-registered rule (OpsLens beats industry standard in all four equal-load settings): "
+              f"{'PASSED' if c['rule_passed'] else 'FAILED'}. Optimiser ablation at k = {c['optimizer_ablation']['k']}, "
+              f"s = {c['optimizer_ablation']['s']}: greedy - min-cost flow {g['mean_diff']:+.2f} [{g['ci_low']:+.2f}, {g['ci_high']:+.2f}] points."]
+    return lines
+
+
+def worlds_md(r: dict) -> list[str]:
+    """Plan v4 W1: 30 random worlds we did not design (eval/run_worlds.py)."""
+    w = r.get("worlds")
+    if not w or not w.get("worlds"):
+        return []
+    lines = ["", f"## {w['n_worlds']} random worlds we did not design (test days, 3 seeds each)", "",
+             f"OpsLens lowest (within {w['tie_points']} points) in {w['wins']} of {w['n_worlds']} worlds "
+             f"(rule needs {w['wins_needed']}); median OpsLens - industry standard {w['median_opslens_minus_d']:+.2f} points, "
+             f"95% CI [{w['median_ci'][0]:+.2f}, {w['median_ci'][1]:+.2f}]. Rule {'PASSED' if w['rule_passed'] else 'NOT passed'}.", "",
+             "| World | Volume | Chats | Mismatch | Industry std | Least slack | OpsLens | Best other |", "|---|---|---|---|---|---|---|---|"]
+    for row in w["worlds"]:
+        b, prm = row["breach_pct"], row["params"]
+        lines.append(f"| {row['seed']} | x{row['volume_factor']:.2f} | {prm['chats_per_agent']} | x{prm['mismatch_factor']:.2f} | "
+                     f"{b['baseline_d']:.2f}% | {b['least_slack']:.2f}% | {b['opslens']:.2f}% | {row['best_other']} |")
     return lines
 
 

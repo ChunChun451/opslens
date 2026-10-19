@@ -30,3 +30,4 @@ data/planted.json
 # Parallel Claude sessions' worktrees
 .claude/worktrees/
 .venv-challengers/
+eval/parts/worlds/*.log

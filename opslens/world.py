@@ -134,6 +134,8 @@ def build_world(
         reopen_prob_mismatch=float(gen_cfg["reopen_prob"]["mismatch"]),
         reopen_handle_factor=float(gen_cfg["reopen_handle_factor"]),
         transfer_discovery_min=float(gen_cfg["transfer_discovery_min"]),
+        # Several chats per agent (Plan v4 W1/W2); absent from today's config, so 0 = no change.
+        concurrency_slowdown=float(gen_cfg.get("concurrency_slowdown", 0.0)),
     )
 
 
