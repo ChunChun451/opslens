@@ -441,6 +441,14 @@ def worlds_md(r: dict) -> list[str]:
              f"(rule needs {w['wins_needed']}); median OpsLens - industry standard {w['median_opslens_minus_d']:+.2f} points, "
              f"95% CI [{w['median_ci'][0]:+.2f}, {w['median_ci'][1]:+.2f}]. Rule {'PASSED' if w['rule_passed'] else 'NOT passed'}.", "",
              "| World | Volume | Chats | Mismatch | Industry std | Least slack | OpsLens | Best other |", "|---|---|---|---|---|---|---|---|"]
+    bd = w.get("breakdown")
+    if bd:
+        lines[4:4] = [f"Breakdown (from the same runs, added after them): OpsLens beats the industry standard in "
+                      f"{bd['beats_industry_standard']} of {bd['of']}; it is lowest in {bd['normal_load']['wins']} of "
+                      f"{bd['normal_load']['worlds']} worlds up to x{bd['normal_load']['max_load']} today's load and "
+                      f"{bd['heavy_load']['wins']} of {bd['heavy_load']['worlds']} heavier ones. All "
+                      f"{bd['losses']['worlds']} losses are to {', '.join(bd['losses']['all_to'])}, at x{bd['losses']['min_load']:.2f} "
+                      f"load or more; in {bd['losses']['opslens_less_late']} of them OpsLens keeps late customers less late."]
     for row in w["worlds"]:
         b, prm = row["breach_pct"], row["params"]
         lines.append(f"| {row['seed']} | x{row['volume_factor']:.2f} | {prm['chats_per_agent']} | x{prm['mismatch_factor']:.2f} | "

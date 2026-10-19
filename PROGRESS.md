@@ -454,3 +454,21 @@ in the real test weeks (eval only). `realdesk.py`: `replicate_cards`, `forecast_
 **Open issues:** the slowdown detector watches "still open after 24 h", which a ×2–3 slowdown of a team
 that resolves most incidents within an hour barely moves (design flaw, fixed before the run, reported);
 5 busy test weeks make week-bootstrap CIs optimistic (per-week table shown).
+
+---
+
+## W1 + W2 — Beyond our own world (19 Oct 2026)
+
+**Why:** a judge's fairest attack: the headline lives in one world we built, where agents take one
+ticket at a time. Rules and amendments were committed before every run (docs/PLAN_V4.md W1, W2).
+**W2 — agents with 2–3 chats (eval/run_concurrency.py): rule PASSED.** Equal load, test days, 5 seeds:
+OpsLens − industry standard −3.29, −3.26, −3.13, −3.14 points, every CI below 0; today's volume −2.07
+to −2.33. Optimiser ablation at 3 chats: greedy − min-cost flow +0.01 [−0.06, +0.07] (still ties).
+**W1 — 30 random worlds (eval/run_worlds.py): rule NOT passed.** OpsLens lowest (within 0.05 points)
+in 19 of 30 (needed 27); median OpsLens − industry standard −8.19 [−12.20, −3.28]. Breakdown (same
+runs): beats the industry standard in 29 of 30; lowest in 13 of 13 worlds up to 1.05× today's load
+and 6 of 17 heavier ones; all 11 losses to least slack at ≥1.06× load; OpsLens less late in 10 of 11.
+Bugs found and fixed before counting: world volume ignored team size / handle time / mix (code check,
+world 7000); partner cluster 40 out of range (world 7005 crashed; same draws, finished worlds unchanged).
+**Open:** why least slack wins the count under sustained overload (diagnosis), and whether an overload
+mode is worth a v6 (would need design on these 30 + confirmation on fresh worlds, run once).

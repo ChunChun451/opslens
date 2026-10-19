@@ -93,6 +93,8 @@ pitch, the Proof screen and the README lead with.
 - **Output:** `eval/run_worlds.py` (+ `eval/run_world_compare.py` inside each world) →
   `eval/parts/worlds/<seed>.json` → `results.worlds`. Proof screen: "30 worlds we never designed".
 - **Owner:** Claude 1 (this session). Touches: new eval file, generator overrides only (no default changes).
+- **Result (19 Oct): rule NOT passed** — lowest in 19 of 30 (needed 27); median vs industry standard −8.19
+  [−12.20, −3.28]. All 11 losses: sustained overload (≥1.06× load), all to least slack (PROGRESS.md W1 + W2).
 
 ### W2 — Concurrency: agents with 2–3 chats at once (validity, optimisation)
 - **What:** the real UCI log shows an agent holds ~4.8 incidents open at once; chat agents often
@@ -113,6 +115,7 @@ pitch, the Proof screen and the README lead with.
   OpsLens; 5 seeds; test days once. The rule above applies to the equal-load test. The slowdown is
   fixed when a chat starts (a chat started while the agent already has one open takes ×(1 + s)),
   a stated simplification.
+- **Result (19 Oct): rule PASSED** — OpsLens beats industry standard in all four equal-load settings.
 - **Output:** `eval/run_concurrency.py` → `results.concurrency` (settings, KPIs per policy, paired CIs,
   and the optimiser ablation at k = 3).
 - **Owner:** Claude 1. Touches: opslens/simulate.py (guarded), config, new eval file.

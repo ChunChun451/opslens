@@ -1,0 +1,2325 @@
+{
+ "n_worlds": 30,
+ "wins": 19,
+ "wins_needed": 27,
+ "tie_points": 0.05,
+ "median_opslens_minus_d": -8.19051880329299,
+ "median_ci": [
+  -12.204354820590329,
+  -3.2831242774111273
+ ],
+ "rule_passed": false,
+ "worst": [
+  {
+   "seed": 7008,
+   "breach_pct": {
+    "baseline_a": 51.89495502690779,
+    "baseline_b": 30.94681194972142,
+    "baseline_c": 14.866792172970506,
+    "baseline_d": 30.441934318367657,
+    "least_slack": 11.677791089052427,
+    "opslens": 17.097381482115352
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 5.419590393062926,
+   "opslens_minus_d": -13.344552836252305,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 69566.73192270666,
+    "baseline_b": 74774.12016488642,
+    "baseline_c": 78322.42676372161,
+    "baseline_d": 89321.04764916694,
+    "least_slack": 83898.67539993544,
+    "opslens": 76972.68440679352
+   },
+   "baseline_a_utilisation": 3.396073750595516,
+   "risk_auc": 0.9969502556105604,
+   "params": {
+    "seed": 7008,
+    "load": 1.3679050900058622,
+    "peak_scale": 0.9985392725110853,
+    "category_scale": {
+     "late_delivery": 0.8901258742403423,
+     "missing_item": 1.2604981057879374,
+     "wrong_item": 0.9109941035174698,
+     "refund": 1.1400615503159512,
+     "payment_failure": 1.2586869693333695,
+     "app_bug": 0.8921756483588131,
+     "account": 1.0974330225903215,
+     "restaurant_partner": 0.6138222139731023
+    },
+    "hindi_share": 0.21456536350372962,
+    "handle_scale": 1.1357260740776245,
+    "mismatch_factor": 1.4713656380344238,
+    "absent_prob": 0.058055875611629004,
+    "team_delta": {
+     "A": 2,
+     "B": 1,
+     "C": 2,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 84,
+     "P2": 338,
+     "P3": 1455
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 27,
+     "payment_spike_mult": 3.245324544623766,
+     "app_bug_day": 55,
+     "app_bug_mult": 4.0747616372918,
+     "partner_cluster": 36,
+     "partner_mult": 2.8066847735849354,
+     "ivr_wrong_prob": 0.17039930979790563,
+     "team_c_lift": 1.358169275381025
+    },
+    "roster_seed": 1349448222
+   },
+   "volume_factor": 1.971530977323833
+  },
+  {
+   "seed": 7025,
+   "breach_pct": {
+    "baseline_a": 67.62199497667744,
+    "baseline_b": 43.85540007176175,
+    "baseline_c": 23.795000598014592,
+    "baseline_d": 45.13066618825499,
+    "least_slack": 14.563150340868317,
+    "opslens": 19.64627436909461
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 5.083124028226292,
+   "opslens_minus_d": -25.484391819160383,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 132220.0747453357,
+    "baseline_b": 129886.49657492485,
+    "baseline_c": 136632.5543840132,
+    "baseline_d": 77213.48260335933,
+    "least_slack": 98314.37506097234,
+    "opslens": 101142.71356201837
+   },
+   "baseline_a_utilisation": 1.173080105456211,
+   "risk_auc": 0.9617614109870152,
+   "params": {
+    "seed": 7025,
+    "load": 1.3462502223432655,
+    "peak_scale": 0.887305769873006,
+    "category_scale": {
+     "late_delivery": 1.2834990385277485,
+     "missing_item": 1.3261373333446553,
+     "wrong_item": 1.2894292075112956,
+     "refund": 1.1021786386422405,
+     "payment_failure": 1.148662849567076,
+     "app_bug": 0.6853260471814124,
+     "account": 1.0779789903087555,
+     "restaurant_partner": 0.9775596205794344
+    },
+    "hindi_share": 0.0882175213348633,
+    "handle_scale": 1.1216718805167125,
+    "mismatch_factor": 1.4638498252003982,
+    "absent_prob": 0.0783150189821534,
+    "team_delta": {
+     "A": 2,
+     "B": 0,
+     "C": -2,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 43,
+     "P2": 206,
+     "P3": 1691
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 18,
+     "payment_spike_mult": 4.716166845338661,
+     "app_bug_day": 53,
+     "app_bug_mult": 3.6897738721524447,
+     "partner_cluster": 35,
+     "partner_mult": 3.1355012411251035,
+     "ivr_wrong_prob": 0.27443584409799776,
+     "team_c_lift": 1.4261804714311874
+    },
+    "roster_seed": 264013612
+   },
+   "volume_factor": 1.2323103323663882
+  },
+  {
+   "seed": 7006,
+   "breach_pct": {
+    "baseline_a": 68.11967527543602,
+    "baseline_b": 50.31335028324188,
+    "baseline_c": 30.393862348900488,
+    "baseline_d": 48.102056291538425,
+    "least_slack": 20.488201971541994,
+    "opslens": 25.40702083054552
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 4.918818859003526,
+   "opslens_minus_d": -22.695035460992905,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 147255.91233046606,
+    "baseline_b": 154717.16860434343,
+    "baseline_c": 158306.88053232545,
+    "baseline_d": 150225.31072434972,
+    "least_slack": 159717.28200827478,
+    "opslens": 103396.21785186022
+   },
+   "baseline_a_utilisation": 2.1616696500198227,
+   "risk_auc": 0.9889238997414771,
+   "params": {
+    "seed": 7006,
+    "load": 1.193963475622555,
+    "peak_scale": 0.7487928067244044,
+    "category_scale": {
+     "late_delivery": 1.2681155130885113,
+     "missing_item": 0.7194144801018127,
+     "wrong_item": 0.608541844878505,
+     "refund": 0.6592295586652265,
+     "payment_failure": 0.9050886854339018,
+     "app_bug": 0.7548904416466875,
+     "account": 1.1198810442873697,
+     "restaurant_partner": 0.9175976687662266
+    },
+    "hindi_share": 0.20378459661862625,
+    "handle_scale": 1.1333248330680195,
+    "mismatch_factor": 1.4088440107657265,
+    "absent_prob": 0.08851776079428718,
+    "team_delta": {
+     "A": -1,
+     "B": 0,
+     "C": -2,
+     "D": -1
+    },
+    "sla_minutes": {
+     "P1": 31,
+     "P2": 239,
+     "P3": 957
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 23,
+     "payment_spike_mult": 3.239558815600965,
+     "app_bug_day": 46,
+     "app_bug_mult": 3.3256864144633544,
+     "partner_cluster": 39,
+     "partner_mult": 3.9991854636282316,
+     "ivr_wrong_prob": 0.16538772889236583,
+     "team_c_lift": 1.4737337149108487
+    },
+    "roster_seed": 1647493759
+   },
+   "volume_factor": 1.572549416886861
+  }
+ ],
+ "worlds": [
+  {
+   "seed": 7001,
+   "breach_pct": {
+    "baseline_a": 58.296216509951186,
+    "baseline_b": 30.686151785974204,
+    "baseline_c": 17.49294052574889,
+    "baseline_d": 23.847922913452305,
+    "least_slack": 11.097202410410176,
+    "opslens": 14.503216791359785
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 3.4060143809496086,
+   "opslens_minus_d": -9.34470612209252,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 43661.76114652989,
+    "baseline_b": 45490.17120366666,
+    "baseline_c": 51435.589398806645,
+    "baseline_d": 47884.01787937645,
+    "least_slack": 49599.81594037774,
+    "opslens": 41184.558310318185
+   },
+   "baseline_a_utilisation": 3.173990214628466,
+   "risk_auc": 0.991916036317452,
+   "params": {
+    "seed": 7001,
+    "load": 1.2171880093980776,
+    "peak_scale": 1.0722758458442307,
+    "category_scale": {
+     "late_delivery": 1.0611057216646136,
+     "missing_item": 0.7491883659691381,
+     "wrong_item": 0.8894099830376014,
+     "refund": 0.7369607564773114,
+     "payment_failure": 0.7091488733319871,
+     "app_bug": 1.3078329621490146,
+     "account": 0.6702496435837149,
+     "restaurant_partner": 0.8783345462714813
+    },
+    "hindi_share": 0.16925870859296244,
+    "handle_scale": 1.0778690023093538,
+    "mismatch_factor": 1.8068629077662037,
+    "absent_prob": 0.06343198490572942,
+    "team_delta": {
+     "A": 2,
+     "B": 2,
+     "C": 0,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 60,
+     "P2": 323,
+     "P3": 1199
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 22,
+     "payment_spike_mult": 3.0226838500199147,
+     "app_bug_day": 53,
+     "app_bug_mult": 3.2430613025174093,
+     "partner_cluster": 31,
+     "partner_mult": 2.75231097918759,
+     "ivr_wrong_prob": 0.2631188681190971,
+     "team_c_lift": 1.4581724358019001
+    },
+    "roster_seed": 2005132142
+   },
+   "volume_factor": 1.9072130259036708
+  },
+  {
+   "seed": 7002,
+   "breach_pct": {
+    "baseline_a": 51.44151770153862,
+    "baseline_b": 30.08514664143803,
+    "baseline_c": 14.313930521668409,
+    "baseline_d": 24.16139686965759,
+    "least_slack": 9.887301034042059,
+    "opslens": 7.33954090524324
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -2.547760128798819,
+   "opslens_minus_d": -16.82185596441435,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 29415.369917735763,
+    "baseline_b": 29111.37410048221,
+    "baseline_c": 34925.80976982411,
+    "baseline_d": 31369.985715232197,
+    "least_slack": 35243.30177940135,
+    "opslens": 15819.31917910382
+   },
+   "baseline_a_utilisation": 1.0306353974382125,
+   "risk_auc": 0.8009345090763953,
+   "params": {
+    "seed": 7002,
+    "load": 1.204383816432117,
+    "peak_scale": 0.7847628830174149,
+    "category_scale": {
+     "late_delivery": 1.1734755273173278,
+     "missing_item": 0.6593461450314023,
+     "wrong_item": 0.9352562706543819,
+     "refund": 1.0353524005935528,
+     "payment_failure": 1.0954443374306915,
+     "app_bug": 1.382715088102024,
+     "account": 1.292780929922462,
+     "restaurant_partner": 0.8905695695914575
+    },
+    "hindi_share": 0.10326639524745314,
+    "handle_scale": 1.1013374876225457,
+    "mismatch_factor": 1.2936903521829843,
+    "absent_prob": 0.038943372639765154,
+    "team_delta": {
+     "A": 0,
+     "B": 2,
+     "C": -2,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 46,
+     "P2": 181,
+     "P3": 1379
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 25,
+     "payment_spike_mult": 4.368743272974628,
+     "app_bug_day": 49,
+     "app_bug_mult": 3.6762631191116446,
+     "partner_cluster": 17,
+     "partner_mult": 2.8340494112174275,
+     "ivr_wrong_prob": 0.17886175485246747,
+     "team_c_lift": 1.3562931863301115
+    },
+    "roster_seed": 1996154360
+   },
+   "volume_factor": 1.1001331256263347
+  },
+  {
+   "seed": 7003,
+   "breach_pct": {
+    "baseline_a": 7.897800379878684,
+    "baseline_b": 4.133733635602394,
+    "baseline_c": 3.5618732512305207,
+    "baseline_d": 3.5006024957621062,
+    "least_slack": 3.1636133406858242,
+    "opslens": 1.6604374731940446
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.5031758674917797,
+   "opslens_minus_d": -1.8401650225680617,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 1421.8293890169043,
+    "baseline_b": 911.2245469901762,
+    "baseline_c": 1759.4730012465377,
+    "baseline_d": 823.5084611364887,
+    "least_slack": 1676.222410340556,
+    "opslens": 208.87195820270043
+   },
+   "baseline_a_utilisation": 0.7383464087367503,
+   "risk_auc": 0.9437260775212244,
+   "params": {
+    "seed": 7003,
+    "load": 0.8094456439435788,
+    "peak_scale": 1.0803298545836377,
+    "category_scale": {
+     "late_delivery": 0.6081870914126618,
+     "missing_item": 1.374805278159669,
+     "wrong_item": 1.1449409999651878,
+     "refund": 0.8141667349986577,
+     "payment_failure": 1.2923733157449278,
+     "app_bug": 0.6474573353272512,
+     "account": 0.9479599803343981,
+     "restaurant_partner": 0.9594524977276478
+    },
+    "hindi_share": 0.13442656502170847,
+    "handle_scale": 0.7935957820448607,
+    "mismatch_factor": 1.8088401571855397,
+    "absent_prob": 0.08761704969588562,
+    "team_delta": {
+     "A": 0,
+     "B": -1,
+     "C": -2,
+     "D": -1
+    },
+    "sla_minutes": {
+     "P1": 48,
+     "P2": 326,
+     "P3": 2108
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 13,
+     "payment_spike_mult": 4.003955058410256,
+     "app_bug_day": 54,
+     "app_bug_mult": 5.057678057383049,
+     "partner_cluster": 31,
+     "partner_mult": 2.3450907008855992,
+     "ivr_wrong_prob": 0.17799011201117387,
+     "team_c_lift": 1.41148891356546
+    },
+    "roster_seed": 300574241
+   },
+   "volume_factor": 0.9082011282406582
+  },
+  {
+   "seed": 7004,
+   "breach_pct": {
+    "baseline_a": 14.85146434724148,
+    "baseline_b": 7.527627211227362,
+    "baseline_c": 6.18723475776293,
+    "baseline_d": 6.8553300558847,
+    "least_slack": 4.918273877053657,
+    "opslens": 2.8803731249212152
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -2.037900752132442,
+   "opslens_minus_d": -3.9749569309634847,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 2607.4848164667033,
+    "baseline_b": 1962.315050256538,
+    "baseline_c": 3001.727868295448,
+    "baseline_d": 1512.9271349968267,
+    "least_slack": 2625.3198388573032,
+    "opslens": 501.00118829716644
+   },
+   "baseline_a_utilisation": 0.8139558703855875,
+   "risk_auc": 0.9695190129393922,
+   "params": {
+    "seed": 7004,
+    "load": 0.9367567891207409,
+    "peak_scale": 1.2581976079715171,
+    "category_scale": {
+     "late_delivery": 0.7642488423650303,
+     "missing_item": 0.9291855333605727,
+     "wrong_item": 1.3555508175291102,
+     "refund": 0.8622002045521282,
+     "payment_failure": 1.1281720375330975,
+     "app_bug": 0.7690781560663571,
+     "account": 0.6141665323711879,
+     "restaurant_partner": 0.6236029653649443
+    },
+    "hindi_share": 0.21242036671133308,
+    "handle_scale": 1.105863231735298,
+    "mismatch_factor": 1.4319750928062103,
+    "absent_prob": 0.0415547676661176,
+    "team_delta": {
+     "A": 1,
+     "B": 1,
+     "C": 1,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 44,
+     "P2": 184,
+     "P3": 1095
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 25,
+     "payment_spike_mult": 3.2688823347150926,
+     "app_bug_day": 48,
+     "app_bug_mult": 5.141553324795786,
+     "partner_cluster": 35,
+     "partner_mult": 2.457421317729672,
+     "ivr_wrong_prob": 0.2304691965359188,
+     "team_c_lift": 1.315831666568732
+    },
+    "roster_seed": 227435526
+   },
+   "volume_factor": 0.8688265881821379
+  },
+  {
+   "seed": 7005,
+   "breach_pct": {
+    "baseline_a": 66.3077594336303,
+    "baseline_b": 43.59948767751833,
+    "baseline_c": 23.44860589170854,
+    "baseline_d": 41.16454841025208,
+    "least_slack": 15.12477304395558,
+    "opslens": 16.85878759729201
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 1.734014553336431,
+   "opslens_minus_d": -24.30576081296007,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 163000.29539377664,
+    "baseline_b": 161225.32103857378,
+    "baseline_c": 164834.6231233645,
+    "baseline_d": 104573.37207962536,
+    "least_slack": 124459.96535074653,
+    "opslens": 91391.71059892136
+   },
+   "baseline_a_utilisation": 1.1078176356614329,
+   "risk_auc": 0.993015866800061,
+   "params": {
+    "seed": 7005,
+    "load": 1.322463100814967,
+    "peak_scale": 0.9885876604756609,
+    "category_scale": {
+     "late_delivery": 1.1122408290946437,
+     "missing_item": 0.8537189293059044,
+     "wrong_item": 1.2463017208848628,
+     "refund": 0.7614166390114264,
+     "payment_failure": 1.258106591181863,
+     "app_bug": 0.9809788643745403,
+     "account": 0.8069999010611908,
+     "restaurant_partner": 1.0592228789597093
+    },
+    "hindi_share": 0.18066156053438415,
+    "handle_scale": 0.9678493065447217,
+    "mismatch_factor": 1.2700082016681125,
+    "absent_prob": 0.05229400285577594,
+    "team_delta": {
+     "A": -2,
+     "B": 1,
+     "C": -2,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 41,
+     "P2": 239,
+     "P3": 1530
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 17,
+     "payment_spike_mult": 4.4572979322320325,
+     "app_bug_day": 45,
+     "app_bug_mult": 3.5428645449736194,
+     "partner_cluster": 0,
+     "partner_mult": 2.5549564561112024,
+     "ivr_wrong_prob": 0.1611695225266118,
+     "team_c_lift": 1.306510996523536
+    },
+    "roster_seed": 1250057158
+   },
+   "volume_factor": 1.297963301203952
+  },
+  {
+   "seed": 7006,
+   "breach_pct": {
+    "baseline_a": 68.11967527543602,
+    "baseline_b": 50.31335028324188,
+    "baseline_c": 30.393862348900488,
+    "baseline_d": 48.102056291538425,
+    "least_slack": 20.488201971541994,
+    "opslens": 25.40702083054552
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 4.918818859003526,
+   "opslens_minus_d": -22.695035460992905,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 147255.91233046606,
+    "baseline_b": 154717.16860434343,
+    "baseline_c": 158306.88053232545,
+    "baseline_d": 150225.31072434972,
+    "least_slack": 159717.28200827478,
+    "opslens": 103396.21785186022
+   },
+   "baseline_a_utilisation": 2.1616696500198227,
+   "risk_auc": 0.9889238997414771,
+   "params": {
+    "seed": 7006,
+    "load": 1.193963475622555,
+    "peak_scale": 0.7487928067244044,
+    "category_scale": {
+     "late_delivery": 1.2681155130885113,
+     "missing_item": 0.7194144801018127,
+     "wrong_item": 0.608541844878505,
+     "refund": 0.6592295586652265,
+     "payment_failure": 0.9050886854339018,
+     "app_bug": 0.7548904416466875,
+     "account": 1.1198810442873697,
+     "restaurant_partner": 0.9175976687662266
+    },
+    "hindi_share": 0.20378459661862625,
+    "handle_scale": 1.1333248330680195,
+    "mismatch_factor": 1.4088440107657265,
+    "absent_prob": 0.08851776079428718,
+    "team_delta": {
+     "A": -1,
+     "B": 0,
+     "C": -2,
+     "D": -1
+    },
+    "sla_minutes": {
+     "P1": 31,
+     "P2": 239,
+     "P3": 957
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 23,
+     "payment_spike_mult": 3.239558815600965,
+     "app_bug_day": 46,
+     "app_bug_mult": 3.3256864144633544,
+     "partner_cluster": 39,
+     "partner_mult": 3.9991854636282316,
+     "ivr_wrong_prob": 0.16538772889236583,
+     "team_c_lift": 1.4737337149108487
+    },
+    "roster_seed": 1647493759
+   },
+   "volume_factor": 1.572549416886861
+  },
+  {
+   "seed": 7007,
+   "breach_pct": {
+    "baseline_a": 60.274286013112906,
+    "baseline_b": 28.336569071571915,
+    "baseline_c": 16.290471241150744,
+    "baseline_d": 21.205524941331817,
+    "least_slack": 11.567600781806652,
+    "opslens": 12.79195183652658
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 1.2243510547199286,
+   "opslens_minus_d": -8.413573104805236,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 59488.03026659882,
+    "baseline_b": 63807.330854812055,
+    "baseline_c": 66072.140342378,
+    "baseline_d": 67907.51714575381,
+    "least_slack": 59472.0564526875,
+    "opslens": 33662.614777407194
+   },
+   "baseline_a_utilisation": 2.126827830553857,
+   "risk_auc": 0.9794743825358474,
+   "params": {
+    "seed": 7007,
+    "load": 1.272318968110143,
+    "peak_scale": 1.062743568968036,
+    "category_scale": {
+     "late_delivery": 1.28508694191504,
+     "missing_item": 0.8360687945198604,
+     "wrong_item": 1.1641157533829873,
+     "refund": 1.0379501348596696,
+     "payment_failure": 0.910150170817579,
+     "app_bug": 1.1416689970770757,
+     "account": 0.6643246977146658,
+     "restaurant_partner": 1.2495037928928305
+    },
+    "hindi_share": 0.22878158042651703,
+    "handle_scale": 0.710661236374343,
+    "mismatch_factor": 1.369831985537434,
+    "absent_prob": 0.04710507749788083,
+    "team_delta": {
+     "A": 1,
+     "B": 1,
+     "C": 0,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 72,
+     "P2": 302,
+     "P3": 2154
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 24,
+     "payment_spike_mult": 3.9012777586434497,
+     "app_bug_day": 55,
+     "app_bug_mult": 3.1425456814892754,
+     "partner_cluster": 21,
+     "partner_mult": 2.694961669975286,
+     "ivr_wrong_prob": 0.31358122186425574,
+     "team_c_lift": 1.413097332013665
+    },
+    "roster_seed": 1559108386
+   },
+   "volume_factor": 2.848161131722955
+  },
+  {
+   "seed": 7008,
+   "breach_pct": {
+    "baseline_a": 51.89495502690779,
+    "baseline_b": 30.94681194972142,
+    "baseline_c": 14.866792172970506,
+    "baseline_d": 30.441934318367657,
+    "least_slack": 11.677791089052427,
+    "opslens": 17.097381482115352
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 5.419590393062926,
+   "opslens_minus_d": -13.344552836252305,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 69566.73192270666,
+    "baseline_b": 74774.12016488642,
+    "baseline_c": 78322.42676372161,
+    "baseline_d": 89321.04764916694,
+    "least_slack": 83898.67539993544,
+    "opslens": 76972.68440679352
+   },
+   "baseline_a_utilisation": 3.396073750595516,
+   "risk_auc": 0.9969502556105604,
+   "params": {
+    "seed": 7008,
+    "load": 1.3679050900058622,
+    "peak_scale": 0.9985392725110853,
+    "category_scale": {
+     "late_delivery": 0.8901258742403423,
+     "missing_item": 1.2604981057879374,
+     "wrong_item": 0.9109941035174698,
+     "refund": 1.1400615503159512,
+     "payment_failure": 1.2586869693333695,
+     "app_bug": 0.8921756483588131,
+     "account": 1.0974330225903215,
+     "restaurant_partner": 0.6138222139731023
+    },
+    "hindi_share": 0.21456536350372962,
+    "handle_scale": 1.1357260740776245,
+    "mismatch_factor": 1.4713656380344238,
+    "absent_prob": 0.058055875611629004,
+    "team_delta": {
+     "A": 2,
+     "B": 1,
+     "C": 2,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 84,
+     "P2": 338,
+     "P3": 1455
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 27,
+     "payment_spike_mult": 3.245324544623766,
+     "app_bug_day": 55,
+     "app_bug_mult": 4.0747616372918,
+     "partner_cluster": 36,
+     "partner_mult": 2.8066847735849354,
+     "ivr_wrong_prob": 0.17039930979790563,
+     "team_c_lift": 1.358169275381025
+    },
+    "roster_seed": 1349448222
+   },
+   "volume_factor": 1.971530977323833
+  },
+  {
+   "seed": 7009,
+   "breach_pct": {
+    "baseline_a": 14.795366795366796,
+    "baseline_b": 9.664521664521665,
+    "baseline_c": 5.72972972972973,
+    "baseline_d": 7.126555126555126,
+    "least_slack": 3.924495924495925,
+    "opslens": 3.236379236379236
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -0.6881166881166889,
+   "opslens_minus_d": -3.89017589017589,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 3234.318913062239,
+    "baseline_b": 2940.4271274843354,
+    "baseline_c": 4086.320168746864,
+    "baseline_d": 1574.01048769277,
+    "least_slack": 2734.7525909518477,
+    "opslens": 887.1016501093254
+   },
+   "baseline_a_utilisation": 0.8601242030042805,
+   "risk_auc": 0.9024603661729773,
+   "params": {
+    "seed": 7009,
+    "load": 0.9963660983902861,
+    "peak_scale": 0.9314943126017066,
+    "category_scale": {
+     "late_delivery": 1.0564313237624978,
+     "missing_item": 0.890378330696976,
+     "wrong_item": 0.6284454872559038,
+     "refund": 1.1735508083566764,
+     "payment_failure": 1.308857542916745,
+     "app_bug": 0.9351921652592614,
+     "account": 1.096277583241462,
+     "restaurant_partner": 0.8183062078184081
+    },
+    "hindi_share": 0.184264644019758,
+    "handle_scale": 0.9723449238336777,
+    "mismatch_factor": 1.9372739374208463,
+    "absent_prob": 0.040657932108633596,
+    "team_delta": {
+     "A": 0,
+     "B": 2,
+     "C": 2,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 74,
+     "P2": 295,
+     "P3": 777
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 22,
+     "payment_spike_mult": 3.8222741377555316,
+     "app_bug_day": 45,
+     "app_bug_mult": 4.808115803308881,
+     "partner_cluster": 30,
+     "partner_mult": 3.56792936145824,
+     "ivr_wrong_prob": 0.2743161700089299,
+     "team_c_lift": 1.3114319808463322
+    },
+    "roster_seed": 860825551
+   },
+   "volume_factor": 1.083350850167418
+  },
+  {
+   "seed": 7010,
+   "breach_pct": {
+    "baseline_a": 13.279905600078665,
+    "baseline_b": 5.9221200648999455,
+    "baseline_c": 4.651982234459249,
+    "baseline_d": 4.487274038382746,
+    "least_slack": 2.8508448465181835,
+    "opslens": 2.8746087156038485
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 0.023763869085664968,
+   "opslens_minus_d": -1.6126653227788976,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 2761.11280694236,
+    "baseline_b": 1459.1443307111938,
+    "baseline_c": 2633.175082958413,
+    "baseline_d": 710.1387384331106,
+    "least_slack": 2000.1726086330648,
+    "opslens": 654.4438730480225
+   },
+   "baseline_a_utilisation": 2.388962461678449,
+   "risk_auc": 0.9820692443986525,
+   "params": {
+    "seed": 7010,
+    "load": 0.9116375352571796,
+    "peak_scale": 1.14084160423616,
+    "category_scale": {
+     "late_delivery": 1.0669750254505512,
+     "missing_item": 1.288159991928926,
+     "wrong_item": 1.2217450750555208,
+     "refund": 0.6885569925703159,
+     "payment_failure": 0.7368051156587565,
+     "app_bug": 1.1944687746374039,
+     "account": 1.3961161936955668,
+     "restaurant_partner": 1.3293931496798848
+    },
+    "hindi_share": 0.08222777581292115,
+    "handle_scale": 0.8857311952177308,
+    "mismatch_factor": 1.2062193011595184,
+    "absent_prob": 0.09200384394513794,
+    "team_delta": {
+     "A": 2,
+     "B": 2,
+     "C": -1,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 71,
+     "P2": 315,
+     "P3": 1593
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 18,
+     "payment_spike_mult": 4.805593297585457,
+     "app_bug_day": 47,
+     "app_bug_mult": 3.912616325313452,
+     "partner_cluster": 18,
+     "partner_mult": 2.6103431328509696,
+     "ivr_wrong_prob": 0.2944750663336412,
+     "team_c_lift": 1.3422964816295437
+    },
+    "roster_seed": 258956465
+   },
+   "volume_factor": 2.277370813189387
+  },
+  {
+   "seed": 7011,
+   "breach_pct": {
+    "baseline_a": 13.125471799849025,
+    "baseline_b": 5.727650167151947,
+    "baseline_c": 4.898630432438261,
+    "baseline_d": 4.359430604982207,
+    "least_slack": 3.742046802545023,
+    "opslens": 4.747654480750566
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 1.0056076782055432,
+   "opslens_minus_d": 0.38822387576835915,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 1761.2131306310155,
+    "baseline_b": 935.8867580963619,
+    "baseline_c": 1578.9179245710918,
+    "baseline_d": 637.2470860850658,
+    "least_slack": 1356.2152416276012,
+    "opslens": 989.6114418731637
+   },
+   "baseline_a_utilisation": 2.504804090605631,
+   "risk_auc": 0.9839480753907898,
+   "params": {
+    "seed": 7011,
+    "load": 1.0593974627634881,
+    "peak_scale": 1.0316200809370357,
+    "category_scale": {
+     "late_delivery": 0.9016812763534078,
+     "missing_item": 1.3697544720403079,
+     "wrong_item": 1.1431755084610016,
+     "refund": 1.357934278213705,
+     "payment_failure": 0.6986983215612228,
+     "app_bug": 0.8968730045010149,
+     "account": 1.296201213676833,
+     "restaurant_partner": 0.8531583158074436
+    },
+    "hindi_share": 0.10794027954757601,
+    "handle_scale": 1.070726680337686,
+    "mismatch_factor": 1.7015990075746816,
+    "absent_prob": 0.02901087478287013,
+    "team_delta": {
+     "A": -1,
+     "B": 0,
+     "C": 0,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 47,
+     "P2": 279,
+     "P3": 1764
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 17,
+     "payment_spike_mult": 3.334637320295321,
+     "app_bug_day": 53,
+     "app_bug_mult": 3.3228572058357293,
+     "partner_cluster": 23,
+     "partner_mult": 3.7502773887425667,
+     "ivr_wrong_prob": 0.23009607800234613,
+     "team_c_lift": 1.3475593667202757
+    },
+    "roster_seed": 222241456
+   },
+   "volume_factor": 1.388932722799231
+  },
+  {
+   "seed": 7012,
+   "breach_pct": {
+    "baseline_a": 36.42643435410067,
+    "baseline_b": 22.593277015135513,
+    "baseline_c": 13.108647189956587,
+    "baseline_d": 20.525343189017953,
+    "least_slack": 8.736653760413,
+    "opslens": 7.8420157221635565
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -0.8946380382494441,
+   "opslens_minus_d": -12.683327466854397,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 49453.039197173755,
+    "baseline_b": 45231.08522295181,
+    "baseline_c": 50746.23334320049,
+    "baseline_d": 51469.57992893602,
+    "least_slack": 55776.92713286154,
+    "opslens": 4132.760163304086
+   },
+   "baseline_a_utilisation": 2.8205124905615535,
+   "risk_auc": 0.9962431390560289,
+   "params": {
+    "seed": 7012,
+    "load": 1.2237638857737774,
+    "peak_scale": 1.009739476175181,
+    "category_scale": {
+     "late_delivery": 0.7295562325783971,
+     "missing_item": 0.8660427572974946,
+     "wrong_item": 1.372111804278163,
+     "refund": 1.1524338810769614,
+     "payment_failure": 1.3420450677886457,
+     "app_bug": 0.6930690701534326,
+     "account": 1.0520468692020923,
+     "restaurant_partner": 1.3655693289931503
+    },
+    "hindi_share": 0.237608813040253,
+    "handle_scale": 1.2749913551916323,
+    "mismatch_factor": 1.7732364754141952,
+    "absent_prob": 0.036662815593852906,
+    "team_delta": {
+     "A": -2,
+     "B": -2,
+     "C": 0,
+     "D": 2
+    },
+    "sla_minutes": {
+     "P1": 80,
+     "P2": 167,
+     "P3": 2020
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 21,
+     "payment_spike_mult": 3.853516603078442,
+     "app_bug_day": 51,
+     "app_bug_mult": 5.8171985168687375,
+     "partner_cluster": 1,
+     "partner_mult": 3.010651113885886,
+     "ivr_wrong_prob": 0.30860165914043935,
+     "team_c_lift": 1.2639419373636425
+    },
+    "roster_seed": 225116039
+   },
+   "volume_factor": 1.3197628153083238
+  },
+  {
+   "seed": 7013,
+   "breach_pct": {
+    "baseline_a": 56.485080174153126,
+    "baseline_b": 29.805670595731126,
+    "baseline_c": 20.27397260273973,
+    "baseline_d": 29.01561006690029,
+    "least_slack": 14.739301263672083,
+    "opslens": 11.21800998194754
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -3.521291281724542,
+   "opslens_minus_d": -17.797600084952748,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 98404.66924807949,
+    "baseline_b": 119565.54288851052,
+    "baseline_c": 107316.66340967787,
+    "baseline_d": 132617.30501099522,
+    "least_slack": 109690.24895106112,
+    "opslens": 35115.34442140845
+   },
+   "baseline_a_utilisation": 0.958489260304368,
+   "risk_auc": 0.9966904081524188,
+   "params": {
+    "seed": 7013,
+    "load": 1.2162565109682384,
+    "peak_scale": 0.7388704032805502,
+    "category_scale": {
+     "late_delivery": 0.787382102239996,
+     "missing_item": 0.7324199001515654,
+     "wrong_item": 1.2800006419961507,
+     "refund": 1.2433764965303444,
+     "payment_failure": 0.6054424015988403,
+     "app_bug": 1.3448021607534602,
+     "account": 1.3856215000193188,
+     "restaurant_partner": 1.118079830415203
+    },
+    "hindi_share": 0.19200093507991678,
+    "handle_scale": 1.2630549321518763,
+    "mismatch_factor": 1.2810118671402504,
+    "absent_prob": 0.022526639331422533,
+    "team_delta": {
+     "A": 0,
+     "B": -2,
+     "C": 2,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 35,
+     "P2": 240,
+     "P3": 1245
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 26,
+     "payment_spike_mult": 4.850344398413641,
+     "app_bug_day": 48,
+     "app_bug_mult": 3.991223991923103,
+     "partner_cluster": 17,
+     "partner_mult": 3.3322507801639447,
+     "ivr_wrong_prob": 0.25872891652125257,
+     "team_c_lift": 1.4143159556521636
+    },
+    "roster_seed": 315379816
+   },
+   "volume_factor": 0.8930300551926499
+  },
+  {
+   "seed": 7014,
+   "breach_pct": {
+    "baseline_a": 52.35573110702157,
+    "baseline_b": 26.518245881772074,
+    "baseline_c": 12.663644388587159,
+    "baseline_d": 23.311937998414052,
+    "least_slack": 9.91067821715517,
+    "opslens": 11.68664063318222
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 1.7759624160270508,
+   "opslens_minus_d": -11.625297365231832,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 44697.9556813772,
+    "baseline_b": 54723.06109484198,
+    "baseline_c": 54009.405728729536,
+    "baseline_d": 64384.10245828574,
+    "least_slack": 52087.52891662225,
+    "opslens": 40443.34751449105
+   },
+   "baseline_a_utilisation": 1.0891045320673218,
+   "risk_auc": 0.9906747583342579,
+   "params": {
+    "seed": 7014,
+    "load": 1.2048402995508192,
+    "peak_scale": 0.9463412078858093,
+    "category_scale": {
+     "late_delivery": 0.9191008116770453,
+     "missing_item": 0.7455293709701759,
+     "wrong_item": 1.1176321905344269,
+     "refund": 1.3833517603921592,
+     "payment_failure": 0.8146906514085227,
+     "app_bug": 1.2406622361772168,
+     "account": 1.3120399793749153,
+     "restaurant_partner": 0.8605698799501024
+    },
+    "hindi_share": 0.11379478439484436,
+    "handle_scale": 0.997251421139553,
+    "mismatch_factor": 1.8031488359094094,
+    "absent_prob": 0.09548385321150997,
+    "team_delta": {
+     "A": 0,
+     "B": 2,
+     "C": 0,
+     "D": -1
+    },
+    "sla_minutes": {
+     "P1": 39,
+     "P2": 333,
+     "P3": 1716
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 18,
+     "payment_spike_mult": 4.785483324366703,
+     "app_bug_day": 47,
+     "app_bug_mult": 3.5383730325946443,
+     "partner_cluster": 22,
+     "partner_mult": 3.9287553296539865,
+     "ivr_wrong_prob": 0.25606175916154983,
+     "team_c_lift": 1.400675877178203
+    },
+    "roster_seed": 277241009
+   },
+   "volume_factor": 1.2297269557465846
+  },
+  {
+   "seed": 7015,
+   "breach_pct": {
+    "baseline_a": 57.436465008895794,
+    "baseline_b": 31.056129765496227,
+    "baseline_c": 19.7224751126106,
+    "baseline_d": 22.442385619164924,
+    "least_slack": 12.388058813378793,
+    "opslens": 11.35210077533218
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.035958038046612,
+   "opslens_minus_d": -11.090284843832743,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 50693.35605745846,
+    "baseline_b": 62086.382040874254,
+    "baseline_c": 60752.15794525408,
+    "baseline_d": 83257.20330801798,
+    "least_slack": 59001.856568680225,
+    "opslens": 27218.844639887815
+   },
+   "baseline_a_utilisation": 3.152313346211498,
+   "risk_auc": 0.9931686883847725,
+   "params": {
+    "seed": 7015,
+    "load": 1.2472126718471337,
+    "peak_scale": 0.9180803753165865,
+    "category_scale": {
+     "late_delivery": 0.6921157632402554,
+     "missing_item": 1.1152286682747332,
+     "wrong_item": 1.2209363805830895,
+     "refund": 0.6399806185727321,
+     "payment_failure": 0.9822630852361662,
+     "app_bug": 0.9918266017141595,
+     "account": 1.2816133510082248,
+     "restaurant_partner": 1.0367765656282395
+    },
+    "hindi_share": 0.06730375173792454,
+    "handle_scale": 0.8200478272786348,
+    "mismatch_factor": 1.5680067439026124,
+    "absent_prob": 0.02383726383658775,
+    "team_delta": {
+     "A": -1,
+     "B": 2,
+     "C": 0,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 59,
+     "P2": 215,
+     "P3": 1084
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 17,
+     "payment_spike_mult": 3.0390265679189024,
+     "app_bug_day": 47,
+     "app_bug_mult": 5.873474576504398,
+     "partner_cluster": 5,
+     "partner_mult": 3.816334464972734,
+     "ivr_wrong_prob": 0.18891788178698316,
+     "team_c_lift": 1.284143142243825
+    },
+    "roster_seed": 885745036
+   },
+   "volume_factor": 3.095190111768136
+  },
+  {
+   "seed": 7016,
+   "breach_pct": {
+    "baseline_a": 17.86808419030586,
+    "baseline_b": 6.786228824084655,
+    "baseline_c": 5.365393213771175,
+    "baseline_d": 5.716462152450031,
+    "least_slack": 4.416513488002384,
+    "opslens": 3.0403894878036666
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.3761240001987178,
+   "opslens_minus_d": -2.6760726646463646,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 5259.95521804098,
+    "baseline_b": 1799.2930300624612,
+    "baseline_c": 8209.215035372878,
+    "baseline_d": 1267.8365409341777,
+    "least_slack": 6563.0125740109725,
+    "opslens": 714.8281682164001
+   },
+   "baseline_a_utilisation": 1.5797076177444003,
+   "risk_auc": 0.9686264447787585,
+   "params": {
+    "seed": 7016,
+    "load": 0.9338056691078543,
+    "peak_scale": 1.1755663092596207,
+    "category_scale": {
+     "late_delivery": 0.8339825109560283,
+     "missing_item": 0.6050514092703644,
+     "wrong_item": 0.6929831929610558,
+     "refund": 1.0098736854275145,
+     "payment_failure": 1.2373229146247926,
+     "app_bug": 1.0191460084641804,
+     "account": 1.2785546575194613,
+     "restaurant_partner": 0.6930894977924626
+    },
+    "hindi_share": 0.1874068026212084,
+    "handle_scale": 1.1568558751677829,
+    "mismatch_factor": 1.5005831795269469,
+    "absent_prob": 0.06773268207436807,
+    "team_delta": {
+     "A": 2,
+     "B": 1,
+     "C": 1,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 77,
+     "P2": 178,
+     "P3": 2119
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 19,
+     "payment_spike_mult": 4.809017533964651,
+     "app_bug_day": 47,
+     "app_bug_mult": 5.524152535364527,
+     "partner_cluster": 7,
+     "partner_mult": 3.835039439879692,
+     "ivr_wrong_prob": 0.3484076769307889,
+     "team_c_lift": 1.256805392320857
+    },
+    "roster_seed": 244240276
+   },
+   "volume_factor": 1.1292351596052026
+  },
+  {
+   "seed": 7017,
+   "breach_pct": {
+    "baseline_a": 19.793548605986583,
+    "baseline_b": 12.575383597547011,
+    "baseline_c": 8.135067050052164,
+    "baseline_d": 11.177553288039562,
+    "least_slack": 5.812700916902042,
+    "opslens": 3.82113200505526
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.9915689118467816,
+   "opslens_minus_d": -7.356421282984302,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 4222.4036088450375,
+    "baseline_b": 3967.511131371957,
+    "baseline_c": 5122.461071413601,
+    "baseline_d": 2181.9415164666702,
+    "least_slack": 3933.1502721460893,
+    "opslens": 1307.7671810173329
+   },
+   "baseline_a_utilisation": 1.591755427495545,
+   "risk_auc": 0.9874623189939562,
+   "params": {
+    "seed": 7017,
+    "load": 0.8969774148209735,
+    "peak_scale": 0.9182328774407591,
+    "category_scale": {
+     "late_delivery": 1.398692248878184,
+     "missing_item": 1.182971063876133,
+     "wrong_item": 1.2565485171272681,
+     "refund": 0.8556243803593486,
+     "payment_failure": 1.138287339491028,
+     "app_bug": 0.9073364082821346,
+     "account": 1.3582791111769714,
+     "restaurant_partner": 0.6440285380889577
+    },
+    "hindi_share": 0.1081797616489719,
+    "handle_scale": 0.809926190865902,
+    "mismatch_factor": 1.909285084469296,
+    "absent_prob": 0.08409647425508966,
+    "team_delta": {
+     "A": 2,
+     "B": 2,
+     "C": 2,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 81,
+     "P2": 122,
+     "P3": 1139
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 26,
+     "payment_spike_mult": 3.6819934484945165,
+     "app_bug_day": 50,
+     "app_bug_mult": 4.448009663407936,
+     "partner_cluster": 30,
+     "partner_mult": 3.4164416034226868,
+     "ivr_wrong_prob": 0.27108972811776255,
+     "team_c_lift": 1.3982391463450519
+    },
+    "roster_seed": 1904199827
+   },
+   "volume_factor": 2.193389372936881
+  },
+  {
+   "seed": 7018,
+   "breach_pct": {
+    "baseline_a": 41.038609921322035,
+    "baseline_b": 27.0208694067256,
+    "baseline_c": 15.99987848962605,
+    "baseline_d": 23.2905009265166,
+    "least_slack": 9.875755642637989,
+    "opslens": 8.54825480725417
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.3275008353838196,
+   "opslens_minus_d": -14.74224611926243,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 74998.94403350959,
+    "baseline_b": 78533.81147524678,
+    "baseline_c": 89313.515413836,
+    "baseline_d": 25030.7762061909,
+    "least_slack": 54414.033074982704,
+    "opslens": 5519.6172037110055
+   },
+   "baseline_a_utilisation": 1.8641547403767091,
+   "risk_auc": 0.9900124855392648,
+   "params": {
+    "seed": 7018,
+    "load": 1.1219315532804635,
+    "peak_scale": 1.0172713175767558,
+    "category_scale": {
+     "late_delivery": 1.385385395009025,
+     "missing_item": 0.8834543847652823,
+     "wrong_item": 1.0581694393450474,
+     "refund": 1.3036895008626055,
+     "payment_failure": 1.3098949491786744,
+     "app_bug": 1.082296639494332,
+     "account": 1.2586946024354964,
+     "restaurant_partner": 0.8711840685596995
+    },
+    "hindi_share": 0.15580966892208192,
+    "handle_scale": 1.245281374546778,
+    "mismatch_factor": 1.352198165496361,
+    "absent_prob": 0.06314782540451462,
+    "team_delta": {
+     "A": -2,
+     "B": 1,
+     "C": 0,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 78,
+     "P2": 311,
+     "P3": 1546
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 18,
+     "payment_spike_mult": 3.7348761731838733,
+     "app_bug_day": 53,
+     "app_bug_mult": 5.285796559395651,
+     "partner_cluster": 38,
+     "partner_mult": 2.65935607112508,
+     "ivr_wrong_prob": 0.34765637820180917,
+     "team_c_lift": 1.337918940138577
+    },
+    "roster_seed": 394182192
+   },
+   "volume_factor": 1.2253354603797846
+  },
+  {
+   "seed": 7019,
+   "breach_pct": {
+    "baseline_a": 47.20585304751331,
+    "baseline_b": 30.252132737400483,
+    "baseline_c": 17.57622341788368,
+    "baseline_d": 34.62199068143214,
+    "least_slack": 10.893804385989883,
+    "opslens": 13.500536149780322
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 2.606731763790439,
+   "opslens_minus_d": -21.121454531651814,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 99391.04311909572,
+    "baseline_b": 103943.34186871088,
+    "baseline_c": 107579.59601203282,
+    "baseline_d": 54387.93896363524,
+    "least_slack": 84599.84027578759,
+    "opslens": 46539.992807404895
+   },
+   "baseline_a_utilisation": 1.8447083400136883,
+   "risk_auc": 0.9906326837457649,
+   "params": {
+    "seed": 7019,
+    "load": 1.107307189198888,
+    "peak_scale": 0.8824636616345767,
+    "category_scale": {
+     "late_delivery": 1.1440261950062105,
+     "missing_item": 0.727007116073529,
+     "wrong_item": 0.8714910215078969,
+     "refund": 1.0074394705103211,
+     "payment_failure": 0.9339930441136652,
+     "app_bug": 0.7962547396135398,
+     "account": 1.120827459762006,
+     "restaurant_partner": 1.0097176058932997
+    },
+    "hindi_share": 0.1892972002928388,
+    "handle_scale": 0.9427393811951226,
+    "mismatch_factor": 1.978106193560314,
+    "absent_prob": 0.06832152729832781,
+    "team_delta": {
+     "A": -2,
+     "B": 2,
+     "C": 2,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 41,
+     "P2": 256,
+     "P3": 1224
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 23,
+     "payment_spike_mult": 4.902806055888442,
+     "app_bug_day": 45,
+     "app_bug_mult": 3.3629481776801815,
+     "partner_cluster": 27,
+     "partner_mult": 3.0514270463745357,
+     "ivr_wrong_prob": 0.21268766436205988,
+     "team_c_lift": 1.2719678973095603
+    },
+    "roster_seed": 1231962543
+   },
+   "volume_factor": 1.9971140816456847
+  },
+  {
+   "seed": 7020,
+   "breach_pct": {
+    "baseline_a": 11.649888700621283,
+    "baseline_b": 8.903950297352072,
+    "baseline_c": 6.465331074122063,
+    "baseline_d": 7.114854314096814,
+    "least_slack": 4.114754643011396,
+    "opslens": 2.897106216153361
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.2176484268580348,
+   "opslens_minus_d": -4.217748097943453,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 2066.8656705014027,
+    "baseline_b": 1706.1975822222278,
+    "baseline_c": 2232.913587642995,
+    "baseline_d": 1103.9064763609822,
+    "least_slack": 1650.3944977668837,
+    "opslens": 636.95537080006
+   },
+   "baseline_a_utilisation": 0.8020751519411421,
+   "risk_auc": 0.9515840621508804,
+   "params": {
+    "seed": 7020,
+    "load": 0.884413567663755,
+    "peak_scale": 1.1438525483001365,
+    "category_scale": {
+     "late_delivery": 1.1909004117189972,
+     "missing_item": 1.3784293531938232,
+     "wrong_item": 0.7598745731096105,
+     "refund": 0.9260378201162291,
+     "payment_failure": 0.7041606918925161,
+     "app_bug": 1.2035053146717924,
+     "account": 0.9945966101902602,
+     "restaurant_partner": 1.1312853663119475
+    },
+    "hindi_share": 0.06365854133751365,
+    "handle_scale": 0.7936401077096353,
+    "mismatch_factor": 1.6339037346630565,
+    "absent_prob": 0.0895465781861693,
+    "team_delta": {
+     "A": 1,
+     "B": -1,
+     "C": 0,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 89,
+     "P2": 133,
+     "P3": 725
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 18,
+     "payment_spike_mult": 3.83972132761764,
+     "app_bug_day": 54,
+     "app_bug_mult": 5.835888381998121,
+     "partner_cluster": 36,
+     "partner_mult": 3.2122301989583963,
+     "ivr_wrong_prob": 0.2551848276412945,
+     "team_c_lift": 1.4284880527614046
+    },
+    "roster_seed": 24806704
+   },
+   "volume_factor": 1.1282707040087079
+  },
+  {
+   "seed": 7021,
+   "breach_pct": {
+    "baseline_a": 4.909481881846976,
+    "baseline_b": 3.578589486531253,
+    "baseline_c": 3.309795716734955,
+    "baseline_d": 3.14706651556098,
+    "least_slack": 2.8579315956179356,
+    "opslens": 1.580797954261471
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.2771336413564647,
+   "opslens_minus_d": -1.5662685612995089,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 897.9280919203935,
+    "baseline_b": 737.2956977368659,
+    "baseline_c": 913.4675354377599,
+    "baseline_d": 612.3599430321066,
+    "least_slack": 809.2390858636146,
+    "opslens": 218.3921804489448
+   },
+   "baseline_a_utilisation": 1.767730857971122,
+   "risk_auc": 0.9671581701202856,
+   "params": {
+    "seed": 7021,
+    "load": 0.7328996022577121,
+    "peak_scale": 1.2344517591993682,
+    "category_scale": {
+     "late_delivery": 0.8402672213540825,
+     "missing_item": 0.7592155215908238,
+     "wrong_item": 0.6349335339170281,
+     "refund": 0.8254297813373547,
+     "payment_failure": 1.0926880996822734,
+     "app_bug": 0.6622930101167356,
+     "account": 0.7347561099468697,
+     "restaurant_partner": 0.8542919185977255
+    },
+    "hindi_share": 0.18389172777773866,
+    "handle_scale": 0.8625497558413383,
+    "mismatch_factor": 1.970129922021608,
+    "absent_prob": 0.07155948323020456,
+    "team_delta": {
+     "A": 1,
+     "B": 2,
+     "C": -1,
+     "D": -2
+    },
+    "sla_minutes": {
+     "P1": 82,
+     "P2": 305,
+     "P3": 1137
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 15,
+     "payment_spike_mult": 4.3831455055590745,
+     "app_bug_day": 54,
+     "app_bug_mult": 4.208821454860581,
+     "partner_cluster": 32,
+     "partner_mult": 2.976794463420055,
+     "ivr_wrong_prob": 0.2787631768174207,
+     "team_c_lift": 1.20944583758887
+    },
+    "roster_seed": 1646625241
+   },
+   "volume_factor": 1.269629550543955
+  },
+  {
+   "seed": 7022,
+   "breach_pct": {
+    "baseline_a": 6.632793188684428,
+    "baseline_b": 4.520278311819098,
+    "baseline_c": 4.005309896548567,
+    "baseline_d": 4.1792547834843905,
+    "least_slack": 3.7695687997802803,
+    "opslens": 1.9042387622448045
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.8653300375354758,
+   "opslens_minus_d": -2.275016021239586,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 1846.5907052579414,
+    "baseline_b": 1710.6187818377723,
+    "baseline_c": 3152.999326538251,
+    "baseline_d": 1657.7686562168112,
+    "least_slack": 3067.201236884482,
+    "opslens": 257.505155877552
+   },
+   "baseline_a_utilisation": 0.6061309074771443,
+   "risk_auc": 0.9744954206027436,
+   "params": {
+    "seed": 7022,
+    "load": 0.7154497016778459,
+    "peak_scale": 1.0232893469127942,
+    "category_scale": {
+     "late_delivery": 0.7033174504344748,
+     "missing_item": 1.352334190234862,
+     "wrong_item": 1.0432057547014866,
+     "refund": 1.0336880548470768,
+     "payment_failure": 0.7900557432217017,
+     "app_bug": 0.6278991468536371,
+     "account": 0.7769103395305876,
+     "restaurant_partner": 1.388376971798184
+    },
+    "hindi_share": 0.2139170395238562,
+    "handle_scale": 0.8683763168435032,
+    "mismatch_factor": 1.4487141607489926,
+    "absent_prob": 0.024369599853177146,
+    "team_delta": {
+     "A": 0,
+     "B": -1,
+     "C": -1,
+     "D": 2
+    },
+    "sla_minutes": {
+     "P1": 32,
+     "P2": 311,
+     "P3": 2026
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 26,
+     "payment_spike_mult": 3.7305421365244467,
+     "app_bug_day": 52,
+     "app_bug_mult": 5.559185553325995,
+     "partner_cluster": 14,
+     "partner_mult": 2.002965944233001,
+     "ivr_wrong_prob": 0.1985395608152513,
+     "team_c_lift": 1.3723765931591516
+    },
+    "roster_seed": 1322529128
+   },
+   "volume_factor": 0.8015807657670295
+  },
+  {
+   "seed": 7023,
+   "breach_pct": {
+    "baseline_a": 80.4921245896994,
+    "baseline_b": 54.520194267992224,
+    "baseline_c": 35.48539447894775,
+    "baseline_d": 46.96436583465181,
+    "least_slack": 22.91622389622248,
+    "opslens": 27.46436189891453
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 4.548138002692049,
+   "opslens_minus_d": -19.50000393573728,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 173286.40929905477,
+    "baseline_b": 172851.715083704,
+    "baseline_c": 182863.888740789,
+    "baseline_d": 126193.2160560981,
+    "least_slack": 143250.213482793,
+    "opslens": 129444.092612406
+   },
+   "baseline_a_utilisation": 3.4658791470202863,
+   "risk_auc": 0.9951772749029343,
+   "params": {
+    "seed": 7023,
+    "load": 1.331235732086651,
+    "peak_scale": 1.2047209500099583,
+    "category_scale": {
+     "late_delivery": 1.20944589591898,
+     "missing_item": 1.0074520434015923,
+     "wrong_item": 1.0490281166523108,
+     "refund": 0.805450223668249,
+     "payment_failure": 0.7339574069334975,
+     "app_bug": 0.6129243461930299,
+     "account": 1.359077025509644,
+     "restaurant_partner": 1.042304264569995
+    },
+    "hindi_share": 0.06742792588976945,
+    "handle_scale": 1.0273822908910635,
+    "mismatch_factor": 1.8974623519550895,
+    "absent_prob": 0.07098145596396897,
+    "team_delta": {
+     "A": 1,
+     "B": 2,
+     "C": 1,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 42,
+     "P2": 204,
+     "P3": 1087
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 28,
+     "payment_spike_mult": 4.348506250186901,
+     "app_bug_day": 45,
+     "app_bug_mult": 3.1978130851292175,
+     "partner_cluster": 33,
+     "partner_mult": 2.2925528056918956,
+     "ivr_wrong_prob": 0.2789561899231482,
+     "team_c_lift": 1.3394378657045698
+    },
+    "roster_seed": 1281903562
+   },
+   "volume_factor": 2.2641469804802354
+  },
+  {
+   "seed": 7024,
+   "breach_pct": {
+    "baseline_a": 8.448310337932414,
+    "baseline_b": 6.180763847230554,
+    "baseline_c": 5.2429514097180565,
+    "baseline_d": 5.884823035392922,
+    "least_slack": 4.99500099980004,
+    "opslens": 3.3093381323735254
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.6856628674265148,
+   "opslens_minus_d": -2.575484903019397,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 2333.2145168866105,
+    "baseline_b": 2423.975992703665,
+    "baseline_c": 3160.4373375973823,
+    "baseline_d": 2329.177027592008,
+    "least_slack": 3114.3185681394457,
+    "opslens": 670.3038825554673
+   },
+   "baseline_a_utilisation": 1.8516330911584078,
+   "risk_auc": 0.9611994832728625,
+   "params": {
+    "seed": 7024,
+    "load": 0.811039118319227,
+    "peak_scale": 1.1155834653130712,
+    "category_scale": {
+     "late_delivery": 1.006019293673269,
+     "missing_item": 0.8357180253299658,
+     "wrong_item": 0.8488127877635858,
+     "refund": 0.7795999815161627,
+     "payment_failure": 1.3955120654563435,
+     "app_bug": 1.1894096886799592,
+     "account": 0.6479970345369371,
+     "restaurant_partner": 1.2450342704913422
+    },
+    "hindi_share": 0.21327451674660974,
+    "handle_scale": 1.193806965741525,
+    "mismatch_factor": 1.320363997454169,
+    "absent_prob": 0.02085846815113216,
+    "team_delta": {
+     "A": -1,
+     "B": -1,
+     "C": 0,
+     "D": -1
+    },
+    "sla_minutes": {
+     "P1": 51,
+     "P2": 340,
+     "P3": 1095
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 16,
+     "payment_spike_mult": 4.558220896394399,
+     "app_bug_day": 45,
+     "app_bug_mult": 3.829137909202233,
+     "partner_cluster": 16,
+     "partner_mult": 3.3614429964867765,
+     "ivr_wrong_prob": 0.28049152596966676,
+     "team_c_lift": 1.344828374846431
+    },
+    "roster_seed": 1942230078
+   },
+   "volume_factor": 0.9176351852085706
+  },
+  {
+   "seed": 7025,
+   "breach_pct": {
+    "baseline_a": 67.62199497667744,
+    "baseline_b": 43.85540007176175,
+    "baseline_c": 23.795000598014592,
+    "baseline_d": 45.13066618825499,
+    "least_slack": 14.563150340868317,
+    "opslens": 19.64627436909461
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 5.083124028226292,
+   "opslens_minus_d": -25.484391819160383,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 132220.0747453357,
+    "baseline_b": 129886.49657492485,
+    "baseline_c": 136632.5543840132,
+    "baseline_d": 77213.48260335933,
+    "least_slack": 98314.37506097234,
+    "opslens": 101142.71356201837
+   },
+   "baseline_a_utilisation": 1.173080105456211,
+   "risk_auc": 0.9617614109870152,
+   "params": {
+    "seed": 7025,
+    "load": 1.3462502223432655,
+    "peak_scale": 0.887305769873006,
+    "category_scale": {
+     "late_delivery": 1.2834990385277485,
+     "missing_item": 1.3261373333446553,
+     "wrong_item": 1.2894292075112956,
+     "refund": 1.1021786386422405,
+     "payment_failure": 1.148662849567076,
+     "app_bug": 0.6853260471814124,
+     "account": 1.0779789903087555,
+     "restaurant_partner": 0.9775596205794344
+    },
+    "hindi_share": 0.0882175213348633,
+    "handle_scale": 1.1216718805167125,
+    "mismatch_factor": 1.4638498252003982,
+    "absent_prob": 0.0783150189821534,
+    "team_delta": {
+     "A": 2,
+     "B": 0,
+     "C": -2,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 43,
+     "P2": 206,
+     "P3": 1691
+    },
+    "chats_per_agent": 1,
+    "chat_slowdown": 0.0,
+    "plants": {
+     "payment_spike_day": 18,
+     "payment_spike_mult": 4.716166845338661,
+     "app_bug_day": 53,
+     "app_bug_mult": 3.6897738721524447,
+     "partner_cluster": 35,
+     "partner_mult": 3.1355012411251035,
+     "ivr_wrong_prob": 0.27443584409799776,
+     "team_c_lift": 1.4261804714311874
+    },
+    "roster_seed": 264013612
+   },
+   "volume_factor": 1.2323103323663882
+  },
+  {
+   "seed": 7026,
+   "breach_pct": {
+    "baseline_a": 62.343893373147324,
+    "baseline_b": 33.63116067123906,
+    "baseline_c": 14.375029160640134,
+    "baseline_d": 21.40235462448872,
+    "least_slack": 9.954276116269304,
+    "opslens": 13.434890122707975
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": 3.480614006438671,
+   "opslens_minus_d": -7.967464501780745,
+   "wins": false,
+   "late_minutes_per_100": {
+    "baseline_a": 69441.50750922946,
+    "baseline_b": 63968.78425768198,
+    "baseline_c": 75860.2435616629,
+    "baseline_d": 50137.37437208564,
+    "least_slack": 58002.96135141755,
+    "opslens": 41019.23496426211
+   },
+   "baseline_a_utilisation": 3.313664477982813,
+   "risk_auc": 0.8670033094326441,
+   "params": {
+    "seed": 7026,
+    "load": 1.2718638278176817,
+    "peak_scale": 1.121013293174082,
+    "category_scale": {
+     "late_delivery": 1.3109602251940198,
+     "missing_item": 1.314165347111341,
+     "wrong_item": 0.7406891611498474,
+     "refund": 1.1482925509636144,
+     "payment_failure": 0.9119105085481864,
+     "app_bug": 0.92363999957768,
+     "account": 0.60901022026746,
+     "restaurant_partner": 1.2843055060542978
+    },
+    "hindi_share": 0.11429279391437777,
+    "handle_scale": 1.0663452273639784,
+    "mismatch_factor": 1.7671198964321206,
+    "absent_prob": 0.06458790594092377,
+    "team_delta": {
+     "A": 1,
+     "B": 2,
+     "C": -2,
+     "D": -1
+    },
+    "sla_minutes": {
+     "P1": 83,
+     "P2": 300,
+     "P3": 2123
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 26,
+     "payment_spike_mult": 4.090746265592541,
+     "app_bug_day": 46,
+     "app_bug_mult": 5.975898245805175,
+     "partner_cluster": 15,
+     "partner_mult": 3.469178000668652,
+     "ivr_wrong_prob": 0.24520125143905003,
+     "team_c_lift": 1.3110466042178424
+    },
+    "roster_seed": 1781848737
+   },
+   "volume_factor": 2.39365256134155
+  },
+  {
+   "seed": 7027,
+   "breach_pct": {
+    "baseline_a": 8.134690724493737,
+    "baseline_b": 4.415659658996855,
+    "baseline_c": 3.921812062020637,
+    "baseline_d": 3.9024995861612317,
+    "least_slack": 3.3396788611157096,
+    "opslens": 2.5009656237929705
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -0.8387132373227391,
+   "opslens_minus_d": -1.4015339623682612,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 1472.9927610667728,
+    "baseline_b": 994.6173359480796,
+    "baseline_c": 1586.7364246587924,
+    "baseline_d": 776.7943270724995,
+    "least_slack": 1473.744945945452,
+    "opslens": 508.88685705326253
+   },
+   "baseline_a_utilisation": 1.6293910485235648,
+   "risk_auc": 0.9817353969121934,
+   "params": {
+    "seed": 7027,
+    "load": 0.9437703179887449,
+    "peak_scale": 1.2186510890492155,
+    "category_scale": {
+     "late_delivery": 0.8688204684728777,
+     "missing_item": 1.1783306582199522,
+     "wrong_item": 0.9597211845264938,
+     "refund": 1.2014721433627173,
+     "payment_failure": 0.6787283248106734,
+     "app_bug": 1.1858463658419236,
+     "account": 1.191137211459449,
+     "restaurant_partner": 1.210646584260022
+    },
+    "hindi_share": 0.1964202410671272,
+    "handle_scale": 1.2223468233138761,
+    "mismatch_factor": 1.90073736443332,
+    "absent_prob": 0.06148870806355053,
+    "team_delta": {
+     "A": 2,
+     "B": 0,
+     "C": 0,
+     "D": 2
+    },
+    "sla_minutes": {
+     "P1": 77,
+     "P2": 189,
+     "P3": 2034
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 24,
+     "payment_spike_mult": 4.248390133924767,
+     "app_bug_day": 48,
+     "app_bug_mult": 3.8724764141304275,
+     "partner_cluster": 16,
+     "partner_mult": 3.62827916941038,
+     "ivr_wrong_prob": 0.21955249370037686,
+     "team_c_lift": 1.2634203382595888
+    },
+    "roster_seed": 1434913541
+   },
+   "volume_factor": 1.3379582812566653
+  },
+  {
+   "seed": 7028,
+   "breach_pct": {
+    "baseline_a": 11.104523333086291,
+    "baseline_b": 7.665703204130537,
+    "baseline_c": 6.188393982064774,
+    "baseline_d": 6.22421502507473,
+    "least_slack": 4.77160997060204,
+    "opslens": 3.668568887571334
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.1030410830307065,
+   "opslens_minus_d": -2.555646137503396,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 1854.442764446656,
+    "baseline_b": 1580.4594928589922,
+    "baseline_c": 2169.7541258169676,
+    "baseline_d": 1034.2399336892033,
+    "least_slack": 1703.3326112478942,
+    "opslens": 677.0007370215408
+   },
+   "baseline_a_utilisation": 2.193334268022717,
+   "risk_auc": 0.9736227996612425,
+   "params": {
+    "seed": 7028,
+    "load": 0.8240868573460188,
+    "peak_scale": 0.7976878067573724,
+    "category_scale": {
+     "late_delivery": 1.191823323335986,
+     "missing_item": 1.058086196765466,
+     "wrong_item": 1.0448634602410416,
+     "refund": 1.0469075451417442,
+     "payment_failure": 1.120578402163011,
+     "app_bug": 0.8949642075789358,
+     "account": 1.3821876795998458,
+     "restaurant_partner": 0.8343928601831158
+    },
+    "hindi_share": 0.13593648094335314,
+    "handle_scale": 0.9637161378306305,
+    "mismatch_factor": 1.3713431102065559,
+    "absent_prob": 0.08822260623632902,
+    "team_delta": {
+     "A": 1,
+     "B": 2,
+     "C": 1,
+     "D": 0
+    },
+    "sla_minutes": {
+     "P1": 73,
+     "P2": 143,
+     "P3": 2074
+    },
+    "chats_per_agent": 3,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 21,
+     "payment_spike_mult": 4.592979790685035,
+     "app_bug_day": 45,
+     "app_bug_mult": 4.6602109058093335,
+     "partner_cluster": 25,
+     "partner_mult": 2.4727516247336387,
+     "ivr_wrong_prob": 0.23126635440020674,
+     "team_c_lift": 1.2549114438531652
+    },
+    "roster_seed": 1538585468
+   },
+   "volume_factor": 1.450163939628717
+  },
+  {
+   "seed": 7029,
+   "breach_pct": {
+    "baseline_a": 44.53357818263825,
+    "baseline_b": 25.209813302405,
+    "baseline_c": 13.316902656292788,
+    "baseline_d": 17.364970440889834,
+    "least_slack": 7.253660658193592,
+    "opslens": 5.639588266563574
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -1.6140723916300184,
+   "opslens_minus_d": -11.72538217432626,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 39864.9364804853,
+    "baseline_b": 43169.38644003321,
+    "baseline_c": 50682.47634586106,
+    "baseline_d": 10819.775148298215,
+    "least_slack": 33615.82462774992,
+    "opslens": 2750.827943927589
+   },
+   "baseline_a_utilisation": 1.857453337620991,
+   "risk_auc": 0.9881144897942622,
+   "params": {
+    "seed": 7029,
+    "load": 1.0867233601918989,
+    "peak_scale": 0.8161120798318282,
+    "category_scale": {
+     "late_delivery": 1.264808914679016,
+     "missing_item": 1.11980624462449,
+     "wrong_item": 0.6816504802515864,
+     "refund": 0.9964054911476136,
+     "payment_failure": 0.6009634863909096,
+     "app_bug": 1.3441696546066018,
+     "account": 1.2476523431476485,
+     "restaurant_partner": 1.064114806202589
+    },
+    "hindi_share": 0.08492892553041897,
+    "handle_scale": 1.1599780503856763,
+    "mismatch_factor": 1.538153793758775,
+    "absent_prob": 0.05911540738428182,
+    "team_delta": {
+     "A": -2,
+     "B": -1,
+     "C": -2,
+     "D": 1
+    },
+    "sla_minutes": {
+     "P1": 63,
+     "P2": 233,
+     "P3": 2000
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.5,
+    "plants": {
+     "payment_spike_day": 23,
+     "payment_spike_mult": 4.52973977002924,
+     "app_bug_day": 44,
+     "app_bug_mult": 4.023363494305488,
+     "partner_cluster": 33,
+     "partner_mult": 3.8034587051611215,
+     "ivr_wrong_prob": 0.29005653696069256,
+     "team_c_lift": 1.3433348524849253
+    },
+    "roster_seed": 1495502425
+   },
+   "volume_factor": 1.1441581498019937
+  },
+  {
+   "seed": 7030,
+   "breach_pct": {
+    "baseline_a": 9.378691235530356,
+    "baseline_b": 5.02834868887314,
+    "baseline_c": 4.483817623434916,
+    "baseline_d": 4.45665012993149,
+    "least_slack": 3.694779116465863,
+    "opslens": 2.8561304039688165
+   },
+   "best_other": "least_slack",
+   "opslens_minus_best_other": -0.8386487124970468,
+   "opslens_minus_d": -1.6005197259626738,
+   "wins": true,
+   "late_minutes_per_100": {
+    "baseline_a": 1951.3935205970436,
+    "baseline_b": 986.1311726093785,
+    "baseline_c": 2237.2805195242677,
+    "baseline_d": 754.6157499833511,
+    "least_slack": 1895.0422039554405,
+    "opslens": 527.6549788692554
+   },
+   "baseline_a_utilisation": 1.4131313543389783,
+   "risk_auc": 0.9874920975894212,
+   "params": {
+    "seed": 7030,
+    "load": 0.7771590188601172,
+    "peak_scale": 1.1229349786653369,
+    "category_scale": {
+     "late_delivery": 0.662118542188423,
+     "missing_item": 0.8600206404371981,
+     "wrong_item": 0.9430655788808108,
+     "refund": 0.7794804500683931,
+     "payment_failure": 0.7112003813234088,
+     "app_bug": 1.3194987355821246,
+     "account": 1.3030244669486315,
+     "restaurant_partner": 0.9173982357508157
+    },
+    "hindi_share": 0.11293911360557181,
+    "handle_scale": 0.894377077518015,
+    "mismatch_factor": 1.2747186847905099,
+    "absent_prob": 0.09867822741433116,
+    "team_delta": {
+     "A": 0,
+     "B": 1,
+     "C": 2,
+     "D": 2
+    },
+    "sla_minutes": {
+     "P1": 72,
+     "P2": 132,
+     "P3": 2008
+    },
+    "chats_per_agent": 2,
+    "chat_slowdown": 0.25,
+    "plants": {
+     "payment_spike_day": 15,
+     "payment_spike_mult": 3.0183126895374928,
+     "app_bug_day": 52,
+     "app_bug_mult": 5.886028850868845,
+     "partner_cluster": 14,
+     "partner_mult": 2.2737204079879856,
+     "ivr_wrong_prob": 0.2790796059831685,
+     "team_c_lift": 1.2856216566411087
+    },
+    "roster_seed": 48353573
+   },
+   "volume_factor": 1.539484775248383
+  }
+ ],
+ "classifier": "local only (no LLM) in every world",
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "test_days": [
+  43,
+  56
+ ],
+ "breakdown": {
+  "note": "Added after the run, from the same results (no new runs): where OpsLens wins and loses.",
+  "beats_industry_standard": 29,
+  "of": 30,
+  "normal_load": {
+   "max_load": 1.05,
+   "worlds": 13,
+   "wins": 13
+  },
+  "heavy_load": {
+   "worlds": 17,
+   "wins": 6
+  },
+  "losses": {
+   "worlds": 11,
+   "all_to": [
+    "least_slack"
+   ],
+   "min_load": 1.0593974627634881,
+   "opslens_less_late": 10
+  }
+ }
+}

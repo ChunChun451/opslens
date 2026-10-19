@@ -31,3 +31,4 @@ data/planted.json
 .claude/worktrees/
 .venv-challengers/
 eval/parts/worlds/*.log
+eval/parts/worlds/7000.json

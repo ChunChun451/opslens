@@ -1,0 +1,285 @@
+{
+ "seed": 7005,
+ "params": {
+  "seed": 7005,
+  "load": 1.322463100814967,
+  "peak_scale": 0.9885876604756609,
+  "category_scale": {
+   "late_delivery": 1.1122408290946437,
+   "missing_item": 0.8537189293059044,
+   "wrong_item": 1.2463017208848628,
+   "refund": 0.7614166390114264,
+   "payment_failure": 1.258106591181863,
+   "app_bug": 0.9809788643745403,
+   "account": 0.8069999010611908,
+   "restaurant_partner": 1.0592228789597093
+  },
+  "hindi_share": 0.18066156053438415,
+  "handle_scale": 0.9678493065447217,
+  "mismatch_factor": 1.2700082016681125,
+  "absent_prob": 0.05229400285577594,
+  "team_delta": {
+   "A": -2,
+   "B": 1,
+   "C": -2,
+   "D": 1
+  },
+  "sla_minutes": {
+   "P1": 41,
+   "P2": 239,
+   "P3": 1530
+  },
+  "chats_per_agent": 1,
+  "chat_slowdown": 0.0,
+  "plants": {
+   "payment_spike_day": 17,
+   "payment_spike_mult": 4.4572979322320325,
+   "app_bug_day": 45,
+   "app_bug_mult": 3.5428645449736194,
+   "partner_cluster": 0,
+   "partner_mult": 2.5549564561112024,
+   "ivr_wrong_prob": 0.1611695225266118,
+   "team_c_lift": 1.306510996523536
+  },
+  "roster_seed": 1250057158
+ },
+ "volume_factor": 1.297963301203952,
+ "compare": {
+  "seeds": [
+   1,
+   2,
+   3
+  ],
+  "first_day": 43,
+  "last_day": 56,
+  "per_seed": {
+   "baseline_a": [
+    {
+     "seed": 1,
+     "turnaround.breach_pct": 68.1754845247646,
+     "turnaround.p90_resolution_min": 4750.14300611117,
+     "quality.late_minutes_per_100": 177326.8655859311,
+     "quality.mean_utilisation": 1.1142172267887087,
+     "quality.p99_wait_min": 5302.355524685455,
+     "productivity.transfers_per_100": 3.5552928260777774
+    },
+    {
+     "seed": 2,
+     "turnaround.breach_pct": 67.25499303297724,
+     "turnaround.p90_resolution_min": 4704.333183813774,
+     "quality.late_minutes_per_100": 166726.85393215262,
+     "quality.mean_utilisation": 1.1119678060996891,
+     "quality.p99_wait_min": 5305.0724415186,
+     "productivity.transfers_per_100": 3.7579698517924247
+    },
+    {
+     "seed": 3,
+     "turnaround.breach_pct": 63.49280074314909,
+     "turnaround.p90_resolution_min": 4355.590504824085,
+     "quality.late_minutes_per_100": 144947.16666324617,
+     "quality.mean_utilisation": 1.0972678740959008,
+     "quality.p99_wait_min": 5856.471015156762,
+     "productivity.transfers_per_100": 3.7410800996495372
+    }
+   ],
+   "baseline_b": [
+    {
+     "seed": 1,
+     "turnaround.breach_pct": 44.75784317865135,
+     "turnaround.p90_resolution_min": 6045.279202740343,
+     "quality.late_minutes_per_100": 176606.93864263967,
+     "quality.mean_utilisation": 1.1127820153992964,
+     "quality.p99_wait_min": 10750.345700954356,
+     "productivity.transfers_per_100": 3.483511379470506
+    },
+    {
+     "seed": 2,
+     "turnaround.breach_pct": 44.33559937507917,
+     "turnaround.p90_resolution_min": 5283.765000229809,
+     "quality.late_minutes_per_100": 163340.2155588186,
+     "quality.mean_utilisation": 1.1121329104385924,
+     "quality.p99_wait_min": 11893.829433089983,
+     "productivity.transfers_per_100": 3.5215133217920025
+    },
+    {
+     "seed": 3,
+     "turnaround.breach_pct": 41.70502047882447,
+     "turnaround.p90_resolution_min": 3333.5803200179457,
+     "quality.late_minutes_per_100": 143728.80891426312,
+     "quality.mean_utilisation": 1.0962788565449102,
+     "quality.p99_wait_min": 12565.821383607483,
+     "productivity.transfers_per_100": 3.5764050162563863
+    }
+   ],
+   "baseline_c": [
+    {
+     "seed": 1,
+     "turnaround.breach_pct": 23.578093991470674,
+     "turnaround.p90_resolution_min": 1089.5512046696676,
+     "quality.late_minutes_per_100": 174510.65243100247,
+     "quality.mean_utilisation": 1.113560293390566,
+     "quality.p99_wait_min": 19431.809106698092,
+     "productivity.transfers_per_100": 3.635519148756492
+    },
+    {
+     "seed": 2,
+     "turnaround.breach_pct": 23.193852130219987,
+     "turnaround.p90_resolution_min": 2355.752290779362,
+     "quality.late_minutes_per_100": 172590.84206753064,
+     "quality.mean_utilisation": 1.1135629983530462,
+     "quality.p99_wait_min": 18571.867094635632,
+     "productivity.transfers_per_100": 3.707300595363763
+    },
+    {
+     "seed": 3,
+     "turnaround.breach_pct": 23.57387155343495,
+     "turnaround.p90_resolution_min": 1089.0847033959633,
+     "quality.late_minutes_per_100": 147402.3748715604,
+     "quality.mean_utilisation": 1.0963487011615343,
+     "quality.p99_wait_min": 19034.29686452947,
+     "productivity.transfers_per_100": 3.715745471435207
+    }
+   ],
+   "baseline_d": [
+    {
+     "seed": 1,
+     "turnaround.breach_pct": 41.392560064181055,
+     "turnaround.p90_resolution_min": 5283.720683347674,
+     "quality.late_minutes_per_100": 122055.20405302603,
+     "quality.mean_utilisation": 1.1349912358179568,
+     "quality.p99_wait_min": 12261.465388005086,
+     "productivity.transfers_per_100": 0.895156863573027
+    },
+    {
+     "seed": 2,
+     "turnaround.breach_pct": 41.54034539543132,
+     "turnaround.p90_resolution_min": 4806.081903369093,
+     "quality.late_minutes_per_100": 105420.82603752207,
+     "quality.mean_utilisation": 1.1303866309545285,
+     "quality.p99_wait_min": 10026.28646097554,
+     "productivity.transfers_per_100": 0.9500485580374107
+    },
+    {
+     "seed": 3,
+     "turnaround.breach_pct": 40.56073977114386,
+     "turnaround.p90_resolution_min": 3926.2919848576807,
+     "quality.late_minutes_per_100": 86244.08614832796,
+     "quality.mean_utilisation": 1.1181064189066026,
+     "quality.p99_wait_min": 7438.767008429224,
+     "productivity.transfers_per_100": 0.895156863573027
+    }
+   ],
+   "least_slack": [
+    {
+     "seed": 1,
+     "turnaround.breach_pct": 16.11704598235021,
+     "turnaround.p90_resolution_min": 1491.2144237349064,
+     "quality.late_minutes_per_100": 138382.47477299615,
+     "quality.mean_utilisation": 1.132535238410257,
+     "quality.p99_wait_min": 19373.089978778513,
+     "productivity.transfers_per_100": 0.9036017396444708
+    },
+    {
+     "seed": 2,
+     "turnaround.breach_pct": 14.78275556306211,
+     "turnaround.p90_resolution_min": 1424.5537330315765,
+     "quality.late_minutes_per_100": 127389.45680975947,
+     "quality.mean_utilisation": 1.116372478596014,
+     "quality.p99_wait_min": 19055.20815388817,
+     "productivity.transfers_per_100": 0.9373812439302452
+    },
+    {
+     "seed": 3,
+     "turnaround.breach_pct": 14.47451758645442,
+     "turnaround.p90_resolution_min": 1305.6589401111123,
+     "quality.late_minutes_per_100": 107607.96446948394,
+     "quality.mean_utilisation": 1.0958427685523726,
+     "quality.p99_wait_min": 18519.75272862015,
+     "productivity.transfers_per_100": 0.9078241776801925
+    }
+   ],
+   "opslens": [
+    {
+     "seed": 1,
+     "turnaround.breach_pct": 18.79829413503357,
+     "turnaround.p90_resolution_min": 1501.6750543099138,
+     "quality.late_minutes_per_100": 114120.21209465351,
+     "quality.mean_utilisation": 1.156657155214686,
+     "quality.p99_wait_min": 14825.056040467629,
+     "productivity.transfers_per_100": 0.8275978550014779
+    },
+    {
+     "seed": 2,
+     "turnaround.breach_pct": 16.703964869315545,
+     "turnaround.p90_resolution_min": 1426.6508575960033,
+     "quality.late_minutes_per_100": 92013.42315264398,
+     "quality.mean_utilisation": 1.1470437764369306,
+     "quality.p99_wait_min": 14422.95062489883,
+     "productivity.transfers_per_100": 0.8698222353586961
+    },
+    {
+     "seed": 3,
+     "turnaround.breach_pct": 15.07410378752692,
+     "turnaround.p90_resolution_min": 1266.3036319745286,
+     "quality.late_minutes_per_100": 68041.49654946661,
+     "quality.mean_utilisation": 1.1403800029560272,
+     "quality.p99_wait_min": 9591.340888682955,
+     "productivity.transfers_per_100": 0.8275978550014779
+    }
+   ]
+  },
+  "mean": {
+   "baseline_a": {
+    "turnaround.breach_pct": 66.3077594336303,
+    "turnaround.p90_resolution_min": 4603.355564916343,
+    "quality.late_minutes_per_100": 163000.29539377664,
+    "quality.mean_utilisation": 1.1078176356614329,
+    "quality.p99_wait_min": 5487.966327120273,
+    "productivity.transfers_per_100": 3.684780925839913
+   },
+   "baseline_b": {
+    "turnaround.breach_pct": 43.59948767751833,
+    "turnaround.p90_resolution_min": 4887.541507662699,
+    "quality.late_minutes_per_100": 161225.32103857378,
+    "quality.mean_utilisation": 1.1070645941275998,
+    "quality.p99_wait_min": 11736.665505883939,
+    "productivity.transfers_per_100": 3.5271432391729647
+   },
+   "baseline_c": {
+    "turnaround.breach_pct": 23.44860589170854,
+    "turnaround.p90_resolution_min": 1511.462732948331,
+    "quality.late_minutes_per_100": 164834.6231233645,
+    "quality.mean_utilisation": 1.1078239976350488,
+    "quality.p99_wait_min": 19012.657688621068,
+    "productivity.transfers_per_100": 3.6861884051851543
+   },
+   "baseline_d": {
+    "turnaround.breach_pct": 41.16454841025208,
+    "turnaround.p90_resolution_min": 4672.031523858149,
+    "quality.late_minutes_per_100": 104573.37207962536,
+    "quality.mean_utilisation": 1.1278280952263626,
+    "quality.p99_wait_min": 9908.839619136617,
+    "productivity.transfers_per_100": 0.9134540950611548
+   },
+   "least_slack": {
+    "turnaround.breach_pct": 15.12477304395558,
+    "turnaround.p90_resolution_min": 1407.142365625865,
+    "quality.late_minutes_per_100": 124459.96535074653,
+    "quality.mean_utilisation": 1.1149168285195479,
+    "quality.p99_wait_min": 18982.683620428943,
+    "productivity.transfers_per_100": 0.9162690537516361
+   },
+   "opslens": {
+    "turnaround.breach_pct": 16.85878759729201,
+    "turnaround.p90_resolution_min": 1398.2098479601484,
+    "quality.late_minutes_per_100": 91391.71059892136,
+    "quality.mean_utilisation": 1.1480269782025478,
+    "quality.p99_wait_min": 12946.449184683137,
+    "productivity.transfers_per_100": 0.8416726484538839
+   }
+  },
+  "seconds": 674.1
+ },
+ "risk_auc": 0.993015866800061,
+ "minutes": 28.8
+}

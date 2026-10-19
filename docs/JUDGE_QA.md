@@ -387,3 +387,13 @@ alarms per 30 clean days. We report this instead of re-tuning on test weeks.
 Week-ahead "more new incidents than the team usually closes": precision 77.6%, recall 92.8% on 240
 team-days, vs 54.0% / 97.9% for alerting every weekday. The forecast choice was honest too: the check
 weeks picked the learned model, which then did worst on test (0.365 vs 0.326 for the average).
+
+**Q64. Does OpsLens only win in the world you built?**
+No. We drew 30 random worlds from ranges fixed before running: volume, skills, deadlines, absences,
+chats per agent. OpsLens beats the industry standard in 29 of 30 (median −8.19 points, CI −12.20 to
+−3.28), and is the best of six policies in all 13 worlds up to today's load.
+
+**Q65. (Attack) Your own pre-registered rule failed: lowest in only 19 of 30 worlds.**
+Yes, and we show it. All 11 losses are floors in sustained overload (1.06× today's load or more, the
+backlog growing for weeks), all to least-slack-first. In 10 of the 11 OpsLens keeps late customers
+less late: least slack wins the count by letting the already-late wait much longer.

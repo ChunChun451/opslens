@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-19T15:57:04 (commit 736da14). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-19T21:00:50 (commit a38d52b). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -268,6 +268,44 @@ the volume by k/(1+s(k-1)) so the floor is as busy as today.
 
 Pre-registered rule (OpsLens beats industry standard in all four equal-load settings): PASSED. Optimiser ablation at k = 3, s = 0.25: greedy - min-cost flow +0.01 [-0.06, +0.07] points.
 
+## 30 random worlds we did not design (test days, 3 seeds each)
+
+OpsLens lowest (within 0.05 points) in 19 of 30 worlds (rule needs 27); median OpsLens - industry standard -8.19 points, 95% CI [-12.20, -3.28]. Rule NOT passed.
+Breakdown (from the same runs, added after them): OpsLens beats the industry standard in 29 of 30; it is lowest in 13 of 13 worlds up to x1.05 today's load and 6 of 17 heavier ones. All 11 losses are to least_slack, at x1.06 load or more; in 10 of them OpsLens keeps late customers less late.
+
+| World | Volume | Chats | Mismatch | Industry std | Least slack | OpsLens | Best other |
+|---|---|---|---|---|---|---|---|
+| 7001 | x1.91 | 3 | x1.81 | 23.85% | 11.10% | 14.50% | least_slack |
+| 7002 | x1.10 | 1 | x1.29 | 24.16% | 9.89% | 7.34% | least_slack |
+| 7003 | x0.91 | 1 | x1.81 | 3.50% | 3.16% | 1.66% | least_slack |
+| 7004 | x0.87 | 1 | x1.43 | 6.86% | 4.92% | 2.88% | least_slack |
+| 7005 | x1.30 | 1 | x1.27 | 41.16% | 15.12% | 16.86% | least_slack |
+| 7006 | x1.57 | 2 | x1.41 | 48.10% | 20.49% | 25.41% | least_slack |
+| 7007 | x2.85 | 2 | x1.37 | 21.21% | 11.57% | 12.79% | least_slack |
+| 7008 | x1.97 | 3 | x1.47 | 30.44% | 11.68% | 17.10% | least_slack |
+| 7009 | x1.08 | 1 | x1.94 | 7.13% | 3.92% | 3.24% | least_slack |
+| 7010 | x2.28 | 3 | x1.21 | 4.49% | 2.85% | 2.87% | least_slack |
+| 7011 | x1.39 | 3 | x1.70 | 4.36% | 3.74% | 4.75% | least_slack |
+| 7012 | x1.32 | 3 | x1.77 | 20.53% | 8.74% | 7.84% | least_slack |
+| 7013 | x0.89 | 1 | x1.28 | 29.02% | 14.74% | 11.22% | least_slack |
+| 7014 | x1.23 | 1 | x1.80 | 23.31% | 9.91% | 11.69% | least_slack |
+| 7015 | x3.10 | 3 | x1.57 | 22.44% | 12.39% | 11.35% | least_slack |
+| 7016 | x1.13 | 2 | x1.50 | 5.72% | 4.42% | 3.04% | least_slack |
+| 7017 | x2.19 | 2 | x1.91 | 11.18% | 5.81% | 3.82% | least_slack |
+| 7018 | x1.23 | 2 | x1.35 | 23.29% | 9.88% | 8.55% | least_slack |
+| 7019 | x2.00 | 2 | x1.98 | 34.62% | 10.89% | 13.50% | least_slack |
+| 7020 | x1.13 | 1 | x1.63 | 7.11% | 4.11% | 2.90% | least_slack |
+| 7021 | x1.27 | 3 | x1.97 | 3.15% | 2.86% | 1.58% | least_slack |
+| 7022 | x0.80 | 1 | x1.45 | 4.18% | 3.77% | 1.90% | least_slack |
+| 7023 | x2.26 | 3 | x1.90 | 46.96% | 22.92% | 27.46% | least_slack |
+| 7024 | x0.92 | 3 | x1.32 | 5.88% | 5.00% | 3.31% | least_slack |
+| 7025 | x1.23 | 1 | x1.46 | 45.13% | 14.56% | 19.65% | least_slack |
+| 7026 | x2.39 | 3 | x1.77 | 21.40% | 9.95% | 13.43% | least_slack |
+| 7027 | x1.34 | 2 | x1.90 | 3.90% | 3.34% | 2.50% | least_slack |
+| 7028 | x1.45 | 3 | x1.37 | 6.22% | 4.77% | 3.67% | least_slack |
+| 7029 | x1.14 | 2 | x1.54 | 17.36% | 7.25% | 5.64% | least_slack |
+| 7030 | x1.54 | 2 | x1.27 | 4.46% | 3.69% | 2.86% | least_slack |
+
 ## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
 
 - Forecast: Chronos-2 (zero-shot) WAPE 0.304 vs LightGBM 0.305 (+0.4%), 80% coverage 76.2% vs 79.2%; one 48 h refresh 1.7 s → **keep LightGBM**.
@@ -276,5 +314,5 @@ Pre-registered rule (OpsLens beats industry standard in all four equal-load sett
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.066 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.047 s.
 - Full evaluation pipeline: 48.5 min.
