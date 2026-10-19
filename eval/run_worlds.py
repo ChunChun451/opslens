@@ -60,6 +60,8 @@ TIE_POINTS = 0.05
 def sample_world(seed: int) -> dict:
     """The world's parameters, drawn from the ranges in docs/PLAN_V4.md (W1). Same seed, same world."""
     rng = np.random.default_rng(seed)
+    # Restaurant clusters are numbered 0-39; the partner draw is 1-40, so 40 maps to 0 (fix 19 Oct,
+    # found when world 7005 crashed; every draw stays the same, so finished worlds are unchanged).
     k = int(rng.integers(1, 4))  # chats per agent: 1, 2 or 3
     s = float(rng.choice([0.25, 0.5])) if k > 1 else 0.0
     return {
@@ -77,7 +79,7 @@ def sample_world(seed: int) -> dict:
         "chats_per_agent": k, "chat_slowdown": s,
         "plants": {"payment_spike_day": int(rng.integers(12, 31)), "payment_spike_mult": float(rng.uniform(3, 5)),
                    "app_bug_day": int(rng.integers(44, 56)), "app_bug_mult": float(rng.uniform(3, 6)),
-                   "partner_cluster": int(rng.integers(1, 41)), "partner_mult": float(rng.uniform(2, 4)),
+                   "partner_cluster": int(rng.integers(1, 41)) % 40, "partner_mult": float(rng.uniform(2, 4)),
                    "ivr_wrong_prob": float(rng.uniform(0.15, 0.35)), "team_c_lift": float(rng.uniform(1.2, 1.5))},
         "roster_seed": int(rng.integers(0, 2**31 - 1)),
     }
@@ -204,6 +206,16 @@ def run_world(seed: int, workers: int) -> dict:
     return result
 
 
+def run_world_safe(seed: int, workers: int) -> dict | None:
+    """run_world, but one broken world is logged instead of stopping the other 29. A failed world
+    is never dropped from the rule: the rule needs all 30, so a failure must be fixed and re-run."""
+    try:
+        return run_world(seed, workers)
+    except Exception as exc:  # noqa: BLE001 — recorded in the world's log and on screen
+        print(f"world {seed} FAILED: {exc!r} (see eval/parts/worlds/{seed}.log)", flush=True)
+        return None
+
+
 # ---- Summary and the pre-registered rule ---------------------------------------------------------
 
 def summarize(results: list[dict]) -> dict:
@@ -239,7 +251,7 @@ def main() -> int:
     if "--summary" not in sys.argv:
         parallel = 3 if len(seeds) > 1 else 1
         with ThreadPoolExecutor(max_workers=parallel) as pool:
-            list(pool.map(lambda s: run_world(s, workers=4), seeds))
+            list(pool.map(lambda s: run_world_safe(s, workers=4), seeds))
     # Only the 30 pre-registered worlds count: the code-check world 7000 is never part of the result.
     done = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(OUT_DIR.glob("*.json"))
             if p.stem.isdigit() and int(p.stem) in WORLD_SEEDS]
