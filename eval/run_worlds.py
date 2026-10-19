@@ -245,6 +245,9 @@ def main() -> int:
             if p.stem.isdigit() and int(p.stem) in WORLD_SEEDS]
     summary = summarize(done)
     (ROOT / "eval" / "parts" / "worlds.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    if not summary["n_worlds"]:
+        print("no counted world finished yet (world 7000 is a code check and never counts)")
+        return 0
     print(f"{summary['n_worlds']} worlds: OpsLens lowest (within {TIE_POINTS} pts) in {summary['wins']}; "
           f"median OpsLens - D {summary['median_opslens_minus_d']:+.2f} pts, CI {summary['median_ci']}; "
           f"rule {'PASSED' if summary['rule_passed'] else 'not passed (or not all worlds done)'}")
