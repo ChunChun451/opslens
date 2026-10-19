@@ -224,7 +224,9 @@ def main() -> int:
         parallel = 3 if len(seeds) > 1 else 1
         with ThreadPoolExecutor(max_workers=parallel) as pool:
             list(pool.map(lambda s: run_world(s, workers=4), seeds))
-    done = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(OUT_DIR.glob("*.json"))]
+    # Only the 30 pre-registered worlds count: the code-check world 7000 is never part of the result.
+    done = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(OUT_DIR.glob("*.json"))
+            if p.stem.isdigit() and int(p.stem) in WORLD_SEEDS]
     summary = summarize(done)
     (ROOT / "eval" / "parts" / "worlds.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     print(f"{summary['n_worlds']} worlds: OpsLens lowest (within {TIE_POINTS} pts) in {summary['wins']}; "

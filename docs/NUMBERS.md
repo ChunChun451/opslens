@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-19T13:11:07 (commit 9124898). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-19T15:29:07 (commit 6bda263). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -233,6 +233,24 @@ Without the plan: breach 2.11%. Change with 95% CI over the seeds.
 | Self-serve instant refund on weekday night (Team B) (days 43-56) | -8.0 [-16.2, +0.2] | -1.3 [-2.3, -0.3] | -6.4 [-8.3, -4.5] | -16 [-42, +10] |
 | **All items together** | -48.8 [-63.1, -34.5] | -12.5 [-14.9, -10.2] | -66.3 [-71.5, -61.1] | -162 [-255, -68] |
 
+## Agents with several chats at once (test days, 5 seeds)
+
+A chat started while k-1 others are open takes x(1 + s(k-1)); s is an assumption. 'Equal load' raises
+the volume by k/(1+s(k-1)) so the floor is as busy as today.
+
+| Chats (k) | Slowdown (s) | Load | Volume | First come | Urgent first | SLA due | Industry std | OpsLens | OpsLens - industry [95% CI] |
+|---|---|---|---|---|---|---|---|---|---|
+| 2 | 0.25 | equal load | x1.60 | 13.02% | 6.82% | 5.49% | 5.42% | 2.14% | -3.29 [-4.56, -2.01] |
+| 2 | 0.25 | today | x1.00 | 4.23% | 3.78% | 3.53% | 3.64% | 1.49% | -2.15 [-2.47, -1.83] |
+| 2 | 0.50 | equal load | x1.33 | 12.87% | 6.79% | 5.48% | 5.42% | 2.16% | -3.26 [-4.60, -1.93] |
+| 2 | 0.50 | today | x1.00 | 5.24% | 4.34% | 3.80% | 3.91% | 1.58% | -2.33 [-2.68, -1.97] |
+| 3 | 0.25 | equal load | x2.00 | 12.81% | 6.81% | 5.49% | 5.44% | 2.31% | -3.13 [-4.31, -1.95] |
+| 3 | 0.25 | today | x1.00 | 3.80% | 3.66% | 3.49% | 3.55% | 1.49% | -2.07 [-2.35, -1.78] |
+| 3 | 0.50 | equal load | x1.50 | 12.78% | 6.80% | 5.59% | 5.46% | 2.32% | -3.14 [-4.33, -1.94] |
+| 3 | 0.50 | today | x1.00 | 4.59% | 4.00% | 3.70% | 3.80% | 1.64% | -2.16 [-2.45, -1.88] |
+
+Pre-registered rule (OpsLens beats industry standard in all four equal-load settings): PASSED. Optimiser ablation at k = 3, s = 0.25: greedy - min-cost flow +0.01 [-0.06, +0.07] points.
+
 ## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
 
 - Forecast: Chronos-2 (zero-shot) WAPE 0.304 vs LightGBM 0.305 (+0.4%), 80% coverage 76.2% vs 79.2%; one 48 h refresh 1.7 s → **keep LightGBM**.
@@ -241,5 +259,5 @@ Without the plan: breach 2.11%. Change with 95% CI over the seeds.
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.06 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.057 s.
 - Full evaluation pipeline: 48.5 min.
