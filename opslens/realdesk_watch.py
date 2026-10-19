@@ -22,9 +22,9 @@ fixed and plain, and were committed before the blind test ran:
 Only information known at the end of the alert day is used: a share is known one day after the
 incidents opened (their 24 hours must have passed).
 
-Example: Category 26, Tue 10 May 2016: 52 incidents are usual on a weekday (MAD 6). A day with
-80 → robust z = 0.6745 × (80 − 52) ÷ 6 = 3.1 → no alert; a day with 90 → z = 4.3 and 38 above
-usual → "spike" alert at the end of that day.
+Example (real, clean test weeks): Category 42 on Mon 2 May 2016 had 101 new incidents; its usual
+weekday in the 4 weeks before is 54.5 (MAD 6) → robust z = 0.6745 × (101 − 54.5) ÷ 6 = 5.2 and
+46.5 above usual → "spike" alert that evening. A day with 80 would give z = 2.9 → no alert.
 """
 
 from __future__ import annotations

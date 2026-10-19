@@ -31,6 +31,7 @@ from opslens import realdesk_watch as W  # noqa: E402
 from opslens.adapters.uci_incidents import load_uci  # noqa: E402
 
 PARTS = ROOT / "eval" / "parts"
+RANGES = {"spike": P.SPIKE_MULTIPLIER, "slowdown": P.SLOW_FACTOR, "bounce": P.BOUNCE_SHARE}
 
 
 def blind_plants(incidents: pd.DataFrame, events: pd.DataFrame, check: np.ndarray) -> dict:
@@ -53,8 +54,11 @@ def blind_plants(incidents: pd.DataFrame, events: pd.DataFrame, check: np.ndarra
     for kind in ("spike", "slowdown", "bounce"):
         mine = [p for p in plants if p["type"] == kind]
         delays = [p["delay_days"] for p in mine if p["found"]]
+        low, high = RANGES[kind]
+        upper = [p for p in mine if p["size"] >= (low + high) / 2]   # the upper half of the pre-registered range
         by_type[kind] = {"found": sum(p["found"] for p in mine), "of": len(mine),
-                         "median_delay_days": float(np.median(delays)) if delays else None}
+                         "median_delay_days": float(np.median(delays)) if delays else None,
+                         "upper_half_of_range": {"from": (low + high) / 2, "found": sum(p["found"] for p in upper), "of": len(upper)}}
     delays = [p["delay_days"] for p in plants if p["found"]]
     return {
         "window": [P.FIRST_DAY, P.LAST_DAY], "days": days, "sets": len(sets), "plants": len(plants),

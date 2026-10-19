@@ -29,8 +29,10 @@ Pre-registered rule (docs/PLAN_V4.md, W3): we say OpsLens's pick is better only 
 misses than the BEST other picker (best on the test months, the hardest comparison) at the 20%
 budget with a CI excluding 0. Every picker and budget is shown either way.
 
-Example: INC0000045-like case — a "3 - Moderate" incident resolved after 100 h misses the 91 h
-limit; it sat 12 h in New after its first hour; fast-tracked it resolves after 88 h → saved.
+Example (real, test months, results.realdesk.fasttrack.example): INC0024933, "3 - Moderate", opened
+Mon 2 May 2016 13:24, resolved after 96.9 h → missed the learned 91 h limit (the company's flag says
+missed too). It still waited 74.4 h for a pickup after its 14:24 mark; fast-tracked it resolves after
+22.5 h → saved. It is the first incident OpsLens's 20% pick saves.
 """
 
 from __future__ import annotations
@@ -269,6 +271,12 @@ def fasttrack_benchmark(incidents: pd.DataFrame, events: pd.DataFrame, states: p
         by_week.append({"week": wk, "incidents": int(in_week.sum()), "missed": int((base_miss & in_week).sum()),
                         "saved": {p: int((savable & picks[(RULE_BUDGET, p)] & in_week).sum()) for p in PICKERS}})
     wins = sum(1 for row in by_week if row["saved"]["opslens"] > row["saved"][best_other])
+    # One worked example for the screen: the first incident (by opening time) that OpsLens's 20% pick saves.
+    first = int(np.flatnonzero(savable & picks[(RULE_BUDGET, "opslens")])[0])
+    example = {"ticket_id": str(inc_t.loc[first, "ticket_id"]), "opened": str(inc_t.loc[first, "created_at"]),
+               "priority": str(pr[first]), "limit_h": limits[str(pr[first])], "resolution_h": round(float(h[first]), 1),
+               "wait_after_1h_h": round(float(w[first]), 1), "fast_tracked_h": round(float(h[first] - w[first]), 1),
+               "company_flag_missed": bool(inc_t.loc[first, "breached"])}
 
     return {
         "question": "If the desk can fast-track 10%, 20% or 30% of each day's new incidents at their 1-hour mark, "
@@ -287,6 +295,7 @@ def fasttrack_benchmark(incidents: pd.DataFrame, events: pd.DataFrame, states: p
         "ceiling": {"saved": ceiling_saved, "saved_pct_of_misses": 100.0 * ceiling_saved / max(n_miss, 1),
                     "missed_pct_after": 100.0 * (n_miss - ceiling_saved) / max(int(scored.sum()), 1),
                     "pickup_hours_saved": float(w[scored].sum())},
+        "whole_log": whole_log_flags(incidents),
         "pickers": [{"id": p, "label": PICKER_LABELS[p]} for p in PICKERS],
         "logistic": {"C": c_chosen, "check_auc": c_auc},
         "budgets": BUDGETS,
@@ -297,6 +306,7 @@ def fasttrack_benchmark(incidents: pd.DataFrame, events: pd.DataFrame, states: p
                  "budget": RULE_BUDGET, "best_other": best_other, "diff": d["diff"], "ci_low": d["ci_low"],
                  "ci_high": d["ci_high"], "passed": passed},
         "by_week": by_week,
+        "example": example,
         "busy_weeks_opslens_ahead_of_best_other": wins,
     }
 
@@ -308,6 +318,16 @@ def new_to_resolved_pct(incidents: pd.DataFrame, events: pd.DataFrame, mask: np.
     ids = incidents.loc[mask, "ticket_id"]
     straight = first.reindex(ids).eq("New") & later.reindex(ids).isin(["Resolved", "Closed"])
     return float(straight.mean() * 100)
+
+
+def whole_log_flags(incidents: pd.DataFrame) -> dict:
+    """Why the screen says 36.6% missed and the benchmark starts from another number: the summary
+    counts every incident; 1,556 never got a resolution time and are rarely flagged missed yet."""
+    has = incidents["resolution_min"].notna().to_numpy()
+    flag = incidents["breached"].to_numpy().astype(bool)
+    return {"incidents": int(len(incidents)), "missed_pct": float(flag.mean() * 100),
+            "with_resolution_time": int(has.sum()), "with_resolution_time_missed_pct": float(flag[has].mean() * 100),
+            "without_resolution_time": int((~has).sum()), "without_resolution_time_missed_pct": float(flag[~has].mean() * 100)}
 
 
 def impact(ft: dict) -> dict:

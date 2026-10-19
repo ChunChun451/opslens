@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-19T15:29:07",
-  "git_commit": "6bda263",
+  "generated_at": "2026-10-19T15:51:42",
+  "git_commit": "b1820e1",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -11610,7 +11610,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.057
+   "seconds": 0.08
   }
  },
  "details": {
@@ -26930,7 +26930,1505 @@
    },
    "note": "The final team is not always the 'right' one: many incidents go to the front-line desk (Group 70) by design. OpsLens only suggests a team when it is at least this sure."
   },
-  "seconds": 77.62364199999138
+  "fasttrack": {
+   "question": "If the desk can fast-track 10%, 20% or 30% of each day's new incidents at their 1-hour mark, whose pick saves more missed deadlines?",
+   "assumption": "A log cannot be replayed. We assume a fast-tracked incident is picked up the moment its first hour ends and that everything after the pickup happens exactly as it really did.",
+   "deadline_rule": {
+    "chosen_on_check": "resolution time",
+    "limits_h": {
+     "3 - Moderate": 91.0,
+     "4 - Low": 325.0
+    },
+    "match_pct": {
+     "learn": 85.76642335766424,
+     "check": 97.4784551548037,
+     "test": 97.78321577659422
+    },
+    "candidates": {
+     "resolution time": {
+      "limits_h": {
+       "3 - Moderate": 91.0,
+       "4 - Low": 325.0
+      },
+      "match_pct": {
+       "learn": 85.76642335766424,
+       "check": 97.4784551548037,
+       "test": 97.78321577659422
+      }
+     },
+     "resolution time with waits on others paused": {
+      "limits_h": {
+       "3 - Moderate": 46.0,
+       "4 - Low": 325.0
+      },
+      "match_pct": {
+       "learn": 75.66645509362108,
+       "check": 89.53080114905842,
+       "test": 88.58500071973513
+      }
+     }
+    },
+    "left_out": {
+     "priorities": [
+      "1 - Critical",
+      "2 - High"
+     ],
+     "test_incidents": 207,
+     "flag_missed_pct": 98.55072463768117,
+     "why": "The company flags almost every Critical or High incident as missed, however fast it was resolved, so no deadline rule can score them. A desk fast-tracks them anyway; they are left out of the benchmark (and of every picker's budget)."
+    }
+   },
+   "pickup": {
+    "definition": "Pickup = the first event in a state other than New. New straight to Resolved: no pickup recorded, the New time includes the fix, so no wait is counted (understates savings).",
+    "new_to_resolved_pct": 31.338561012518916,
+    "waited_after_1h_pct": 23.66489131999424
+   },
+   "population": {
+    "test_incidents": 7269,
+    "scored": 6947,
+    "no_resolution_time": 322,
+    "missed_by_rule": 1674,
+    "missed_by_rule_pct": 24.09673240247589,
+    "missed_by_flag_pct": 22.023895206563985,
+    "weeks": 39,
+    "busy_weeks": 5
+   },
+   "ceiling": {
+    "saved": 223,
+    "saved_pct_of_misses": 13.321385902031063,
+    "missed_pct_after": 20.886713689362313,
+    "pickup_hours_saved": 145423.91666666666
+   },
+   "whole_log": {
+    "incidents": 24918,
+    "missed_pct": 36.579982342082026,
+    "with_resolution_time": 23362,
+    "with_resolution_time_missed_pct": 38.22446708329766,
+    "without_resolution_time": 1556,
+    "without_resolution_time_missed_pct": 11.889460154241645
+   },
+   "pickers": [
+    {
+     "id": "priority",
+     "label": "The desk's priority field (then oldest)"
+    },
+    {
+     "id": "unassigned",
+     "label": "Still unassigned at 1 hour (then oldest)"
+    },
+    {
+     "id": "oldest",
+     "label": "Oldest first"
+    },
+    {
+     "id": "logistic",
+     "label": "Logistic regression, same features as OpsLens"
+    },
+    {
+     "id": "opslens",
+     "label": "OpsLens early warning (LightGBM)"
+    }
+   ],
+   "logistic": {
+    "C": 1.0,
+    "check_auc": 0.8646271259207245
+   },
+   "budgets": [
+    10,
+    20,
+    30
+   ],
+   "results": {
+    "10": {
+     "priority": {
+      "picked": 713,
+      "saved": 16,
+      "ci_low": 4.4975551645365375,
+      "ci_high": 25.777816805587744,
+      "saved_pct_of_misses": 0.955794504181601,
+      "missed_pct_after": 23.866417158485678,
+      "pickup_hours_saved": 4675.216666666667,
+      "hit_rate_pct": 2.244039270687237
+     },
+     "unassigned": {
+      "picked": 713,
+      "saved": 46,
+      "ci_low": 32.66966292134831,
+      "ci_high": 55.64929109274658,
+      "saved_pct_of_misses": 2.7479091995221028,
+      "missed_pct_after": 23.43457607600403,
+      "pickup_hours_saved": 27795.699999999997,
+      "hit_rate_pct": 6.451612903225806
+     },
+     "oldest": {
+      "picked": 713,
+      "saved": 17,
+      "ci_low": 4.4975551645365375,
+      "ci_high": 28.613105707125655,
+      "saved_pct_of_misses": 1.015531660692951,
+      "missed_pct_after": 23.85202245573629,
+      "pickup_hours_saved": 4753.566666666667,
+      "hit_rate_pct": 2.3842917251051894
+     },
+     "logistic": {
+      "picked": 713,
+      "saved": 36,
+      "ci_low": 21.23478429306032,
+      "ci_high": 55.49036732577698,
+      "saved_pct_of_misses": 2.150537634408602,
+      "missed_pct_after": 23.57852310349791,
+      "pickup_hours_saved": 60667.08333333333,
+      "hit_rate_pct": 5.049088359046284
+     },
+     "opslens": {
+      "picked": 713,
+      "saved": 36,
+      "ci_low": 26.287907826017726,
+      "ci_high": 45.59376679038079,
+      "saved_pct_of_misses": 2.150537634408602,
+      "missed_pct_after": 23.57852310349791,
+      "pickup_hours_saved": 61009.03333333334,
+      "hit_rate_pct": 5.049088359046284
+     }
+    },
+    "20": {
+     "priority": {
+      "picked": 1447,
+      "saved": 29,
+      "ci_low": 18.192846585679185,
+      "ci_high": 44.22753106839904,
+      "saved_pct_of_misses": 1.7323775388291518,
+      "missed_pct_after": 23.67928602274363,
+      "pickup_hours_saved": 15299.35,
+      "hit_rate_pct": 2.0041465100207327
+     },
+     "unassigned": {
+      "picked": 1447,
+      "saved": 115,
+      "ci_low": 102.75028419307175,
+      "ci_high": 120.27602219399189,
+      "saved_pct_of_misses": 6.8697729988052565,
+      "missed_pct_after": 22.441341586296243,
+      "pickup_hours_saved": 71613.78333333333,
+      "hit_rate_pct": 7.947477539737387
+     },
+     "oldest": {
+      "picked": 1447,
+      "saved": 29,
+      "ci_low": 18.192846585679185,
+      "ci_high": 44.22753106839904,
+      "saved_pct_of_misses": 1.7323775388291518,
+      "missed_pct_after": 23.67928602274363,
+      "pickup_hours_saved": 14968.183333333334,
+      "hit_rate_pct": 2.0041465100207327
+     },
+     "logistic": {
+      "picked": 1447,
+      "saved": 100,
+      "ci_low": 76.94769619380344,
+      "ci_high": 129.39626794884373,
+      "saved_pct_of_misses": 5.973715651135006,
+      "missed_pct_after": 22.657262127537066,
+      "pickup_hours_saved": 84935.01666666666,
+      "hit_rate_pct": 6.91085003455425
+     },
+     "opslens": {
+      "picked": 1447,
+      "saved": 108,
+      "ci_low": 86.52638931650247,
+      "ci_high": 136.94712354376273,
+      "saved_pct_of_misses": 6.451612903225806,
+      "missed_pct_after": 22.54210450554196,
+      "pickup_hours_saved": 84011.29999999999,
+      "hit_rate_pct": 7.46371803731859
+     }
+    },
+    "30": {
+     "priority": {
+      "picked": 2175,
+      "saved": 51,
+      "ci_low": 39.06926442847648,
+      "ci_high": 62.64470687307906,
+      "saved_pct_of_misses": 3.046594982078853,
+      "missed_pct_after": 23.362602562257088,
+      "pickup_hours_saved": 32856.933333333334,
+      "hit_rate_pct": 2.3448275862068964
+     },
+     "unassigned": {
+      "picked": 2175,
+      "saved": 175,
+      "ci_low": 152.7491941812186,
+      "ci_high": 193.93867673394877,
+      "saved_pct_of_misses": 10.454002389486261,
+      "missed_pct_after": 21.57765942133295,
+      "pickup_hours_saved": 115759.6,
+      "hit_rate_pct": 8.045977011494253
+     },
+     "oldest": {
+      "picked": 2175,
+      "saved": 51,
+      "ci_low": 39.03165539165147,
+      "ci_high": 64.48312255669116,
+      "saved_pct_of_misses": 3.046594982078853,
+      "missed_pct_after": 23.362602562257088,
+      "pickup_hours_saved": 32497.416666666664,
+      "hit_rate_pct": 2.3448275862068964
+     },
+     "logistic": {
+      "picked": 2175,
+      "saved": 154,
+      "ci_low": 115.1051956137285,
+      "ci_high": 193.6965862657721,
+      "saved_pct_of_misses": 9.19952210274791,
+      "missed_pct_after": 21.8799481790701,
+      "pickup_hours_saved": 105913.16666666666,
+      "hit_rate_pct": 7.080459770114943
+     },
+     "opslens": {
+      "picked": 2175,
+      "saved": 151,
+      "ci_low": 115.72127320784662,
+      "ci_high": 196.2981698609737,
+      "saved_pct_of_misses": 9.020310633213859,
+      "missed_pct_after": 21.923132287318268,
+      "pickup_hours_saved": 104144.21666666666,
+      "hit_rate_pct": 6.942528735632184
+     }
+    }
+   },
+   "opslens_minus": {
+    "10": {
+     "priority": {
+      "diff": 20,
+      "ci_low": 3.185143315781444,
+      "ci_high": 34.0031885897774
+     },
+     "unassigned": {
+      "diff": -10,
+      "ci_low": -23.861483997403035,
+      "ci_high": 0.0
+     },
+     "oldest": {
+      "diff": 19,
+      "ci_low": 0.0,
+      "ci_high": 34.0031885897774
+     },
+     "logistic": {
+      "diff": 0,
+      "ci_low": -17.683322333828915,
+      "ci_high": 7.921508710101212
+     }
+    },
+    "20": {
+     "priority": {
+      "diff": 79,
+      "ci_low": 50.0875715325677,
+      "ci_high": 111.72568474985289
+     },
+     "unassigned": {
+      "diff": -7,
+      "ci_low": -30.497084558098535,
+      "ci_high": 29.11926466978861
+     },
+     "oldest": {
+      "diff": 79,
+      "ci_low": 50.0875715325677,
+      "ci_high": 111.72568474985289
+     },
+     "logistic": {
+      "diff": 8,
+      "ci_low": 0.0,
+      "ci_high": 11.527620598862308
+     }
+    },
+    "30": {
+     "priority": {
+      "diff": 100,
+      "ci_low": 62.099409909642034,
+      "ci_high": 146.54039624250916
+     },
+     "unassigned": {
+      "diff": -24,
+      "ci_low": -46.279177699409566,
+      "ci_high": 20.067356293456193
+     },
+     "oldest": {
+      "diff": 100,
+      "ci_low": 60.17999008018093,
+      "ci_high": 149.68656164481658
+     },
+     "logistic": {
+      "diff": -3,
+      "ci_low": -16.769621659938483,
+      "ci_high": 10.097376064025571
+     }
+    }
+   },
+   "rule": {
+    "text": "OpsLens's pick is better only if it saves more misses than the best other picker at the 20% budget, with a 95% CI (whole test weeks resampled) excluding 0.",
+    "budget": 20,
+    "best_other": "unassigned",
+    "diff": -7,
+    "ci_low": -30.497084558098535,
+    "ci_high": 29.11926466978861,
+    "passed": false
+   },
+   "by_week": [
+    {
+     "week": "2016-05-02/2016-05-08",
+     "incidents": 1784,
+     "missed": 430,
+     "saved": {
+      "priority": 13,
+      "unassigned": 30,
+      "oldest": 13,
+      "logistic": 21,
+      "opslens": 23
+     }
+    },
+    {
+     "week": "2016-05-09/2016-05-15",
+     "incidents": 1694,
+     "missed": 404,
+     "saved": {
+      "priority": 5,
+      "unassigned": 27,
+      "oldest": 5,
+      "logistic": 23,
+      "opslens": 25
+     }
+    },
+    {
+     "week": "2016-05-16/2016-05-22",
+     "incidents": 1731,
+     "missed": 351,
+     "saved": {
+      "priority": 4,
+      "unassigned": 29,
+      "oldest": 4,
+      "logistic": 18,
+      "opslens": 21
+     }
+    },
+    {
+     "week": "2016-05-23/2016-05-29",
+     "incidents": 1150,
+     "missed": 288,
+     "saved": {
+      "priority": 4,
+      "unassigned": 17,
+      "oldest": 4,
+      "logistic": 25,
+      "opslens": 27
+     }
+    },
+    {
+     "week": "2016-05-30/2016-06-05",
+     "incidents": 650,
+     "missed": 116,
+     "saved": {
+      "priority": 2,
+      "unassigned": 10,
+      "oldest": 2,
+      "logistic": 12,
+      "opslens": 11
+     }
+    }
+   ],
+   "example": {
+    "ticket_id": "INC0024933",
+    "opened": "2016-05-02 13:24:00",
+    "priority": "3 - Moderate",
+    "limit_h": 91.0,
+    "resolution_h": 96.9,
+    "wait_after_1h_h": 74.4,
+    "fast_tracked_h": 22.5,
+    "company_flag_missed": true
+   },
+   "busy_weeks_opslens_ahead_of_best_other": 2
+  },
+  "impact": {
+   "budget_pct": 20,
+   "assumption": "A log cannot be replayed. We assume a fast-tracked incident is picked up the moment its first hour ends and that everything after the pickup happens exactly as it really did.",
+   "turnaround": {
+    "pickup_hours_saved_opslens": 84011.29999999999,
+    "pickup_hours_saved_priority": 15299.35,
+    "misses_avoided_opslens": 108,
+    "misses_avoided_priority": 29,
+    "misses_avoided_ceiling": 223,
+    "ci_opslens": [
+     86.52638931650247,
+     136.94712354376273
+    ]
+   },
+   "productivity": {
+    "claim": null,
+    "text": "No claim. Fast-tracking moves the same work earlier; the log cannot show whether agents would close more incidents per hour."
+   },
+   "service_quality": {
+    "met_deadline_pct_as_it_happened": 75.9032675975241,
+    "met_deadline_pct_opslens": 77.45789549445804,
+    "met_deadline_pct_priority": 76.32071397725637,
+    "met_deadline_pct_ceiling": 79.11328631063769
+   },
+   "money": {
+    "shown": false,
+    "why": "No cost per missed deadline exists for this desk (config/impact.yaml is not part of the project), and we do not invent one."
+   }
+  },
+  "replication": {
+   "cards": [
+    {
+     "id": "R1",
+     "title": "Incidents that wait on someone outside the team miss their SLA 2.4\u00d7 as often",
+     "comparison_text": "incidents that never waited",
+     "learning": {
+      "value": 74.49709432275368,
+      "comparison": 31.161320172732882,
+      "gap": 43.3357741500208,
+      "ratio": 2.3906912130103186,
+      "n_group": 4474,
+      "n_comparison": 12968
+     },
+     "test": {
+      "value": 60.863095238095234,
+      "comparison": 15.05218525766471,
+      "gap": 45.81090998043052,
+      "ratio": 4.043472372697725,
+      "n_group": 1344,
+      "n_comparison": 6132,
+      "ci_low": 39.531559617845,
+      "ci_high": 50.84624810592235
+     },
+     "replicates": true
+    },
+    {
+     "id": "R2",
+     "title": "24% of all open time is spent waiting for someone to pick the incident up",
+     "comparison_text": "incidents picked up within 8 h",
+     "learning": {
+      "value": 64.75474683544303,
+      "comparison": 33.10188922977556,
+      "gap": 31.65285760566747,
+      "ratio": 1.956225108058042,
+      "n_group": 5056,
+      "n_comparison": 12386
+     },
+     "test": {
+      "value": 52.203777904979965,
+      "comparison": 14.47023913422936,
+      "gap": 37.733538770750606,
+      "ratio": 3.607665182359834,
+      "n_group": 1747,
+      "n_comparison": 5729,
+      "ci_low": 34.49024903654284,
+      "ci_high": 41.4728804451812
+     },
+     "replicates": true
+    },
+    {
+     "id": "R3",
+     "title": "Category 26: 57% of incidents are passed between teams",
+     "comparison_text": "Category 26 incidents that stayed with one team",
+     "learning": {
+      "value": 58.16554809843401,
+      "comparison": 13.100000000000001,
+      "gap": 45.06554809843401,
+      "ratio": 4.4401181754529775,
+      "n_group": 1341,
+      "n_comparison": 1000
+     },
+     "test": {
+      "value": 38.52140077821012,
+      "comparison": 0.945945945945946,
+      "gap": 37.57545483226418,
+      "ratio": 40.72262367982212,
+      "n_group": 257,
+      "n_comparison": 740,
+      "ci_low": 26.494197414055883,
+      "ci_high": 54.46861284066537
+     },
+     "replicates": true
+    }
+   ],
+   "replicated": 3,
+   "of": 3,
+   "rule": "Found on the learning months; replicates only if the gap keeps its sign on the test months with a 95% CI (whole test weeks resampled) excluding 0."
+  },
+  "forecast_candidates": {
+   "candidates": {
+    "same_day_last_week": "Same day last week",
+    "learned": "Learned (LightGBM)",
+    "average": "Average of both"
+   },
+   "wape_check": {
+    "same_day_last_week": 0.5668639053254438,
+    "learned": 0.3773249371090483,
+    "average": 0.4334027368829394
+   },
+   "wape_test": {
+    "same_day_last_week": 0.3414816197051689,
+    "learned": 0.36528410771842307,
+    "average": 0.32640440233217644
+   },
+   "chosen_on_check": "learned",
+   "wape_test_chosen": 0.36528410771842307,
+   "best_on_test": "average",
+   "team_days_check": 112,
+   "team_days_test": 240,
+   "note": "WAPE = sum of |forecast - actual| / sum of actual over team-days. Chosen on the check weeks only."
+  },
+  "alerts": {
+   "chosen_forecast": "learned",
+   "team_days": 240,
+   "overloaded_share_pct": 40.416666666666664,
+   "scores": {
+    "same_day_last_week": {
+     "alerts": 107,
+     "overloaded": 97,
+     "hits": 82,
+     "precision_pct": 76.6355140186916,
+     "recall_pct": 84.5360824742268
+    },
+    "learned": {
+     "alerts": 116,
+     "overloaded": 97,
+     "hits": 90,
+     "precision_pct": 77.58620689655173,
+     "recall_pct": 92.78350515463917
+    },
+    "average": {
+     "alerts": 125,
+     "overloaded": 97,
+     "hits": 91,
+     "precision_pct": 72.8,
+     "recall_pct": 93.81443298969072
+    },
+    "every_weekday": {
+     "alerts": 176,
+     "overloaded": 97,
+     "hits": 95,
+     "precision_pct": 53.97727272727273,
+     "recall_pct": 97.9381443298969
+    }
+   },
+   "by_team": [
+    {
+     "team": "Group 20",
+     "usual_closures": 7.5,
+     "alerts": 22,
+     "overloaded": 20,
+     "hits": 20,
+     "precision_pct": 90.9090909090909,
+     "recall_pct": 100.0
+    },
+    {
+     "team": "Group 24",
+     "usual_closures": 14.0,
+     "alerts": 1,
+     "overloaded": 1,
+     "hits": 0,
+     "precision_pct": 0.0,
+     "recall_pct": 0.0
+    },
+    {
+     "team": "Group 25",
+     "usual_closures": 19.0,
+     "alerts": 0,
+     "overloaded": 1,
+     "hits": 0,
+     "precision_pct": 0.0,
+     "recall_pct": 0.0
+    },
+    {
+     "team": "Group 55",
+     "usual_closures": 3.0,
+     "alerts": 22,
+     "overloaded": 11,
+     "hits": 11,
+     "precision_pct": 50.0,
+     "recall_pct": 100.0
+    },
+    {
+     "team": "Group 64",
+     "usual_closures": 8.0,
+     "alerts": 5,
+     "overloaded": 5,
+     "hits": 2,
+     "precision_pct": 40.0,
+     "recall_pct": 40.0
+    },
+    {
+     "team": "Group 65",
+     "usual_closures": 2.0,
+     "alerts": 22,
+     "overloaded": 24,
+     "hits": 22,
+     "precision_pct": 100.0,
+     "recall_pct": 91.66666666666667
+    },
+    {
+     "team": "Group 66",
+     "usual_closures": 3.0,
+     "alerts": 22,
+     "overloaded": 15,
+     "hits": 15,
+     "precision_pct": 68.18181818181819,
+     "recall_pct": 100.0
+    },
+    {
+     "team": "Group 70",
+     "usual_closures": 118.0,
+     "alerts": 22,
+     "overloaded": 20,
+     "hits": 20,
+     "precision_pct": 90.9090909090909,
+     "recall_pct": 100.0
+    }
+   ],
+   "definition": "Overloaded team-day = more new incidents than the team usually closes in a day (median of the 4 weeks before the test period). Alerts are made a week ahead.",
+   "labels": {
+    "same_day_last_week": "Same day last week",
+    "learned": "Learned (LightGBM)",
+    "average": "Average of both",
+    "every_weekday": "Calendar rule: alert on every weekday"
+   }
+  },
+  "blind_plants": {
+   "window": [
+    "2016-05-02",
+    "2016-06-05"
+   ],
+   "days": 35,
+   "sets": 20,
+   "plants": 60,
+   "found": 9,
+   "recall_pct": 15.0,
+   "by_type": {
+    "spike": {
+     "found": 6,
+     "of": 20,
+     "median_delay_days": 0.0,
+     "upper_half_of_range": {
+      "from": 1.25,
+      "found": 5,
+      "of": 8
+     }
+    },
+    "slowdown": {
+     "found": 0,
+     "of": 20,
+     "median_delay_days": null,
+     "upper_half_of_range": {
+      "from": 2.25,
+      "found": 0,
+      "of": 12
+     }
+    },
+    "bounce": {
+     "found": 3,
+     "of": 20,
+     "median_delay_days": 1.0,
+     "upper_half_of_range": {
+      "from": 0.275,
+      "found": 2,
+      "of": 10
+     }
+    }
+   },
+   "median_delay_days": 0.0,
+   "clean_alerts": 9,
+   "false_alarms_per_30_days": 7.714285714285714,
+   "clean_alert_list": [
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-02",
+     "z": 9.9
+    },
+    {
+     "type": "spike",
+     "segment": "Category 42",
+     "known_on": "2016-05-02",
+     "z": 5.2
+    },
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-03",
+     "z": 9.9
+    },
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-04",
+     "z": 9.2
+    },
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-05",
+     "z": 13.7
+    },
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-06",
+     "z": 9.7
+    },
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-09",
+     "z": 5.4
+    },
+    {
+     "type": "spike",
+     "segment": "Category 28",
+     "known_on": "2016-05-10",
+     "z": 4.1
+    },
+    {
+     "type": "spike",
+     "segment": "Category 20",
+     "known_on": "2016-05-30",
+     "z": 4.5
+    }
+   ],
+   "clean_check_alerts": 7,
+   "unmatched_alerts_per_set": 9.0,
+   "ranges": {
+    "spike_multiplier": [
+     0.5,
+     2.0
+    ],
+    "slow_factor": [
+     1.5,
+     3.0
+    ],
+    "bounce_share": [
+     0.15,
+     0.4
+    ],
+    "window_days": 7,
+    "min_weekday_median": 8,
+    "seeds": [
+     9101,
+     9120
+    ],
+    "match_slack_days": 2
+   },
+   "detector": {
+    "z": 3.5,
+    "window_days": 28,
+    "min_excess_count": 5,
+    "min_day_count": 8,
+    "min_excess_share": 3
+   },
+   "set_list": [
+    {
+     "seed": 9101,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 37",
+       "first_day": "2016-05-09",
+       "last_day": "2016-05-09",
+       "size": 0.89,
+       "extra_incidents": 14,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 25",
+       "first_day": "2016-05-17",
+       "last_day": "2016-05-23",
+       "size": 2.58,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 9",
+       "first_day": "2016-05-13",
+       "last_day": "2016-05-19",
+       "size": 0.34,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9102,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 57",
+       "first_day": "2016-05-26",
+       "last_day": "2016-05-26",
+       "size": 1.8,
+       "extra_incidents": 19,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 70",
+       "first_day": "2016-05-27",
+       "last_day": "2016-06-02",
+       "size": 2.85,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 53",
+       "first_day": "2016-05-02",
+       "last_day": "2016-05-08",
+       "size": 0.33,
+       "found": true,
+       "delay_days": 1
+      }
+     ],
+     "alerts": 10,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9103,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 26",
+       "first_day": "2016-05-19",
+       "last_day": "2016-05-19",
+       "size": 1.21,
+       "extra_incidents": 64,
+       "found": true,
+       "delay_days": 0
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 20",
+       "first_day": "2016-05-10",
+       "last_day": "2016-05-16",
+       "size": 2.94,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 32",
+       "first_day": "2016-05-24",
+       "last_day": "2016-05-30",
+       "size": 0.39,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 10,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9104,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 26",
+       "first_day": "2016-05-26",
+       "last_day": "2016-05-26",
+       "size": 1.56,
+       "extra_incidents": 83,
+       "found": true,
+       "delay_days": 0
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 24",
+       "first_day": "2016-05-16",
+       "last_day": "2016-05-22",
+       "size": 2.73,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 35",
+       "first_day": "2016-05-09",
+       "last_day": "2016-05-15",
+       "size": 0.18,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 10,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9105,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 9",
+       "first_day": "2016-05-17",
+       "last_day": "2016-05-17",
+       "size": 0.57,
+       "extra_incidents": 9,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 70",
+       "first_day": "2016-05-12",
+       "last_day": "2016-05-18",
+       "size": 2.57,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 24",
+       "first_day": "2016-05-02",
+       "last_day": "2016-05-08",
+       "size": 0.17,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9106,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 35",
+       "first_day": "2016-05-18",
+       "last_day": "2016-05-18",
+       "size": 1.43,
+       "extra_incidents": 19,
+       "found": true,
+       "delay_days": 0
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 20",
+       "first_day": "2016-05-25",
+       "last_day": "2016-05-31",
+       "size": 2.08,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 57",
+       "first_day": "2016-05-03",
+       "last_day": "2016-05-09",
+       "size": 0.19,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 10,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9107,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 32",
+       "first_day": "2016-05-09",
+       "last_day": "2016-05-09",
+       "size": 1.03,
+       "extra_incidents": 20,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 70",
+       "first_day": "2016-05-11",
+       "last_day": "2016-05-17",
+       "size": 2.33,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 34",
+       "first_day": "2016-05-20",
+       "last_day": "2016-05-26",
+       "size": 0.16,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9108,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 32",
+       "first_day": "2016-06-03",
+       "last_day": "2016-06-03",
+       "size": 0.69,
+       "extra_incidents": 14,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 20",
+       "first_day": "2016-05-06",
+       "last_day": "2016-05-12",
+       "size": 2.98,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 37",
+       "first_day": "2016-05-25",
+       "last_day": "2016-05-31",
+       "size": 0.3,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9109,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 53",
+       "first_day": "2016-05-18",
+       "last_day": "2016-05-18",
+       "size": 0.9,
+       "extra_incidents": 43,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 24",
+       "first_day": "2016-05-12",
+       "last_day": "2016-05-18",
+       "size": 2.03,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 42",
+       "first_day": "2016-05-18",
+       "last_day": "2016-05-24",
+       "size": 0.17,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9110,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 35",
+       "first_day": "2016-05-20",
+       "last_day": "2016-05-20",
+       "size": 1.34,
+       "extra_incidents": 18,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 70",
+       "first_day": "2016-05-20",
+       "last_day": "2016-05-26",
+       "size": 2.8,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 34",
+       "first_day": "2016-05-16",
+       "last_day": "2016-05-22",
+       "size": 0.21,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9111,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 20",
+       "first_day": "2016-05-25",
+       "last_day": "2016-05-25",
+       "size": 1.72,
+       "extra_incidents": 28,
+       "found": true,
+       "delay_days": 0
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 20",
+       "first_day": "2016-05-04",
+       "last_day": "2016-05-10",
+       "size": 1.7,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 34",
+       "first_day": "2016-05-05",
+       "last_day": "2016-05-11",
+       "size": 0.21,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 10,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9112,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 53",
+       "first_day": "2016-05-13",
+       "last_day": "2016-05-13",
+       "size": 1.37,
+       "extra_incidents": 66,
+       "found": true,
+       "delay_days": 0
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 24",
+       "first_day": "2016-05-06",
+       "last_day": "2016-05-12",
+       "size": 2.28,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 34",
+       "first_day": "2016-05-03",
+       "last_day": "2016-05-09",
+       "size": 0.36,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 10,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9113,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 23",
+       "first_day": "2016-05-31",
+       "last_day": "2016-05-31",
+       "size": 0.85,
+       "extra_incidents": 12,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 24",
+       "first_day": "2016-05-24",
+       "last_day": "2016-05-30",
+       "size": 2.98,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 20",
+       "first_day": "2016-05-20",
+       "last_day": "2016-05-26",
+       "size": 0.27,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9114,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 23",
+       "first_day": "2016-05-17",
+       "last_day": "2016-05-17",
+       "size": 1.15,
+       "extra_incidents": 16,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 70",
+       "first_day": "2016-05-02",
+       "last_day": "2016-05-08",
+       "size": 2.74,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 35",
+       "first_day": "2016-05-19",
+       "last_day": "2016-05-25",
+       "size": 0.21,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9115,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 37",
+       "first_day": "2016-05-27",
+       "last_day": "2016-05-27",
+       "size": 1.33,
+       "extra_incidents": 21,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 24",
+       "first_day": "2016-05-16",
+       "last_day": "2016-05-22",
+       "size": 1.6,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 37",
+       "first_day": "2016-05-03",
+       "last_day": "2016-05-09",
+       "size": 0.3,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9116,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 9",
+       "first_day": "2016-05-23",
+       "last_day": "2016-05-23",
+       "size": 1.56,
+       "extra_incidents": 26,
+       "found": true,
+       "delay_days": 0
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 20",
+       "first_day": "2016-05-19",
+       "last_day": "2016-05-25",
+       "size": 1.87,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 24",
+       "first_day": "2016-05-19",
+       "last_day": "2016-05-25",
+       "size": 0.26,
+       "found": true,
+       "delay_days": 7
+      }
+     ],
+     "alerts": 11,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9117,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 23",
+       "first_day": "2016-05-27",
+       "last_day": "2016-05-27",
+       "size": 0.51,
+       "extra_incidents": 7,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 25",
+       "first_day": "2016-05-11",
+       "last_day": "2016-05-17",
+       "size": 1.95,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 24",
+       "first_day": "2016-05-27",
+       "last_day": "2016-06-02",
+       "size": 0.29,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9118,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 20",
+       "first_day": "2016-05-27",
+       "last_day": "2016-05-27",
+       "size": 1.08,
+       "extra_incidents": 17,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 25",
+       "first_day": "2016-05-04",
+       "last_day": "2016-05-10",
+       "size": 2.17,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 46",
+       "first_day": "2016-05-09",
+       "last_day": "2016-05-15",
+       "size": 0.33,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9119,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 23",
+       "first_day": "2016-05-26",
+       "last_day": "2016-05-26",
+       "size": 0.54,
+       "extra_incidents": 8,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 25",
+       "first_day": "2016-05-03",
+       "last_day": "2016-05-09",
+       "size": 2.93,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 42",
+       "first_day": "2016-05-24",
+       "last_day": "2016-05-30",
+       "size": 0.3,
+       "found": false,
+       "delay_days": null
+      }
+     ],
+     "alerts": 9,
+     "unmatched_alerts": 9
+    },
+    {
+     "seed": 9120,
+     "plants": [
+      {
+       "type": "spike",
+       "segment": "Category 23",
+       "first_day": "2016-05-11",
+       "last_day": "2016-05-11",
+       "size": 0.97,
+       "extra_incidents": 14,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "slowdown",
+       "segment": "Group 20",
+       "first_day": "2016-05-13",
+       "last_day": "2016-05-19",
+       "size": 1.9,
+       "found": false,
+       "delay_days": null
+      },
+      {
+       "type": "bounce",
+       "segment": "Category 46",
+       "first_day": "2016-05-06",
+       "last_day": "2016-05-12",
+       "size": 0.39,
+       "found": true,
+       "delay_days": 1
+      }
+     ],
+     "alerts": 12,
+     "unmatched_alerts": 9
+    }
+   ]
+  },
+  "seconds": 77.57878370000981
  },
  "plan": {
   "test_days": [

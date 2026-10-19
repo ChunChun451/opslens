@@ -15,6 +15,11 @@ time) and is scored only on the last 30%; every choice (thresholds, stopping) us
 the learning period. We report what OpsLens does NOT do better, too: picking the final team at
 opening time is worse than the real desk overall, so OpsLens only suggests a team when it is sure.
 
+Plan v4 adds proof on the same split: replicate_cards (each card re-measured on the test months),
+forecast_candidates (three forecasts, the check weeks pick one) and bottleneck_alerts (overload
+alerts scored on test team-days). The fast-track benchmark is in realdesk_fasttrack.py, the daily
+detectors in realdesk_watch.py. Exact JSON shapes: docs/explain/realdesk.md.
+
 Example (from the 19 Oct check): incidents that wait on the user, a vendor or a problem record miss
 their SLA 71% of the time, against 26% for incidents that never wait.
 """

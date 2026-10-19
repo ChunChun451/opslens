@@ -21,8 +21,9 @@ its first day and 2 days after its last day; delay = alert day − first day.
 Why: recall on problems we chose ourselves could be tuning. Problems drawn at random, inside a
 real company's log whose own noise we did not make, after the detectors were frozen, cannot be.
 
-Example: set 9101 might plant [spike: Category 42 on Wed 11 May, ×1.3 = +70 incidents],
-[slowdown: Group 24 from Mon 16 May, ×2.2], [bounce: Category 53 from Tue 3 May, 31%].
+Example: set 9101 planted [spike: Category 37 on Mon 9 May, ×0.89 = +14 incidents],
+[slowdown: Group 25 from Tue 17 May, ×2.58], [bounce: Category 9 from Fri 13 May, 34%] —
+none of the three was found (results.realdesk.blind_plants.set_list[0]).
 """
 
 from __future__ import annotations

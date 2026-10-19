@@ -874,6 +874,14 @@
    "missed_pct_after": 20.886713689362313,
    "pickup_hours_saved": 145423.91666666666
   },
+  "whole_log": {
+   "incidents": 24918,
+   "missed_pct": 36.579982342082026,
+   "with_resolution_time": 23362,
+   "with_resolution_time_missed_pct": 38.22446708329766,
+   "without_resolution_time": 1556,
+   "without_resolution_time_missed_pct": 11.889460154241645
+  },
   "pickers": [
    {
     "id": "priority",
@@ -1202,6 +1210,16 @@
     }
    }
   ],
+  "example": {
+   "ticket_id": "INC0024933",
+   "opened": "2016-05-02 13:24:00",
+   "priority": "3 - Moderate",
+   "limit_h": 91.0,
+   "resolution_h": 96.9,
+   "wait_after_1h_h": 74.4,
+   "fast_tracked_h": 22.5,
+   "company_flag_missed": true
+  },
   "busy_weeks_opslens_ahead_of_best_other": 2
  },
  "impact": {
@@ -1465,17 +1483,32 @@
    "spike": {
     "found": 6,
     "of": 20,
-    "median_delay_days": 0.0
+    "median_delay_days": 0.0,
+    "upper_half_of_range": {
+     "from": 1.25,
+     "found": 5,
+     "of": 8
+    }
    },
    "slowdown": {
     "found": 0,
     "of": 20,
-    "median_delay_days": null
+    "median_delay_days": null,
+    "upper_half_of_range": {
+     "from": 2.25,
+     "found": 0,
+     "of": 12
+    }
    },
    "bounce": {
     "found": 3,
     "of": 20,
-    "median_delay_days": 1.0
+    "median_delay_days": 1.0,
+    "upper_half_of_range": {
+     "from": 0.275,
+     "found": 2,
+     "of": 10
+    }
    }
   },
   "median_delay_days": 0.0,
@@ -2270,5 +2303,5 @@
    }
   ]
  },
- "seconds": 59.91465339995921
+ "seconds": 77.57878370000981
 }
