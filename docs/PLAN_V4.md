@@ -92,7 +92,17 @@ pitch, the Proof screen and the README lead with.
   several slots?
 - **Rule:** "survives concurrency" only if OpsLens beats industry standard with CI < 0 in all four
   settings. If not: fix on validation days only, confirm on fresh seeds, or report the limit.
-- **Output:** `results.stress.concurrency`, `results.ablations_concurrency`.
+- **Amendment (19 Oct, committed before any run):** at the same headcount, k chats per agent RAISE
+  capacity (k = 2, s = 0.25 → each agent does 2 / 1.25 = 1.6× the work), so every policy drifts
+  towards 0% missed and the test says little. **Primary test: equal load** — volume × k / (1 + s·(k−1))
+  (×1.6, ×1.33, ×2.0, ×1.5 for (k, s) = (2, .25), (2, .5), (3, .25), (3, .5)), using the same
+  ticket-copying method as the +25% volume stress test. The four settings at today's volume are
+  reported too. Policies: first come (A), urgent first (B), SLA due (C), industry standard (D),
+  OpsLens; 5 seeds; test days once. The rule above applies to the equal-load test. The slowdown is
+  fixed when a chat starts (a chat started while the agent already has one open takes ×(1 + s)),
+  a stated simplification.
+- **Output:** `eval/run_concurrency.py` → `results.concurrency` (settings, KPIs per policy, paired CIs,
+  and the optimiser ablation at k = 3).
 - **Owner:** Claude 1. Touches: opslens/simulate.py (guarded), config, new eval file.
 
 ### W3 — The real desk: an outcome, not just a prediction (D1, D4, measure impact, recommend)
