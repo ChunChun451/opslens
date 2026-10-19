@@ -324,6 +324,10 @@ class Results(Strict):
     # A NEW world (never-used seed) under the corrected simulator, run once: every baseline, the
     # published rules, the frozen OpsLens policy and the floor (eval/run_sealed_world.py --new).
     sealed_world_new: dict[str, Any] | None = None
+    # "Your plan" (eval/run_plan_items.py, added 19 Oct): the recommendations a manager can accept
+    # (staffing moves, playbooks), each measured alone on the test days vs OpsLens with nothing
+    # accepted. The live endpoint POST /api/plan/impact reads its item catalogue from here.
+    plan: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

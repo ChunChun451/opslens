@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-18T23:18:28 (commit bc9e4cf). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-19T02:58:47 (commit eede459). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -190,6 +190,32 @@ Least slack + cross-skill rescue (added after the re-run; this world built a thi
 - OpsLens with every playbook vs priority-first today: breaches -889.2 [-1119.4, -659.0] (of 1220), breach % -4.9 [-6.2, -3.6] points.
 - Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; see `playbooks[].sensitivity` in results.json.
 
+## Your plan: each recommendation alone (test days, change vs OpsLens with nothing accepted)
+
+Without the plan: breach 2.11%. Change with 95% CI over the seeds.
+
+| Item | Missed SLA (customers) | Mean resolution (min) | Agent-hours | Minutes past SLA per 100 |
+|---|---|---|---|---|
+| Deepak W. (C02, Team C): start 07:00 instead of 08:00 (days 43-49) | -1.2 [-5.4, +3.0] | -0.5 [-0.9, -0.0] | -0.9 [-3.8, +1.9] | -2 [-10, +6] |
+| Vikram P. (A03, Team A): start 07:00 instead of 08:00 (days 43-49) | -0.4 [-3.0, +2.2] | -0.5 [-1.2, +0.2] | -1.1 [-2.6, +0.5] | -6 [-15, +3] |
+| Arjun N. (B02, Team B): day off on Mon instead of Fri (days 43-49) | -7.6 [-15.0, -0.2] | -2.6 [-4.6, -0.7] | -3.2 [-5.4, -1.0] | -28 [-65, +10] |
+| Lata I. (C05, Team C): day off on Mon instead of Sat (days 43-49) | -3.0 [-9.4, +3.4] | -0.7 [-1.3, -0.1] | -0.0 [-0.6, +0.6] | +2 [-27, +32] |
+| Harsh U. (C06, Team C): day off on Fri instead of Tue (days 43-49) | +1.4 [-5.3, +8.1] | +1.5 [+0.3, +2.7] | -1.6 [-4.2, +1.0] | +16 [-12, +45] |
+| Sana K. (A02, Team A): start 07:00 instead of 08:00 (days 43-49) | +1.8 [-5.1, +8.7] | -0.6 [-1.3, +0.1] | -1.5 [-3.1, +0.2] | -2 [-28, +25] |
+| Deepak W. (C02, Team C): start 07:00 instead of 08:00 (days 50-56) | -1.6 [-8.9, +5.7] | -0.1 [-0.2, +0.0] | -0.5 [-1.1, +0.1] | -3 [-11, +5] |
+| Sana K. (A02, Team A): start 07:00 instead of 08:00 (days 50-56) | -0.2 [-8.6, +8.2] | +0.3 [-0.7, +1.3] | -0.9 [-2.6, +0.9] | +17 [-38, +73] |
+| Arjun N. (B02, Team B): day off on Thu instead of Fri (days 50-56) | -6.2 [-19.3, +6.9] | -0.6 [-1.6, +0.4] | -1.3 [-3.5, +0.9] | -6 [-28, +16] |
+| Lata I. (C05, Team C): day off on Fri instead of Sat (days 50-56) | +4.0 [-1.6, +9.6] | +0.1 [-0.5, +0.6] | +0.1 [-0.6, +0.8] | +10 [-4, +25] |
+| Sneh Y. (C03, Team C): start 07:00 instead of 08:00 (days 50-56) | -0.4 [-9.8, +9.0] | -0.2 [-0.9, +0.6] | -1.1 [-2.3, +0.2] | +11 [-5, +28] |
+| Kavita D. (B01, Team B): start 08:00 instead of 10:00 (days 50-56) | +5.2 [-0.2, +10.6] | -0.1 [-1.1, +0.9] | +0.5 [-1.2, +2.1] | +20 [-43, +83] |
+| Fix the phone menu (IVR) (days 43-56) | -2.0 [-12.8, +8.8] | -0.9 [-1.8, +0.0] | -4.6 [-6.3, -2.9] | -15 [-32, +1] |
+| Cross-train 2 Hindi-speaking agents on payment failure and refund (days 43-56) | -26.8 [-39.0, -14.6] | -3.2 [-4.6, -1.9] | -22.8 [-26.8, -18.8] | -87 [-137, -37] |
+| Self-serve instant refund on weekend dinner (Team C) (days 43-56) | -4.8 [-16.5, +6.9] | -1.1 [-2.0, -0.2] | -11.1 [-12.3, -9.9] | +1 [-16, +18] |
+| Status banner the moment a spike alert fires (days 43-56) | -6.8 [-11.5, -2.1] | -2.7 [-3.5, -2.0] | -8.5 [-11.0, -5.9] | -23 [-44, -1] |
+| Kitchen order-check for restaurant cluster 17 (days 43-56) | -10.6 [-30.4, +9.2] | -1.6 [-2.3, -0.8] | -11.9 [-13.1, -10.7] | -28 [-61, +5] |
+| Self-serve instant refund on weekday night (Team B) (days 43-56) | -8.0 [-16.2, +0.2] | -1.3 [-2.3, -0.3] | -6.4 [-8.3, -4.5] | -16 [-42, +10] |
+| **All items together** | -48.8 [-63.1, -34.5] | -12.5 [-14.9, -10.2] | -66.3 [-71.5, -61.1] | -162 [-255, -68] |
+
 ## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
 
 - Forecast: Chronos-2 (zero-shot) WAPE 0.304 vs LightGBM 0.305 (+0.4%), 80% coverage 76.2% vs 79.2%; one 48 h refresh 1.7 s → **keep LightGBM**.
@@ -198,5 +224,5 @@ Least slack + cross-skill rescue (added after the re-run; this world built a thi
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.062 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.048 s.
 - Full evaluation pipeline: 48.5 min.

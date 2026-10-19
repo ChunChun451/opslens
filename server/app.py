@@ -9,6 +9,9 @@ Why this design:
 - Everything runs locally: no network calls at serve time (LLM answers are already cached),
   so the demo works with Wi-Fi off.
 - Live endpoints (What-if M10, Plant-a-problem M11, Upload M10) are added as their milestones land.
+- "Your plan" (POST /api/plan/impact, 19 Oct): the accepted recommendations are replayed on one
+  test day with and without them. Each run takes ~20 s, so the runs go to a few worker processes
+  in parallel and every finished run is kept in memory (the same run is never simulated twice).
 
 Example: curl http://localhost:8000/api/health  →  {"ok": true, "results": "eval/results.json", "fixture": false}
 """
@@ -16,6 +19,9 @@ Example: curl http://localhost:8000/api/health  →  {"ok": true, "results": "ev
 from __future__ import annotations
 
 import json
+import threading
+import time
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, UploadFile
@@ -88,6 +94,70 @@ def whatif(request: dict) -> JSONResponse:
                             inputs["weights"], inputs["test_days"])
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
+    return JSONResponse(answer)
+
+
+PLAN_SEEDS = [1, 2, 3]  # live plan runs: 3 seeds, without and with the plan = 6 runs side by side
+_PLAN_POOL: ProcessPoolExecutor | None = None
+_PLAN_RUNS: dict = {}  # (day, seed, accepted items) -> finished run
+_PLAN_LOCK = threading.Lock()  # one plan request at a time: they share the pool and the memory
+
+
+def plan_job(job: dict) -> dict:
+    """One plan simulation (opslens/plan.py). Runs in a worker process, which loads the engine
+    inputs once and keeps them for later requests."""
+    from opslens.plan import run_plan_day
+
+    return run_plan_day(engine_inputs(), job)
+
+
+def run_plan_jobs(jobs: list[dict]) -> list[dict]:
+    """Results for the jobs, from memory if this exact run was done before, else simulated in
+    parallel. The "without" runs of a day are shared by every plan asked for that day."""
+    global _PLAN_POOL
+    keys = [(j["day"], j["seed"], json.dumps(j["items"], sort_keys=True)) for j in jobs]
+    with _PLAN_LOCK:
+        todo = {key: job for key, job in zip(keys, jobs) if key not in _PLAN_RUNS}
+        if todo:
+            if _PLAN_POOL is None:
+                _PLAN_POOL = ProcessPoolExecutor(max_workers=2 * len(PLAN_SEEDS))
+            try:
+                runs = list(_PLAN_POOL.map(plan_job, list(todo.values())))
+            except Exception:
+                _PLAN_POOL.shutdown(cancel_futures=True)  # e.g. a worker died: start fresh next time
+                _PLAN_POOL = None
+                raise
+            _PLAN_RUNS.update(zip(todo, runs))
+        return [_PLAN_RUNS[key] for key in keys]
+
+
+@app.post("/api/plan/impact")
+def plan_impact(request: dict) -> JSONResponse:
+    """What the accepted recommendations would change on one test day (opslens/plan.py).
+    Request: {"day": 48, "items": ["staff_43_C02", "pb_F2"]}. Unknown ids → 400."""
+    import pandas as pd
+
+    from opslens.config import load_config
+    from opslens.plan import check_ids, impact_answer, plan_jobs
+    from opslens.whatif import check_day
+
+    plan = json.loads(results_path().read_text(encoding="utf-8")).get("plan")
+    if not plan:
+        return JSONResponse({"error": "results.json has no plan items yet: run make eval"}, status_code=503)
+    calendar = load_config("calendar")
+    test_days = (calendar["splits"]["validation_last_day"] + 1, calendar["splits"]["test_last_day"])
+    first_weekday = pd.Timestamp(calendar["start_date"]).weekday()
+    try:
+        day = int(request.get("day", test_days[0]))
+        check_day(day, test_days)
+        items = check_ids(request.get("items", []), plan["items"])
+    except (TypeError, ValueError) as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    started = time.perf_counter()
+    without, with_plan = plan_jobs(items, day, PLAN_SEEDS, plan["alerts_used"], first_weekday)
+    runs = run_plan_jobs(without + with_plan)
+    answer = impact_answer(items, day, PLAN_SEEDS, first_weekday, runs[:len(without)], runs[len(without):],
+                           time.perf_counter() - started)
     return JSONResponse(answer)
 
 

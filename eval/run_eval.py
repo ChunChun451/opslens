@@ -37,7 +37,8 @@ STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/ru
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
-         ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py")]
+         ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
+         ("plan_items", "eval/run_plan_items.py")]  # needs forecast + playbooks (added 19 Oct)
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -214,6 +215,10 @@ def assemble(timings: dict[str, float]) -> dict:
         results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
     if (PARTS / "floor.json").exists():
         results["floor"] = part("floor")
+    # "Your plan" (eval/run_plan_items.py, added 19 Oct): each recommendation a manager can accept,
+    # measured alone on the test days against OpsLens with nothing accepted.
+    if (PARTS / "plan_items.json").exists():
+        results["plan"] = part("plan_items")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
         sealed = part("sealed_world_new")
         for key in ("test", "best_baselines_test", "rescue_test"):
@@ -358,7 +363,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -392,6 +397,31 @@ def playbooks_md(r: dict) -> list[str]:
               f"(of {base_b:.0f}), breach % {cell(h['breach_pct'])} points.",
               "- Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; "
               "see `playbooks[].sensitivity` in results.json."]
+    return lines
+
+
+def plan_md(r: dict) -> list[str]:
+    """"Your plan": each item alone vs OpsLens with nothing accepted (eval/run_plan_items.py)."""
+    plan = r.get("plan")
+    if not plan:
+        return []
+    lines = ["", "## Your plan: each recommendation alone (test days, change vs OpsLens with nothing accepted)", "",
+             f"Without the plan: breach {fmt(plan['base_kpis']['turnaround.breach_pct']['mean'])}%. "
+             "Change with 95% CI over the seeds.", "",
+             "| Item | Missed SLA (customers) | Mean resolution (min) | Agent-hours | Minutes past SLA per 100 |",
+             "|---|---|---|---|---|"]
+
+    def cell(effect: dict, heading: str, key: str, nd: int = 1) -> str:
+        d = next(row for row in effect[heading] if row["key"] == key)
+        return f"{d['diff']:+.{nd}f} [{d['ci_low']:+.{nd}f}, {d['ci_high']:+.{nd}f}]"
+
+    rows = [(f"{item['title']} ({item['when']})", item["effect"]) for item in plan["items"]]
+    rows.append(("**All items together**", plan["all_items"]["effect"]))
+    for title, effect in rows:
+        lines.append(f"| {title} | {cell(effect, 'turnaround', 'breaches')} | "
+                     f"{cell(effect, 'turnaround', 'turnaround.mean_resolution_min')} | "
+                     f"{cell(effect, 'productivity', 'productivity.busy_agent_hours')} | "
+                     f"{cell(effect, 'quality', 'quality.late_minutes_per_100', 0)} |")
     return lines
 
 

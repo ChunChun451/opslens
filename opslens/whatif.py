@@ -71,28 +71,44 @@ def change_agents(agents: list[Agent], delta: dict[str, int]) -> list[Agent]:
     return out
 
 
+def check_day(day: int, test_days: tuple[int, int]) -> None:
+    """Live runs are allowed on held-out test days only."""
+    if not test_days[0] <= day <= test_days[1]:
+        raise ValueError(f"day must be a test day ({test_days[0]}-{test_days[1]})")
+
+
+def make_policy(key: str, world, preds: dict[str, str], risk_model, weights: dict):
+    """The policies the What-if panel can run, by key."""
+    if key == "opslens":
+        return OpsLensPolicy(world, preds, risk_model, weights, OpsLensSettings())
+    if key == "baseline_d":
+        return baseline_d(world, preds)  # industry standard, with the same AI triage
+    return baseline_a() if key == "baseline_a" else baseline_b()
+
+
+def simulate_day(tickets: pd.DataFrame, agents: list[Agent], preds: dict[str, str], risk_model, weights: dict,
+                 day: int, seed: int, policy_key: str = "opslens") -> dict[str, float]:
+    """KPIs of one policy on one day, with the day before as warm-up. Also used by "Your plan"
+    (opslens/plan.py), so the plan's live numbers come from the same runner as the What-if panel."""
+    world = build_world(tickets, seed=seed, agents=agents)
+    warm, _ = day_bounds(day - 1, day - 1)
+    start, end = day_bounds(day, day)
+    policy = make_policy(policy_key, world, preds, risk_model, weights)
+    return summarize(simulate(world, policy, warm, end, metric_start_min=start))
+
+
 def run_whatif(request: dict, tickets: pd.DataFrame, agents: list[Agent], preds: dict[str, str],
                risk_model, weights: dict, test_days: tuple[int, int], seed: int = 1) -> dict:
     """Simulate the requested day for all three policies; return the chosen one's KPIs first."""
     day = int(request.get("day", test_days[0]))
-    if not test_days[0] <= day <= test_days[1]:
-        raise ValueError(f"day must be a test day ({test_days[0]}-{test_days[1]})")
+    check_day(day, test_days)
     factor = float(min(MAX_VOLUME, max(MIN_VOLUME, request.get("volume_factor", 1.0))))
     chosen = str(request.get("policy", "opslens"))
     t, p = change_volume(tickets, preds, day, factor)
     team_agents = change_agents(agents, {k: int(v) for k, v in (request.get("agents_delta") or {}).items()})
-    world = build_world(t, seed=seed, agents=team_agents)
-    warm, _ = day_bounds(day - 1, day - 1)
-    start, end = day_bounds(day, day)
     answers = {}
     for key in ("baseline_a", "baseline_b", "baseline_d", "opslens"):
-        if key == "opslens":
-            policy = OpsLensPolicy(world, p, risk_model, weights, OpsLensSettings())
-        elif key == "baseline_d":
-            policy = baseline_d(world, p)  # industry standard, with the same AI triage
-        else:
-            policy = baseline_a() if key == "baseline_a" else baseline_b()
-        k = summarize(simulate(world, policy, warm, end, metric_start_min=start))
+        k = simulate_day(t, team_agents, p, risk_model, weights, day, seed, policy_key=key)
         answers[key] = {name: round(float(k[name]), 3) for name in SHOW}
     return {
         "request": {"day": day, "policy": chosen, "volume_factor": factor,
