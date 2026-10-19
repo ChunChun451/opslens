@@ -18,6 +18,7 @@ Seeds run in parallel processes.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import sys
 import time
@@ -75,7 +76,11 @@ def run_one(job: dict) -> dict:
     gen_cfg = load_config("generator")
     if job.get("absent_prob") is not None:
         gen_cfg = {**gen_cfg, "absent_prob": job["absent_prob"]}
+    if job.get("max_concurrent"):  # Plan v4 W2: every agent may hold several chats at once
+        agents = [dataclasses.replace(a, max_concurrent=int(job["max_concurrent"])) for a in agents]
     world = build_world(tickets, seed=job["seed"], agents=agents, gen_cfg=gen_cfg)
+    if "concurrency_slowdown" in job:  # else the world's own setting (generator.yaml, default 0)
+        world.concurrency_slowdown = float(job["concurrency_slowdown"])
     warm, _ = day_bounds(job["first_day"] - 1, job["first_day"] - 1)
     start, end = day_bounds(job["first_day"], job["last_day"])
     if job["policy"] == "baseline_a":

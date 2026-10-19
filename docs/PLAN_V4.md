@@ -79,7 +79,16 @@ pitch, the Proof screen and the README lead with.
 - **Rule (pre-registered):** we say "robust" only if OpsLens has the lowest missed-SLA rate in
   **≥ 27 of 30 worlds** and the median paired difference vs industry standard has a 95% CI below 0.
   We report every world, the worst three, and why OpsLens loses there.
-- **Output:** `eval/run_worlds.py` → `results.worlds`. Proof screen: "30 worlds we never designed".
+- **Amendment (19 Oct, committed before any world ran):** (1) with k chats per agent the volume is
+  also multiplied by k / (1 + s·(k−1)), so "volume ×0.7–1.4" means ×0.7–1.4 of today's LOAD (same
+  reason as the W2 amendment). (2) Ties: OpsLens counts as lowest if it is within 0.05 points of the
+  lowest (3 seeds cannot separate smaller gaps). (3) The planted problems are randomised through the
+  generator's own settings (day and size of each spike, which restaurant cluster, IVR error rate,
+  Team C weekend lift) rather than data/plant.py. (4) Classifier: local only in every world (30
+  worlds would exhaust the free LLM quota; the LLM moves accuracy by ~0.1 point). (5) A code check
+  runs on world seed 7000, which is NOT one of the 30 and is not reported as a result.
+- **Output:** `eval/run_worlds.py` (+ `eval/run_world_compare.py` inside each world) →
+  `eval/parts/worlds/<seed>.json` → `results.worlds`. Proof screen: "30 worlds we never designed".
 - **Owner:** Claude 1 (this session). Touches: new eval file, generator overrides only (no default changes).
 
 ### W2 — Concurrency: agents with 2–3 chats at once (validity, optimisation)

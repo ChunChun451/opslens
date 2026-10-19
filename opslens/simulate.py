@@ -100,6 +100,10 @@ class World:
     reopen_prob_mismatch: float = 0.15
     reopen_handle_factor: float = 0.6
     transfer_discovery_min: float = 4.0
+    # Agents with several chats open (max_concurrent > 1, Plan v4 W2): a piece of work started while
+    # the agent already has k − 1 others open takes ×(1 + concurrency_slowdown·(k − 1)). Fixed when
+    # the work starts (a stated simplification). With one chat per agent it never applies.
+    concurrency_slowdown: float = 0.0
 
     @property
     def n_tickets(self) -> int:
@@ -440,6 +444,8 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
     else:
         # The agent believed it was theirs; reading it shows it belongs elsewhere.
         duration, outcome, mismatch = world.transfer_discovery_min, "transfer", False
+    if ast.busy > 1:  # only when the agent already had other chats open: one-chat runs are untouched
+        duration *= 1.0 + world.concurrency_slowdown * (ast.busy - 1)
 
     ast.busy_minutes += duration
     heapq.heappush(heap, (now + duration, FINISH, seq, (i, a.agent_id, outcome, mismatch, duration)))
