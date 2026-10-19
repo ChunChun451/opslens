@@ -424,3 +424,33 @@ Docs: DEMO_SCRIPT step 4 + warm-up, JUDGE_QA Q41/Q43 aligned with the screen (Q4
 "46"), Q56–Q58 added, plain-words guide.
 
 **Open:** story mode tour through the new screens; rehearsal (27 Oct).
+
+---
+
+## RD4 — The real desk, proven: an outcome, findings that last, plants in the real log (19 Oct 2026)
+
+**Why:** Plan v4 W3/W4/W7(real)/W9. The real desk had a prediction win (AUC 0.857) but no outcome,
+and its only baseline (the priority field) is 94% one value.
+**Built** (rules committed in `4706f8f` before the first run): `opslens/realdesk_fasttrack.py` —
+fast-track benchmark: deadline rule per priority learned on the learning part (91 h Moderate, 325 h
+Low; matches the company's flag 97.8% on the test months), pickup wait after the 1-hour mark from the
+event log (New → Resolved counts no wait: conservative), 5 pickers, daily budgets 10/20/30%, CIs by
+resampling whole test weeks; `impact()` under the three headings. `opslens/realdesk_watch.py` — daily
+spike / slowdown / bounce detectors (robust z ≥ 3.5). `eval/realdesk_plants.py` — 20 random plant sets
+in the real test weeks (eval only). `realdesk.py`: `replicate_cards`, `forecast_candidates`,
+`bottleneck_alerts`. `docs/explain/realdesk.md` (JSON shapes first). 13 new tests.
+**Numbers (test months)**
+- Fast-track 20% of each day's incidents: still unassigned at 1 h 115 saved, OpsLens 108 [86.5, 136.9],
+  logistic 100, priority field 29, oldest first 29; ceiling 223 of 1,674 misses. Pre-registered rule
+  (beat the best other picker): NOT passed, −7 [−30.5, +29.1]. Risk ≠ rescue: fast-track only helps
+  incidents still waiting, which "unassigned" picks directly.
+- Impact (20%, OpsLens): 108 misses avoided vs 29; met the deadline 75.9% → 77.5% (ceiling 79.1%);
+  no productivity claim; no ₹.
+- Cards still true on later months: 3 of 3 (R1 45.8 [39.5, 50.8], R2 37.7 [34.5, 41.5], R3 37.6 [26.5, 54.5]).
+- Blind plants in the real log: 9 of 60 (15%); spikes 6/20, slowdowns 0/20, bounces 3/20; 7.7 false
+  alarms per 30 days.
+- Week-ahead overload alerts: precision 77.6%, recall 92.8% vs 54.0% / 97.9% for "every weekday".
+  Forecast: check weeks chose learned (WAPE 0.377), worst on test (0.365); the average did best (0.326).
+**Open issues:** the slowdown detector watches "still open after 24 h", which a ×2–3 slowdown of a team
+that resolves most incidents within an hour barely moves (design flaw, fixed before the run, reported);
+5 busy test weeks make week-bootstrap CIs optimistic (per-week table shown).

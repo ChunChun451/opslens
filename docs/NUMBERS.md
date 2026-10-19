@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-19T15:51:42 (commit b1820e1). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-19T15:57:04 (commit 736da14). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -142,6 +142,23 @@ OpsLens − Baseline A, breach %: -11.03 [-13.48, -8.58].
 
 - Not better than the desk: the forecast (check weeks chose learned (LightGBM)) and team routing (net +19 incidents: 319 fixed, 300 made wrong). Reported, not claimed.
 
+### Real desk, Plan v4: fast-track 20% of each day's new incidents (test months)
+
+Assumption: A log cannot be replayed. We assume a fast-tracked incident is picked up the moment its first hour ends and that everything after the pickup happens exactly as it really did.
+
+| Picker | Misses saved | 95% CI |
+|---|---|---|
+| The desk's priority field (then oldest) | 29 | 18.2 - 44.2 |
+| Still unassigned at 1 hour (then oldest) | 115 | 102.8 - 120.3 |
+| Oldest first | 29 | 18.2 - 44.2 |
+| Logistic regression, same features as OpsLens | 100 | 76.9 - 129.4 |
+| OpsLens early warning (LightGBM) | 108 | 86.5 - 136.9 |
+
+- Ceiling (everyone fast-tracked): 223 saved. Pre-registered rule (OpsLens beats the best other picker, Still unassigned at 1 hour (then oldest)): NOT passed, -7 [-30.5, 29.1].
+- Findings still true on later months: 3 of 3.
+- Blind plants in the real log: 9 of 60 found (15.0%); false alarms 7.7 per 30 clean days.
+- Week-ahead overload alerts (learned): precision 77.6%, recall 92.8% vs every weekday 54.0% / 97.9%.
+
 ## How close to perfect (test days)
 
 - Physical floor: 1.31% of tickets breach even with unlimited agents and perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).
@@ -259,5 +276,5 @@ Pre-registered rule (OpsLens beats industry standard in all four equal-load sett
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.08 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.066 s.
 - Full evaluation pipeline: 48.5 min.

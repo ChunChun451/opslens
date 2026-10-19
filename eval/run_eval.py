@@ -652,6 +652,33 @@ def realdesk_md(r: dict) -> list[str]:
               f"{fmt(rt['opslens_sure_right_pct'], 1)}% | desk on the same incidents {fmt(rt['desk_on_same_right_pct'], 1)}% |",
               "", f"- Not better than the desk: the forecast (check weeks chose {fc['chosen_on_check_weeks']}) and team routing "
               f"(net {rt['net_first_time_right']:+d} incidents: {rt['fixed']} fixed, {rt['made_wrong']} made wrong). Reported, not claimed."]
+    return lines + realdesk_v4_md(d)
+
+
+def realdesk_v4_md(d: dict) -> list[str]:
+    """Plan v4 on the real desk (W3, W4, W7, W9): an outcome, findings that last, plants, alerts."""
+    ft, rep, bp, al = d.get("fasttrack"), d.get("replication"), d.get("blind_plants"), d.get("alerts")
+    if not ft:
+        return []
+    labels = {p["id"]: p["label"] for p in ft["pickers"]}
+    res, rule = ft["results"]["20"], ft["rule"]
+    lines = ["", "### Real desk, Plan v4: fast-track 20% of each day's new incidents (test months)", "",
+             f"Assumption: {ft['assumption']}", "", "| Picker | Misses saved | 95% CI |", "|---|---|---|"]
+    lines += [f"| {labels[p['id']]} | {res[p['id']]['saved']} | {fmt(res[p['id']]['ci_low'], 1)} - {fmt(res[p['id']]['ci_high'], 1)} |"
+              for p in ft["pickers"]]
+    lines += ["", f"- Ceiling (everyone fast-tracked): {ft['ceiling']['saved']} saved. Pre-registered rule (OpsLens beats the "
+              f"best other picker, {labels[rule['best_other']]}): {'PASSED' if rule['passed'] else 'NOT passed'}, "
+              f"{rule['diff']:+.0f} [{fmt(rule['ci_low'], 1)}, {fmt(rule['ci_high'], 1)}]."]
+    if rep:
+        lines.append(f"- Findings still true on later months: {rep['replicated']} of {rep['of']}.")
+    if bp:
+        lines.append(f"- Blind plants in the real log: {bp['found']} of {bp['plants']} found ({fmt(bp['recall_pct'], 1)}%); "
+                     f"false alarms {fmt(bp['false_alarms_per_30_days'], 1)} per 30 clean days.")
+    if al:
+        sc = al["scores"]
+        lines.append(f"- Week-ahead overload alerts ({al['chosen_forecast']}): precision {fmt(sc[al['chosen_forecast']]['precision_pct'], 1)}%, "
+                     f"recall {fmt(sc[al['chosen_forecast']]['recall_pct'], 1)}% vs every weekday "
+                     f"{fmt(sc['every_weekday']['precision_pct'], 1)}% / {fmt(sc['every_weekday']['recall_pct'], 1)}%.")
     return lines
 
 

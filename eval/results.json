@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-19T15:51:42",
-  "git_commit": "b1820e1",
+  "generated_at": "2026-10-19T15:57:04",
+  "git_commit": "736da14",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -11610,7 +11610,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.08
+   "seconds": 0.066
   }
  },
  "details": {

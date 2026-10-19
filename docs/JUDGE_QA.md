@@ -362,3 +362,28 @@ the same tickets. That is why Your plan simulates the plan instead of adding num
 The same simulator and OpsLens policy as every result: one test day, three seeds, without and
 with the plan, in parallel worker processes. About 20 seconds for a new plan; a plan simulated
 before comes back at once. It runs only on held-out days 43 to 56.
+
+**Q59. On the real desk, do you show an outcome or only an AUC?**
+An outcome, under one stated assumption: a fast-tracked incident is picked up at its 1-hour mark and
+everything else happens as it really did. Fast-tracking 20% of each day's incidents, OpsLens's pick saves
+108 missed deadlines [86.5, 136.9] on the test months; the desk's priority field saves 29; the ceiling is 223.
+
+**Q60. (Attack) Beating the priority field is a strawman — 94% of incidents share one value.**
+Agreed, so we pre-registered a harder rule: beat the BEST other picker. It failed. "Still unassigned
+at 1 hour" saves 115, OpsLens 108: −7 [−30.5, +29.1]. Fast-track only helps incidents still waiting;
+risk is not rescue. We show this on the Proof screen.
+
+**Q61. Are your real-log findings just stories fitted to the data?**
+Each card was found on the learning months and re-measured on later months it never saw. All 3 still
+hold with CIs excluding 0: waits on outsiders 45.8 points [39.5, 50.8], slow pickup 37.7 [34.5, 41.5],
+Category 26 bouncing 37.6 [26.5, 54.5].
+
+**Q62. (Attack) Can your detectors find problems in real data, or only in your simulator?**
+Partly. We planted 60 random problems into the real test weeks, ranges fixed before the run. We found
+9: spikes 6 of 20 (same evening), team slowdowns 0 of 20, bouncing categories 3 of 20, with 7.7 false
+alarms per 30 clean days. We report this instead of re-tuning on test weeks.
+
+**Q63. Are the real desk's bottleneck alerts any good?**
+Week-ahead "more new incidents than the team usually closes": precision 77.6%, recall 92.8% on 240
+team-days, vs 54.0% / 97.9% for alerting every weekday. The forecast choice was honest too: the check
+weeks picked the learned model, which then did worst on test (0.365 vs 0.326 for the average).

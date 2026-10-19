@@ -47,7 +47,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "eval" / "parts" / "worlds"
 WORLD_SEEDS = list(range(7001, 7031))
-SKIP = {".git", ".venv", ".venv-challengers", ".claude", "data/generated", "data/public/uci_incidents",
+SKIP = {".git", ".venv", ".venv-challengers", ".claude", "data/generated",
         "cache", ".pytest_tmp", ".pytest_cache", "__pycache__", "eval/parts/worlds", "eval/challengers"}
 CATEGORIES = ["late_delivery", "missing_item", "wrong_item", "refund", "payment_failure", "app_bug",
               "account", "restaurant_partner"]
