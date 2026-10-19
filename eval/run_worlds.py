@@ -25,8 +25,9 @@ Rule (pre-registered): "robust" only if OpsLens has the lowest missed-SLA rate (
 points of the lowest) in at least 27 of 30 worlds, AND the median over worlds of (OpsLens − industry
 standard) has a 95% bootstrap CI below 0. Every world is reported, with the worst three.
 
-Example: world 7001 might draw volume x1.12, Hindi share 9%, skill mismatch x1.85, P1 SLA 47 min,
-2 chats per agent at slowdown .25 (so volume is also x1.6 to keep the load: see load_factor).
+Example: world 7001 draws load x1.22, Hindi share 17%, skill mismatch x1.81, P1 SLA 60 min, 3 chats
+per agent at slowdown .5 and 45 agents; load_factor turns that into the ticket volume that makes the
+floor exactly 1.22 times as busy as today.
 """
 
 from __future__ import annotations
@@ -82,22 +83,37 @@ def sample_world(seed: int) -> dict:
     }
 
 
-def load_factor(world: dict) -> float:
-    """Ticket volume multiplier. With k chats per agent each agent does k / (1 + s(k-1)) times the
-    work, so the volume is raised by that much too: the same load, a different way of working
-    (the W2 amendment). Example: load 1.1, k = 2, s = .25 → 1.1 x 1.6 = 1.76."""
+def load_factor(world: dict, gen: dict, n_agents_before: int, n_agents_after: int) -> float:
+    """Ticket volume multiplier that makes the floor exactly `world["load"]` times as busy as today
+    (the W1 amendment: "x0.7-1.4 of today's LOAD"). Load = work / capacity, so the volume is
+    - raised by k / (1 + s(k-1)) when agents hold k chats (each agent does that much more work),
+    - raised by agents_after / agents_before when teams grow (more people),
+    - lowered by the handle-time scale and by the category mix's effect on the average handle time
+      (longer tickets = more work per ticket).
+    Example: load 1.10, 2 chats at s = .25 (x1.6), 42 agents instead of 40 (x1.05), handle x1.2 and
+    a mix whose average handle time is 3% longer → 1.10 x 1.6 x 1.05 / (1.2 x 1.03) = 1.50."""
     k, s = world["chats_per_agent"], world["chat_slowdown"]
-    return world["load"] * k / (1.0 + s * (k - 1))
+    medians = gen["handle_median_min"]
+    old_mix = sum(gen["categories"][c] * medians[c] for c in CATEGORIES)
+    shares = {c: gen["categories"][c] * world["category_scale"][c] for c in CATEGORIES}
+    new_mix = sum(shares[c] / sum(shares.values()) * medians[c] for c in CATEGORIES)
+    capacity = k / (1.0 + s * (k - 1)) * n_agents_after / n_agents_before
+    work_per_ticket = world["handle_scale"] * new_mix / old_mix
+    return world["load"] * capacity / work_per_ticket
 
 
 # ---- 2. Writing it into a copy of the repo ----------------------------------------------------
 
-def apply_world(dest: Path, world: dict) -> None:
-    """Edit the copy's generator, roster and SLA configs (comments are lost; it is a throwaway copy)."""
+def apply_world(dest: Path, world: dict) -> float:
+    """Edit the copy's generator, roster and SLA configs (comments are lost; it is a throwaway copy).
+    Returns the ticket volume multiplier used."""
     gen_path, roster_path, sla_path = (dest / "config" / n for n in ("generator.yaml", "roster.yaml", "sla.yaml"))
     gen = yaml.safe_load(gen_path.read_text(encoding="utf-8"))
+    roster = yaml.safe_load(roster_path.read_text(encoding="utf-8"))
+    resized = resize_teams(roster["agents"], world["team_delta"], world["roster_seed"])
+    volume = load_factor(world, gen, len(roster["agents"]), len(resized))  # before gen is edited below
     gen["seed"] = world["seed"]
-    gen["tickets_per_weekday"] = int(round(gen["tickets_per_weekday"] * load_factor(world)))
+    gen["tickets_per_weekday"] = int(round(gen["tickets_per_weekday"] * volume))
     profile = np.asarray(gen["hourly_profile"], dtype=float)
     gen["hourly_profile"] = [float(max(0.1, profile.mean() + (v - profile.mean()) * world["peak_scale"])) for v in profile]
     shares = {c: gen["categories"][c] * world["category_scale"][c] for c in CATEGORIES}
@@ -116,14 +132,14 @@ def apply_world(dest: Path, world: dict) -> None:
     planted["team_c_weekend_dinner"]["weekend_lift"] = {"missing_item": p["team_c_lift"], "wrong_item": p["team_c_lift"]}
     gen_path.write_text(yaml.safe_dump(gen, sort_keys=False), encoding="utf-8")
 
-    roster = yaml.safe_load(roster_path.read_text(encoding="utf-8"))
     roster["max_concurrent"] = world["chats_per_agent"]
-    roster["agents"] = resize_teams(roster["agents"], world["team_delta"], world["roster_seed"])
+    roster["agents"] = resized
     roster_path.write_text(yaml.safe_dump(roster, sort_keys=False), encoding="utf-8")
 
     sla = yaml.safe_load(sla_path.read_text(encoding="utf-8"))
     sla["sla_minutes"] = world["sla_minutes"]
     sla_path.write_text(yaml.safe_dump(sla, sort_keys=False), encoding="utf-8")
+    return volume
 
 
 def resize_teams(agents: list[dict], delta: dict[str, int], seed: int) -> list[dict]:
@@ -156,7 +172,7 @@ def copy_repo(dest: Path) -> None:
 
 def run_step(dest: Path, log, *args: str) -> None:
     started = time.perf_counter()
-    subprocess.run([sys.executable, *args], cwd=dest, check=True, stdout=log, stderr=subprocess.STDOUT)
+    subprocess.run([sys.executable, "-u", *args], cwd=dest, check=True, stdout=log, stderr=subprocess.STDOUT)
     log.write(f"\n== {' '.join(args)} done in {time.perf_counter() - started:.0f}s\n".encode())
 
 
@@ -170,7 +186,7 @@ def run_world(seed: int, workers: int) -> dict:
     with tempfile.TemporaryDirectory(prefix=f"opslens_world_{seed}_") as tmp:
         dest = Path(tmp) / "repo"
         copy_repo(dest)
-        apply_world(dest, world)
+        volume = apply_world(dest, world)
         with open(OUT_DIR / f"{seed}.log", "wb") as log:
             run_step(dest, log, "data/generate_ops.py")
             run_step(dest, log, "eval/run_classification.py", "--no-llm")
@@ -180,7 +196,7 @@ def run_world(seed: int, workers: int) -> dict:
         parts = dest / "eval" / "parts"
         compare = json.loads((parts / "world_compare.json").read_text(encoding="utf-8"))
         risk = json.loads((parts / "risk.json").read_text(encoding="utf-8"))
-    result = {"seed": seed, "params": world, "volume_factor": load_factor(world), "compare": compare,
+    result = {"seed": seed, "params": world, "volume_factor": volume, "compare": compare,
               "risk_auc": (risk.get("test") or {}).get("auc"), "minutes": round((time.perf_counter() - started) / 60, 1)}
     out_path.write_text(json.dumps(result, indent=1), encoding="utf-8")
     breach = {p: v["turnaround.breach_pct"] for p, v in compare["mean"].items()}

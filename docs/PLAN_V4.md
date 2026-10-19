@@ -87,6 +87,9 @@ pitch, the Proof screen and the README lead with.
   Team C weekend lift) rather than data/plant.py. (4) Classifier: local only in every world (30
   worlds would exhaust the free LLM quota; the LLM moves accuracy by ~0.1 point). (5) A code check
   runs on world seed 7000, which is NOT one of the 30 and is not reported as a result.
+  (6) Fix found by that code check, before any of the 30 worlds ran: "today's load" means work ÷
+  capacity, so the volume multiplier also accounts for team size, the handle-time scale and the
+  category mix's average handle time, not only chats per agent (eval/run_worlds.py load_factor).
 - **Output:** `eval/run_worlds.py` (+ `eval/run_world_compare.py` inside each world) →
   `eval/parts/worlds/<seed>.json` → `results.worlds`. Proof screen: "30 worlds we never designed".
 - **Owner:** Claude 1 (this session). Touches: new eval file, generator overrides only (no default changes).
