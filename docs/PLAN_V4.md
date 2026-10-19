@@ -134,8 +134,8 @@ pitch, the Proof screen and the README lead with.
   on 20 fresh seeds. Otherwise keep greedy and report it.
 - **Output:** `results.staffing_opt`; Actions screen shows the optimised week with reasons
   ("Team C short 2.2 agents Sat 19–23 at the P80 forecast").
-- **Owner:** session "roster" (local). Touches: opslens/staffing.py, new opslens/roster_opt.py,
-  eval file; plan items re-run.
+- **Owner:** Claude 2 (GitHub). Touches: opslens/staffing.py, new opslens/roster_opt.py, its eval
+  file, tests; Claude 1 re-runs the plan items after the merge.
 
 ### W6 — NLP and LLMs on a real benchmark (NLP/LLM 3 → 9)
 - **What:** (a) **Banking77** (real customer banking queries, 77 intents, CC BY 4.0 — verify): our
@@ -161,14 +161,16 @@ pitch, the Proof screen and the README lead with.
   test days (food) and predicted overloaded team-days (real), vs the naive forecast. (c) Real-desk
   forecast: candidates {same day last week, learned, average of both}, chosen on check weeks.
 - **Rule:** report all; the Risks screen shows the alert hit rate.
-- **Owner:** Claude 1 after W1/W2 (small). Touches: eval files, forecast/risk eval code.
+- **Owner:** Claude 2 (GitHub). Touches: new eval files; reads opslens/risk.py and forecast.py (the
+  real-desk forecast part (c) goes to the real-desk session, which owns realdesk.py).
 
 ### W8 — Explanations tested for faithfulness (explain 8 → 10, D3)
 - **What:** (a) **Deletion test:** remove a ticket's top reason → the risk must drop more than when
   a random feature is removed (share of tickets where it does). (b) **Reason correctness:** on the
   planted Hindi-refund segment, language/skill must be in the top 3 reasons (share). (c) **"Why not
   the other agent":** each assignment shows the runner-up agent and the value gap.
-- **Owner:** Claude 1 (small).
+- **Owner:** Claude 2 (GitHub). Touches: new eval file; (c) adds the runner-up to the assignment
+  reasons in opslens/optimize.py output only (no decision change; regression: same assignments).
 
 ### W9 — Impact under the three headings on both worlds (measure impact → 9)
 Turnaround, productivity, service quality, for food (exists) and the real desk (from W3), plus the
@@ -210,26 +212,29 @@ Turnaround, productivity, service quality, for food (exists) and the real desk (
 
 | Worker | Items | Files it owns |
 |---|---|---|
-| Claude 1 (this session) | W1, W2, then W7, W8, W11 docs; reviews and merges every branch | simulate.py (guarded), eval/run_worlds.py, stress/ablation eval, risk/forecast eval, docs |
-| Session "real-desk" (local, own worktree) | W3, W4, W9 | opslens/realdesk.py, eval/run_realdesk.py, a UCI plant module, tests |
-| Session "roster" (local, own worktree) | W5 | opslens/staffing.py, opslens/roster_opt.py, its eval file, tests |
+| Claude 1 (this session) | W1, W2, W11 docs, W12; reviews and merges every branch | simulate.py (guarded), eval/run_worlds.py, stress/ablation eval, docs |
+| Claude 2 (GitHub, one `claude2/*` branch per item) | **W6, W7, W8, W5** (in that order), then a harsh review of the dashboard | new eval/data files; opslens/staffing.py + roster_opt.py (W5); optimize.py reason text only (W8c) |
+| Session "real-desk" (local, own worktree) | W3, W4, W9, W7(c) | opslens/realdesk.py, eval/run_realdesk.py, a UCI plant module, tests |
 | Session "web" (local, own worktree) | W10, W11 shadow view | web/ only |
-| Claude 2 (GitHub, `claude2/*` branch) | W6, then a harsh review of the dashboard | new eval/data files only |
+
+Claude 2 runs on Sneha's account and machine, so the heaviest share of new engine work goes there:
+it also saves the owner's usage. Claude 1 keeps the simulator change (W2) because every other
+result depends on it.
 
 Shared files (`eval/run_eval.py`, `opslens/results_schema.py`, `PROGRESS.md`, `JUDGE_QA.md`): each
 worker adds ONE step line and ONE schema field and proposes doc text in its branch notes; Claude 1
 merges and writes the shared docs. Usage note: four parallel sessions spend the plan's usage fast —
-start W1/W2, W3/W4 and W6 first; W5 and W10 next.
+start W1/W2, W3/W4 and Claude 2's list first; W10 next.
 
 ---
 
 ## 5. Timeline (code freeze 26 Oct evening)
 | Day | Work |
 |---|---|
-| Mon 19 Oct | This plan; pre-registration committed; W1/W2 start; real-desk session and Claude 2 (W6) start |
-| Tue 20 | W2 simulator change + regression test; W1 world generator; roster session starts (W5); web session starts (W10) |
-| Wed 21 | W1 runs (30 worlds); W2 runs; W3/W4 results; W5 validation runs |
-| Thu 22 | Review + merge W3/W4, W6; W7, W8 |
+| Mon 19 Oct | This plan; pre-registration committed; W1/W2 start; real-desk session and Claude 2 (W6, W7) start |
+| Tue 20 | W2 simulator change + regression test; W1 world generator; web session starts (W10); Claude 2: W6 LLM runs (daily quota), W7 |
+| Wed 21 | W1 runs (30 worlds); W2 runs; W3/W4 results; Claude 2: W8, W5 design |
+| Thu 22 | Review + merge W3/W4, W6, W7, W8; Claude 2: W5 validation runs |
 | Fri 23 | W5 confirmation + test once; merge; web wires new proof sections |
 | Sat 24 | Integration: full `make eval`; docs, JUDGE_QA, DEMO_SCRIPT; W11 |
 | Sun 25 | Buffer for whatever failed; story mode; projector check |
