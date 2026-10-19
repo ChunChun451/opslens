@@ -409,22 +409,20 @@ def plan_md(r: dict) -> list[str]:
     if not plan:
         return []
     lines = ["", "## Your plan: each recommendation alone (test days, change vs OpsLens with nothing accepted)", "",
-             f"Without the plan: breach {fmt(plan['base_kpis']['turnaround.breach_pct']['mean'])}%. "
+             f"Without the plan: breach {fmt(plan['base_kpis']['breach_pct']['mean'])}%. "
              "Change with 95% CI over the seeds.", "",
              "| Item | Missed SLA (customers) | Mean resolution (min) | Agent-hours | Minutes past SLA per 100 |",
              "|---|---|---|---|---|"]
 
-    def cell(effect: dict, heading: str, key: str, nd: int = 1) -> str:
-        d = next(row for row in effect[heading] if row["key"] == key)
+    def cell(effect: dict, key: str, nd: int = 1) -> str:
+        d = effect[key]
         return f"{d['diff']:+.{nd}f} [{d['ci_low']:+.{nd}f}, {d['ci_high']:+.{nd}f}]"
 
     rows = [(f"{item['title']} ({item['when']})", item["effect"]) for item in plan["items"]]
     rows.append(("**All items together**", plan["all_items"]["effect"]))
     for title, effect in rows:
-        lines.append(f"| {title} | {cell(effect, 'turnaround', 'breaches')} | "
-                     f"{cell(effect, 'turnaround', 'turnaround.mean_resolution_min')} | "
-                     f"{cell(effect, 'productivity', 'productivity.busy_agent_hours')} | "
-                     f"{cell(effect, 'quality', 'quality.late_minutes_per_100', 0)} |")
+        lines.append(f"| {title} | {cell(effect, 'breaches')} | {cell(effect, 'mean_resolution_min')} | "
+                     f"{cell(effect, 'busy_agent_hours')} | {cell(effect, 'late_minutes_per_100', 0)} |")
     return lines
 
 

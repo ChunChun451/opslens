@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-from opslens.plan import (HEADINGS, apply_items, apply_staffing_move, check_ids, effect_by_heading,
+from opslens.plan import (HEADINGS, PLAN_KPIS, apply_items, apply_staffing_move, check_ids, effect_by_kpi,
                           item_changes, plan_kpis, staffing_items)
 from opslens.world import load_agents
 
@@ -71,27 +71,28 @@ def test_a_day_off_move_is_only_in_effect_on_the_days_it_touches() -> None:
 
 def test_counts_from_percentages() -> None:
     # 2% of 1,500 tickets missed the SLA = 30 customers; 10 transfers per 100 = 150 transfers.
-    k = {"tickets": 1500.0, "turnaround.breach_pct": 2.0, "productivity.transfers_per_100": 10.0,
-         "turnaround.mean_resolution_min": 50.0}
+    k = {"tickets": 1500.0, "turnaround.breach_pct": 2.0, "turnaround.mean_resolution_min": 50.0,
+         "turnaround.p90_resolution_min": 120.0, "productivity.busy_agent_hours": 300.0,
+         "productivity.tickets_per_agent_hour": 4.0, "productivity.transfers_per_100": 10.0,
+         "quality.reopen_rate_pct": 4.0, "quality.late_minutes_per_100": 500.0}
     out = plan_kpis(k)
     assert out["breaches"] == pytest.approx(30.0) and out["transfers"] == pytest.approx(150.0)
-    assert out["turnaround.mean_resolution_min"] == 50.0
+    assert out["mean_resolution_min"] == 50.0 and out["breach_pct"] == 2.0
+    assert set(out) == {key for key, _, _, _, _ in PLAN_KPIS}
+    assert all("." not in key for key in out)  # usable in the dashboard's evidence paths
 
 
-def test_paired_effect_by_heading() -> None:
+def test_paired_effect_per_kpi() -> None:
     # Breaches without [30, 40, 50], with [25, 36, 44] → differences -5, -4, -6 → mean -5.
-    row = {"breaches": 0.0, "turnaround.breach_pct": 0.0, "turnaround.mean_resolution_min": 0.0,
-           "turnaround.p90_resolution_min": 0.0, "tickets": 0.0, "productivity.busy_agent_hours": 0.0,
-           "productivity.tickets_per_agent_hour": 0.0, "transfers": 0.0, "quality.reopen_rate_pct": 0.0,
-           "quality.late_minutes_per_100": 0.0}
+    row = {key: 0.0 for key, _, _, _, _ in PLAN_KPIS}
     without = [{**row, "breaches": b} for b in (30, 40, 50)]
     with_plan = [{**row, "breaches": b} for b in (25, 36, 44)]
-    effect = effect_by_heading(without, with_plan)
-    assert list(effect) == HEADINGS
-    breaches = effect["turnaround"][0]
-    assert breaches["key"] == "breaches" and breaches["diff"] == pytest.approx(-5.0)
+    effect = effect_by_kpi(without, with_plan)
+    breaches = effect["breaches"]
+    assert breaches["diff"] == pytest.approx(-5.0)
     assert breaches["without"] == pytest.approx(40.0) and breaches["with"] == pytest.approx(35.0)
     assert breaches["ci_low"] < -5.0 < breaches["ci_high"]
+    assert effect["transfers"]["diff"] == 0.0
 
 
 # ---- The endpoint -----------------------------------------------------------------------------
@@ -137,10 +138,9 @@ def test_endpoint_refuses_unknown_ids_and_non_test_days(small_server) -> None:
 
 def test_endpoint_with_no_items_has_zero_delta(small_server) -> None:
     answer = small_server.post("/api/plan/impact", json={"day": 48, "items": []}).json()
-    for heading in HEADINGS:
-        assert answer[heading], heading
-        for row in answer[heading]:
-            assert row["delta"] == 0.0, row["key"]   # same tickets, same luck → identical runs
+    assert answer["delta"] and answer["without"]["tickets"] > 0
+    for key, value in answer["delta"].items():
+        assert value == 0.0, key   # same tickets, same luck → identical runs
     assert answer["items"] == [] and answer["seeds"] == [1]
 
 
@@ -149,10 +149,13 @@ def test_endpoint_returns_all_three_headings_for_a_plan(small_server) -> None:
     answer = small_server.post("/api/plan/impact", json={"day": 48, "items": ["staff_43_C02"]}).json()
     assert answer["day"] == 48 and answer["weekday"] == "Sat" and answer["policy"] == "opslens"
     assert [i["id"] for i in answer["items"]] == ["staff_43_C02"] and answer["items"][0]["in_effect"]
-    keys = {row["key"] for heading in HEADINGS for row in answer[heading]}
-    assert {"breaches", "turnaround.mean_resolution_min", "productivity.tickets_per_agent_hour",
-            "transfers", "quality.reopen_rate_pct", "quality.late_minutes_per_100"} <= keys
-    for heading in HEADINGS:
-        for row in answer[heading]:
-            assert row["delta"] == pytest.approx(row["with"] - row["without"], abs=0.002)
-    assert answer["runtime_s"] >= 0
+    assert list(answer["headings"]) == HEADINGS
+    assert answer["headings"]["turnaround"][:3] == ["breaches", "breach_pct", "mean_resolution_min"]
+    assert {"tickets_per_agent_hour", "transfers"} <= set(answer["headings"]["productivity"])
+    assert {"reopen_rate_pct", "late_minutes_per_100"} <= set(answer["headings"]["quality"])
+    shown = [key for keys in answer["headings"].values() for key in keys]
+    for key in shown:
+        assert answer["labels"][key] and key in answer["units"] and key in answer["better"]
+        assert answer["delta"][key] == pytest.approx(answer["with"][key] - answer["without"][key], abs=0.002)
+        assert len(answer["delta_by_seed"][key]) == 1
+    assert answer["seconds"] >= 0

@@ -13,78 +13,60 @@
  ],
  "policy": "opslens",
  "without": "OpsLens dispatch on the published roster, nothing accepted (no staffing moves, no playbooks)",
- "kpis": [
-  {
-   "heading": "turnaround",
-   "key": "breaches",
-   "label": "customers who missed the SLA",
-   "unit": "tickets",
-   "better": "lower"
-  },
-  {
-   "heading": "turnaround",
-   "key": "turnaround.breach_pct",
-   "label": "SLA breach rate",
-   "unit": "%",
-   "better": "lower"
-  },
-  {
-   "heading": "turnaround",
-   "key": "turnaround.mean_resolution_min",
-   "label": "mean resolution time",
-   "unit": "min",
-   "better": "lower"
-  },
-  {
-   "heading": "turnaround",
-   "key": "turnaround.p90_resolution_min",
-   "label": "P90 resolution time",
-   "unit": "min",
-   "better": "lower"
-  },
-  {
-   "heading": "productivity",
-   "key": "tickets",
-   "label": "tickets that reach an agent",
-   "unit": "tickets",
-   "better": "lower"
-  },
-  {
-   "heading": "productivity",
-   "key": "productivity.busy_agent_hours",
-   "label": "agent-hours of work",
-   "unit": "h",
-   "better": "lower"
-  },
-  {
-   "heading": "productivity",
-   "key": "productivity.tickets_per_agent_hour",
-   "label": "tickets resolved per agent-hour",
-   "unit": "tickets/h",
-   "better": null
-  },
-  {
-   "heading": "productivity",
-   "key": "transfers",
-   "label": "transfers between teams",
-   "unit": "tickets",
-   "better": "lower"
-  },
-  {
-   "heading": "quality",
-   "key": "quality.reopen_rate_pct",
-   "label": "reopen rate",
-   "unit": "%",
-   "better": "lower"
-  },
-  {
-   "heading": "quality",
-   "key": "quality.late_minutes_per_100",
-   "label": "minutes past SLA per 100 tickets",
-   "unit": "min",
-   "better": "lower"
-  }
- ],
+ "headings": {
+  "turnaround": [
+   "breaches",
+   "breach_pct",
+   "mean_resolution_min",
+   "p90_resolution_min"
+  ],
+  "productivity": [
+   "tickets",
+   "busy_agent_hours",
+   "tickets_per_agent_hour",
+   "transfers"
+  ],
+  "quality": [
+   "reopen_rate_pct",
+   "late_minutes_per_100"
+  ]
+ },
+ "labels": {
+  "breaches": "customers who missed the SLA",
+  "breach_pct": "SLA breach rate",
+  "mean_resolution_min": "mean resolution time",
+  "p90_resolution_min": "P90 resolution time",
+  "tickets": "tickets that reach an agent",
+  "busy_agent_hours": "agent-hours of work",
+  "tickets_per_agent_hour": "tickets resolved per agent-hour",
+  "transfers": "transfers between teams",
+  "reopen_rate_pct": "reopen rate",
+  "late_minutes_per_100": "minutes past SLA per 100 tickets"
+ },
+ "units": {
+  "breaches": "tickets",
+  "breach_pct": "%",
+  "mean_resolution_min": "min",
+  "p90_resolution_min": "min",
+  "tickets": "tickets",
+  "busy_agent_hours": "h",
+  "tickets_per_agent_hour": "tickets/h",
+  "transfers": "tickets",
+  "reopen_rate_pct": "%",
+  "late_minutes_per_100": "min"
+ },
+ "better": {
+  "breaches": "lower",
+  "breach_pct": "lower",
+  "mean_resolution_min": "lower",
+  "p90_resolution_min": "lower",
+  "tickets": "lower",
+  "busy_agent_hours": "lower",
+  "tickets_per_agent_hour": null,
+  "transfers": "lower",
+  "reopen_rate_pct": "lower",
+  "late_minutes_per_100": "lower"
+ },
  "alerts_used": [
   {
    "minute": 67365,
@@ -100,15 +82,19 @@
   }
  ],
  "base_kpis": {
-  "turnaround.breach_pct": {
+  "breaches": {
+   "mean": 379.8,
+   "std": 61.884569966995805
+  },
+  "breach_pct": {
    "mean": 2.1062555456965395,
    "std": 0.34319304551350815
   },
-  "turnaround.mean_resolution_min": {
+  "mean_resolution_min": {
    "mean": 66.77998311468893,
    "std": 15.188905437737949
   },
-  "turnaround.p90_resolution_min": {
+  "p90_resolution_min": {
    "mean": 151.2944902040595,
    "std": 33.88426366740008
   },
@@ -116,29 +102,25 @@
    "mean": 18032.0,
    "std": 0.0
   },
-  "productivity.busy_agent_hours": {
+  "busy_agent_hours": {
    "mean": 3005.4529225271194,
    "std": 18.549222645971
   },
-  "productivity.tickets_per_agent_hour": {
+  "tickets_per_agent_hour": {
    "mean": 5.2934648822597,
    "std": 0.09834598997064835
-  },
-  "quality.reopen_rate_pct": {
-   "mean": 4.4809228039041695,
-   "std": 0.14999033203525428
-  },
-  "quality.late_minutes_per_100": {
-   "mean": 518.547802347098,
-   "std": 293.2634276228659
-  },
-  "breaches": {
-   "mean": 379.8,
-   "std": 61.884569966995805
   },
   "transfers": {
    "mean": 173.4,
    "std": 4.929503017546491
+  },
+  "reopen_rate_pct": {
+   "mean": 4.4809228039041695,
+   "std": 0.14999033203525428
+  },
+  "late_minutes_per_100": {
+   "mean": 518.547802347098,
+   "std": 293.2634276228659
   }
  },
  "items": [
@@ -162,132 +144,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 378.6,
-      "diff": -1.2,
-      "ci_low": -5.446463450920071,
-      "ci_high": 3.0464634509200703,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.099600709849157,
-      "diff": -0.006654835847382401,
-      "ci_low": -0.03020443351220079,
-      "ci_high": 0.016894761817435988,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.30231052521884,
-      "diff": -0.4776725894700945,
-      "ci_low": -0.9079529975331174,
-      "ci_high": -0.047392181407071576,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 150.6701240759696,
-      "diff": -0.6243661280898948,
-      "ci_low": -1.6849496784667224,
-      "ci_high": 0.4362174222869327,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3004.529552581481,
-      "diff": -0.9233699456381146,
-      "ci_low": -3.780225369706994,
-      "ci_high": 1.933485478430765,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 171.6,
-      "diff": -1.8000000000000056,
-      "ci_low": -5.666520585746326,
-      "ci_high": 2.066520585746315,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.4642857142857135,
-      "diff": -0.016637089618456002,
-      "ci_low": -0.05736804369740123,
-      "ci_high": 0.024093864460489223,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 516.6802207289533,
-      "diff": -1.867581618144743,
-      "ci_low": -9.76448498078558,
-      "ci_high": 6.029321744496094,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 378.6,
+     "diff": -1.2,
+     "ci_low": -5.446463450920071,
+     "ci_high": 3.0464634509200703,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.099600709849157,
+     "diff": -0.006654835847382401,
+     "ci_low": -0.03020443351220079,
+     "ci_high": 0.016894761817435988,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.30231052521884,
+     "diff": -0.4776725894700945,
+     "ci_low": -0.9079529975331174,
+     "ci_high": -0.047392181407071576,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 150.6701240759696,
+     "diff": -0.6243661280898948,
+     "ci_low": -1.6849496784667224,
+     "ci_high": 0.4362174222869327,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3004.529552581481,
+     "diff": -0.9233699456381146,
+     "ci_low": -3.780225369706994,
+     "ci_high": 1.933485478430765,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 171.6,
+     "diff": -1.8000000000000056,
+     "ci_low": -5.666520585746326,
+     "ci_high": 2.066520585746315,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.4642857142857135,
+     "diff": -0.016637089618456002,
+     "ci_low": -0.05736804369740123,
+     "ci_high": 0.024093864460489223,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 516.6802207289533,
+     "diff": -1.867581618144743,
+     "ci_low": -9.76448498078558,
+     "ci_high": 6.029321744496094,
+     "n": 5
+    }
    }
   },
   {
@@ -310,132 +246,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 379.4,
-      "diff": -0.4,
-      "ci_low": -2.9743564943496836,
-      "ci_high": 2.174356494349684,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.104037267080745,
-      "diff": -0.002218278615794045,
-      "ci_low": -0.016494878517910684,
-      "ci_high": 0.012058321286322593,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.29738639019584,
-      "diff": -0.4825967244930993,
-      "ci_low": -1.2128979520419225,
-      "ci_high": 0.24770450305572378,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 150.59777797509523,
-      "diff": -0.6967122289643015,
-      "ci_low": -2.152880754817037,
-      "ci_high": 0.7594562968884342,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3004.396184849694,
-      "diff": -1.0567376774254627,
-      "ci_low": -2.5856711174160534,
-      "ci_high": 0.4721957625651283,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 173.0,
-      "diff": -0.4000000000000057,
-      "ci_low": -2.4773681811369057,
-      "ci_high": 1.6773681811368943,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.470940550133096,
-      "diff": -0.009982253771073424,
-      "ci_low": -0.02409187015217073,
-      "ci_high": 0.004127362610023879,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 512.4874158424967,
-      "diff": -6.0603865046012855,
-      "ci_low": -15.01480183958314,
-      "ci_high": 2.8940288303805675,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 379.4,
+     "diff": -0.4,
+     "ci_low": -2.9743564943496836,
+     "ci_high": 2.174356494349684,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.104037267080745,
+     "diff": -0.002218278615794045,
+     "ci_low": -0.016494878517910684,
+     "ci_high": 0.012058321286322593,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.29738639019584,
+     "diff": -0.4825967244930993,
+     "ci_low": -1.2128979520419225,
+     "ci_high": 0.24770450305572378,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 150.59777797509523,
+     "diff": -0.6967122289643015,
+     "ci_low": -2.152880754817037,
+     "ci_high": 0.7594562968884342,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3004.396184849694,
+     "diff": -1.0567376774254627,
+     "ci_low": -2.5856711174160534,
+     "ci_high": 0.4721957625651283,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 173.0,
+     "diff": -0.4000000000000057,
+     "ci_low": -2.4773681811369057,
+     "ci_high": 1.6773681811368943,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.470940550133096,
+     "diff": -0.009982253771073424,
+     "ci_low": -0.02409187015217073,
+     "ci_high": 0.004127362610023879,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 512.4874158424967,
+     "diff": -6.0603865046012855,
+     "ci_low": -15.01480183958314,
+     "ci_high": 2.8940288303805675,
+     "n": 5
+    }
    }
   },
   {
@@ -458,132 +348,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 372.2,
-      "diff": -7.6,
-      "ci_low": -15.028069746576204,
-      "ci_high": -0.17193025342379542,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.0641082519964504,
-      "diff": -0.04214729370008867,
-      "ci_low": -0.08334111438873228,
-      "ci_high": -0.0009534730114450635,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 64.16793128223053,
-      "diff": -2.612051832458414,
-      "ci_low": -4.560066699061059,
-      "ci_high": -0.6640369658557694,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 147.64769681097283,
-      "diff": -3.6467933930867047,
-      "ci_low": -6.295657443027931,
-      "ci_high": -0.9979293431454779,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3002.2336140577304,
-      "diff": -3.219308469389307,
-      "ci_low": -5.4056176959149065,
-      "ci_high": -1.0329992428637071,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 173.8,
-      "diff": 0.3999999999999943,
-      "ci_low": -1.4827748033155705,
-      "ci_high": 2.2827748033155593,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.443212067435669,
-      "diff": -0.037710736468500095,
-      "ci_low": -0.06499048653901598,
-      "ci_high": -0.010430986397984211,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 490.92915654911604,
-      "diff": -27.618645797982005,
-      "ci_low": -64.84414568135378,
-      "ci_high": 9.606854085389763,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 372.2,
+     "diff": -7.6,
+     "ci_low": -15.028069746576204,
+     "ci_high": -0.17193025342379542,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.0641082519964504,
+     "diff": -0.04214729370008867,
+     "ci_low": -0.08334111438873228,
+     "ci_high": -0.0009534730114450635,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 64.16793128223053,
+     "diff": -2.612051832458414,
+     "ci_low": -4.560066699061059,
+     "ci_high": -0.6640369658557694,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 147.64769681097283,
+     "diff": -3.6467933930867047,
+     "ci_low": -6.295657443027931,
+     "ci_high": -0.9979293431454779,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3002.2336140577304,
+     "diff": -3.219308469389307,
+     "ci_low": -5.4056176959149065,
+     "ci_high": -1.0329992428637071,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 173.8,
+     "diff": 0.3999999999999943,
+     "ci_low": -1.4827748033155705,
+     "ci_high": 2.2827748033155593,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.443212067435669,
+     "diff": -0.037710736468500095,
+     "ci_low": -0.06499048653901598,
+     "ci_high": -0.010430986397984211,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 490.92915654911604,
+     "diff": -27.618645797982005,
+     "ci_low": -64.84414568135378,
+     "ci_high": 9.606854085389763,
+     "n": 5
+    }
    }
   },
   {
@@ -606,132 +450,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 376.8,
-      "diff": -3.0,
-      "ci_low": -9.39083193332451,
-      "ci_high": 3.3908319333245105,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.089618456078083,
-      "diff": -0.016637089618455957,
-      "ci_low": -0.05207870415552636,
-      "ci_high": 0.018804524918614448,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.0953760675554,
-      "diff": -0.6846070471335353,
-      "ci_low": -1.26677583561262,
-      "ci_high": -0.10243825865445044,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 149.77550740420978,
-      "diff": -1.5189827998497605,
-      "ci_low": -2.6874708263872877,
-      "ci_high": -0.350494773312233,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3005.440511254561,
-      "diff": -0.012411272558256314,
-      "ci_low": -0.630375110675616,
-      "ci_high": 0.6055525655591033,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 172.6,
-      "diff": -0.8,
-      "ci_low": -1.838684090568446,
-      "ci_high": 0.23868409056844597,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.479813664596274,
-      "diff": -0.0011091393078967115,
-      "ci_low": -0.032433032442028636,
-      "ci_high": 0.030214753826235216,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 521.0107042209366,
-      "diff": 2.462901873838587,
-      "ci_low": -26.920701711003623,
-      "ci_high": 31.846505458680795,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 376.8,
+     "diff": -3.0,
+     "ci_low": -9.39083193332451,
+     "ci_high": 3.3908319333245105,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.089618456078083,
+     "diff": -0.016637089618455957,
+     "ci_low": -0.05207870415552636,
+     "ci_high": 0.018804524918614448,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.0953760675554,
+     "diff": -0.6846070471335353,
+     "ci_low": -1.26677583561262,
+     "ci_high": -0.10243825865445044,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 149.77550740420978,
+     "diff": -1.5189827998497605,
+     "ci_low": -2.6874708263872877,
+     "ci_high": -0.350494773312233,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3005.440511254561,
+     "diff": -0.012411272558256314,
+     "ci_low": -0.630375110675616,
+     "ci_high": 0.6055525655591033,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 172.6,
+     "diff": -0.8,
+     "ci_low": -1.838684090568446,
+     "ci_high": 0.23868409056844597,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.479813664596274,
+     "diff": -0.0011091393078967115,
+     "ci_low": -0.032433032442028636,
+     "ci_high": 0.030214753826235216,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 521.0107042209366,
+     "diff": 2.462901873838587,
+     "ci_low": -26.920701711003623,
+     "ci_high": 31.846505458680795,
+     "n": 5
+    }
    }
   },
   {
@@ -754,132 +552,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 381.2,
-      "diff": 1.3999999999999886,
-      "ci_low": -5.319984476172551,
-      "ci_high": 8.119984476172528,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.1140195208518193,
-      "diff": 0.0077639751552795126,
-      "ci_low": -0.029503019499625936,
-      "ci_high": 0.04503096981018496,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 68.27910624142274,
-      "diff": 1.4991231267338123,
-      "ci_low": 0.2621942280959164,
-      "ci_high": 2.736052025371708,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 153.3099895824796,
-      "diff": 2.0154993784200657,
-      "ci_low": -1.2609869408268741,
-      "ci_high": 5.291985697667005,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3003.8430099045827,
-      "diff": -1.609912622536649,
-      "ci_low": -4.206070299066168,
-      "ci_high": 0.98624505399287,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 173.6,
-      "diff": 0.2,
-      "ci_low": -4.6401213869075635,
-      "ci_high": 5.040121386907564,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.466503992901508,
-      "diff": -0.014418811002661869,
-      "ci_low": -0.03169949130271357,
-      "ci_high": 0.0028618692973898362,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 534.8345103550439,
-      "diff": 16.2867080079459,
-      "ci_low": -12.123923740625276,
-      "ci_high": 44.69733975651708,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 381.2,
+     "diff": 1.3999999999999886,
+     "ci_low": -5.319984476172551,
+     "ci_high": 8.119984476172528,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.1140195208518193,
+     "diff": 0.0077639751552795126,
+     "ci_low": -0.029503019499625936,
+     "ci_high": 0.04503096981018496,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 68.27910624142274,
+     "diff": 1.4991231267338123,
+     "ci_low": 0.2621942280959164,
+     "ci_high": 2.736052025371708,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 153.3099895824796,
+     "diff": 2.0154993784200657,
+     "ci_low": -1.2609869408268741,
+     "ci_high": 5.291985697667005,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3003.8430099045827,
+     "diff": -1.609912622536649,
+     "ci_low": -4.206070299066168,
+     "ci_high": 0.98624505399287,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 173.6,
+     "diff": 0.2,
+     "ci_low": -4.6401213869075635,
+     "ci_high": 5.040121386907564,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.466503992901508,
+     "diff": -0.014418811002661869,
+     "ci_low": -0.03169949130271357,
+     "ci_high": 0.0028618692973898362,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 534.8345103550439,
+     "diff": 16.2867080079459,
+     "ci_low": -12.123923740625276,
+     "ci_high": 44.69733975651708,
+     "n": 5
+    }
    }
   },
   {
@@ -902,132 +654,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 381.6,
-      "diff": 1.8,
-      "ci_low": -5.1344457774215435,
-      "ci_high": 8.734445777421543,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.116237799467613,
-      "diff": 0.009982253771073734,
-      "ci_low": -0.028474078180021782,
-      "ci_high": 0.048438585722169254,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.13412179189396,
-      "diff": -0.6458613227949741,
-      "ci_low": -1.3483561325888205,
-      "ci_high": 0.05663348699887227,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 150.30619153177523,
-      "diff": -0.9882986722842901,
-      "ci_low": -3.0382958831759064,
-      "ci_high": 1.0616985386073263,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3003.993748858726,
-      "diff": -1.459173668393305,
-      "ci_low": -3.072975211693185,
-      "ci_high": 0.15462787490657504,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 173.8,
-      "diff": 0.3999999999999943,
-      "ci_low": -2.458066927138006,
-      "ci_high": 3.2580669271379943,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.4653948535936125,
-      "diff": -0.015527950310558581,
-      "ci_low": -0.030453814645282712,
-      "ci_high": -0.0006020859758344484,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 516.8053534191356,
-      "diff": -1.742448927962414,
-      "ci_low": -28.157347885727336,
-      "ci_high": 24.67245002980251,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 381.6,
+     "diff": 1.8,
+     "ci_low": -5.1344457774215435,
+     "ci_high": 8.734445777421543,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.116237799467613,
+     "diff": 0.009982253771073734,
+     "ci_low": -0.028474078180021782,
+     "ci_high": 0.048438585722169254,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.13412179189396,
+     "diff": -0.6458613227949741,
+     "ci_low": -1.3483561325888205,
+     "ci_high": 0.05663348699887227,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 150.30619153177523,
+     "diff": -0.9882986722842901,
+     "ci_low": -3.0382958831759064,
+     "ci_high": 1.0616985386073263,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3003.993748858726,
+     "diff": -1.459173668393305,
+     "ci_low": -3.072975211693185,
+     "ci_high": 0.15462787490657504,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 173.8,
+     "diff": 0.3999999999999943,
+     "ci_low": -2.458066927138006,
+     "ci_high": 3.2580669271379943,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.4653948535936125,
+     "diff": -0.015527950310558581,
+     "ci_low": -0.030453814645282712,
+     "ci_high": -0.0006020859758344484,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 516.8053534191356,
+     "diff": -1.742448927962414,
+     "ci_low": -28.157347885727336,
+     "ci_high": 24.67245002980251,
+     "n": 5
+    }
    }
   },
   {
@@ -1050,132 +756,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 378.2,
-      "diff": -1.6,
-      "ci_low": -8.870788633979124,
-      "ci_high": 5.670788633979125,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.0973824312333624,
-      "diff": -0.008873114463176535,
-      "ci_low": -0.04919470182996399,
-      "ci_high": 0.03144847290361092,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.68020931867582,
-      "diff": -0.09977379601311327,
-      "ci_low": -0.2078923955075811,
-      "ci_high": 0.008344803481354537,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 151.47571144545972,
-      "diff": 0.18122124140020618,
-      "ci_low": -1.0033666335046092,
-      "ci_high": 1.3658091163050214,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3004.985018724178,
-      "diff": -0.46790380294150963,
-      "ci_low": -1.0630019889359934,
-      "ci_high": 0.1271943830529741,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 174.4,
-      "diff": 0.9999999999999943,
-      "ci_low": -1.3225682336585995,
-      "ci_high": 3.322568233658588,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.484250221827861,
-      "diff": 0.003327417923691378,
-      "ci_low": -0.020322604920234234,
-      "ci_high": 0.026977440767616993,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 515.7097797553295,
-      "diff": -2.838022591768481,
-      "ci_low": -10.788686962015468,
-      "ci_high": 5.1126417784785065,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 378.2,
+     "diff": -1.6,
+     "ci_low": -8.870788633979124,
+     "ci_high": 5.670788633979125,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.0973824312333624,
+     "diff": -0.008873114463176535,
+     "ci_low": -0.04919470182996399,
+     "ci_high": 0.03144847290361092,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.68020931867582,
+     "diff": -0.09977379601311327,
+     "ci_low": -0.2078923955075811,
+     "ci_high": 0.008344803481354537,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 151.47571144545972,
+     "diff": 0.18122124140020618,
+     "ci_low": -1.0033666335046092,
+     "ci_high": 1.3658091163050214,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3004.985018724178,
+     "diff": -0.46790380294150963,
+     "ci_low": -1.0630019889359934,
+     "ci_high": 0.1271943830529741,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 174.4,
+     "diff": 0.9999999999999943,
+     "ci_low": -1.3225682336585995,
+     "ci_high": 3.322568233658588,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.484250221827861,
+     "diff": 0.003327417923691378,
+     "ci_low": -0.020322604920234234,
+     "ci_high": 0.026977440767616993,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 515.7097797553295,
+     "diff": -2.838022591768481,
+     "ci_low": -10.788686962015468,
+     "ci_high": 5.1126417784785065,
+     "n": 5
+    }
    }
   },
   {
@@ -1198,132 +858,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 379.6,
-      "diff": -0.20000000000001136,
-      "ci_low": -8.592523377387781,
-      "ci_high": 8.192523377387758,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.1051464063886423,
-      "diff": -0.0011091393078970669,
-      "ci_low": -0.04765152715942646,
-      "ci_high": 0.04543324854363233,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 67.10292796838652,
-      "diff": 0.3229448536975809,
-      "ci_low": -0.6936806159737545,
-      "ci_high": 1.3395703233689165,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 152.13143312764743,
-      "diff": 0.8369429235879124,
-      "ci_low": -2.3393337036111697,
-      "ci_high": 4.013219550786994,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3004.585983202888,
-      "diff": -0.8669393242310435,
-      "ci_low": -2.6266297998824344,
-      "ci_high": 0.8927511514203477,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 172.2,
-      "diff": -1.2000000000000057,
-      "ci_low": -3.239935057789835,
-      "ci_high": 0.8399350577898235,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.472049689440993,
-      "diff": -0.008873114463176535,
-      "ci_low": -0.04101851249859751,
-      "ci_high": 0.023272283572244444,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 536.0155927160434,
-      "diff": 17.467790368945465,
-      "ci_low": -37.69537180790662,
-      "ci_high": 72.63095254579756,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 379.6,
+     "diff": -0.20000000000001136,
+     "ci_low": -8.592523377387781,
+     "ci_high": 8.192523377387758,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.1051464063886423,
+     "diff": -0.0011091393078970669,
+     "ci_low": -0.04765152715942646,
+     "ci_high": 0.04543324854363233,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 67.10292796838652,
+     "diff": 0.3229448536975809,
+     "ci_low": -0.6936806159737545,
+     "ci_high": 1.3395703233689165,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 152.13143312764743,
+     "diff": 0.8369429235879124,
+     "ci_low": -2.3393337036111697,
+     "ci_high": 4.013219550786994,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3004.585983202888,
+     "diff": -0.8669393242310435,
+     "ci_low": -2.6266297998824344,
+     "ci_high": 0.8927511514203477,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 172.2,
+     "diff": -1.2000000000000057,
+     "ci_low": -3.239935057789835,
+     "ci_high": 0.8399350577898235,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.472049689440993,
+     "diff": -0.008873114463176535,
+     "ci_low": -0.04101851249859751,
+     "ci_high": 0.023272283572244444,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 536.0155927160434,
+     "diff": 17.467790368945465,
+     "ci_low": -37.69537180790662,
+     "ci_high": 72.63095254579756,
+     "n": 5
+    }
    }
   },
   {
@@ -1346,132 +960,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 373.6,
-      "diff": -6.2,
-      "ci_low": -19.32082207180629,
-      "ci_high": 6.920822071806289,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.0718722271517303,
-      "diff": -0.03438331854480925,
-      "ci_low": -0.10714741610362845,
-      "ci_high": 0.03838077901400995,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.17695722922187,
-      "diff": -0.6030258854670635,
-      "ci_low": -1.614897089253728,
-      "ci_high": 0.4088453183196009,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 149.46350422015803,
-      "diff": -1.830985983901502,
-      "ci_low": -5.6563551852091125,
-      "ci_high": 1.994383217406109,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3004.1443687154447,
-      "diff": -1.3085538116747557,
-      "ci_low": -3.48272657371559,
-      "ci_high": 0.8656189503660787,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.296232606469611,
-      "diff": 0.002767724209912359,
-      "ci_low": -0.004915478196804348,
-      "ci_high": 0.010450926616629067,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 173.6,
-      "diff": 0.19999999999999432,
-      "ci_low": -1.6413900836053186,
-      "ci_high": 2.0413900836053074,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.473158828748891,
-      "diff": -0.0077639751552794675,
-      "ci_low": -0.03379903496129023,
-      "ci_high": 0.018271084650731295,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 512.343353707166,
-      "diff": -6.20444863993198,
-      "ci_low": -28.091158948555403,
-      "ci_high": 15.682261668691446,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 373.6,
+     "diff": -6.2,
+     "ci_low": -19.32082207180629,
+     "ci_high": 6.920822071806289,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.0718722271517303,
+     "diff": -0.03438331854480925,
+     "ci_low": -0.10714741610362845,
+     "ci_high": 0.03838077901400995,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.17695722922187,
+     "diff": -0.6030258854670635,
+     "ci_low": -1.614897089253728,
+     "ci_high": 0.4088453183196009,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 149.46350422015803,
+     "diff": -1.830985983901502,
+     "ci_low": -5.6563551852091125,
+     "ci_high": 1.994383217406109,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3004.1443687154447,
+     "diff": -1.3085538116747557,
+     "ci_low": -3.48272657371559,
+     "ci_high": 0.8656189503660787,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.296232606469611,
+     "diff": 0.002767724209912359,
+     "ci_low": -0.004915478196804348,
+     "ci_high": 0.010450926616629067,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 173.6,
+     "diff": 0.19999999999999432,
+     "ci_low": -1.6413900836053186,
+     "ci_high": 2.0413900836053074,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.473158828748891,
+     "diff": -0.0077639751552794675,
+     "ci_low": -0.03379903496129023,
+     "ci_high": 0.018271084650731295,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 512.343353707166,
+     "diff": -6.20444863993198,
+     "ci_low": -28.091158948555403,
+     "ci_high": 15.682261668691446,
+     "n": 5
+    }
    }
   },
   {
@@ -1494,132 +1062,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 383.8,
-      "diff": 4.000000000000023,
-      "ci_low": -1.6209715886134957,
-      "ci_high": 9.620971588613543,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.1284383318544813,
-      "diff": 0.02218278615794156,
-      "ci_low": -0.008989416529578,
-      "ci_high": 0.05335498884546112,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.8350881580574,
-      "diff": 0.055105043368457986,
-      "ci_low": -0.4769339033491191,
-      "ci_high": 0.5871439900860351,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 151.36699848869785,
-      "diff": 0.07250828463832307,
-      "ci_low": -1.8045182895152547,
-      "ci_high": 1.949534858791901,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3005.515012825538,
-      "diff": 0.0620902984184795,
-      "ci_low": -0.6480820584307659,
-      "ci_high": 0.7722626552677249,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 174.0,
-      "diff": 0.6,
-      "ci_low": -1.9743564943496028,
-      "ci_high": 3.174356494349603,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.486468500443655,
-      "diff": 0.005545696539485512,
-      "ci_low": -0.005340108831931467,
-      "ci_high": 0.01643150191090249,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 528.8537098514106,
-      "diff": 10.305907504312632,
-      "ci_low": -4.1969291847846115,
-      "ci_high": 24.808744193409876,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 383.8,
+     "diff": 4.000000000000023,
+     "ci_low": -1.6209715886134957,
+     "ci_high": 9.620971588613543,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.1284383318544813,
+     "diff": 0.02218278615794156,
+     "ci_low": -0.008989416529578,
+     "ci_high": 0.05335498884546112,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.8350881580574,
+     "diff": 0.055105043368457986,
+     "ci_low": -0.4769339033491191,
+     "ci_high": 0.5871439900860351,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 151.36699848869785,
+     "diff": 0.07250828463832307,
+     "ci_low": -1.8045182895152547,
+     "ci_high": 1.949534858791901,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3005.515012825538,
+     "diff": 0.0620902984184795,
+     "ci_low": -0.6480820584307659,
+     "ci_high": 0.7722626552677249,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 174.0,
+     "diff": 0.6,
+     "ci_low": -1.9743564943496028,
+     "ci_high": 3.174356494349603,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.486468500443655,
+     "diff": 0.005545696539485512,
+     "ci_low": -0.005340108831931467,
+     "ci_high": 0.01643150191090249,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 528.8537098514106,
+     "diff": 10.305907504312632,
+     "ci_low": -4.1969291847846115,
+     "ci_high": 24.808744193409876,
+     "n": 5
+    }
    }
   },
   {
@@ -1642,132 +1164,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 379.4,
-      "diff": -0.40000000000001135,
-      "ci_low": -9.756396708135098,
-      "ci_high": 8.956396708135076,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.1040372670807455,
-      "diff": -0.0022182786157941337,
-      "ci_low": -0.054106015462150985,
-      "ci_high": 0.049669458230562714,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.59751819462628,
-      "diff": -0.18246492006265952,
-      "ci_low": -0.9212385211016427,
-      "ci_high": 0.5563086809763238,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 150.33921941566305,
-      "diff": -0.9552707883964786,
-      "ci_low": -4.268229954812442,
-      "ci_high": 2.3576883780194846,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3004.4013604603956,
-      "diff": -1.0515620667238181,
-      "ci_low": -2.262517730418076,
-      "ci_high": 0.15939359697043964,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 172.8,
-      "diff": -0.5999999999999943,
-      "ci_low": -5.534725540493602,
-      "ci_high": 4.334725540493613,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.478704525288376,
-      "diff": -0.002218278615793956,
-      "ci_low": -0.044826160768189585,
-      "ci_high": 0.040389603536601676,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 529.8008788473583,
-      "diff": 11.253076500260272,
-      "ci_low": -5.123951637330203,
-      "ci_high": 27.63010463785075,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 379.4,
+     "diff": -0.40000000000001135,
+     "ci_low": -9.756396708135098,
+     "ci_high": 8.956396708135076,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.1040372670807455,
+     "diff": -0.0022182786157941337,
+     "ci_low": -0.054106015462150985,
+     "ci_high": 0.049669458230562714,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.59751819462628,
+     "diff": -0.18246492006265952,
+     "ci_low": -0.9212385211016427,
+     "ci_high": 0.5563086809763238,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 150.33921941566305,
+     "diff": -0.9552707883964786,
+     "ci_low": -4.268229954812442,
+     "ci_high": 2.3576883780194846,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3004.4013604603956,
+     "diff": -1.0515620667238181,
+     "ci_low": -2.262517730418076,
+     "ci_high": 0.15939359697043964,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 172.8,
+     "diff": -0.5999999999999943,
+     "ci_low": -5.534725540493602,
+     "ci_high": 4.334725540493613,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.478704525288376,
+     "diff": -0.002218278615793956,
+     "ci_low": -0.044826160768189585,
+     "ci_high": 0.040389603536601676,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 529.8008788473583,
+     "diff": 11.253076500260272,
+     "ci_low": -5.123951637330203,
+     "ci_high": 27.63010463785075,
+     "n": 5
+    }
    }
   },
   {
@@ -1790,132 +1266,86 @@
     "same person, same hours per week: only the start time or a day off moves"
    ],
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 385.0,
-      "diff": 5.199999999999989,
-      "ci_low": -0.16852849857390595,
-      "ci_high": 10.568528498573883,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.1350931677018634,
-      "diff": 0.028837622005323825,
-      "ci_low": -0.0009346079113460096,
-      "ci_high": 0.05860985192199366,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 66.69492301056809,
-      "diff": -0.0850601041208435,
-      "ci_low": -1.1195659957566695,
-      "ci_high": 0.9494457875149825,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 150.95128382200355,
-      "diff": -0.3432063820559506,
-      "ci_low": -2.5436671547117267,
-      "ci_high": 1.8572543905998253,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3005.912733166281,
-      "diff": 0.4598106391616966,
-      "ci_low": -1.2175810352759222,
-      "ci_high": 2.1372023135993157,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 173.4,
-      "diff": -5.684341886080802e-15,
-      "ci_low": -3.6194611753685098,
-      "ci_high": 3.619461175368498,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.4853593611357585,
-      "diff": 0.004436557231588445,
-      "ci_low": -0.021046459800197564,
-      "ci_high": 0.02991957426337445,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 538.6029706398851,
-      "diff": 20.05516829278729,
-      "ci_low": -43.09012802422512,
-      "ci_high": 83.2004646097997,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 385.0,
+     "diff": 5.199999999999989,
+     "ci_low": -0.16852849857390595,
+     "ci_high": 10.568528498573883,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.1350931677018634,
+     "diff": 0.028837622005323825,
+     "ci_low": -0.0009346079113460096,
+     "ci_high": 0.05860985192199366,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 66.69492301056809,
+     "diff": -0.0850601041208435,
+     "ci_low": -1.1195659957566695,
+     "ci_high": 0.9494457875149825,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 150.95128382200355,
+     "diff": -0.3432063820559506,
+     "ci_low": -2.5436671547117267,
+     "ci_high": 1.8572543905998253,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3005.912733166281,
+     "diff": 0.4598106391616966,
+     "ci_low": -1.2175810352759222,
+     "ci_high": 2.1372023135993157,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 173.4,
+     "diff": -5.684341886080802e-15,
+     "ci_low": -3.6194611753685098,
+     "ci_high": 3.619461175368498,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.4853593611357585,
+     "diff": 0.004436557231588445,
+     "ci_low": -0.021046459800197564,
+     "ci_high": 0.02991957426337445,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 538.6029706398851,
+     "diff": 20.05516829278729,
+     "ci_low": -43.09012802422512,
+     "ci_high": 83.2004646097997,
+     "n": 5
+    }
    }
   },
   {
@@ -1937,132 +1367,86 @@
    ],
    "card_id": "F1",
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 377.8,
-      "diff": -2.0000000000000115,
-      "ci_low": -12.822840440475872,
-      "ci_high": 8.82284044047585,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.095164152617569,
-      "diff": -0.011091393078970757,
-      "ci_low": -0.07111158185712,
-      "ci_high": 0.04892879569917848,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 65.8845049568832,
-      "diff": -0.8954781578057321,
-      "ci_low": -1.832267091532839,
-      "ci_high": 0.041310775921374554,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 149.21764356783098,
-      "diff": -2.076846636228575,
-      "ci_low": -5.617777538022601,
-      "ci_high": 1.4640842655654507,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 3000.8661356854864,
-      "diff": -4.586786841633329,
-      "ci_low": -6.287250017370108,
-      "ci_high": -2.8863236658965503,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 119.0,
-      "diff": -54.4,
-      "ci_low": -59.176010988262064,
-      "ci_high": -49.62398901173793,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.46206743566992,
-      "diff": -0.018855368234249957,
-      "ci_low": -0.022626321831170117,
-      "ci_high": -0.015084414637329797,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 503.1134053435935,
-      "diff": -15.434397003504534,
-      "ci_low": -31.79293719515708,
-      "ci_high": 0.92414318814801,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 377.8,
+     "diff": -2.0000000000000115,
+     "ci_low": -12.822840440475872,
+     "ci_high": 8.82284044047585,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.095164152617569,
+     "diff": -0.011091393078970757,
+     "ci_low": -0.07111158185712,
+     "ci_high": 0.04892879569917848,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 65.8845049568832,
+     "diff": -0.8954781578057321,
+     "ci_low": -1.832267091532839,
+     "ci_high": 0.041310775921374554,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 149.21764356783098,
+     "diff": -2.076846636228575,
+     "ci_low": -5.617777538022601,
+     "ci_high": 1.4640842655654507,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 3000.8661356854864,
+     "diff": -4.586786841633329,
+     "ci_low": -6.287250017370108,
+     "ci_high": -2.8863236658965503,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 119.0,
+     "diff": -54.4,
+     "ci_low": -59.176010988262064,
+     "ci_high": -49.62398901173793,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.46206743566992,
+     "diff": -0.018855368234249957,
+     "ci_low": -0.022626321831170117,
+     "ci_high": -0.015084414637329797,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 503.1134053435935,
+     "diff": -15.434397003504534,
+     "ci_low": -31.79293719515708,
+     "ci_high": 0.92414318814801,
+     "n": 5
+    }
    }
   },
   {
@@ -2090,132 +1474,86 @@
    ],
    "card_id": "F2",
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 353.0,
-      "diff": -26.80000000000001,
-      "ci_low": -39.008089278834795,
-      "ci_high": -14.591910721165227,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 1.9576308784383318,
-      "diff": -0.14862466725820758,
-      "ci_low": -0.21632702572557005,
-      "ci_high": -0.08092230879084512,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 63.561206818930785,
-      "diff": -3.21877629575816,
-      "ci_low": -4.5743121550441135,
-      "ci_high": -1.8632404364722066,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 147.40497349428796,
-      "diff": -3.8895167097715673,
-      "ci_low": -8.675168217655164,
-      "ci_high": 0.8961347981120298,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18032.0,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 2982.628158306724,
-      "diff": -22.824764220395082,
-      "ci_low": -26.843637853741754,
-      "ci_high": -18.80589058704841,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2934648822597,
-      "diff": 0.0,
-      "ci_low": 0.0,
-      "ci_high": 0.0,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 167.0,
-      "diff": -6.400000000000006,
-      "ci_low": -14.983183707692634,
-      "ci_high": 2.1831837076926224,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.357808340727596,
-      "diff": -0.12311446317657478,
-      "ci_low": -0.18017934594959278,
-      "ci_high": -0.06604958040355678,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 431.6119265056529,
-      "diff": -86.93587584144511,
-      "ci_low": -136.9958579610004,
-      "ci_high": -36.875893721889796,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 353.0,
+     "diff": -26.80000000000001,
+     "ci_low": -39.008089278834795,
+     "ci_high": -14.591910721165227,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 1.9576308784383318,
+     "diff": -0.14862466725820758,
+     "ci_low": -0.21632702572557005,
+     "ci_high": -0.08092230879084512,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 63.561206818930785,
+     "diff": -3.21877629575816,
+     "ci_low": -4.5743121550441135,
+     "ci_high": -1.8632404364722066,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 147.40497349428796,
+     "diff": -3.8895167097715673,
+     "ci_low": -8.675168217655164,
+     "ci_high": 0.8961347981120298,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18032.0,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 2982.628158306724,
+     "diff": -22.824764220395082,
+     "ci_low": -26.843637853741754,
+     "ci_high": -18.80589058704841,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2934648822597,
+     "diff": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 0.0,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 167.0,
+     "diff": -6.400000000000006,
+     "ci_low": -14.983183707692634,
+     "ci_high": 2.1831837076926224,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.357808340727596,
+     "diff": -0.12311446317657478,
+     "ci_low": -0.18017934594959278,
+     "ci_high": -0.06604958040355678,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 431.6119265056529,
+     "diff": -86.93587584144511,
+     "ci_low": -136.9958579610004,
+     "ci_high": -36.875893721889796,
+     "n": 5
+    }
    }
   },
   {
@@ -2242,132 +1580,86 @@
    ],
    "card_id": "F3",
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 375.0,
-      "diff": -4.800000000000011,
-      "ci_low": -16.492200915139996,
-      "ci_high": 6.892200915139972,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.089252883168979,
-      "diff": -0.017002662527560684,
-      "ci_low": -0.08185377181424075,
-      "ci_high": 0.04784844675911939,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 65.7073734332749,
-      "diff": -1.0726096814140433,
-      "ci_low": -1.979049660962037,
-      "ci_high": -0.16616970186604985,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 148.40511061769274,
-      "diff": -2.8893795863667804,
-      "ci_low": -4.220454553363504,
-      "ci_high": -1.5583046193700572,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 17949.0,
-      "diff": -83.0,
-      "ci_low": -83.0,
-      "ci_high": -83.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 2994.366558933156,
-      "diff": -11.086363593963688,
-      "ci_low": -12.308980940104174,
-      "ci_high": -9.863746247823201,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.269099443859768,
-      "diff": -0.024365438399930994,
-      "ci_low": -0.02492742415790109,
-      "ci_high": -0.023803452641960897,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 170.4,
-      "diff": -3.0000000000000058,
-      "ci_low": -9.269090651761239,
-      "ci_high": 3.269090651761227,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.480472449718647,
-      "diff": -0.0004503541855228832,
-      "ci_low": -0.04228487050559209,
-      "ci_high": 0.04138416213454633,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 519.2939390729,
-      "diff": 0.7461367258019436,
-      "ci_low": -16.25371610698487,
-      "ci_high": 17.745989558588757,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 375.0,
+     "diff": -4.800000000000011,
+     "ci_low": -16.492200915139996,
+     "ci_high": 6.892200915139972,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.089252883168979,
+     "diff": -0.017002662527560684,
+     "ci_low": -0.08185377181424075,
+     "ci_high": 0.04784844675911939,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 65.7073734332749,
+     "diff": -1.0726096814140433,
+     "ci_low": -1.979049660962037,
+     "ci_high": -0.16616970186604985,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 148.40511061769274,
+     "diff": -2.8893795863667804,
+     "ci_low": -4.220454553363504,
+     "ci_high": -1.5583046193700572,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 17949.0,
+     "diff": -83.0,
+     "ci_low": -83.0,
+     "ci_high": -83.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 2994.366558933156,
+     "diff": -11.086363593963688,
+     "ci_low": -12.308980940104174,
+     "ci_high": -9.863746247823201,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.269099443859768,
+     "diff": -0.024365438399930994,
+     "ci_low": -0.02492742415790109,
+     "ci_high": -0.023803452641960897,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 170.4,
+     "diff": -3.0000000000000058,
+     "ci_low": -9.269090651761239,
+     "ci_high": 3.269090651761227,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.480472449718647,
+     "diff": -0.0004503541855228832,
+     "ci_low": -0.04228487050559209,
+     "ci_high": 0.04138416213454633,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 519.2939390729,
+     "diff": 0.7461367258019436,
+     "ci_low": -16.25371610698487,
+     "ci_high": 17.745989558588757,
+     "n": 5
+    }
    }
   },
   {
@@ -2389,132 +1681,86 @@
    ],
    "card_id": "F4",
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 373.0,
-      "diff": -6.800000000000011,
-      "ci_low": -11.478198354067535,
-      "ci_high": -2.1218016459324875,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.07199200088879,
-      "diff": -0.03426354480774929,
-      "ci_low": -0.060508883873790054,
-      "ci_high": -0.008018205741708532,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 64.04351512133391,
-      "diff": -2.736467993355018,
-      "ci_low": -3.492520787173773,
-      "ci_high": -1.9804151995362629,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 146.09086836196101,
-      "diff": -5.203621842098502,
-      "ci_low": -7.2955647026273045,
-      "ci_high": -3.1116789815696997,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18002.0,
-      "diff": -30.0,
-      "ci_low": -30.0,
-      "ci_high": -30.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 2996.9775887416226,
-      "diff": -8.475333785496877,
-      "ci_low": -11.041869107445544,
-      "ci_high": -5.9087984635482105,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.2846580972958686,
-      "diff": -0.008806784963830517,
-      "ci_low": -0.009009912346229706,
-      "ci_high": -0.008603657581431327,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 172.4,
-      "diff": -1.0000000000000058,
-      "ci_low": -4.92585684914772,
-      "ci_high": 2.925856849147708,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.456171536495946,
-      "diff": -0.024751267408225353,
-      "ci_low": -0.04555908962000439,
-      "ci_high": -0.003943445196446318,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 495.9181619467696,
-      "diff": -22.629640400328448,
-      "ci_low": -44.26788418563139,
-      "ci_high": -0.9913966150255078,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 373.0,
+     "diff": -6.800000000000011,
+     "ci_low": -11.478198354067535,
+     "ci_high": -2.1218016459324875,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.07199200088879,
+     "diff": -0.03426354480774929,
+     "ci_low": -0.060508883873790054,
+     "ci_high": -0.008018205741708532,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 64.04351512133391,
+     "diff": -2.736467993355018,
+     "ci_low": -3.492520787173773,
+     "ci_high": -1.9804151995362629,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 146.09086836196101,
+     "diff": -5.203621842098502,
+     "ci_low": -7.2955647026273045,
+     "ci_high": -3.1116789815696997,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18002.0,
+     "diff": -30.0,
+     "ci_low": -30.0,
+     "ci_high": -30.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 2996.9775887416226,
+     "diff": -8.475333785496877,
+     "ci_low": -11.041869107445544,
+     "ci_high": -5.9087984635482105,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.2846580972958686,
+     "diff": -0.008806784963830517,
+     "ci_low": -0.009009912346229706,
+     "ci_high": -0.008603657581431327,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 172.4,
+     "diff": -1.0000000000000058,
+     "ci_low": -4.92585684914772,
+     "ci_high": 2.925856849147708,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.456171536495946,
+     "diff": -0.024751267408225353,
+     "ci_low": -0.04555908962000439,
+     "ci_high": -0.003943445196446318,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 495.9181619467696,
+     "diff": -22.629640400328448,
+     "ci_low": -44.26788418563139,
+     "ci_high": -0.9913966150255078,
+     "n": 5
+    }
    }
   },
   {
@@ -2538,132 +1784,86 @@
    ],
    "card_id": "F5",
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 369.2,
-      "diff": -10.600000000000046,
-      "ci_low": -30.436263422328338,
-      "ci_high": 9.236263422328248,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.055107152797105,
-      "diff": -0.05114839289943411,
-      "ci_low": -0.16058673508528615,
-      "ci_high": 0.058289949286417925,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 65.22328716245165,
-      "diff": -1.5566959522372925,
-      "ci_low": -2.3235306243348726,
-      "ci_high": -0.7898612801397122,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 147.68918204913615,
-      "diff": -3.6053081549233554,
-      "ci_low": -7.507779202897488,
-      "ci_high": 0.2971628930507775,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 17965.0,
-      "diff": -67.0,
-      "ci_low": -67.0,
-      "ci_high": -67.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 2993.5186429700166,
-      "diff": -11.934279557102764,
-      "ci_low": -13.137066023104634,
-      "ci_high": -10.731493091100894,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.273796395840478,
-      "diff": -0.01966848641922141,
-      "ci_low": -0.020122137573245245,
-      "ci_high": -0.019214835265197575,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 169.0,
-      "diff": -4.400000000000011,
-      "ci_low": -10.705859827176615,
-      "ci_high": 1.9058598271765934,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.429724464236014,
-      "diff": -0.05119833966815577,
-      "ci_low": -0.08241150335356222,
-      "ci_high": -0.01998517598274932,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 490.3947307180805,
-      "diff": -28.153071629017496,
-      "ci_low": -61.176398741666404,
-      "ci_high": 4.870255483631411,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 369.2,
+     "diff": -10.600000000000046,
+     "ci_low": -30.436263422328338,
+     "ci_high": 9.236263422328248,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.055107152797105,
+     "diff": -0.05114839289943411,
+     "ci_low": -0.16058673508528615,
+     "ci_high": 0.058289949286417925,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 65.22328716245165,
+     "diff": -1.5566959522372925,
+     "ci_low": -2.3235306243348726,
+     "ci_high": -0.7898612801397122,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 147.68918204913615,
+     "diff": -3.6053081549233554,
+     "ci_low": -7.507779202897488,
+     "ci_high": 0.2971628930507775,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 17965.0,
+     "diff": -67.0,
+     "ci_low": -67.0,
+     "ci_high": -67.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 2993.5186429700166,
+     "diff": -11.934279557102764,
+     "ci_low": -13.137066023104634,
+     "ci_high": -10.731493091100894,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.273796395840478,
+     "diff": -0.01966848641922141,
+     "ci_low": -0.020122137573245245,
+     "ci_high": -0.019214835265197575,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 169.0,
+     "diff": -4.400000000000011,
+     "ci_low": -10.705859827176615,
+     "ci_high": 1.9058598271765934,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.429724464236014,
+     "diff": -0.05119833966815577,
+     "ci_low": -0.08241150335356222,
+     "ci_high": -0.01998517598274932,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 490.3947307180805,
+     "diff": -28.153071629017496,
+     "ci_low": -61.176398741666404,
+     "ci_high": 4.870255483631411,
+     "n": 5
+    }
    }
   },
   {
@@ -2690,132 +1890,86 @@
    ],
    "card_id": "F6",
    "effect": {
-    "turnaround": [
-     {
-      "key": "breaches",
-      "label": "customers who missed the SLA",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 379.8,
-      "with": 371.8,
-      "diff": -8.00000000000001,
-      "ci_low": -16.188023644323465,
-      "ci_high": 0.18802364432344376,
-      "n": 5
-     },
-     {
-      "key": "turnaround.breach_pct",
-      "label": "SLA breach rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 2.1062555456965395,
-      "with": 2.064523293908601,
-      "diff": -0.0417322517879382,
-      "ci_low": -0.08724876138611659,
-      "ci_high": 0.0037842578102401936,
-      "n": 5
-     },
-     {
-      "key": "turnaround.mean_resolution_min",
-      "label": "mean resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 66.77998311468893,
-      "with": 65.47485057516907,
-      "diff": -1.3051325395198732,
-      "ci_low": -2.2726969568921525,
-      "ci_high": -0.337568122147594,
-      "n": 5
-     },
-     {
-      "key": "turnaround.p90_resolution_min",
-      "label": "P90 resolution time",
-      "unit": "min",
-      "better": "lower",
-      "without": 151.2944902040595,
-      "with": 147.47430399159123,
-      "diff": -3.8201862124682746,
-      "ci_low": -8.350306221151891,
-      "ci_high": 0.709933796215342,
-      "n": 5
-     }
-    ],
-    "productivity": [
-     {
-      "key": "tickets",
-      "label": "tickets that reach an agent",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 18032.0,
-      "with": 18009.0,
-      "diff": -23.0,
-      "ci_low": -23.0,
-      "ci_high": -23.0,
-      "n": 5
-     },
-     {
-      "key": "productivity.busy_agent_hours",
-      "label": "agent-hours of work",
-      "unit": "h",
-      "better": "lower",
-      "without": 3005.4529225271194,
-      "with": 2999.0175821434977,
-      "diff": -6.435340383622224,
-      "ci_low": -8.339070797992125,
-      "ci_high": -4.531609969252322,
-      "n": 5
-     },
-     {
-      "key": "productivity.tickets_per_agent_hour",
-      "label": "tickets resolved per agent-hour",
-      "unit": "tickets/h",
-      "better": null,
-      "without": 5.2934648822597,
-      "with": 5.286713013787429,
-      "diff": -0.006751868472269784,
-      "ci_low": -0.006907599465442234,
-      "ci_high": -0.006596137479097335,
-      "n": 5
-     },
-     {
-      "key": "transfers",
-      "label": "transfers between teams",
-      "unit": "tickets",
-      "better": "lower",
-      "without": 173.4,
-      "with": 170.2,
-      "diff": -3.2000000000000055,
-      "ci_low": -8.848324409946725,
-      "ci_high": 2.4483244099467143,
-      "n": 5
-     }
-    ],
-    "quality": [
-     {
-      "key": "quality.reopen_rate_pct",
-      "label": "reopen rate",
-      "unit": "%",
-      "better": "lower",
-      "without": 4.4809228039041695,
-      "with": 4.449997223610417,
-      "diff": -0.03092558029375301,
-      "ci_low": -0.07947876388714409,
-      "ci_high": 0.017627603299638063,
-      "n": 5
-     },
-     {
-      "key": "quality.late_minutes_per_100",
-      "label": "minutes past SLA per 100 tickets",
-      "unit": "min",
-      "better": "lower",
-      "without": 518.547802347098,
-      "with": 502.39236883501235,
-      "diff": -16.155433512085644,
-      "ci_low": -42.24577433643905,
-      "ci_high": 9.934907312267761,
-      "n": 5
-     }
-    ]
+    "breaches": {
+     "without": 379.8,
+     "with": 371.8,
+     "diff": -8.00000000000001,
+     "ci_low": -16.188023644323465,
+     "ci_high": 0.18802364432344376,
+     "n": 5
+    },
+    "breach_pct": {
+     "without": 2.1062555456965395,
+     "with": 2.064523293908601,
+     "diff": -0.0417322517879382,
+     "ci_low": -0.08724876138611659,
+     "ci_high": 0.0037842578102401936,
+     "n": 5
+    },
+    "mean_resolution_min": {
+     "without": 66.77998311468893,
+     "with": 65.47485057516907,
+     "diff": -1.3051325395198732,
+     "ci_low": -2.2726969568921525,
+     "ci_high": -0.337568122147594,
+     "n": 5
+    },
+    "p90_resolution_min": {
+     "without": 151.2944902040595,
+     "with": 147.47430399159123,
+     "diff": -3.8201862124682746,
+     "ci_low": -8.350306221151891,
+     "ci_high": 0.709933796215342,
+     "n": 5
+    },
+    "tickets": {
+     "without": 18032.0,
+     "with": 18009.0,
+     "diff": -23.0,
+     "ci_low": -23.0,
+     "ci_high": -23.0,
+     "n": 5
+    },
+    "busy_agent_hours": {
+     "without": 3005.4529225271194,
+     "with": 2999.0175821434977,
+     "diff": -6.435340383622224,
+     "ci_low": -8.339070797992125,
+     "ci_high": -4.531609969252322,
+     "n": 5
+    },
+    "tickets_per_agent_hour": {
+     "without": 5.2934648822597,
+     "with": 5.286713013787429,
+     "diff": -0.006751868472269784,
+     "ci_low": -0.006907599465442234,
+     "ci_high": -0.006596137479097335,
+     "n": 5
+    },
+    "transfers": {
+     "without": 173.4,
+     "with": 170.2,
+     "diff": -3.2000000000000055,
+     "ci_low": -8.848324409946725,
+     "ci_high": 2.4483244099467143,
+     "n": 5
+    },
+    "reopen_rate_pct": {
+     "without": 4.4809228039041695,
+     "with": 4.449997223610417,
+     "diff": -0.03092558029375301,
+     "ci_low": -0.07947876388714409,
+     "ci_high": 0.017627603299638063,
+     "n": 5
+    },
+    "late_minutes_per_100": {
+     "without": 518.547802347098,
+     "with": 502.39236883501235,
+     "diff": -16.155433512085644,
+     "ci_low": -42.24577433643905,
+     "ci_high": 9.934907312267761,
+     "n": 5
+    }
    }
   }
  ],
@@ -2841,132 +1995,86 @@
    "pb_F6"
   ],
   "effect": {
-   "turnaround": [
-    {
-     "key": "breaches",
-     "label": "customers who missed the SLA",
-     "unit": "tickets",
-     "better": "lower",
-     "without": 379.8,
-     "with": 331.0,
-     "diff": -48.8,
-     "ci_low": -63.1280329647862,
-     "ci_high": -34.471967035213794,
-     "n": 5
-    },
-    {
-     "key": "turnaround.breach_pct",
-     "label": "SLA breach rate",
-     "unit": "%",
-     "better": "lower",
-     "without": 2.1062555456965395,
-     "with": 1.8568383260406147,
-     "diff": -0.24941721965592462,
-     "ci_low": -0.32782573927295194,
-     "ci_high": -0.1710087000388973,
-     "n": 5
-    },
-    {
-     "key": "turnaround.mean_resolution_min",
-     "label": "mean resolution time",
-     "unit": "min",
-     "better": "lower",
-     "without": 66.77998311468893,
-     "with": 54.23104650055406,
-     "diff": -12.548936614134885,
-     "ci_low": -14.864886845904683,
-     "ci_high": -10.232986382365086,
-     "n": 5
-    },
-    {
-     "key": "turnaround.p90_resolution_min",
-     "label": "P90 resolution time",
-     "unit": "min",
-     "better": "lower",
-     "without": 151.2944902040595,
-     "with": 127.06045529405091,
-     "diff": -24.234034910008603,
-     "ci_low": -29.857213756072746,
-     "ci_high": -18.61085606394446,
-     "n": 5
-    }
-   ],
-   "productivity": [
-    {
-     "key": "tickets",
-     "label": "tickets that reach an agent",
-     "unit": "tickets",
-     "better": "lower",
-     "without": 18032.0,
-     "with": 17826.0,
-     "diff": -206.0,
-     "ci_low": -206.0,
-     "ci_high": -206.0,
-     "n": 5
-    },
-    {
-     "key": "productivity.busy_agent_hours",
-     "label": "agent-hours of work",
-     "unit": "h",
-     "better": "lower",
-     "without": 3005.4529225271194,
-     "with": 2939.1284910302884,
-     "diff": -66.32443149683077,
-     "ci_low": -71.53399767781104,
-     "ci_high": -61.1148653158505,
-     "n": 5
-    },
-    {
-     "key": "productivity.tickets_per_agent_hour",
-     "label": "tickets resolved per agent-hour",
-     "unit": "tickets/h",
-     "better": null,
-     "without": 5.2934648822597,
-     "with": 5.2357277308633146,
-     "diff": -0.057737151396384336,
-     "ci_low": -0.06572626532243692,
-     "ci_high": -0.04974803747033175,
-     "n": 5
-    },
-    {
-     "key": "transfers",
-     "label": "transfers between teams",
-     "unit": "tickets",
-     "better": "lower",
-     "without": 173.4,
-     "with": 118.2,
-     "diff": -55.2,
-     "ci_low": -59.79509763117173,
-     "ci_high": -50.60490236882828,
-     "n": 5
-    }
-   ],
-   "quality": [
-    {
-     "key": "quality.reopen_rate_pct",
-     "label": "reopen rate",
-     "unit": "%",
-     "better": "lower",
-     "without": 4.4809228039041695,
-     "with": 4.288118478626726,
-     "diff": -0.1928043252774451,
-     "ci_low": -0.26463298296861504,
-     "ci_high": -0.12097566758627516,
-     "n": 5
-    },
-    {
-     "key": "quality.late_minutes_per_100",
-     "label": "minutes past SLA per 100 tickets",
-     "unit": "min",
-     "better": "lower",
-     "without": 518.547802347098,
-     "with": 356.8286664095974,
-     "diff": -161.71913593750057,
-     "ci_low": -255.06606855586404,
-     "ci_high": -68.3722033191371,
-     "n": 5
-    }
-   ]
+   "breaches": {
+    "without": 379.8,
+    "with": 331.0,
+    "diff": -48.8,
+    "ci_low": -63.1280329647862,
+    "ci_high": -34.471967035213794,
+    "n": 5
+   },
+   "breach_pct": {
+    "without": 2.1062555456965395,
+    "with": 1.8568383260406147,
+    "diff": -0.24941721965592462,
+    "ci_low": -0.32782573927295194,
+    "ci_high": -0.1710087000388973,
+    "n": 5
+   },
+   "mean_resolution_min": {
+    "without": 66.77998311468893,
+    "with": 54.23104650055406,
+    "diff": -12.548936614134885,
+    "ci_low": -14.864886845904683,
+    "ci_high": -10.232986382365086,
+    "n": 5
+   },
+   "p90_resolution_min": {
+    "without": 151.2944902040595,
+    "with": 127.06045529405091,
+    "diff": -24.234034910008603,
+    "ci_low": -29.857213756072746,
+    "ci_high": -18.61085606394446,
+    "n": 5
+   },
+   "tickets": {
+    "without": 18032.0,
+    "with": 17826.0,
+    "diff": -206.0,
+    "ci_low": -206.0,
+    "ci_high": -206.0,
+    "n": 5
+   },
+   "busy_agent_hours": {
+    "without": 3005.4529225271194,
+    "with": 2939.1284910302884,
+    "diff": -66.32443149683077,
+    "ci_low": -71.53399767781104,
+    "ci_high": -61.1148653158505,
+    "n": 5
+   },
+   "tickets_per_agent_hour": {
+    "without": 5.2934648822597,
+    "with": 5.2357277308633146,
+    "diff": -0.057737151396384336,
+    "ci_low": -0.06572626532243692,
+    "ci_high": -0.04974803747033175,
+    "n": 5
+   },
+   "transfers": {
+    "without": 173.4,
+    "with": 118.2,
+    "diff": -55.2,
+    "ci_low": -59.79509763117173,
+    "ci_high": -50.60490236882828,
+    "n": 5
+   },
+   "reopen_rate_pct": {
+    "without": 4.4809228039041695,
+    "with": 4.288118478626726,
+    "diff": -0.1928043252774451,
+    "ci_low": -0.26463298296861504,
+    "ci_high": -0.12097566758627516,
+    "n": 5
+   },
+   "late_minutes_per_100": {
+    "without": 518.547802347098,
+    "with": 356.8286664095974,
+    "diff": -161.71913593750057,
+    "ci_low": -255.06606855586404,
+    "ci_high": -68.3722033191371,
+    "n": 5
+   }
   }
  }
 }

@@ -1,5 +1,76 @@
 # plan.py — "Your plan": accept a recommendation, see what it changes
 
+## For the dashboard: exact shapes (read this first)
+
+**KPI keys** (no dots, so they work in evidence paths), in display order:
+
+| Heading | Keys |
+|---|---|
+| `turnaround` | `breaches`, `breach_pct`, `mean_resolution_min`, `p90_resolution_min` |
+| `productivity` | `tickets`, `busy_agent_hours`, `tickets_per_agent_hour`, `transfers` |
+| `quality` | `reopen_rate_pct`, `late_minutes_per_100` |
+
+`headings`, `labels`, `units` and `better` ("lower" / "higher" / `null`) come with the data, in
+`results.plan` and in every live answer, so the screen never hard-codes them.
+`tickets_per_agent_hour` has `better: null`: it falls when a playbook prevents tickets.
+
+**Item ids** are stable strings, safe to show next to each recommendation:
+- staffing move: `staff_<first day of its week>_<agent id>`, e.g. `staff_43_C02`;
+- playbook: the playbook's own id, e.g. `pb_F2` (same as `results.playbooks.playbooks[*].id`).
+
+`results.plan.items[i]` for i = 0..11 are the staffing moves in **the same order** as
+`results.recommendations.staffing_moves[i]` (same agent, same week). So a screen that lists
+`staffing_moves` sends `results.plan.items[i].id`, not its own `move-<i>` id; the server answers 400
+to ids it does not know.
+
+**1. Precomputed, each item alone** — `results.plan` (from `GET /api/results`):
+```
+plan = {
+  test_days: [43, 56], warmup_day: 42, seeds: [1, 2, 3, 4, 5], policy: "opslens",
+  without: "OpsLens dispatch on the published roster, nothing accepted (...)",
+  headings: {turnaround: [keys], productivity: [keys], quality: [keys]},
+  labels: {key: "customers who missed the SLA", ...}, units: {key: "tickets", ...},
+  better: {key: "lower" | "higher" | null},
+  base_kpis: {key: {mean, std}},            // nothing accepted, 14 test days
+  alerts_used: [...],                        // used by the status-banner playbook; ignore
+  items: [ITEM, ...],                        // 18: 12 staffing moves, then 6 playbooks
+  all_items: {ids: [...], effect: EFFECT}    // every item accepted together (its own run, not a sum)
+}
+ITEM = {
+  id, kind: "staffing" | "playbook", title, owner, when: "days 43-49", first_day, last_day,
+  assumptions: [str],                        // show them; "ASSUMPTION: ..." = a business guess
+  change: {agent_id, start_hour, days_off},  // staffing only
+  action, scenario, card_id,                 // playbook only (card_id → patterns.cards)
+  effect: EFFECT                             // this item ALONE vs nothing accepted
+}
+EFFECT = {key: {without, with, diff, ci_low, ci_high, n}}
+```
+`diff` = mean over the 5 paired seeds of (with − without); `[ci_low, ci_high]` = its 95% CI. If the
+CI contains 0, say "no clear effect". Evidence path example: `plan.items[13].effect.breaches.diff`.
+
+**2. Live, the whole plan on one day** — `POST /api/plan/impact`:
+```
+request:  {"day": 48, "items": ["staff_43_C02", "pb_F2"]}   // day 43-56; ids in any order; [] allowed
+response: {
+  day: 48, weekday: "Sat", policy: "opslens", seeds: [1, 2, 3],
+  items: [{id, kind, title, when, in_effect, tickets_removed, tickets_rerouted, agents_changed}],
+  headings: {turnaround: [keys], productivity: [keys], quality: [keys]},
+  labels: {key: str}, units: {key: str}, better: {key: "lower" | "higher" | null},
+  without: {key: number}, with: {key: number}, delta: {key: number},  // means over the 3 seeds
+  delta_by_seed: {key: [d1, d2, d3]},                                 // shows how noisy one day is
+  seconds: 17.7,
+  note: "Simulated now: OpsLens dispatch on day 48 (day 47 as warm-up), 3 seeds; ..."
+}
+errors:   400 {"error": "unknown plan item ids: move-0"}  (unknown or repeated id, day outside 43-56)
+          503 {"error": "results.json has no plan items yet: run make eval"}
+```
+- `in_effect: false` = the item changes nothing that day (a week-43 move asked for day 52, a day-off
+  swap on a day it does not touch, a status banner on a day with no alert). Grey it out.
+- Time: first request ~27-31 s (6 worker processes start and load the data), a new plan ~18 s, the
+  same plan again instant. Tip: when the plan panel opens, POST `{"day": 48, "items": []}` in the
+  background; it starts the workers and caches the day's "without" runs, so the first real click
+  takes ~18 s. Requests are served one at a time.
+
 ## What it does
 - OpsLens recommends two kinds of big decisions a person must approve: **staffing moves**
   (one agent, one week, a new start time or day off) and **fix-at-source playbooks**
@@ -30,7 +101,7 @@
    with OpsLens, without and with ALL accepted items, for 3 seeds. One run takes about 20 s, so
    the 6 runs go to 6 worker processes at the same time. Finished runs are kept in memory: the
    "without" runs of a day are shared by every plan asked for that day. Measured on this laptop:
-   first request 26.7–28.5 s (the workers start and load the data), a new plan on a day already
+   first request 26.7–30.8 s (the workers start and load the data), a new plan on a day already
    asked about 17.7 s, a new day 18.5 s, the same plan again 0.0 s.
 6. **In effect?** A move only matters on days when the agent's shift is different. "Day off on
    Monday instead of Friday" changes nothing on a Wednesday. The endpoint says so per item
@@ -88,18 +159,7 @@ Asked for day 52, the week-43 move is `in_effect: false` and every delta is exac
 
 ## How to read the code
 `opslens/plan.py`: `staffing_items()` / `playbook_items()` (the catalogue) → `check_ids()` →
-`apply_items()` → `effect_by_heading()` (make eval) or `run_plan_day()` + `impact_answer()` (live).
+`apply_items()` → `effect_by_kpi()` (make eval) or `run_plan_day()` + `impact_answer()` (live).
 Then `eval/run_plan_items.py` → `main()`, and `server/app.py` → `plan_impact()`,
 `run_plan_jobs()`. The one-day runner is `opslens/whatif.py` → `simulate_day()`, shared with the
 What-if panel. Tests: `tests/test_plan.py`.
-
-## For the dashboard (response shapes)
-- `results.plan.items[*]`: `id`, `kind` (staffing / playbook), `title`, `owner`, `when`,
-  `assumptions`, `effect` = `{turnaround: [row], productivity: [row], quality: [row]}`, each row
-  `{key, label, unit, better, without, with, diff, ci_low, ci_high, n}`. `results.plan.all_items`
-  has the same `effect` for every item together; `results.plan.kpis` lists the rows in order.
-- `POST /api/plan/impact {"day": 48, "items": ["staff_43_C02", "pb_F2"]}` →
-  `{day, weekday, policy, seeds, items: [{id, kind, title, when, in_effect, tickets_removed,
-  tickets_rerouted, agents_changed}], turnaround: [row], productivity: [row], quality: [row],
-  runtime_s, note}`, each row `{key, label, unit, better, without, with, delta, delta_by_seed}`.
-  Unknown or repeated id, or a day outside 43-56 → 400 `{"error": ...}`; no `plan` in results → 503.

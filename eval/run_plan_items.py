@@ -36,8 +36,7 @@ sys.path.insert(0, str(ROOT))
 from opslens import risk  # noqa: E402
 from opslens.config import load_config  # noqa: E402
 from opslens.impact import mean_std, summarize  # noqa: E402
-from opslens.plan import (apply_items, effect_by_heading, kpi_info, plan_kpis, playbook_items,  # noqa: E402
-                          staffing_items)
+from opslens.plan import apply_items, effect_by_kpi, kpi_info, plan_kpis, playbook_items, staffing_items  # noqa: E402
 from opslens.policies import OpsLensPolicy, OpsLensSettings  # noqa: E402
 from opslens.simulate import simulate  # noqa: E402
 from opslens.world import build_world, day_bounds, load_agents  # noqa: E402
@@ -91,20 +90,20 @@ def main() -> int:
     base = runs["none"]
 
     for item in items:
-        item["effect"] = effect_by_heading(base, runs[item["id"]])
-        d = item["effect"]["turnaround"][0]
+        item["effect"] = effect_by_kpi(base, runs[item["id"]])
+        d = item["effect"]["breaches"]
         print(f"{item['id']:14s} breaches {d['diff']:+7.1f} [{d['ci_low']:+.1f}, {d['ci_high']:+.1f}]")
-    together = {"ids": [item["id"] for item in items], "effect": effect_by_heading(base, runs["all"])}
-    d = together["effect"]["turnaround"][0]
+    together = {"ids": [item["id"] for item in items], "effect": effect_by_kpi(base, runs["all"])}
+    d = together["effect"]["breaches"]
     print(f"{'all items':14s} breaches {d['diff']:+7.1f} [{d['ci_low']:+.1f}, {d['ci_high']:+.1f}]")
     base_kpis = {k: dict(zip(("mean", "std"), mean_std([r[k] for r in base]))) for k in base[0]}
-    print(f"without (nothing accepted): breach {base_kpis['turnaround.breach_pct']['mean']:.2f}%")
+    print(f"without (nothing accepted): breach {base_kpis['breach_pct']['mean']:.2f}%")
 
     PARTS.mkdir(parents=True, exist_ok=True)
     (PARTS / "plan_items.json").write_text(json.dumps({
         "test_days": [FIRST, LAST], "warmup_day": FIRST - 1, "seeds": SEEDS, "policy": "opslens",
         "without": "OpsLens dispatch on the published roster, nothing accepted (no staffing moves, no playbooks)",
-        "kpis": kpi_info(), "alerts_used": alerts, "base_kpis": base_kpis,
+        **kpi_info(), "alerts_used": alerts, "base_kpis": base_kpis,
         "items": items, "all_items": together,
     }, indent=1), encoding="utf-8")
     print(f"wrote eval/parts/plan_items.json ({time.perf_counter() - started:.0f}s)")

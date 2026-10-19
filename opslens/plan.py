@@ -37,20 +37,20 @@ from opslens.impact import mean_std, paired_ci
 from opslens.playbooks import apply_scenario
 from opslens.simulate import Agent
 
-# (heading, KPI key, plain words, unit, which direction is better). "breaches" and "transfers"
-# are counts made from the percentages; the rest come straight from impact.summarize.
+# (KPI key, heading, plain words, unit, which direction is better). Keys have no dots, so the
+# dashboard can use them in evidence paths ("planimpact.delta.breaches").
 PLAN_KPIS = [
-    ("turnaround", "breaches", "customers who missed the SLA", "tickets", "lower"),
-    ("turnaround", "turnaround.breach_pct", "SLA breach rate", "%", "lower"),
-    ("turnaround", "turnaround.mean_resolution_min", "mean resolution time", "min", "lower"),
-    ("turnaround", "turnaround.p90_resolution_min", "P90 resolution time", "min", "lower"),
-    ("productivity", "tickets", "tickets that reach an agent", "tickets", "lower"),
-    ("productivity", "productivity.busy_agent_hours", "agent-hours of work", "h", "lower"),
+    ("breaches", "turnaround", "customers who missed the SLA", "tickets", "lower"),
+    ("breach_pct", "turnaround", "SLA breach rate", "%", "lower"),
+    ("mean_resolution_min", "turnaround", "mean resolution time", "min", "lower"),
+    ("p90_resolution_min", "turnaround", "P90 resolution time", "min", "lower"),
+    ("tickets", "productivity", "tickets that reach an agent", "tickets", "lower"),
+    ("busy_agent_hours", "productivity", "agent-hours of work", "h", "lower"),
     # Falls when a playbook prevents tickets: agents are less busy, not slower. So no direction.
-    ("productivity", "productivity.tickets_per_agent_hour", "tickets resolved per agent-hour", "tickets/h", None),
-    ("productivity", "transfers", "transfers between teams", "tickets", "lower"),
-    ("quality", "quality.reopen_rate_pct", "reopen rate", "%", "lower"),
-    ("quality", "quality.late_minutes_per_100", "minutes past SLA per 100 tickets", "min", "lower"),
+    ("tickets_per_agent_hour", "productivity", "tickets resolved per agent-hour", "tickets/h", None),
+    ("transfers", "productivity", "transfers between teams", "tickets", "lower"),
+    ("reopen_rate_pct", "quality", "reopen rate", "%", "lower"),
+    ("late_minutes_per_100", "quality", "minutes past SLA per 100 tickets", "min", "lower"),
 ]
 HEADINGS = ["turnaround", "productivity", "quality"]
 DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -178,41 +178,56 @@ def item_changes(item: dict, info: dict, agents_before: list[Agent], agents_afte
 # ---- KPIs under the three headings ------------------------------------------------------------
 
 def plan_kpis(k: dict[str, float]) -> dict[str, float]:
-    """The plan's KPIs for one run (from impact.summarize), with counts made from the percentages."""
+    """The plan's KPIs for one run, from impact.summarize. Counts are made from the percentages:
+    2% of 1,500 tickets = 30 customers who missed the SLA."""
     n = k["tickets"]
-    return {**{key: float(k[key]) for _, key, _, _, _ in PLAN_KPIS if key in k},
-            "breaches": k["turnaround.breach_pct"] * n / 100.0,
-            "transfers": k["productivity.transfers_per_100"] * n / 100.0, "tickets": float(n)}
+    return {
+        "breaches": k["turnaround.breach_pct"] * n / 100.0,
+        "breach_pct": k["turnaround.breach_pct"],
+        "mean_resolution_min": k["turnaround.mean_resolution_min"],
+        "p90_resolution_min": k["turnaround.p90_resolution_min"],
+        "tickets": float(n),
+        "busy_agent_hours": k["productivity.busy_agent_hours"],
+        "tickets_per_agent_hour": k["productivity.tickets_per_agent_hour"],
+        "transfers": k["productivity.transfers_per_100"] * n / 100.0,
+        "reopen_rate_pct": k["quality.reopen_rate_pct"],
+        "late_minutes_per_100": k["quality.late_minutes_per_100"],
+    }
 
 
-def kpi_info() -> list[dict]:
-    """The KPI list for the dashboard: heading, key, plain words, unit, better direction."""
-    return [{"heading": h, "key": key, "label": label, "unit": unit, "better": better}
-            for h, key, label, unit, better in PLAN_KPIS]
+def kpi_info() -> dict:
+    """How to show the KPIs: which keys go under which heading (in order), and each key's plain
+    words, unit and better direction. The same block is in results.plan and in every live answer."""
+    return {
+        "headings": {h: [key for key, heading, _, _, _ in PLAN_KPIS if heading == h] for h in HEADINGS},
+        "labels": {key: label for key, _, label, _, _ in PLAN_KPIS},
+        "units": {key: unit for key, _, _, unit, _ in PLAN_KPIS},
+        "better": {key: better for key, _, _, _, better in PLAN_KPIS},
+    }
 
 
-def effect_by_heading(without: list[dict], with_plan: list[dict]) -> dict[str, list[dict]]:
-    """Precomputed effect over paired seeds: mean without, mean with, mean difference and its 95%
-    CI. without[i] and with_plan[i] must be the same seed."""
-    out: dict[str, list[dict]] = {h: [] for h in HEADINGS}
-    for heading, key, label, unit, better in PLAN_KPIS:
+def effect_by_kpi(without: list[dict], with_plan: list[dict]) -> dict[str, dict]:
+    """Precomputed effect over paired seeds, per KPI: mean without, mean with, mean difference and
+    its 95% CI. without[i] and with_plan[i] must be the same seed."""
+    out = {}
+    for key, _, _, _, _ in PLAN_KPIS:
         a, b = [r[key] for r in without], [r[key] for r in with_plan]
         ci = paired_ci(b, a)
-        out[heading].append({"key": key, "label": label, "unit": unit, "better": better,
-                             "without": mean_std(a)[0], "with": mean_std(b)[0], "diff": ci["mean_diff"],
-                             "ci_low": ci["ci_low"], "ci_high": ci["ci_high"], "n": ci["n"]})
+        out[key] = {"without": mean_std(a)[0], "with": mean_std(b)[0], "diff": ci["mean_diff"],
+                    "ci_low": ci["ci_low"], "ci_high": ci["ci_high"], "n": ci["n"]}
     return out
 
 
-def delta_by_heading(without: list[dict], with_plan: list[dict]) -> dict[str, list[dict]]:
-    """Live answer for one day: means over the seeds, the change, and the change seed by seed."""
-    out: dict[str, list[dict]] = {h: [] for h in HEADINGS}
-    for heading, key, label, unit, better in PLAN_KPIS:
+def live_delta(without: list[dict], with_plan: list[dict]) -> dict[str, dict]:
+    """Live answer for one day, per KPI: mean over the seeds without and with, the change, and the
+    change seed by seed (so a noisy day shows as noisy)."""
+    out: dict[str, dict] = {"without": {}, "with": {}, "delta": {}, "delta_by_seed": {}}
+    for key, _, _, _, _ in PLAN_KPIS:
         a, b = [r[key] for r in without], [r[key] for r in with_plan]
-        out[heading].append({"key": key, "label": label, "unit": unit, "better": better,
-                             "without": round(sum(a) / len(a), 3), "with": round(sum(b) / len(b), 3),
-                             "delta": round((sum(b) - sum(a)) / len(a), 3),
-                             "delta_by_seed": [round(y - x, 3) for x, y in zip(a, b)]})
+        out["without"][key] = round(sum(a) / len(a), 3)
+        out["with"][key] = round(sum(b) / len(b), 3)
+        out["delta"][key] = round((sum(b) - sum(a)) / len(a), 3)
+        out["delta_by_seed"][key] = [round(y - x, 3) for x, y in zip(a, b)]
     return out
 
 
@@ -251,9 +266,9 @@ def plan_jobs(items: list[dict], day: int, seeds: list[int], alerts: list[dict],
 
 
 def impact_answer(items: list[dict], day: int, seeds: list[int], first_weekday: int,
-                  without: list[dict], with_plan: list[dict], runtime_s: float) -> dict:
+                  without: list[dict], with_plan: list[dict], seconds: float) -> dict:
     """The endpoint's answer: the items and what they change that day, then without / with /
-    delta under turnaround, productivity and quality."""
+    delta per KPI, and which KPIs go under turnaround, productivity and quality."""
     changes = with_plan[0]["changes"] if with_plan else {}
     return {
         "day": day,
@@ -262,8 +277,9 @@ def impact_answer(items: list[dict], day: int, seeds: list[int], first_weekday: 
         "seeds": seeds,
         "items": [{"id": item["id"], "kind": item["kind"], "title": item["title"], "when": item["when"],
                    **changes.get(item["id"], {})} for item in items],
-        **delta_by_heading([r["kpis"] for r in without], [r["kpis"] for r in with_plan]),
-        "runtime_s": round(runtime_s, 1),
+        **kpi_info(),
+        **live_delta([r["kpis"] for r in without], [r["kpis"] for r in with_plan]),
+        "seconds": round(seconds, 1),
         "note": (f"Simulated now: OpsLens dispatch on day {day} (day {day - 1} as warm-up), {len(seeds)} "
                  f"seed{'s' if len(seeds) > 1 else ''}; the same tickets and luck without and with the plan."),
     }
