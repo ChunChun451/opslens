@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import bisect
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable
 
 import numpy as np
@@ -558,6 +558,8 @@ class OpsLensPolicy:
             chosen = solve(candidates, slots, self.w["time_budget_s"], self.stats)
         else:
             chosen = greedy_by_agent(candidates, free)
+        # W8 (c): name the runner-up agent in the reason (text only, the same decisions)
+        chosen = with_runner_up(chosen, candidates, lambda i: self.world.ticket_ids[i])
         if self.log_window and self.log_window[0] <= now < self.log_window[1]:
             for c in chosen:
                 self.decision_log.append({"minute": now, "ticket_idx": c.ticket_idx, "agent_id": c.agent_id,
@@ -621,6 +623,40 @@ class OpsLensPolicy:
             for k in top_k(np.asarray(values), self.w["top_k_per_agent"]):
                 out.append(cands[k])
         return out
+
+
+def with_runner_up(chosen: list[Candidate], candidates: list[Candidate],
+                   ticket_name: Callable[[int], str] = str) -> list[Candidate]:
+    """Add "why this agent and not another" to each chosen pair's reason (Plan v4 W8 c).
+
+    The runner-up is the free agent with the next-best value for the SAME ticket (among the agents
+    for whom it was a top choice). The optimiser maximises the total value of all assignments,
+    so the runner-up can value the ticket MORE and still not get it: it was needed elsewhere.
+    Only the text changes; the chosen pairs are returned in the same order.
+    Example: "...; runner-up B03, value 0.31 lower" or "...; C04 valued it 0.12 higher but took T061200".
+    """
+    if not chosen:
+        return chosen
+    by_ticket: dict[int, list[Candidate]] = {}
+    for c in candidates:
+        by_ticket.setdefault(c.ticket_idx, []).append(c)
+    took = {c.agent_id: c.ticket_idx for c in chosen}
+    out = []
+    for c in chosen:
+        others = [o for o in by_ticket.get(c.ticket_idx, []) if o.agent_id != c.agent_id]
+        if not others:
+            note = "no other free agent could take it now"
+        else:
+            best = max(others, key=lambda o: o.value)
+            gap = c.value - best.value
+            if gap >= 0:
+                note = f"runner-up {best.agent_id}, value {gap:.2f} lower"
+            elif best.agent_id in took:
+                note = f"{best.agent_id} valued it {-gap:.2f} higher but took {ticket_name(took[best.agent_id])}"
+            else:
+                note = f"{best.agent_id} valued it {-gap:.2f} higher but the plan as a whole is better this way"
+        out.append(replace(c, reason=f"{c.reason}; {note}"))
+    return out
 
 
 def greedy_by_agent(candidates: list[Candidate], free: list[AgentView]) -> list[Candidate]:
