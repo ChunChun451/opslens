@@ -77,6 +77,6 @@
    "ahead_in_team_queue": 2
   }
  },
- "runner_up": "opslens/policies.py with_runner_up; regression: tests/test_w8.py (same assignments)",
+ "runner_up": "opslens/optimize.py with_runner_up, called in policies.py; regression: tests/test_w8.py (same assignments)",
  "seconds": 113.4
 }

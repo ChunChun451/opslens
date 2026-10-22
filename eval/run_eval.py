@@ -40,7 +40,8 @@ STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/ru
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
          ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
          ("realdesk", "eval/run_realdesk.py"),
-         ("plan_items", "eval/run_plan_items.py")]  # needs forecast + playbooks (added 19 Oct)
+         ("plan_items", "eval/run_plan_items.py"),
+         ("w8", "eval/run_w8.py")]  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)  # needs forecast + playbooks (added 19 Oct)
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -225,6 +226,8 @@ def assemble(timings: dict[str, float]) -> dict:
         results["plan"] = part("plan_items")
     if (PARTS / "concurrency.json").exists():  # Plan v4 W2: agents with 2-3 chats at once
         results["concurrency"] = part("concurrency")
+    if (PARTS / "w8.json").exists():  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
+        results["faithfulness"] = part("w8")
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)

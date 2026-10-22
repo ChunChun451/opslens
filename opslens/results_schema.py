@@ -337,6 +337,8 @@ class Results(Strict):
     # Plan v4 W1 (eval/run_worlds.py): 30 random worlds drawn from pre-registered ranges, every policy
     # on each world's test days, and the pre-registered rule. Run once; not a make-eval step.
     worlds: dict[str, Any] | None = None
+    # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
+    faithfulness: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".
