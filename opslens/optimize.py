@@ -40,7 +40,8 @@ from __future__ import annotations
 
 import math
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from typing import Callable
 
 import numpy as np
 from ortools.graph.python import min_cost_flow
@@ -152,6 +153,40 @@ def greedy(candidates: list[Candidate], slots: dict[str, int]) -> list[Candidate
         used.add(c.ticket_idx)
         left[c.agent_id] -= 1
     return chosen
+
+
+def with_runner_up(chosen: list[Candidate], candidates: list[Candidate],
+                   ticket_name: Callable[[int], str] = str) -> list[Candidate]:
+    """Add "why this agent and not another" to each chosen pair's reason (Plan v4 W8 c).
+
+    The runner-up is the free agent with the next-best value for the SAME ticket (among the agents
+    for whom it was a top choice). The optimiser maximises the total value of all assignments,
+    so the runner-up can value the ticket MORE and still not get it: it was needed elsewhere.
+    Only the text changes; the chosen pairs are returned in the same order.
+    Example: "...; runner-up B03, value 0.31 lower" or "...; C04 valued it 0.12 higher but took T061200".
+    """
+    if not chosen:
+        return chosen
+    by_ticket: dict[int, list[Candidate]] = {}
+    for c in candidates:
+        by_ticket.setdefault(c.ticket_idx, []).append(c)
+    took = {c.agent_id: c.ticket_idx for c in chosen}
+    out = []
+    for c in chosen:
+        others = [o for o in by_ticket.get(c.ticket_idx, []) if o.agent_id != c.agent_id]
+        if not others:
+            note = "no other free agent could take it now"
+        else:
+            best = max(others, key=lambda o: o.value)
+            gap = c.value - best.value
+            if gap >= 0:
+                note = f"runner-up {best.agent_id}, value {gap:.2f} lower"
+            elif best.agent_id in took:
+                note = f"{best.agent_id} valued it {-gap:.2f} higher but took {ticket_name(took[best.agent_id])}"
+            else:
+                note = f"{best.agent_id} valued it {-gap:.2f} higher but the plan as a whole is better this way"
+        out.append(replace(c, reason=f"{c.reason}; {note}"))
+    return out
 
 
 def top_k(values: np.ndarray, k: int) -> np.ndarray:
