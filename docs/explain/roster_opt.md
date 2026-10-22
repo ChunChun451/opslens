@@ -1,5 +1,38 @@
 # W5 — A CP-SAT weekly roster (pre-registered design)
 
+## For the dashboard: exact shape (read this first)
+`results.staffing_opt` (= `eval/parts/roster_opt.json`):
+```
+design:  {days: [36, 42], seeds, forecast, chosen: "cpsat_n4",
+          rosters: {published | greedy | cpsat_n1..n4: [{first_day, weighted_shortage, changes: [{agent_id, team, change}],
+                    status?, objective_agent_hours?, best_bound_agent_hours?, wall_s?}]},
+          means: {roster: {breach_pct, late_minutes_per_100, p90_resolution_min}}, per_seed: {roster: {kpi: [..]}},
+          chosen_minus_greedy | greedy_minus_published: {kpi: {mean_diff, ci95: [lo, hi]}}}
+confirm: {seeds: 26..45, candidate, means, per_seed, candidate_minus_greedy, adopted: false}
+test:    {days: [43, 56], seeds, greedy_equals_product_plan: true, rosters, means, per_seed,
+          candidate_minus_greedy | greedy_minus_published | candidate_minus_published}
+```
+Proof-screen line: "We tried an exact roster optimiser (CP-SAT). It beats our greedy planner on the
+planning score every week, but not on customers — so we keep the simple one."
+
+## Results (22 Oct) — NOT adopted (pre-registered rule failed at the design stage)
+| stage | published | greedy (product) | CP-SAT, N = 4 | CP-SAT − greedy, missed SLA |
+|---|---|---|---|---|
+| design, days 36–42, seeds 1–5 | 1.92% | 1.82% | 1.81% | −0.016 [−0.131, +0.099] |
+| confirm, same week, seeds 26–45 | — | 1.81% | 1.78% | −0.034 [−0.071, +0.002] |
+| test, days 43–56, seeds 1–5 (once) | 2.11% | **2.05%** | 2.25% | **+0.21 [+0.05, +0.37]** (worse) |
+
+- **The search works:** weighted shortage (the objective) greedy → CP-SAT: 1,308 → 1,274 (validation),
+  1,340 → 1,308 and 1,426 → 1,389 (test weeks). N = 1, 2 proven optimal in ~17 s; N = 3, 4 stop at 30 s.
+- **The objective is the limit:** fitting the Erlang-C need harder does not lower missed SLAs, and on the
+  test weeks it raises them. The P80 forecast's errors and the dispatcher's cross-skill rescues decide
+  the outcome more than an extra agent-hour where Erlang C asks for one.
+- Secondary: in the confirmation CP-SAT's P90 resolution was 7.3 min better [−10.2, −4.5]; on test days
+  it was not (+9.1 [−0.8, +19.1]). Greedy reproduces the product's plan and its 2.046% exactly.
+- What we say: "We tried the exact optimiser. It wins on the planner's own score and ties or loses on
+  customers, so the product keeps the simple, readable moves." Next lever (not done): an objective
+  measured in simulated breaches, not in Erlang shortfall.
+
 Plan v4, item W5. Owner: Claude 2. **Committed on 22 Oct 2026 before any W5 roster was built or
 simulated.** Results are reported whatever they are.
 
