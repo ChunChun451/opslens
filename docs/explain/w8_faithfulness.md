@@ -1,5 +1,29 @@
 # W8 — Are the explanations faithful? (pre-registered design)
 
+## For the dashboard: exact shape (read this first)
+`results.faithfulness` (= `eval/parts/w8.json`):
+```
+shown_threshold: 0.5, shown_rows,
+deletion: {rows, tickets, background_rows, rule_faithful: bool,
+    top1_vs_random1 | top3_vs_random3: {share_top_drops_more_logodds, share_top_drops_more_probability,
+        mean_drop_top_logodds, mean_drop_random_logodds, mean_drop_top_probability, mean_drop_random_probability,
+        top_minus_random_logodds: {mean, ci95}, share_ci95}},
+reasons_vs_plant: {planted_hindi_refund_payment | control_team_b_not_hindi:
+    {rows, tickets, share_skill_reason_in_top3, ci95}, skill_features, planted_top1_reason_counts},
+runner_up: "<where it lives>"
+```
+Assignment reasons (replay decisions, `decisions[*].reason`) now end with "runner-up B03, value 0.31
+lower", "C04 valued it 0.12 higher but took T061200" or "no other free agent could take it now".
+
+## Results (22 Oct) — pre-registered rule PASSED
+- Removing a ticket's top reason lowers its risk more than removing a random feature in **98.9%**
+  [98.5, 99.2] of 3,000 shown tickets; mean drop 3.18 vs 0.17 log-odds (0.37 vs 0.02 in
+  probability). Top 3 vs random 3: 100.0%.
+- Planted Hindi refund/payment tickets: language/skill in the top 3 reasons for **98.6%** [98.0, 99.2];
+  control (non-Hindi Team B): 63.0% [56.6, 68.5]. The control is not low: "capable agents on shift"
+  is a real driver at night for everyone, so the reasons name the mechanism (thin coverage), and for
+  Hindi tickets almost always.
+
 Plan v4, item W8. Owner: Claude 2. **Committed on 22 Oct 2026 before any W8 number was computed.**
 
 Why: every risk score on the Risks screen comes with "top 3 reasons" (TreeSHAP shares). Showing

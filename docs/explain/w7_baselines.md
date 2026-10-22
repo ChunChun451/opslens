@@ -1,5 +1,38 @@
 # W7 — Predictions against strong baselines (pre-registered design)
 
+## For the dashboard: exact shape (read this first)
+`results.prediction_baselines` (= `eval/parts/w7.json`):
+```
+risk_offline: {rows, tickets, models: {lightgbm | logistic_regression | time_left_rule: {
+    all_rows:   {auc, pr_auc, top10_precision, brier, base_rate, n, calibration: [{predicted, observed, n}] x10},
+    at_arrival: {same keys},
+    bootstrap:  {auc_ci95: [lo, hi], brier_ci95, lightgbm_minus_this_auc_ci95, lightgbm_minus_this_brier_ci95}}}}
+risk_in_dispatch: {seeds, days: [43, 56], variants: {lightgbm | logistic_regression | no_risk_model: {
+    breach_pct: {mean, std}, per_seed, late_minutes_per_100, p90_resolution_min,
+    minus_lightgbm: {mean, ci95: [lo, hi]}}}}
+alerts: {team_hours_scored, truth_outcome_hours, q80_team: {opslens, naive_last_week},
+    rules: {erlang_gap | rho_085: {truth_workload_hours, predictors: {opslens | naive_last_week: {
+        alert_hours, workload: {precision, recall, f1, blocks, block_precision, median_lead_hours_of_hits},
+        outcome: {same keys}}}}}}
+```
+Reliability chart: `calibration` bins (predicted vs observed) per model. Risks screen line:
+`alerts.rules.rho_085.predictors.opslens.workload` (precision = alert hit rate, recall, lead hours).
+
+## Results (22 Oct, test days 43–56)
+| | AUC | PR-AUC | top-10% precision | Brier | OpsLens dispatch, missed SLA |
+|---|---|---|---|---|---|
+| LightGBM (product) | **0.977** [0.974, 0.979] | 0.960 | 0.997 | **0.055** | **2.05%** |
+| Logistic regression | 0.957 [0.953, 0.961] | 0.918 | 0.985 | 0.080 | 3.87% (+1.83 [+1.66, +2.00]) |
+| Time-left rule | 0.884 [0.877, 0.890] | 0.785 | 0.906 | 0.131 | — (rescue would be 0: = no model, 4.19%) |
+
+- The simple model is close on ranking (AUC −0.02) but **not in use**: dispatch needs "how much does
+  serving now help", and the LR estimate of that costs +1.83 points — most of the 2.15 points that
+  removing the model costs.
+- Alerts made 1–7 days ahead (median lead ~4 days for the ρ rule): OpsLens forecast beats naive on
+  every score, but modestly. ρ 0.85 rule: precision 0.58 vs 0.56, recall 0.98 vs 0.91. Pre-registered
+  Erlang rule: 0.31 vs 0.26, recall 0.85 vs 0.80. Against breaches: precision 0.15–0.18, i.e. most
+  overloaded hours do NOT produce a breach cluster — the floor absorbs them (cross-skill help, queues).
+
 Plan v4, item W7 (a) and (b). Owner: Claude 2. **Committed on 22 Oct 2026 before any W7 number was
 computed.** Part (c), the real-desk forecast, belongs to the real-desk session (it owns realdesk.py).
 
