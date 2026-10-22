@@ -208,7 +208,13 @@ def main() -> int:
         out["routing"] = run_routing(build_client(["groq_route"]), rng)
     if args.only in (None, "attribution"):
         print("(b) attribution", flush=True)
-        out["attribution"] = run_attribution(build_client(["gemini"]), rng)
+        attribution = run_attribution(build_client(["gemini"]), rng)
+        if attribution["unanswered"]:
+            # A card the LLM never answered would count as wrong and bias the test against it.
+            # Answers are cached, so a re-run only asks for the missing ones.
+            print(f"{attribution['unanswered']} cards unanswered (provider down?): NOT written; run again later")
+            return 1
+        out["attribution"] = attribution
     OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
     for key in ("routing", "attribution"):
         if key in out:

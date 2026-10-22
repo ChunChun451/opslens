@@ -42,7 +42,7 @@ DATA = ROOT / "data" / "public" / "banking77"
 SEED = 77
 CANDIDATES = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 MAX_ESCALATED_PCT = 30.0
-LLM_ONLY_SAMPLE = 400
+LLM_ONLY_SAMPLE = 500  # Claude 1, issue #8 (was 400 in the first design; changed before it ran)
 BOOT = 2000
 PROVIDER = "gemini"
 RETRY_WAITS_S = [20, 40, 60, 120, 240, 300]
@@ -277,6 +277,11 @@ def main() -> int:
                        "intents": len(intents), "source": "github.com/PolyAI-LDN/task-specific-datasets"},
            "settings": settings, "llm_only": llm_only, "llm": llm, "published": PUBLISHED,
            "no_llm": bool(args.no_llm), "seconds": round(time.perf_counter() - started, 1)}
+    if stats.failed_batches:
+        # A batch with no LLM answer would silently stay local and bias the test against the LLM.
+        # Answers are cached, so a re-run only asks for the missing batches.
+        print(f"{stats.failed_batches} LLM batches unanswered (provider down?): NOT written; run again later")
+        return 1
     path = ROOT / "eval" / "parts" / "nlp_bench.json"
     path.write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(json.dumps({k: v for k, v in out.items() if k != "published"}, indent=1)[:4000])

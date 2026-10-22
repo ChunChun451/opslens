@@ -1,0 +1,6178 @@
+{
+ "main": {
+  "cards": [
+   {
+    "id": "F1",
+    "title": "phone (IVR) tickets are transferred 5.1\u00d7 more",
+    "cause_type": "process",
+    "metric": "transfers per 100 tickets",
+    "value": 13.01,
+    "comparison_value": 2.56,
+    "comparison_text": "13.0 transfers per 100 phone (IVR) tickets vs 2.6 for the rest",
+    "segment": {
+     "channel": "call"
+    },
+    "affected_tickets": 10788,
+    "affected_share_pct": 20.17,
+    "strength": 20.46,
+    "not_explained_by": "",
+    "examples": [
+     {
+      "ticket_id": "T000039",
+      "created_at": "2026-08-31 01:22",
+      "text": "I have a problem with my order",
+      "wait_min": 398.1,
+      "breached": false
+     },
+     {
+      "ticket_id": "T000137",
+      "created_at": "2026-08-31 09:00",
+      "text": "veg manga tha non veg aa gaya, bahut galat hai",
+      "wait_min": 3.0,
+      "breached": true
+     },
+     {
+      "ticket_id": "T000188",
+      "created_at": "2026-08-31 10:03",
+      "text": "delivery boy ka phone anhi lag raha, order late hai",
+      "wait_min": 288.3,
+      "breached": true
+     }
+    ],
+    "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+   },
+   {
+    "id": "F2",
+    "title": "Hindi \u00d7 Team B wait 5.1\u00d7 longer",
+    "cause_type": "skill_gap",
+    "metric": "mean wait (min)",
+    "value": 336.42,
+    "comparison_value": 65.53,
+    "comparison_text": "Hindi \u00d7 Team B: 336 min mean wait vs 66 min (Hindi, other team) and 55 min (Team B, other language)",
+    "segment": {
+     "language": "hi",
+     "team": "B"
+    },
+    "affected_tickets": 2871,
+    "affected_share_pct": 5.37,
+    "strength": 17.75,
+    "not_explained_by": "only 3 agents (B01, B02, B05) speak hi and handle refund, payment failure",
+    "examples": [
+     {
+      "ticket_id": "T004740",
+      "created_at": "2026-09-03 23:12",
+      "text": "aapne bola tha 5 din mein refund, ek hafta ho agya",
+      "wait_min": 1907.1,
+      "breached": true
+     },
+     {
+      "ticket_id": "T004793",
+      "created_at": "2026-09-04 00:06",
+      "text": "Bilkul nahi khaya, paneer butter masala garam nahi tha, paisa do.",
+      "wait_min": 1892.6,
+      "breached": true
+     },
+     {
+      "ticket_id": "T004773",
+      "created_at": "2026-09-03 23:41",
+      "text": "bahut bura experience tha aaj",
+      "wait_min": 1889.5,
+      "breached": true
+     }
+    ],
+    "recommendation": "Cross-train hi-speaking agents on refund, payment failure; meanwhile route these tickets to the 3 capable agents first"
+   },
+   {
+    "id": "F3",
+    "title": "Team C overloaded on weekend dinner (work 1.45\u00d7 agent-time)",
+    "cause_type": "capacity",
+    "metric": "work \u00f7 agent-time (rho)",
+    "value": 1.45,
+    "comparison_value": 1.0,
+    "comparison_text": "Team C gets 1.45\u00d7 more work than its agents' time on weekend dinner (3.5 agents on shift); its tickets wait 58 min then and 322 min on weekend late while the backlog clears (usual 52 min)",
+    "segment": {
+     "team": "C",
+     "when": "weekend dinner"
+    },
+    "affected_tickets": 1887,
+    "affected_share_pct": 3.53,
+    "strength": 14.5,
+    "not_explained_by": "recurs every weekend, not a one-off",
+    "examples": [
+     {
+      "ticket_id": "T006878",
+      "created_at": "2026-09-05 19:31",
+      "text": "and my payment also showed failed. order id [ORDER_ID] issue. shawarma roll not delivered. i waited 50 and the rider left. please contact Spice Route Kitchen and resolve.",
+      "wait_min": 48.8,
+      "breached": false
+     },
+     {
+      "ticket_id": "T007077",
+      "created_at": "2026-09-05 20:57",
+      "text": "they sent the wrong items, please fix",
+      "wait_min": 108.4,
+      "breached": true
+     },
+     {
+      "ticket_id": "T007114",
+      "created_at": "2026-09-05 21:16",
+      "text": "completely different food delivered to me",
+      "wait_min": 23.1,
+      "breached": false
+     }
+    ],
+    "recommendation": "Add Team C capacity on weekend dinner: move agents trained on missing item, wrong item from a quieter team (see Recommendations)"
+   },
+   {
+    "id": "F4",
+    "title": "Payment failure spike on Thu 17 Sep",
+    "cause_type": "volume_spike",
+    "metric": "tickets per day",
+    "value": 254.0,
+    "comparison_value": 117.0,
+    "comparison_text": "254 payment failure tickets on Thu 17 Sep vs 117 on a usual day (robust z 7.7), concentrated 17:00-23:00",
+    "segment": {
+     "category": "payment_failure",
+     "day": 18,
+     "hour": [
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+     ]
+    },
+    "affected_tickets": 254,
+    "affected_share_pct": 0.47,
+    "strength": 7.7,
+    "not_explained_by": "not a known sale or event day",
+    "examples": [
+     {
+      "ticket_id": "T021107",
+      "created_at": "2026-09-17 00:08",
+      "text": "money debited but order not placed",
+      "wait_min": 5.4,
+      "breached": false
+     },
+     {
+      "ticket_id": "T021363",
+      "created_at": "2026-09-17 11:10",
+      "text": "help, 94 gone, no confirmation",
+      "wait_min": 5.0,
+      "breached": false
+     },
+     {
+      "ticket_id": "T021517",
+      "created_at": "2026-09-17 13:26",
+      "text": "i am waiting for 30 and still no food. i paid 206 for butter chicken frmo Biryani Junction. refund please.",
+      "wait_min": 25.7,
+      "breached": false
+     }
+    ],
+    "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+   },
+   {
+    "id": "F5",
+    "title": "Restaurant cluster 17: 2.5\u00d7 more wrong item tickets",
+    "cause_type": "partner_issue",
+    "metric": "share of tickets that are wrong item",
+    "value": 24.51,
+    "comparison_value": 9.61,
+    "comparison_text": "24.5% of cluster 17's tickets are wrong item vs 9.6% for other clusters",
+    "segment": {
+     "category": "wrong_item",
+     "restaurant_cluster_id": 17
+    },
+    "affected_tickets": 264,
+    "affected_share_pct": 0.49,
+    "strength": 6.17,
+    "not_explained_by": "",
+    "examples": [
+     {
+      "ticket_id": "T002455",
+      "created_at": "2026-09-01 23:41",
+      "text": "got rajma chawal instead of what I ordered, order id [ORDER_ID]",
+      "wait_min": 30.2,
+      "breached": false
+     },
+     {
+      "ticket_id": "T005202",
+      "created_at": "2026-09-04 13:53",
+      "text": "the order belongs to someone else, wrong name on the bill",
+      "wait_min": 23.7,
+      "breached": false
+     },
+     {
+      "ticket_id": "T010123",
+      "created_at": "2026-09-08 12:39",
+      "text": "aur ek item bhi imssing tha. Momo Street ne galat khana bhej diya",
+      "wait_min": 33.5,
+      "breached": true
+     }
+    ],
+    "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+   },
+   {
+    "id": "F6",
+    "title": "Team B \u00d7 weekday night wait 2.1\u00d7 longer",
+    "cause_type": "capacity",
+    "metric": "mean wait (min)",
+    "value": 227.83,
+    "comparison_value": 109.21,
+    "comparison_text": "Team B \u00d7 weekday night: 228 min mean wait vs 109 min (Team B, other when) and 88 min (weekday night, other team)",
+    "segment": {
+     "team": "B",
+     "when": "weekday night"
+    },
+    "affected_tickets": 744,
+    "affected_share_pct": 1.39,
+    "strength": 5.99,
+    "not_explained_by": "on average only 0.8 agents who handle refund, payment failure are on shift on weekday night",
+    "examples": [
+     {
+      "ticket_id": "T004793",
+      "created_at": "2026-09-04 00:06",
+      "text": "Bilkul nahi khaya, paneer butter masala garam nahi tha, paisa do.",
+      "wait_min": 1892.6,
+      "breached": true
+     },
+     {
+      "ticket_id": "T004808",
+      "created_at": "2026-09-04 00:38",
+      "text": "aur mera number bhi update karo. aapne bola tha 5 din mein refund, ek hafta ho gaya",
+      "wait_min": 1868.3,
+      "breached": true
+     },
+     {
+      "ticket_id": "T004827",
+      "created_at": "2026-09-04 01:27",
+      "text": "Refund 156 abhi tak nahi aaya, kya baat hai?",
+      "wait_min": 1828.2,
+      "breached": true
+     }
+    ],
+    "recommendation": "Put at least one agent who can handle refund, payment failure on shift on weekday night"
+   },
+   {
+    "id": "F7",
+    "title": "regional-language \u00d7 weekday morning wait 2.3\u00d7 longer",
+    "cause_type": "other",
+    "metric": "mean wait (min)",
+    "value": 171.19,
+    "comparison_value": 73.76,
+    "comparison_text": "regional-language \u00d7 weekday morning: 171 min mean wait vs 74 min (regional-language, other when) and 40 min (weekday morning, other language)",
+    "segment": {
+     "language": "other",
+     "when": "weekday morning"
+    },
+    "affected_tickets": 371,
+    "affected_share_pct": 0.69,
+    "strength": 5.96,
+    "not_explained_by": "",
+    "examples": [
+     {
+      "ticket_id": "T013648",
+      "created_at": "2026-09-11 07:04",
+      "text": "showing me purchase [PHONE] status. call me on [PHONE]",
+      "wait_min": 895.0,
+      "breached": true
+     },
+     {
+      "ticket_id": "T013655",
+      "created_at": "2026-09-11 07:18",
+      "text": "the restaruant quality is also bad. i do not know how to see hwen my delivery is gonna arrive",
+      "wait_min": 893.5,
+      "breached": true
+     },
+     {
+      "ticket_id": "T001309",
+      "created_at": "2026-09-01 07:48",
+      "text": "hello? is anyone there?",
+      "wait_min": 851.8,
+      "breached": false
+     }
+    ],
+    "recommendation": "Review this group with the team lead"
+   }
+  ],
+  "plants": [
+   {
+    "id": "P1",
+    "name": "Hindi payments and refunds wait long",
+    "cause_type": "skill_gap",
+    "segment": {
+     "language": "hi",
+     "category": [
+      "refund",
+      "payment_failure"
+     ]
+    },
+    "mechanism": "only 3 agents (B01, B02, B05) have Hindi + refund/payment skills, none at night"
+   },
+   {
+    "id": "P2",
+    "name": "Team C overloaded at weekend dinner",
+    "cause_type": "capacity",
+    "segment": {
+     "team": "C",
+     "weekday": [
+      5,
+      6
+     ],
+     "hour": [
+      19,
+      20,
+      21,
+      22
+     ]
+    },
+    "mechanism": "evening Team C agents are off at weekends; missing/wrong items x1.35"
+   },
+   {
+    "id": "P3a",
+    "name": "Payment-failure spike (bad app release)",
+    "cause_type": "volume_spike",
+    "segment": {
+     "category": "payment_failure",
+     "day": 18,
+     "hour": [
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+     ]
+    },
+    "mechanism": "x4.0 volume",
+    "period": "history"
+   },
+   {
+    "id": "P3b",
+    "name": "App-bug surge (unseen, test period)",
+    "cause_type": "volume_spike",
+    "segment": {
+     "category": "app_bug",
+     "day": 47,
+     "hour": [
+      18,
+      19,
+      20,
+      21,
+      22
+     ]
+    },
+    "mechanism": "x5.0 volume",
+    "period": "test"
+   },
+   {
+    "id": "P4",
+    "name": "Wrong items from one restaurant cluster",
+    "cause_type": "partner_issue",
+    "segment": {
+     "category": "wrong_item",
+     "restaurant_cluster_id": 17
+    },
+    "mechanism": "x3.0 wrong-item rate"
+   },
+   {
+    "id": "P5",
+    "name": "IVR menu mislabels call tickets",
+    "cause_type": "process",
+    "segment": {
+     "channel": "call"
+    },
+    "mechanism": "25% wrong selected category -> transfers"
+   }
+  ]
+ },
+ "blind": [
+  {
+   "set": 1,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "missing_item spike day 13",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "missing_item",
+      "day": 13,
+      "hour": [
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "missing_item spike day 13",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team D overloaded on weekend dinner (work 2.31\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.31,
+     "comparison_value": 1.0,
+     "comparison_text": "Team D gets 2.31\u00d7 more work than its agents' time on weekend dinner (2.6 agents on shift); its tickets wait 391 min then and 654 min on weekend late while the backlog clears (usual 130 min)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1714,
+     "affected_share_pct": 3.18,
+     "strength": 23.14,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T006667",
+       "created_at": "2026-09-05 19:06",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T006904",
+       "created_at": "2026-09-05 21:01",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T006937",
+       "created_at": "2026-09-05 21:16",
+       "text": "",
+       "wait_min": 73.5,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team D capacity on weekend dinner: move agents trained on account, app bug, restaurant partner from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "Missing item spike on Sat 12 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 433.0,
+     "comparison_value": 191.0,
+     "comparison_text": "433 missing item tickets on Sat 12 Sep vs 191 on a usual day (robust z 17.5), concentrated 10:00-16:00",
+     "segment": {
+      "category": "missing_item",
+      "day": 13,
+      "hour": [
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "affected_tickets": 433,
+     "affected_share_pct": 0.8,
+     "strength": 17.51,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T014858",
+       "created_at": "2026-09-12 11:43",
+       "text": "",
+       "wait_min": 11.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T014447",
+       "created_at": "2026-09-12 00:05",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T014453",
+       "created_at": "2026-09-12 00:12",
+       "text": "",
+       "wait_min": 5.9,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F3",
+     "title": "Hindi \u00d7 Team C wait 3.7\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 743.09,
+     "comparison_value": 200.59,
+     "comparison_text": "Hindi \u00d7 Team C: 743 min mean wait vs 201 min (Hindi, other team) and 27 min (Team C, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "C"
+     },
+     "affected_tickets": 2855,
+     "affected_share_pct": 5.3,
+     "strength": 12.8,
+     "not_explained_by": "only 2 agents (C02, C04) speak hi and handle missing item, wrong item",
+     "examples": [
+      {
+       "ticket_id": "T027827",
+       "created_at": "2026-09-22 13:45",
+       "text": "",
+       "wait_min": 2547.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T027814",
+       "created_at": "2026-09-22 13:40",
+       "text": "",
+       "wait_min": 2539.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T027865",
+       "created_at": "2026-09-22 14:17",
+       "text": "",
+       "wait_min": 2519.7,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on missing item, wrong item; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F4",
+     "title": "Team D \u00d7 weekend afternoon wait 2.3\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 285.57,
+     "comparison_value": 122.34,
+     "comparison_text": "Team D \u00d7 weekend afternoon: 286 min mean wait vs 122 min (Team D, other when) and 36 min (weekend afternoon, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend afternoon"
+     },
+     "affected_tickets": 586,
+     "affected_share_pct": 1.09,
+     "strength": 6.46,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T044153",
+       "created_at": "2026-10-04 16:09",
+       "text": "",
+       "wait_min": 1110.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T044147",
+       "created_at": "2026-10-04 16:05",
+       "text": "",
+       "wait_min": 1098.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T044142",
+       "created_at": "2026-10-04 16:03",
+       "text": "",
+       "wait_min": 1096.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F5",
+     "title": "Late delivery spike on Sat 12 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 480.0,
+     "comparison_value": 385.0,
+     "comparison_text": "480 late delivery tickets on Sat 12 Sep vs 385 on a usual day (robust z 4.8)",
+     "segment": {
+      "category": "late_delivery",
+      "day": 13,
+      "hour": []
+     },
+     "affected_tickets": 480,
+     "affected_share_pct": 0.89,
+     "strength": 4.84,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T014454",
+       "created_at": "2026-09-12 00:12",
+       "text": "",
+       "wait_min": 7.7,
+       "breached": false
+      },
+      {
+       "ticket_id": "T014650",
+       "created_at": "2026-09-12 09:18",
+       "text": "",
+       "wait_min": 138.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T014734",
+       "created_at": "2026-09-12 10:44",
+       "text": "",
+       "wait_min": 76.1,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F6",
+     "title": "Account spike on Tue 29 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 125.0,
+     "comparison_value": 91.0,
+     "comparison_text": "125 account tickets on Tue 29 Sep vs 91 on a usual day (robust z 3.6), concentrated 19:00-20:00",
+     "segment": {
+      "category": "account",
+      "day": 30,
+      "hour": [
+       19
+      ]
+     },
+     "affected_tickets": 125,
+     "affected_share_pct": 0.23,
+     "strength": 3.56,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T037076",
+       "created_at": "2026-09-29 09:02",
+       "text": "",
+       "wait_min": 5.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T036941",
+       "created_at": "2026-09-29 01:19",
+       "text": "",
+       "wait_min": 5.4,
+       "breached": false
+      },
+      {
+       "ticket_id": "T036964",
+       "created_at": "2026-09-29 02:31",
+       "text": "",
+       "wait_min": 328.8,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 2,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team C weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "C",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 17 restaurant_partner",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 17
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team A skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "late_delivery"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team C weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 17 restaurant_partner",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team A skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "late delivery \u00d7 Hindi wait 4.9\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 607.99,
+     "comparison_value": 123.5,
+     "comparison_text": "late delivery \u00d7 Hindi: 608 min mean wait vs 39 min (late delivery, other language) and 124 min (Hindi, other category)",
+     "segment": {
+      "category": "late_delivery",
+      "language": "hi"
+     },
+     "affected_tickets": 3326,
+     "affected_share_pct": 6.21,
+     "strength": 17.34,
+     "not_explained_by": "only 2 agents (A01, A03) speak hi and handle late delivery",
+     "examples": [
+      {
+       "ticket_id": "T044815",
+       "created_at": "2026-10-04 22:21",
+       "text": "",
+       "wait_min": 1976.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T044801",
+       "created_at": "2026-10-04 22:14",
+       "text": "",
+       "wait_min": 1973.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T044796",
+       "created_at": "2026-10-04 22:12",
+       "text": "",
+       "wait_min": 1967.6,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on late delivery; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F2",
+     "title": "Team C overloaded on weekend dinner (work 1.44\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 1.44,
+     "comparison_value": 1.0,
+     "comparison_text": "Team C gets 1.44\u00d7 more work than its agents' time on weekend dinner (3.5 agents on shift); its tickets wait 67 min then and 284 min on weekend late while the backlog clears (usual 54 min)",
+     "segment": {
+      "team": "C",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1870,
+     "affected_share_pct": 3.49,
+     "strength": 14.39,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T007668",
+       "created_at": "2026-09-05 23:12",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T009181",
+       "created_at": "2026-09-06 22:56",
+       "text": "",
+       "wait_min": 547.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T016150",
+       "created_at": "2026-09-12 19:14",
+       "text": "",
+       "wait_min": 15.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team C capacity on weekend dinner: move agents trained on missing item, wrong item from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant cluster 17: 2.4\u00d7 more restaurant partner tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are restaurant partner",
+     "value": 22.52,
+     "comparison_value": 9.42,
+     "comparison_text": "22.5% of cluster 17's tickets are restaurant partner vs 9.4% for other clusters",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 17
+     },
+     "affected_tickets": 250,
+     "affected_share_pct": 0.47,
+     "strength": 5.74,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T001300",
+       "created_at": "2026-09-01 00:10",
+       "text": "",
+       "wait_min": 949.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T005445",
+       "created_at": "2026-09-04 11:15",
+       "text": "",
+       "wait_min": 50.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T009536",
+       "created_at": "2026-09-07 11:25",
+       "text": "",
+       "wait_min": 45.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F4",
+     "title": "Hindi \u00d7 weekend late wait 2.4\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 619.16,
+     "comparison_value": 255.62,
+     "comparison_text": "Hindi \u00d7 weekend late: 619 min mean wait vs 256 min (Hindi, other when) and 166 min (weekend late, other language)",
+     "segment": {
+      "language": "hi",
+      "when": "weekend late"
+     },
+     "affected_tickets": 163,
+     "affected_share_pct": 0.3,
+     "strength": 5.36,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T044898",
+       "created_at": "2026-10-04 23:10",
+       "text": "",
+       "wait_min": 1949.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T044894",
+       "created_at": "2026-10-04 23:09",
+       "text": "",
+       "wait_min": 1946.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T043437",
+       "created_at": "2026-10-03 23:44",
+       "text": "",
+       "wait_min": 1941.2,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F5",
+     "title": "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 177.45,
+     "comparison_value": 88.07,
+     "comparison_text": "regional-language \u00d7 weekday morning: 177 min mean wait vs 88 min (regional-language, other when) and 67 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 375,
+     "affected_share_pct": 0.7,
+     "strength": 5.19,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T014207",
+       "created_at": "2026-09-11 08:57",
+       "text": "",
+       "wait_min": 789.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T014293",
+       "created_at": "2026-09-11 10:55",
+       "text": "",
+       "wait_min": 689.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T014286",
+       "created_at": "2026-09-11 10:50",
+       "text": "",
+       "wait_min": 680.9,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    }
+   ]
+  },
+  {
+   "set": 3,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 42",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 42,
+      "hour": [
+       16,
+       17,
+       18,
+       19,
+       20,
+       21
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 11 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 11
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 42",
+     "found": false,
+     "diagnosed": false,
+     "card": ""
+    },
+    {
+     "id": "R2",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 11 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team D overloaded on weekend dinner (work 2.47\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.47,
+     "comparison_value": 1.0,
+     "comparison_text": "Team D gets 2.47\u00d7 more work than its agents' time on weekend dinner (2.6 agents on shift); its tickets wait 431 min then and 658 min on weekend late while the backlog clears (usual 120 min)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1810,
+     "affected_share_pct": 3.4,
+     "strength": 24.72,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T006886",
+       "created_at": "2026-09-05 19:13",
+       "text": "",
+       "wait_min": 3.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007015",
+       "created_at": "2026-09-05 20:29",
+       "text": "",
+       "wait_min": 1.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007207",
+       "created_at": "2026-09-05 22:12",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team D capacity on weekend dinner: move agents trained on account, app bug, restaurant partner from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "Restaurant cluster 11: 2.2\u00d7 more missing item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are missing item",
+     "value": 31.01,
+     "comparison_value": 14.11,
+     "comparison_text": "31.0% of cluster 11's tickets are missing item vs 14.1% for other clusters",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 11
+     },
+     "affected_tickets": 467,
+     "affected_share_pct": 0.88,
+     "strength": 5.87,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T041698",
+       "created_at": "2026-10-03 02:17",
+       "text": "",
+       "wait_min": 517.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000012",
+       "created_at": "2026-08-31 00:23",
+       "text": "",
+       "wait_min": 410.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000052",
+       "created_at": "2026-08-31 02:23",
+       "text": "",
+       "wait_min": 576.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    }
+   ]
+  },
+  {
+   "set": 4,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "other x Team A skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "late_delivery"
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 13 restaurant_partner",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 13
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "other x Team A skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 13 restaurant_partner",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "email tickets are transferred 4.9\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.68,
+     "comparison_value": 2.57,
+     "comparison_text": "12.7 transfers per 100 email tickets vs 2.6 for the rest",
+     "segment": {
+      "channel": "email"
+     },
+     "affected_tickets": 7981,
+     "affected_share_pct": 15.31,
+     "strength": 19.26,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000020",
+       "created_at": "2026-08-31 00:30",
+       "text": "",
+       "wait_min": 407.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000057",
+       "created_at": "2026-08-31 03:22",
+       "text": "",
+       "wait_min": 517.7,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000065",
+       "created_at": "2026-08-31 04:19",
+       "text": "",
+       "wait_min": 257.6,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F2",
+     "title": "late delivery \u00d7 regional-language wait 4.8\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 1077.1,
+     "comparison_value": 225.8,
+     "comparison_text": "late delivery \u00d7 regional-language: 1077 min mean wait vs 36 min (late delivery, other language) and 226 min (regional-language, other category)",
+     "segment": {
+      "category": "late_delivery",
+      "language": "other"
+     },
+     "affected_tickets": 883,
+     "affected_share_pct": 1.69,
+     "strength": 14.05,
+     "not_explained_by": "only 1 agents (A02) speak other and handle late delivery",
+     "examples": [
+      {
+       "ticket_id": "T017474",
+       "created_at": "2026-09-14 17:06",
+       "text": "",
+       "wait_min": 5213.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T017491",
+       "created_at": "2026-09-14 17:23",
+       "text": "",
+       "wait_min": 5203.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T017522",
+       "created_at": "2026-09-14 17:54",
+       "text": "",
+       "wait_min": 5178.7,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train other-speaking agents on late delivery; meanwhile route these tickets to the 1 capable agents first"
+    },
+    {
+     "id": "F3",
+     "title": "wrong item \u00d7 Hindi wait 2.1\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 124.16,
+     "comparison_value": 58.16,
+     "comparison_text": "wrong item \u00d7 Hindi: 124 min mean wait vs 47 min (wrong item, other language) and 58 min (Hindi, other category)",
+     "segment": {
+      "category": "wrong_item",
+      "language": "hi"
+     },
+     "affected_tickets": 1068,
+     "affected_share_pct": 2.05,
+     "strength": 6.47,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T018086",
+       "created_at": "2026-09-15 00:26",
+       "text": "",
+       "wait_min": 1381.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T018123",
+       "created_at": "2026-09-15 02:16",
+       "text": "",
+       "wait_min": 1315.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T018130",
+       "created_at": "2026-09-15 02:40",
+       "text": "",
+       "wait_min": 1302.8,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F4",
+     "title": "Restaurant cluster 13: 2.4\u00d7 more restaurant partner tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are restaurant partner",
+     "value": 22.21,
+     "comparison_value": 9.2,
+     "comparison_text": "22.2% of cluster 13's tickets are restaurant partner vs 9.2% for other clusters",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 13
+     },
+     "affected_tickets": 277,
+     "affected_share_pct": 0.53,
+     "strength": 5.9,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000443",
+       "created_at": "2026-08-31 14:10",
+       "text": "",
+       "wait_min": 11.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007596",
+       "created_at": "2026-09-06 07:49",
+       "text": "",
+       "wait_min": 33.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T016419",
+       "created_at": "2026-09-13 19:38",
+       "text": "",
+       "wait_min": 11.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F5",
+     "title": "Wrong item spike on Sat 26 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 187.0,
+     "comparison_value": 128.0,
+     "comparison_text": "187 wrong item tickets on Sat 26 Sep vs 128 on a usual day (robust z 5.2)",
+     "segment": {
+      "category": "wrong_item",
+      "day": 27,
+      "hour": []
+     },
+     "affected_tickets": 187,
+     "affected_share_pct": 0.36,
+     "strength": 5.21,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T032382",
+       "created_at": "2026-09-26 11:50",
+       "text": "",
+       "wait_min": 172.4,
+       "breached": false
+      },
+      {
+       "ticket_id": "T032633",
+       "created_at": "2026-09-26 14:21",
+       "text": "",
+       "wait_min": 24.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T032946",
+       "created_at": "2026-09-26 18:09",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 5,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 9 restaurant_partner",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 9
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 9 restaurant_partner",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "phone (IVR) tickets are transferred 5.8\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.62,
+     "comparison_value": 2.18,
+     "comparison_text": "12.6 transfers per 100 phone (IVR) tickets vs 2.2 for the rest",
+     "segment": {
+      "channel": "call"
+     },
+     "affected_tickets": 10479,
+     "affected_share_pct": 19.72,
+     "strength": 23.29,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000024",
+       "created_at": "2026-08-31 00:45",
+       "text": "",
+       "wait_min": 674.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000037",
+       "created_at": "2026-08-31 01:24",
+       "text": "",
+       "wait_min": 384.4,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000043",
+       "created_at": "2026-08-31 01:38",
+       "text": "",
+       "wait_min": 362.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F2",
+     "title": "Hindi \u00d7 Team C wait 4.2\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 708.11,
+     "comparison_value": 168.24,
+     "comparison_text": "Hindi \u00d7 Team C: 708 min mean wait vs 168 min (Hindi, other team) and 29 min (Team C, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "C"
+     },
+     "affected_tickets": 2832,
+     "affected_share_pct": 5.33,
+     "strength": 14.53,
+     "not_explained_by": "only 2 agents (C02, C04) speak hi and handle missing item, wrong item",
+     "examples": [
+      {
+       "ticket_id": "T036176",
+       "created_at": "2026-09-28 13:58",
+       "text": "",
+       "wait_min": 2521.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036203",
+       "created_at": "2026-09-28 14:26",
+       "text": "",
+       "wait_min": 2512.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036200",
+       "created_at": "2026-09-28 14:23",
+       "text": "",
+       "wait_min": 2501.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on missing item, wrong item; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F3",
+     "title": "Team D \u00d7 weekend dinner wait 2.4\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 163.14,
+     "comparison_value": 66.62,
+     "comparison_text": "Team D \u00d7 weekend dinner: 163 min mean wait vs 67 min (Team D, other when) and 63 min (weekend dinner, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1137,
+     "affected_share_pct": 2.14,
+     "strength": 7.48,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T024934",
+       "created_at": "2026-09-19 19:41",
+       "text": "",
+       "wait_min": 2178.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T024967",
+       "created_at": "2026-09-19 19:57",
+       "text": "",
+       "wait_min": 2170.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T024856",
+       "created_at": "2026-09-19 19:07",
+       "text": "",
+       "wait_min": 2168.2,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F4",
+     "title": "Restaurant cluster 9: 2.5\u00d7 more restaurant partner tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are restaurant partner",
+     "value": 22.42,
+     "comparison_value": 9.13,
+     "comparison_text": "22.4% of cluster 9's tickets are restaurant partner vs 9.1% for other clusters",
+     "segment": {
+      "category": "restaurant_partner",
+      "restaurant_cluster_id": 9
+     },
+     "affected_tickets": 363,
+     "affected_share_pct": 0.68,
+     "strength": 6.29,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T005079",
+       "created_at": "2026-09-04 11:40",
+       "text": "",
+       "wait_min": 0.8,
+       "breached": false
+      },
+      {
+       "ticket_id": "T013206",
+       "created_at": "2026-09-10 16:05",
+       "text": "",
+       "wait_min": 167.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T014637",
+       "created_at": "2026-09-11 18:53",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F5",
+     "title": "regional-language \u00d7 weekday morning wait 2.1\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 162.58,
+     "comparison_value": 78.63,
+     "comparison_text": "regional-language \u00d7 weekday morning: 163 min mean wait vs 67 min (regional-language, other when) and 79 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 392,
+     "affected_share_pct": 0.74,
+     "strength": 5.36,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T030428",
+       "created_at": "2026-09-24 10:44",
+       "text": "",
+       "wait_min": 918.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T020495",
+       "created_at": "2026-09-16 08:39",
+       "text": "",
+       "wait_min": 800.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T020528",
+       "created_at": "2026-09-16 09:40",
+       "text": "",
+       "wait_min": 749.1,
+       "breached": false
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F6",
+     "title": "Missing item spike on Fri 02 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 221.0,
+     "comparison_value": 169.0,
+     "comparison_text": "221 missing item tickets on Fri 02 Oct vs 169 on a usual day (robust z 3.9), concentrated 15:00-16:00",
+     "segment": {
+      "category": "missing_item",
+      "day": 33,
+      "hour": [
+       15
+      ]
+     },
+     "affected_tickets": 221,
+     "affected_share_pct": 0.42,
+     "strength": 3.9,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T041574",
+       "created_at": "2026-10-02 21:06",
+       "text": "",
+       "wait_min": 25.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T040521",
+       "created_at": "2026-10-02 00:10",
+       "text": "",
+       "wait_min": 7.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T040524",
+       "created_at": "2026-10-02 00:11",
+       "text": "",
+       "wait_min": 18.3,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F7",
+     "title": "Missing item spike on Fri 04 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 216.0,
+     "comparison_value": 169.0,
+     "comparison_text": "216 missing item tickets on Fri 04 Sep vs 169 on a usual day (robust z 3.5)",
+     "segment": {
+      "category": "missing_item",
+      "day": 5,
+      "hour": []
+     },
+     "affected_tickets": 216,
+     "affected_share_pct": 0.41,
+     "strength": 3.52,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T004936",
+       "created_at": "2026-09-04 08:51",
+       "text": "",
+       "wait_min": 107.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T004972",
+       "created_at": "2026-09-04 09:51",
+       "text": "",
+       "wait_min": 69.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T005189",
+       "created_at": "2026-09-04 12:58",
+       "text": "",
+       "wait_min": 57.7,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 6,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 20",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 20,
+      "hour": [
+       10,
+       11,
+       12,
+       13
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 6 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 6
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 20",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 6 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Hindi \u00d7 Team C wait 4.7\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 697.49,
+     "comparison_value": 149.75,
+     "comparison_text": "Hindi \u00d7 Team C: 697 min mean wait vs 150 min (Hindi, other team) and 20 min (Team C, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "C"
+     },
+     "affected_tickets": 2781,
+     "affected_share_pct": 5.29,
+     "strength": 16.04,
+     "not_explained_by": "only 2 agents (C02, C04) speak hi and handle missing item, wrong item",
+     "examples": [
+      {
+       "ticket_id": "T036483",
+       "created_at": "2026-09-28 21:15",
+       "text": "",
+       "wait_min": 2264.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036213",
+       "created_at": "2026-09-28 18:23",
+       "text": "",
+       "wait_min": 2263.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036507",
+       "created_at": "2026-09-28 21:29",
+       "text": "",
+       "wait_min": 2262.8,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on missing item, wrong item; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F2",
+     "title": "App bug spike on Sat 19 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 166.0,
+     "comparison_value": 84.0,
+     "comparison_text": "166 app bug tickets on Sat 19 Sep vs 84 on a usual day (robust z 8.9), concentrated 00:00-14:00",
+     "segment": {
+      "category": "app_bug",
+      "day": 20,
+      "hour": [
+       0,
+       8,
+       10,
+       11,
+       12,
+       13
+      ]
+     },
+     "affected_tickets": 166,
+     "affected_share_pct": 0.32,
+     "strength": 8.95,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T023644",
+       "created_at": "2026-09-19 11:19",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T023671",
+       "created_at": "2026-09-19 11:42",
+       "text": "",
+       "wait_min": 0.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T023821",
+       "created_at": "2026-09-19 13:11",
+       "text": "",
+       "wait_min": 7.8,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F3",
+     "title": "Team D \u00d7 weekend dinner wait 2.3\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 171.33,
+     "comparison_value": 73.98,
+     "comparison_text": "Team D \u00d7 weekend dinner: 171 min mean wait vs 74 min (Team D, other when) and 59 min (weekend dinner, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1117,
+     "affected_share_pct": 2.12,
+     "strength": 7.06,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T034978",
+       "created_at": "2026-09-27 19:01",
+       "text": "",
+       "wait_min": 951.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T034998",
+       "created_at": "2026-09-27 19:11",
+       "text": "",
+       "wait_min": 947.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T035007",
+       "created_at": "2026-09-27 19:19",
+       "text": "",
+       "wait_min": 946.5,
+       "breached": false
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F4",
+     "title": "Restaurant cluster 6: 2.4\u00d7 more missing item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are missing item",
+     "value": 32.52,
+     "comparison_value": 13.68,
+     "comparison_text": "32.5% of cluster 6's tickets are missing item vs 13.7% for other clusters",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 6
+     },
+     "affected_tickets": 743,
+     "affected_share_pct": 1.41,
+     "strength": 6.82,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T014114",
+       "created_at": "2026-09-11 19:47",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T021725",
+       "created_at": "2026-09-17 18:47",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T027341",
+       "created_at": "2026-09-21 22:30",
+       "text": "",
+       "wait_min": 21.9,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F5",
+     "title": "Team C \u00d7 weekday night wait 2.1\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 331.7,
+     "comparison_value": 160.63,
+     "comparison_text": "Team C \u00d7 weekday night: 332 min mean wait vs 161 min (Team C, other when) and 109 min (weekday night, other team)",
+     "segment": {
+      "team": "C",
+      "when": "weekday night"
+     },
+     "affected_tickets": 643,
+     "affected_share_pct": 1.22,
+     "strength": 5.8,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T036710",
+       "created_at": "2026-09-29 00:02",
+       "text": "",
+       "wait_min": 2178.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T039179",
+       "created_at": "2026-10-01 00:07",
+       "text": "",
+       "wait_min": 2161.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036726",
+       "created_at": "2026-09-29 00:24",
+       "text": "",
+       "wait_min": 2160.7,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F6",
+     "title": "Hindi \u00d7 weekday night wait 2.0\u00d7 longer",
+     "cause_type": "capacity",
+     "metric": "mean wait (min)",
+     "value": 639.0,
+     "comparison_value": 311.73,
+     "comparison_text": "Hindi \u00d7 weekday night: 639 min mean wait vs 312 min (Hindi, other when) and 62 min (weekday night, other language)",
+     "segment": {
+      "language": "hi",
+      "when": "weekday night"
+     },
+     "affected_tickets": 606,
+     "affected_share_pct": 1.15,
+     "strength": 5.7,
+     "not_explained_by": "on average only 0.2 agents who speak Hindi are on shift on weekday night",
+     "examples": [
+      {
+       "ticket_id": "T036710",
+       "created_at": "2026-09-29 00:02",
+       "text": "",
+       "wait_min": 2178.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T039179",
+       "created_at": "2026-10-01 00:07",
+       "text": "",
+       "wait_min": 2161.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036726",
+       "created_at": "2026-09-29 00:24",
+       "text": "",
+       "wait_min": 2160.7,
+       "breached": true
+      }
+     ],
+     "recommendation": "Put at least one agent who can speak Hindi on shift on weekday night"
+    },
+    {
+     "id": "F7",
+     "title": "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 179.52,
+     "comparison_value": 83.17,
+     "comparison_text": "regional-language \u00d7 weekday morning: 180 min mean wait vs 78 min (regional-language, other when) and 83 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 372,
+     "affected_share_pct": 0.71,
+     "strength": 5.55,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T022259",
+       "created_at": "2026-09-18 07:10",
+       "text": "",
+       "wait_min": 889.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T018530",
+       "created_at": "2026-09-15 07:11",
+       "text": "",
+       "wait_min": 888.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T018538",
+       "created_at": "2026-09-15 07:27",
+       "text": "",
+       "wait_min": 872.1,
+       "breached": false
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F8",
+     "title": "Team D \u00d7 weekend late wait 2.3\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 234.58,
+     "comparison_value": 101.45,
+     "comparison_text": "Team D \u00d7 weekend late: 235 min mean wait vs 80 min (Team D, other when) and 101 min (weekend late, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend late"
+     },
+     "affected_tickets": 200,
+     "affected_share_pct": 0.38,
+     "strength": 5.32,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T034072",
+       "created_at": "2026-09-26 23:21",
+       "text": "",
+       "wait_min": 874.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T034063",
+       "created_at": "2026-09-26 23:14",
+       "text": "",
+       "wait_min": 860.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T017200",
+       "created_at": "2026-09-13 23:31",
+       "text": "",
+       "wait_min": 828.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F9",
+     "title": "Late delivery spike on Wed 16 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 421.0,
+     "comparison_value": 333.0,
+     "comparison_text": "421 late delivery tickets on Wed 16 Sep vs 333 on a usual day (robust z 4.0)",
+     "segment": {
+      "category": "late_delivery",
+      "day": 17,
+      "hour": []
+     },
+     "affected_tickets": 421,
+     "affected_share_pct": 0.8,
+     "strength": 3.96,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T019988",
+       "created_at": "2026-09-16 11:57",
+       "text": "",
+       "wait_min": 80.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T020035",
+       "created_at": "2026-09-16 12:24",
+       "text": "",
+       "wait_min": 7.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T020039",
+       "created_at": "2026-09-16 12:27",
+       "text": "",
+       "wait_min": 13.7,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F10",
+     "title": "Wrong item spike on Wed 16 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 153.0,
+     "comparison_value": 108.0,
+     "comparison_text": "153 wrong item tickets on Wed 16 Sep vs 108 on a usual day (robust z 3.8)",
+     "segment": {
+      "category": "wrong_item",
+      "day": 17,
+      "hour": []
+     },
+     "affected_tickets": 153,
+     "affected_share_pct": 0.29,
+     "strength": 3.79,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T020091",
+       "created_at": "2026-09-16 12:59",
+       "text": "",
+       "wait_min": 2.8,
+       "breached": false
+      },
+      {
+       "ticket_id": "T020274",
+       "created_at": "2026-09-16 15:04",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T019636",
+       "created_at": "2026-09-16 00:21",
+       "text": "",
+       "wait_min": 1966.4,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 7,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "cluster 16 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 16
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team D skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "account",
+       "app_bug",
+       "restaurant_partner"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "cluster 16 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team D skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R3",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Hindi \u00d7 Team D wait 8.5\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 997.81,
+     "comparison_value": 117.87,
+     "comparison_text": "Hindi \u00d7 Team D: 998 min mean wait vs 118 min (Hindi, other team) and 47 min (Team D, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "D"
+     },
+     "affected_tickets": 2616,
+     "affected_share_pct": 4.98,
+     "strength": 28.93,
+     "not_explained_by": "only 2 agents (D01, D04) speak hi and handle account, app bug, restaurant partner",
+     "examples": [
+      {
+       "ticket_id": "T010099",
+       "created_at": "2026-09-08 14:53",
+       "text": "",
+       "wait_min": 2434.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T050235",
+       "created_at": "2026-10-10 15:31",
+       "text": "",
+       "wait_min": 2426.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T050245",
+       "created_at": "2026-10-10 15:37",
+       "text": "",
+       "wait_min": 2422.7,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on account, app bug, restaurant partner; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F2",
+     "title": "email tickets are transferred 5.5\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 13.35,
+     "comparison_value": 2.44,
+     "comparison_text": "13.4 transfers per 100 email tickets vs 2.4 for the rest",
+     "segment": {
+      "channel": "email"
+     },
+     "affected_tickets": 8067,
+     "affected_share_pct": 15.36,
+     "strength": 21.35,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000053",
+       "created_at": "2026-08-31 03:53",
+       "text": "",
+       "wait_min": 239.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000155",
+       "created_at": "2026-08-31 10:00",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000190",
+       "created_at": "2026-08-31 10:49",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant cluster 16: 2.5\u00d7 more wrong item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are wrong item",
+     "value": 23.28,
+     "comparison_value": 9.44,
+     "comparison_text": "23.3% of cluster 16's tickets are wrong item vs 9.4% for other clusters",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 16
+     },
+     "affected_tickets": 240,
+     "affected_share_pct": 0.46,
+     "strength": 5.87,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000377",
+       "created_at": "2026-08-31 13:55",
+       "text": "",
+       "wait_min": 47.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T002585",
+       "created_at": "2026-09-02 12:19",
+       "text": "",
+       "wait_min": 132.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T005793",
+       "created_at": "2026-09-05 00:19",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F4",
+     "title": "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 156.23,
+     "comparison_value": 77.64,
+     "comparison_text": "regional-language \u00d7 weekday morning: 156 min mean wait vs 68 min (regional-language, other when) and 78 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 358,
+     "affected_share_pct": 0.68,
+     "strength": 5.14,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T048235",
+       "created_at": "2026-10-09 08:05",
+       "text": "",
+       "wait_min": 924.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T029022",
+       "created_at": "2026-09-24 10:32",
+       "text": "",
+       "wait_min": 841.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T029037",
+       "created_at": "2026-09-24 10:42",
+       "text": "",
+       "wait_min": 840.5,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F5",
+     "title": "Hindi \u00d7 weekend night wait 2.0\u00d7 longer",
+     "cause_type": "capacity",
+     "metric": "mean wait (min)",
+     "value": 620.22,
+     "comparison_value": 306.21,
+     "comparison_text": "Hindi \u00d7 weekend night: 620 min mean wait vs 306 min (Hindi, other when) and 159 min (weekend night, other language)",
+     "segment": {
+      "language": "hi",
+      "when": "weekend night"
+     },
+     "affected_tickets": 323,
+     "affected_share_pct": 0.61,
+     "strength": 5.08,
+     "not_explained_by": "on average only 0.3 agents who speak Hindi are on shift on weekend night",
+     "examples": [
+      {
+       "ticket_id": "T051103",
+       "created_at": "2026-10-11 00:17",
+       "text": "",
+       "wait_min": 2124.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T022624",
+       "created_at": "2026-09-19 00:05",
+       "text": "",
+       "wait_min": 2038.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T051148",
+       "created_at": "2026-10-11 01:57",
+       "text": "",
+       "wait_min": 2033.1,
+       "breached": true
+      }
+     ],
+     "recommendation": "Put at least one agent who can speak Hindi on shift on weekend night"
+    },
+    {
+     "id": "F6",
+     "title": "Team D \u00d7 weekend night wait 2.0\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 499.59,
+     "comparison_value": 249.21,
+     "comparison_text": "Team D \u00d7 weekend night: 500 min mean wait vs 249 min (Team D, other when) and 199 min (weekend night, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend night"
+     },
+     "affected_tickets": 319,
+     "affected_share_pct": 0.61,
+     "strength": 5.02,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T051103",
+       "created_at": "2026-10-11 00:17",
+       "text": "",
+       "wait_min": 2124.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T022624",
+       "created_at": "2026-09-19 00:05",
+       "text": "",
+       "wait_min": 2038.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T051148",
+       "created_at": "2026-10-11 01:57",
+       "text": "",
+       "wait_min": 2033.1,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F7",
+     "title": "Late delivery spike on Sat 10 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 481.0,
+     "comparison_value": 386.0,
+     "comparison_text": "481 late delivery tickets on Sat 10 Oct vs 386 on a usual day (robust z 4.8)",
+     "segment": {
+      "category": "late_delivery",
+      "day": 41,
+      "hour": []
+     },
+     "affected_tickets": 481,
+     "affected_share_pct": 0.92,
+     "strength": 4.84,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T049562",
+       "created_at": "2026-10-10 07:03",
+       "text": "",
+       "wait_min": 210.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T049615",
+       "created_at": "2026-10-10 08:45",
+       "text": "",
+       "wait_min": 193.7,
+       "breached": false
+      },
+      {
+       "ticket_id": "T049626",
+       "created_at": "2026-10-10 08:51",
+       "text": "",
+       "wait_min": 160.4,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F8",
+     "title": "Payment failure spike on Sat 10 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 175.0,
+     "comparison_value": 122.0,
+     "comparison_text": "175 payment failure tickets on Sat 10 Oct vs 122 on a usual day (robust z 4.8), concentrated 18:00-19:00",
+     "segment": {
+      "category": "payment_failure",
+      "day": 41,
+      "hour": [
+       18
+      ]
+     },
+     "affected_tickets": 175,
+     "affected_share_pct": 0.33,
+     "strength": 4.8,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T050247",
+       "created_at": "2026-10-10 15:37",
+       "text": "",
+       "wait_min": 14.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T049417",
+       "created_at": "2026-10-10 00:01",
+       "text": "",
+       "wait_min": 351.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T049441",
+       "created_at": "2026-10-10 00:31",
+       "text": "",
+       "wait_min": 360.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 8,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 12
+     }
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "A",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team A overloaded on weekend dinner (work 2.41\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.41,
+     "comparison_value": 1.0,
+     "comparison_text": "Team A gets 2.41\u00d7 more work than its agents' time on weekend dinner (2.2 agents on shift); its tickets wait 265 min then and 507 min on weekend late while the backlog clears (usual 81 min)",
+     "segment": {
+      "team": "A",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 2372,
+     "affected_share_pct": 4.46,
+     "strength": 24.1,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T006931",
+       "created_at": "2026-09-05 19:36",
+       "text": "",
+       "wait_min": 10.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007071",
+       "created_at": "2026-09-05 20:49",
+       "text": "",
+       "wait_min": 50.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007144",
+       "created_at": "2026-09-05 21:23",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Add Team A capacity on weekend dinner: move agents trained on late delivery from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "email tickets are transferred 5.1\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.57,
+     "comparison_value": 2.48,
+     "comparison_text": "12.6 transfers per 100 email tickets vs 2.5 for the rest",
+     "segment": {
+      "channel": "email"
+     },
+     "affected_tickets": 7922,
+     "affected_share_pct": 14.91,
+     "strength": 19.8,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000006",
+       "created_at": "2026-08-31 00:06",
+       "text": "",
+       "wait_min": 413.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000073",
+       "created_at": "2026-08-31 04:51",
+       "text": "",
+       "wait_min": 207.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000084",
+       "created_at": "2026-08-31 06:04",
+       "text": "",
+       "wait_min": 155.2,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant cluster 12: 2.6\u00d7 more missing item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are missing item",
+     "value": 35.53,
+     "comparison_value": 13.72,
+     "comparison_text": "35.5% of cluster 12's tickets are missing item vs 13.7% for other clusters",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 12
+     },
+     "affected_tickets": 528,
+     "affected_share_pct": 0.99,
+     "strength": 7.05,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T011431",
+       "created_at": "2026-09-09 12:54",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T021136",
+       "created_at": "2026-09-17 00:34",
+       "text": "",
+       "wait_min": 4.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T032142",
+       "created_at": "2026-09-25 20:03",
+       "text": "",
+       "wait_min": 185.8,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F4",
+     "title": "Team B \u00d7 weekday late wait 2.0\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 105.05,
+     "comparison_value": 52.45,
+     "comparison_text": "Team B \u00d7 weekday late: 105 min mean wait vs 52 min (Team B, other when) and 35 min (weekday late, other team)",
+     "segment": {
+      "team": "B",
+      "when": "weekday late"
+     },
+     "affected_tickets": 472,
+     "affected_share_pct": 0.89,
+     "strength": 5.35,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T032482",
+       "created_at": "2026-09-25 23:10",
+       "text": "",
+       "wait_min": 545.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T032485",
+       "created_at": "2026-09-25 23:11",
+       "text": "",
+       "wait_min": 523.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T012241",
+       "created_at": "2026-09-09 23:59",
+       "text": "",
+       "wait_min": 518.4,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F5",
+     "title": "Missing item spike on Sun 27 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 252.0,
+     "comparison_value": 193.0,
+     "comparison_text": "252 missing item tickets on Sun 27 Sep vs 193 on a usual day (robust z 4.0)",
+     "segment": {
+      "category": "missing_item",
+      "day": 28,
+      "hour": []
+     },
+     "affected_tickets": 252,
+     "affected_share_pct": 0.47,
+     "strength": 3.98,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T034376",
+       "created_at": "2026-09-27 11:53",
+       "text": "",
+       "wait_min": 54.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T034906",
+       "created_at": "2026-09-27 18:34",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T034018",
+       "created_at": "2026-09-27 00:12",
+       "text": "",
+       "wait_min": 503.7,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F6",
+     "title": "Restaurant partner spike on Thu 01 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 165.0,
+     "comparison_value": 113.0,
+     "comparison_text": "165 restaurant partner tickets on Thu 01 Oct vs 113 on a usual day (robust z 3.9)",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 32,
+      "hour": []
+     },
+     "affected_tickets": 165,
+     "affected_share_pct": 0.31,
+     "strength": 3.9,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T039434",
+       "created_at": "2026-10-01 07:37",
+       "text": "",
+       "wait_min": 22.8,
+       "breached": false
+      },
+      {
+       "ticket_id": "T039532",
+       "created_at": "2026-10-01 09:52",
+       "text": "",
+       "wait_min": 1.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T039678",
+       "created_at": "2026-10-01 12:07",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F7",
+     "title": "Late delivery spike on Thu 01 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 428.0,
+     "comparison_value": 333.0,
+     "comparison_text": "428 late delivery tickets on Thu 01 Oct vs 333 on a usual day (robust z 3.8)",
+     "segment": {
+      "category": "late_delivery",
+      "day": 32,
+      "hour": []
+     },
+     "affected_tickets": 428,
+     "affected_share_pct": 0.81,
+     "strength": 3.77,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T039461",
+       "created_at": "2026-10-01 08:28",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T039468",
+       "created_at": "2026-10-01 08:41",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T039542",
+       "created_at": "2026-10-01 10:06",
+       "text": "",
+       "wait_min": 44.7,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 9,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team A weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "A",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "payment_failure spike day 29",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "payment_failure",
+      "day": 29,
+      "hour": [
+       15,
+       16,
+       17,
+       18,
+       19
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 15 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 15
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team A weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "payment_failure spike day 29",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "cluster 15 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team A overloaded on weekend dinner (work 2.33\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.33,
+     "comparison_value": 1.0,
+     "comparison_text": "Team A gets 2.33\u00d7 more work than its agents' time on weekend dinner (2.2 agents on shift); its tickets wait 259 min then and 512 min on weekend late while the backlog clears (usual 84 min)",
+     "segment": {
+      "team": "A",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 2324,
+     "affected_share_pct": 4.38,
+     "strength": 23.26,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T007224",
+       "created_at": "2026-09-05 19:34",
+       "text": "",
+       "wait_min": 9.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007306",
+       "created_at": "2026-09-05 20:20",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007307",
+       "created_at": "2026-09-05 20:21",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Add Team A capacity on weekend dinner: move agents trained on late delivery from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "Payment failure spike on Mon 28 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 221.0,
+     "comparison_value": 112.0,
+     "comparison_text": "221 payment failure tickets on Mon 28 Sep vs 112 on a usual day (robust z 8.2), concentrated 15:00-20:00",
+     "segment": {
+      "category": "payment_failure",
+      "day": 29,
+      "hour": [
+       15,
+       16,
+       17,
+       18,
+       19
+      ]
+     },
+     "affected_tickets": 221,
+     "affected_share_pct": 0.42,
+     "strength": 8.17,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T035570",
+       "created_at": "2026-09-28 15:34",
+       "text": "",
+       "wait_min": 6.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T035628",
+       "created_at": "2026-09-28 16:19",
+       "text": "",
+       "wait_min": 3.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T035631",
+       "created_at": "2026-09-28 16:24",
+       "text": "",
+       "wait_min": 2.1,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F3",
+     "title": "wrong item \u00d7 Hindi wait 2.2\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 159.37,
+     "comparison_value": 71.86,
+     "comparison_text": "wrong item \u00d7 Hindi: 159 min mean wait vs 34 min (wrong item, other language) and 72 min (Hindi, other category)",
+     "segment": {
+      "category": "wrong_item",
+      "language": "hi"
+     },
+     "affected_tickets": 1121,
+     "affected_share_pct": 2.11,
+     "strength": 6.76,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T036298",
+       "created_at": "2026-09-29 00:00",
+       "text": "",
+       "wait_min": 1920.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036335",
+       "created_at": "2026-09-29 01:40",
+       "text": "",
+       "wait_min": 1823.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T036373",
+       "created_at": "2026-09-29 06:23",
+       "text": "",
+       "wait_min": 1559.2,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F4",
+     "title": "Restaurant cluster 15: 2.6\u00d7 more wrong item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are wrong item",
+     "value": 23.82,
+     "comparison_value": 9.3,
+     "comparison_text": "23.8% of cluster 15's tickets are wrong item vs 9.3% for other clusters",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 15
+     },
+     "affected_tickets": 257,
+     "affected_share_pct": 0.48,
+     "strength": 6.17,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T024751",
+       "created_at": "2026-09-20 00:03",
+       "text": "",
+       "wait_min": 519.8,
+       "breached": false
+      },
+      {
+       "ticket_id": "T035589",
+       "created_at": "2026-09-28 15:52",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T037112",
+       "created_at": "2026-09-29 20:24",
+       "text": "",
+       "wait_min": 2.6,
+       "breached": true
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F5",
+     "title": "Team B \u00d7 weekday late wait 2.3\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 142.13,
+     "comparison_value": 61.99,
+     "comparison_text": "Team B \u00d7 weekday late: 142 min mean wait vs 48 min (Team B, other when) and 62 min (weekday late, other team)",
+     "segment": {
+      "team": "B",
+      "when": "weekday late"
+     },
+     "affected_tickets": 469,
+     "affected_share_pct": 0.88,
+     "strength": 6.12,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T041226",
+       "created_at": "2026-10-02 23:30",
+       "text": "",
+       "wait_min": 652.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T041206",
+       "created_at": "2026-10-02 23:08",
+       "text": "",
+       "wait_min": 651.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T041214",
+       "created_at": "2026-10-02 23:16",
+       "text": "",
+       "wait_min": 650.5,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    }
+   ]
+  },
+  {
+   "set": 10,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "late_delivery spike day 13",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "late_delivery",
+      "day": 13,
+      "hour": [
+       14,
+       15,
+       16,
+       17
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "late_delivery spike day 13",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team D overloaded on weekend dinner (work 2.31\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.31,
+     "comparison_value": 1.0,
+     "comparison_text": "Team D gets 2.31\u00d7 more work than its agents' time on weekend dinner (2.6 agents on shift); its tickets wait 305 min then and 501 min on weekend late while the backlog clears (usual 103 min)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1709,
+     "affected_share_pct": 3.18,
+     "strength": 23.05,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T006975",
+       "created_at": "2026-09-05 19:18",
+       "text": "",
+       "wait_min": 38.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007064",
+       "created_at": "2026-09-05 20:00",
+       "text": "",
+       "wait_min": 2.4,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007100",
+       "created_at": "2026-09-05 20:15",
+       "text": "",
+       "wait_min": 8.5,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team D capacity on weekend dinner: move agents trained on account, app bug, restaurant partner from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "Hindi \u00d7 Team C wait 4.8\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 784.99,
+     "comparison_value": 163.09,
+     "comparison_text": "Hindi \u00d7 Team C: 785 min mean wait vs 163 min (Hindi, other team) and 19 min (Team C, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "C"
+     },
+     "affected_tickets": 2780,
+     "affected_share_pct": 5.17,
+     "strength": 16.58,
+     "not_explained_by": "only 2 agents (C02, C04) speak hi and handle missing item, wrong item",
+     "examples": [
+      {
+       "ticket_id": "T000836",
+       "created_at": "2026-08-31 20:36",
+       "text": "",
+       "wait_min": 3603.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000830",
+       "created_at": "2026-08-31 20:34",
+       "text": "",
+       "wait_min": 3596.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000784",
+       "created_at": "2026-08-31 20:12",
+       "text": "",
+       "wait_min": 3593.4,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on missing item, wrong item; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F3",
+     "title": "Late delivery spike on Sat 12 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 556.0,
+     "comparison_value": 393.0,
+     "comparison_text": "556 late delivery tickets on Sat 12 Sep vs 393 on a usual day (robust z 8.2), concentrated 14:00-18:00",
+     "segment": {
+      "category": "late_delivery",
+      "day": 13,
+      "hour": [
+       14,
+       15,
+       16,
+       17
+      ]
+     },
+     "affected_tickets": 556,
+     "affected_share_pct": 1.03,
+     "strength": 8.22,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T015338",
+       "created_at": "2026-09-12 00:57",
+       "text": "",
+       "wait_min": 362.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T015393",
+       "created_at": "2026-09-12 05:29",
+       "text": "",
+       "wait_min": 350.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T015681",
+       "created_at": "2026-09-12 12:28",
+       "text": "",
+       "wait_min": 20.2,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F4",
+     "title": "Team D \u00d7 weekend afternoon wait 2.5\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 243.22,
+     "comparison_value": 96.32,
+     "comparison_text": "Team D \u00d7 weekend afternoon: 243 min mean wait vs 96 min (Team D, other when) and 10 min (weekend afternoon, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend afternoon"
+     },
+     "affected_tickets": 582,
+     "affected_share_pct": 1.08,
+     "strength": 6.98,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T008297",
+       "created_at": "2026-09-06 16:21",
+       "text": "",
+       "wait_min": 1013.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T008294",
+       "created_at": "2026-09-06 16:20",
+       "text": "",
+       "wait_min": 1008.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T008321",
+       "created_at": "2026-09-06 16:37",
+       "text": "",
+       "wait_min": 997.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F5",
+     "title": "Restaurant partner spike on Sun 06 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 190.0,
+     "comparison_value": 138.0,
+     "comparison_text": "190 restaurant partner tickets on Sun 06 Sep vs 138 on a usual day (robust z 4.4)",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 7,
+      "hour": []
+     },
+     "affected_tickets": 190,
+     "affected_share_pct": 0.35,
+     "strength": 4.43,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T007680",
+       "created_at": "2026-09-06 09:09",
+       "text": "",
+       "wait_min": 73.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007685",
+       "created_at": "2026-09-06 09:15",
+       "text": "",
+       "wait_min": 10.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T008335",
+       "created_at": "2026-09-06 16:46",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F6",
+     "title": "Payment failure spike on Sun 06 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 175.0,
+     "comparison_value": 131.0,
+     "comparison_text": "175 payment failure tickets on Sun 06 Sep vs 131 on a usual day (robust z 3.8)",
+     "segment": {
+      "category": "payment_failure",
+      "day": 7,
+      "hour": []
+     },
+     "affected_tickets": 175,
+     "affected_share_pct": 0.33,
+     "strength": 3.84,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T007543",
+       "created_at": "2026-09-06 01:55",
+       "text": "",
+       "wait_min": 610.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007894",
+       "created_at": "2026-09-06 12:11",
+       "text": "",
+       "wait_min": 219.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T008034",
+       "created_at": "2026-09-06 13:20",
+       "text": "",
+       "wait_min": 1099.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 11,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "wrong_item spike day 13",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "wrong_item",
+      "day": 13,
+      "hour": [
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "other x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "wrong_item spike day 13",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "other x Team C skill gap",
+     "found": false,
+     "diagnosed": false,
+     "card": ""
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "email tickets are transferred 5.2\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.5,
+     "comparison_value": 2.41,
+     "comparison_text": "12.5 transfers per 100 email tickets vs 2.4 for the rest",
+     "segment": {
+      "channel": "email"
+     },
+     "affected_tickets": 8125,
+     "affected_share_pct": 15.3,
+     "strength": 20.33,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000026",
+       "created_at": "2026-08-31 00:47",
+       "text": "",
+       "wait_min": 390.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000057",
+       "created_at": "2026-08-31 02:41",
+       "text": "",
+       "wait_min": 373.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000111",
+       "created_at": "2026-08-31 07:25",
+       "text": "",
+       "wait_min": 71.8,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F2",
+     "title": "Wrong item spike on Sat 12 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 237.0,
+     "comparison_value": 129.0,
+     "comparison_text": "237 wrong item tickets on Sat 12 Sep vs 129 on a usual day (robust z 9.5), concentrated 11:00-16:00",
+     "segment": {
+      "category": "wrong_item",
+      "day": 13,
+      "hour": [
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "affected_tickets": 237,
+     "affected_share_pct": 0.45,
+     "strength": 9.51,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T015045",
+       "created_at": "2026-09-12 12:03",
+       "text": "",
+       "wait_min": 6.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T015048",
+       "created_at": "2026-09-12 12:04",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T015066",
+       "created_at": "2026-09-12 12:12",
+       "text": "",
+       "wait_min": 5.8,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F3",
+     "title": "Payment failure spike on Tue 15 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 166.0,
+     "comparison_value": 110.0,
+     "comparison_text": "166 payment failure tickets on Tue 15 Sep vs 110 on a usual day (robust z 3.8)",
+     "segment": {
+      "category": "payment_failure",
+      "day": 16,
+      "hour": []
+     },
+     "affected_tickets": 166,
+     "affected_share_pct": 0.31,
+     "strength": 3.78,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T018762",
+       "created_at": "2026-09-15 04:06",
+       "text": "",
+       "wait_min": 1.6,
+       "breached": false
+      },
+      {
+       "ticket_id": "T018772",
+       "created_at": "2026-09-15 05:07",
+       "text": "",
+       "wait_min": 217.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T018784",
+       "created_at": "2026-09-15 06:03",
+       "text": "",
+       "wait_min": 10.1,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F4",
+     "title": "Missing item spike on Mon 31 Aug",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 227.0,
+     "comparison_value": 178.0,
+     "comparison_text": "227 missing item tickets on Mon 31 Aug vs 178 on a usual day (robust z 3.7)",
+     "segment": {
+      "category": "missing_item",
+      "day": 1,
+      "hour": []
+     },
+     "affected_tickets": 227,
+     "affected_share_pct": 0.43,
+     "strength": 3.67,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T000012",
+       "created_at": "2026-08-31 00:25",
+       "text": "",
+       "wait_min": 400.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000014",
+       "created_at": "2026-08-31 00:26",
+       "text": "",
+       "wait_min": 405.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000018",
+       "created_at": "2026-08-31 00:33",
+       "text": "",
+       "wait_min": 408.7,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 12,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 19",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 19,
+      "hour": [
+       15,
+       16,
+       17,
+       18,
+       19,
+       20
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "other x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "cluster 4 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 4
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 19",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "other x Team C skill gap",
+     "found": false,
+     "diagnosed": false,
+     "card": ""
+    },
+    {
+     "id": "R3",
+     "name": "cluster 4 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Restaurant partner spike on Fri 18 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 233.0,
+     "comparison_value": 116.0,
+     "comparison_text": "233 restaurant partner tickets on Fri 18 Sep vs 116 on a usual day (robust z 9.9), concentrated 15:00-21:00",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 19,
+      "hour": [
+       15,
+       16,
+       17,
+       18,
+       19,
+       20
+      ]
+     },
+     "affected_tickets": 233,
+     "affected_share_pct": 0.44,
+     "strength": 9.86,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T022616",
+       "created_at": "2026-09-18 07:40",
+       "text": "",
+       "wait_min": 79.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T022669",
+       "created_at": "2026-09-18 09:18",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T022705",
+       "created_at": "2026-09-18 10:06",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F2",
+     "title": "Restaurant cluster 4: 2.5\u00d7 more wrong item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are wrong item",
+     "value": 22.03,
+     "comparison_value": 8.78,
+     "comparison_text": "22.0% of cluster 4's tickets are wrong item vs 8.8% for other clusters",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 4
+     },
+     "affected_tickets": 633,
+     "affected_share_pct": 1.2,
+     "strength": 7.03,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T003516",
+       "created_at": "2026-09-02 22:32",
+       "text": "",
+       "wait_min": 8.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T006464",
+       "created_at": "2026-09-05 12:28",
+       "text": "",
+       "wait_min": 31.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T010137",
+       "created_at": "2026-09-07 23:47",
+       "text": "",
+       "wait_min": 589.6,
+       "breached": true
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F3",
+     "title": "regional-language \u00d7 Team D wait 2.3\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 1273.43,
+     "comparison_value": 564.14,
+     "comparison_text": "regional-language \u00d7 Team D: 1273 min mean wait vs 564 min (regional-language, other team) and 38 min (Team D, other language)",
+     "segment": {
+      "language": "other",
+      "team": "D"
+     },
+     "affected_tickets": 744,
+     "affected_share_pct": 1.4,
+     "strength": 6.48,
+     "not_explained_by": "only 1 agents (D02) speak other and handle account, app bug, restaurant partner",
+     "examples": [
+      {
+       "ticket_id": "T038596",
+       "created_at": "2026-09-30 16:38",
+       "text": "",
+       "wait_min": 3804.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T038607",
+       "created_at": "2026-09-30 16:45",
+       "text": "",
+       "wait_min": 3802.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T020543",
+       "created_at": "2026-09-16 15:41",
+       "text": "",
+       "wait_min": 3798.5,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train other-speaking agents on account, app bug, restaurant partner; meanwhile route these tickets to the 1 capable agents first"
+    },
+    {
+     "id": "F4",
+     "title": "App bug spike on Wed 02 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 98.0,
+     "comparison_value": 67.0,
+     "comparison_text": "98 app bug tickets on Wed 02 Sep vs 67 on a usual day (robust z 3.8)",
+     "segment": {
+      "category": "app_bug",
+      "day": 3,
+      "hour": []
+     },
+     "affected_tickets": 98,
+     "affected_share_pct": 0.19,
+     "strength": 3.79,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T002591",
+       "created_at": "2026-09-02 10:23",
+       "text": "",
+       "wait_min": 32.7,
+       "breached": false
+      },
+      {
+       "ticket_id": "T003163",
+       "created_at": "2026-09-02 18:55",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T002350",
+       "created_at": "2026-09-02 00:05",
+       "text": "",
+       "wait_min": 4.1,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 13,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 12
+     }
+    },
+    {
+     "id": "R3",
+     "name": "other x Team A skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "other",
+      "category": [
+       "late_delivery"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 12 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "other x Team A skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "email tickets are transferred 4.8\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.26,
+     "comparison_value": 2.58,
+     "comparison_text": "12.3 transfers per 100 email tickets vs 2.6 for the rest",
+     "segment": {
+      "channel": "email"
+     },
+     "affected_tickets": 7782,
+     "affected_share_pct": 14.97,
+     "strength": 18.51,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000057",
+       "created_at": "2026-08-31 02:20",
+       "text": "",
+       "wait_min": 369.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000186",
+       "created_at": "2026-08-31 09:08",
+       "text": "",
+       "wait_min": 68.3,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000222",
+       "created_at": "2026-08-31 10:02",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F2",
+     "title": "late delivery \u00d7 regional-language wait 5.6\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 1192.83,
+     "comparison_value": 213.23,
+     "comparison_text": "late delivery \u00d7 regional-language: 1193 min mean wait vs 24 min (late delivery, other language) and 213 min (regional-language, other category)",
+     "segment": {
+      "category": "late_delivery",
+      "language": "other"
+     },
+     "affected_tickets": 890,
+     "affected_share_pct": 1.71,
+     "strength": 16.5,
+     "not_explained_by": "only 1 agents (A02) speak other and handle late delivery",
+     "examples": [
+      {
+       "ticket_id": "T018217",
+       "created_at": "2026-09-14 17:04",
+       "text": "",
+       "wait_min": 5215.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T027825",
+       "created_at": "2026-09-22 17:26",
+       "text": "",
+       "wait_min": 5193.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T018262",
+       "created_at": "2026-09-14 17:52",
+       "text": "",
+       "wait_min": 5171.4,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train other-speaking agents on late delivery; meanwhile route these tickets to the 1 capable agents first"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant cluster 12: 2.7\u00d7 more wrong item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are wrong item",
+     "value": 23.89,
+     "comparison_value": 8.91,
+     "comparison_text": "23.9% of cluster 12's tickets are wrong item vs 8.9% for other clusters",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 12
+     },
+     "affected_tickets": 323,
+     "affected_share_pct": 0.62,
+     "strength": 6.73,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T004947",
+       "created_at": "2026-09-04 06:27",
+       "text": "",
+       "wait_min": 80.6,
+       "breached": false
+      },
+      {
+       "ticket_id": "T005985",
+       "created_at": "2026-09-04 21:47",
+       "text": "",
+       "wait_min": 91.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T009877",
+       "created_at": "2026-09-07 18:44",
+       "text": "",
+       "wait_min": 1.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F4",
+     "title": "wrong item \u00d7 Hindi wait 2.2\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 102.42,
+     "comparison_value": 47.15,
+     "comparison_text": "wrong item \u00d7 Hindi: 102 min mean wait vs 38 min (wrong item, other language) and 47 min (Hindi, other category)",
+     "segment": {
+      "category": "wrong_item",
+      "language": "hi"
+     },
+     "affected_tickets": 1094,
+     "affected_share_pct": 2.11,
+     "strength": 6.6,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T044626",
+       "created_at": "2026-10-06 07:41",
+       "text": "",
+       "wait_min": 1258.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T044632",
+       "created_at": "2026-10-06 07:56",
+       "text": "",
+       "wait_min": 1253.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T044674",
+       "created_at": "2026-10-06 09:05",
+       "text": "",
+       "wait_min": 1191.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    }
+   ]
+  },
+  {
+   "set": 14,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 40",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 40,
+      "hour": [
+       16,
+       17,
+       18,
+       19,
+       20,
+       21
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 16 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 16
+     }
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "A",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "app_bug spike day 40",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 16 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "Team A weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team A overloaded on weekend dinner (work 2.44\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.44,
+     "comparison_value": 1.0,
+     "comparison_text": "Team A gets 2.44\u00d7 more work than its agents' time on weekend dinner (2.2 agents on shift); its tickets wait 484 min then and 748 min on weekend late while the backlog clears (usual 157 min)",
+     "segment": {
+      "team": "A",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 2457,
+     "affected_share_pct": 4.53,
+     "strength": 24.37,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T007115",
+       "created_at": "2026-09-05 19:39",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007138",
+       "created_at": "2026-09-05 19:49",
+       "text": "",
+       "wait_min": 44.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T007147",
+       "created_at": "2026-09-05 19:54",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team A capacity on weekend dinner: move agents trained on late delivery from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "App bug spike on Fri 09 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 152.0,
+     "comparison_value": 70.0,
+     "comparison_text": "152 app bug tickets on Fri 09 Oct vs 70 on a usual day (robust z 7.9), concentrated 16:00-22:00",
+     "segment": {
+      "category": "app_bug",
+      "day": 40,
+      "hour": [
+       16,
+       17,
+       18,
+       19,
+       20,
+       21
+      ]
+     },
+     "affected_tickets": 152,
+     "affected_share_pct": 0.28,
+     "strength": 7.9,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T050678",
+       "created_at": "2026-10-09 16:06",
+       "text": "",
+       "wait_min": 23.4,
+       "breached": false
+      },
+      {
+       "ticket_id": "T050764",
+       "created_at": "2026-10-09 17:16",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T050920",
+       "created_at": "2026-10-09 19:19",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant cluster 16: 2.5\u00d7 more missing item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are missing item",
+     "value": 33.53,
+     "comparison_value": 13.68,
+     "comparison_text": "33.5% of cluster 16's tickets are missing item vs 13.7% for other clusters",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 16
+     },
+     "affected_tickets": 395,
+     "affected_share_pct": 0.73,
+     "strength": 6.36,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T021270",
+       "created_at": "2026-09-16 20:31",
+       "text": "",
+       "wait_min": 22.6,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000019",
+       "created_at": "2026-08-31 00:30",
+       "text": "",
+       "wait_min": 396.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000108",
+       "created_at": "2026-08-31 07:11",
+       "text": "",
+       "wait_min": 91.9,
+       "breached": true
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F4",
+     "title": "Refund spike on Sat 26 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 276.0,
+     "comparison_value": 203.0,
+     "comparison_text": "276 refund tickets on Sat 26 Sep vs 203 on a usual day (robust z 4.9)",
+     "segment": {
+      "category": "refund",
+      "day": 27,
+      "hour": []
+     },
+     "affected_tickets": 276,
+     "affected_share_pct": 0.51,
+     "strength": 4.92,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T033293",
+       "created_at": "2026-09-26 03:57",
+       "text": "",
+       "wait_min": 320.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T033857",
+       "created_at": "2026-09-26 14:43",
+       "text": "",
+       "wait_min": 19.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T033886",
+       "created_at": "2026-09-26 14:56",
+       "text": "",
+       "wait_min": 68.3,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 15,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 9 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 9
+     }
+    },
+    {
+     "id": "R3",
+     "name": "account spike day 18",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "account",
+      "day": 18,
+      "hour": [
+       16,
+       17,
+       18,
+       19
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 9 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    },
+    {
+     "id": "R3",
+     "name": "account spike day 18",
+     "found": true,
+     "diagnosed": true,
+     "card": "F8"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "phone (IVR) tickets are transferred 5.2\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.72,
+     "comparison_value": 2.43,
+     "comparison_text": "12.7 transfers per 100 phone (IVR) tickets vs 2.4 for the rest",
+     "segment": {
+      "channel": "call"
+     },
+     "affected_tickets": 10437,
+     "affected_share_pct": 20.08,
+     "strength": 21.04,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000056",
+       "created_at": "2026-08-31 02:33",
+       "text": "",
+       "wait_min": 313.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000074",
+       "created_at": "2026-08-31 05:14",
+       "text": "",
+       "wait_min": 196.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000080",
+       "created_at": "2026-08-31 06:14",
+       "text": "",
+       "wait_min": 138.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F2",
+     "title": "wrong item \u00d7 Hindi wait 2.4\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 132.88,
+     "comparison_value": 55.65,
+     "comparison_text": "wrong item \u00d7 Hindi: 133 min mean wait vs 26 min (wrong item, other language) and 56 min (Hindi, other category)",
+     "segment": {
+      "category": "wrong_item",
+      "language": "hi"
+     },
+     "affected_tickets": 1121,
+     "affected_share_pct": 2.16,
+     "strength": 7.28,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T026717",
+       "created_at": "2026-09-22 07:35",
+       "text": "",
+       "wait_min": 1468.8,
+       "breached": true
+      },
+      {
+       "ticket_id": "T026736",
+       "created_at": "2026-09-22 08:19",
+       "text": "",
+       "wait_min": 1428.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T026749",
+       "created_at": "2026-09-22 08:40",
+       "text": "",
+       "wait_min": 1414.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F3",
+     "title": "Team B \u00d7 weekday night wait 2.3\u00d7 longer",
+     "cause_type": "capacity",
+     "metric": "mean wait (min)",
+     "value": 165.36,
+     "comparison_value": 71.86,
+     "comparison_text": "Team B \u00d7 weekday night: 165 min mean wait vs 52 min (Team B, other when) and 72 min (weekday night, other team)",
+     "segment": {
+      "team": "B",
+      "when": "weekday night"
+     },
+     "affected_tickets": 775,
+     "affected_share_pct": 1.49,
+     "strength": 6.65,
+     "not_explained_by": "on average only 0.8 agents who handle refund, payment failure are on shift on weekday night",
+     "examples": [
+      {
+       "ticket_id": "T030532",
+       "created_at": "2026-09-25 00:59",
+       "text": "",
+       "wait_min": 668.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T030549",
+       "created_at": "2026-09-25 01:58",
+       "text": "",
+       "wait_min": 666.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T030530",
+       "created_at": "2026-09-25 00:58",
+       "text": "",
+       "wait_min": 662.8,
+       "breached": true
+      }
+     ],
+     "recommendation": "Put at least one agent who can handle refund, payment failure on shift on weekday night"
+    },
+    {
+     "id": "F4",
+     "title": "Restaurant cluster 9: 2.3\u00d7 more wrong item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are wrong item",
+     "value": 21.87,
+     "comparison_value": 9.43,
+     "comparison_text": "21.9% of cluster 9's tickets are wrong item vs 9.4% for other clusters",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 9
+     },
+     "affected_tickets": 334,
+     "affected_share_pct": 0.64,
+     "strength": 5.86,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T012198",
+       "created_at": "2026-09-09 22:06",
+       "text": "",
+       "wait_min": 20.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T012540",
+       "created_at": "2026-09-10 10:09",
+       "text": "",
+       "wait_min": 338.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T023857",
+       "created_at": "2026-09-19 20:49",
+       "text": "",
+       "wait_min": 4.7,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F5",
+     "title": "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 143.38,
+     "comparison_value": 64.6,
+     "comparison_text": "regional-language \u00d7 weekday morning: 143 min mean wait vs 65 min (regional-language, other when) and 28 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 392,
+     "affected_share_pct": 0.75,
+     "strength": 5.76,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T035940",
+       "created_at": "2026-09-29 07:15",
+       "text": "",
+       "wait_min": 884.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T026729",
+       "created_at": "2026-09-22 08:10",
+       "text": "",
+       "wait_min": 829.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T026877",
+       "created_at": "2026-09-22 11:44",
+       "text": "",
+       "wait_min": 615.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F6",
+     "title": "Team B \u00d7 weekday late wait 2.0\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 140.06,
+     "comparison_value": 69.74,
+     "comparison_text": "Team B \u00d7 weekday late: 140 min mean wait vs 56 min (Team B, other when) and 70 min (weekday late, other team)",
+     "segment": {
+      "team": "B",
+      "when": "weekday late"
+     },
+     "affected_tickets": 454,
+     "affected_share_pct": 0.87,
+     "strength": 5.34,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T030491",
+       "created_at": "2026-09-24 23:57",
+       "text": "",
+       "wait_min": 668.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T030480",
+       "created_at": "2026-09-24 23:46",
+       "text": "",
+       "wait_min": 664.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T030482",
+       "created_at": "2026-09-24 23:52",
+       "text": "",
+       "wait_min": 661.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F7",
+     "title": "Team D \u00d7 weekend late wait 2.3\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 111.08,
+     "comparison_value": 47.89,
+     "comparison_text": "Team D \u00d7 weekend late: 111 min mean wait vs 28 min (Team D, other when) and 48 min (weekend late, other team)",
+     "segment": {
+      "team": "D",
+      "when": "weekend late"
+     },
+     "affected_tickets": 177,
+     "affected_share_pct": 0.34,
+     "strength": 5.21,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T024146",
+       "created_at": "2026-09-19 23:46",
+       "text": "",
+       "wait_min": 428.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T050650",
+       "created_at": "2026-10-10 23:45",
+       "text": "",
+       "wait_min": 349.6,
+       "breached": false
+      },
+      {
+       "ticket_id": "T050660",
+       "created_at": "2026-10-10 23:53",
+       "text": "",
+       "wait_min": 349.2,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F8",
+     "title": "Account spike on Thu 17 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 143.0,
+     "comparison_value": 91.0,
+     "comparison_text": "143 account tickets on Thu 17 Sep vs 91 on a usual day (robust z 4.4), concentrated 16:00-20:00",
+     "segment": {
+      "category": "account",
+      "day": 18,
+      "hour": [
+       16,
+       17,
+       18,
+       19
+      ]
+     },
+     "affected_tickets": 143,
+     "affected_share_pct": 0.28,
+     "strength": 4.38,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T021238",
+       "created_at": "2026-09-17 17:57",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T020577",
+       "created_at": "2026-09-17 00:16",
+       "text": "",
+       "wait_min": 38.7,
+       "breached": false
+      },
+      {
+       "ticket_id": "T020593",
+       "created_at": "2026-09-17 00:37",
+       "text": "",
+       "wait_min": 44.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 16,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 missing_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 20
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team D skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "account",
+       "app_bug",
+       "restaurant_partner"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 missing_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team D skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Hindi \u00d7 Team D wait 10.7\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 1013.4,
+     "comparison_value": 94.39,
+     "comparison_text": "Hindi \u00d7 Team D: 1013 min mean wait vs 91 min (Hindi, other team) and 94 min (Team D, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "D"
+     },
+     "affected_tickets": 2718,
+     "affected_share_pct": 5.2,
+     "strength": 36.87,
+     "not_explained_by": "only 2 agents (D01, D04) speak hi and handle account, app bug, restaurant partner",
+     "examples": [
+      {
+       "ticket_id": "T045040",
+       "created_at": "2026-10-06 10:09",
+       "text": "",
+       "wait_min": 2690.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T045084",
+       "created_at": "2026-10-06 11:00",
+       "text": "",
+       "wait_min": 2655.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T045101",
+       "created_at": "2026-10-06 11:14",
+       "text": "",
+       "wait_min": 2645.4,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on account, app bug, restaurant partner; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F2",
+     "title": "Team D overloaded on weekend dinner (work 2.17\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.17,
+     "comparison_value": 1.0,
+     "comparison_text": "Team D gets 2.17\u00d7 more work than its agents' time on weekend dinner (2.6 agents on shift); its tickets wait 404 min then and 496 min on weekend late while the backlog clears (usual 299 min)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1600,
+     "affected_share_pct": 3.06,
+     "strength": 21.74,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T007035",
+       "created_at": "2026-09-05 20:26",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007178",
+       "created_at": "2026-09-05 21:37",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T007295",
+       "created_at": "2026-09-05 22:37",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      }
+     ],
+     "recommendation": "Add Team D capacity on weekend dinner: move agents trained on account, app bug, restaurant partner from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F3",
+     "title": "regional-language \u00d7 weekday morning wait 2.3\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 203.88,
+     "comparison_value": 87.5,
+     "comparison_text": "regional-language \u00d7 weekday morning: 204 min mean wait vs 74 min (regional-language, other when) and 88 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 366,
+     "affected_share_pct": 0.7,
+     "strength": 5.97,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T029739",
+       "created_at": "2026-09-24 08:25",
+       "text": "",
+       "wait_min": 1974.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T029811",
+       "created_at": "2026-09-24 09:54",
+       "text": "",
+       "wait_min": 1901.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T029847",
+       "created_at": "2026-09-24 10:24",
+       "text": "",
+       "wait_min": 1877.8,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F4",
+     "title": "Restaurant cluster 20: 2.3\u00d7 more missing item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are missing item",
+     "value": 32.64,
+     "comparison_value": 14.09,
+     "comparison_text": "32.6% of cluster 20's tickets are missing item vs 14.1% for other clusters",
+     "segment": {
+      "category": "missing_item",
+      "restaurant_cluster_id": 20
+     },
+     "affected_tickets": 299,
+     "affected_share_pct": 0.57,
+     "strength": 5.74,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T025125",
+       "created_at": "2026-09-20 13:37",
+       "text": "",
+       "wait_min": 52.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T044691",
+       "created_at": "2026-10-05 21:47",
+       "text": "",
+       "wait_min": 10.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T048337",
+       "created_at": "2026-10-09 01:19",
+       "text": "",
+       "wait_min": 386.4,
+       "breached": true
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F5",
+     "title": "Refund spike on Thu 17 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 224.0,
+     "comparison_value": 174.0,
+     "comparison_text": "224 refund tickets on Thu 17 Sep vs 174 on a usual day (robust z 3.7)",
+     "segment": {
+      "category": "refund",
+      "day": 18,
+      "hour": []
+     },
+     "affected_tickets": 224,
+     "affected_share_pct": 0.43,
+     "strength": 3.75,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T021153",
+       "created_at": "2026-09-17 13:15",
+       "text": "",
+       "wait_min": 123.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T021313",
+       "created_at": "2026-09-17 15:22",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T021331",
+       "created_at": "2026-09-17 15:38",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 17,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "D",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 wrong_item",
+     "cause_type": "partner_issue",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 20
+     }
+    },
+    {
+     "id": "R3",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "Team D weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    },
+    {
+     "id": "R2",
+     "name": "cluster 20 wrong_item",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R3",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team D overloaded on weekend dinner (work 2.27\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.27,
+     "comparison_value": 1.0,
+     "comparison_text": "Team D gets 2.27\u00d7 more work than its agents' time on weekend dinner (2.6 agents on shift); its tickets wait 428 min then and 645 min on weekend late while the backlog clears (usual 125 min)",
+     "segment": {
+      "team": "D",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1661,
+     "affected_share_pct": 3.11,
+     "strength": 22.7,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T006601",
+       "created_at": "2026-09-05 19:25",
+       "text": "",
+       "wait_min": 0.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T006615",
+       "created_at": "2026-09-05 19:32",
+       "text": "",
+       "wait_min": 11.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T006884",
+       "created_at": "2026-09-05 21:39",
+       "text": "",
+       "wait_min": 44.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team D capacity on weekend dinner: move agents trained on account, app bug, restaurant partner from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "phone (IVR) tickets are transferred 4.9\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.65,
+     "comparison_value": 2.6,
+     "comparison_text": "12.7 transfers per 100 phone (IVR) tickets vs 2.6 for the rest",
+     "segment": {
+      "channel": "call"
+     },
+     "affected_tickets": 10743,
+     "affected_share_pct": 20.12,
+     "strength": 19.59,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000011",
+       "created_at": "2026-08-31 00:14",
+       "text": "",
+       "wait_min": 413.5,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000012",
+       "created_at": "2026-08-31 00:15",
+       "text": "",
+       "wait_min": 432.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000046",
+       "created_at": "2026-08-31 01:26",
+       "text": "",
+       "wait_min": 378.5,
+       "breached": true
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant cluster 20: 2.4\u00d7 more wrong item tickets",
+     "cause_type": "partner_issue",
+     "metric": "share of tickets that are wrong item",
+     "value": 22.07,
+     "comparison_value": 9.23,
+     "comparison_text": "22.1% of cluster 20's tickets are wrong item vs 9.2% for other clusters",
+     "segment": {
+      "category": "wrong_item",
+      "restaurant_cluster_id": 20
+     },
+     "affected_tickets": 207,
+     "affected_share_pct": 0.39,
+     "strength": 5.54,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000549",
+       "created_at": "2026-08-31 15:12",
+       "text": "",
+       "wait_min": 50.8,
+       "breached": false
+      },
+      {
+       "ticket_id": "T005846",
+       "created_at": "2026-09-05 08:15",
+       "text": "",
+       "wait_min": 31.2,
+       "breached": false
+      },
+      {
+       "ticket_id": "T023598",
+       "created_at": "2026-09-19 08:33",
+       "text": "",
+       "wait_min": 101.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+    },
+    {
+     "id": "F4",
+     "title": "Team B \u00d7 weekday late wait 2.1\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 178.62,
+     "comparison_value": 86.13,
+     "comparison_text": "Team B \u00d7 weekday late: 179 min mean wait vs 86 min (Team B, other when) and 83 min (weekday late, other team)",
+     "segment": {
+      "team": "B",
+      "when": "weekday late"
+     },
+     "affected_tickets": 443,
+     "affected_share_pct": 0.83,
+     "strength": 5.49,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T031601",
+       "created_at": "2026-09-24 23:53",
+       "text": "",
+       "wait_min": 845.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T031598",
+       "created_at": "2026-09-24 23:51",
+       "text": "",
+       "wait_min": 844.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T031599",
+       "created_at": "2026-09-24 23:52",
+       "text": "",
+       "wait_min": 842.5,
+       "breached": false
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    }
+   ]
+  },
+  {
+   "set": 18,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "payment_failure spike day 10",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "payment_failure",
+      "day": 10,
+      "hour": [
+       14,
+       15,
+       16,
+       17,
+       18
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team B skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "refund",
+       "payment_failure"
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "Team B weekend dinner overload",
+     "cause_type": "capacity",
+     "segment": {
+      "team": "B",
+      "weekday": [
+       5,
+       6
+      ],
+      "hour": [
+       19,
+       20,
+       21,
+       22
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "payment_failure spike day 10",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R2",
+     "name": "hi x Team B skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "Team B weekend dinner overload",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Team B overloaded on weekend dinner (work 2.39\u00d7 agent-time)",
+     "cause_type": "capacity",
+     "metric": "work \u00f7 agent-time (rho)",
+     "value": 2.39,
+     "comparison_value": 1.0,
+     "comparison_text": "Team B gets 2.39\u00d7 more work than its agents' time on weekend dinner (2.5 agents on shift); its tickets wait 684 min then and 896 min on weekend late while the backlog clears (usual 311 min)",
+     "segment": {
+      "team": "B",
+      "when": "weekend dinner"
+     },
+     "affected_tickets": 1808,
+     "affected_share_pct": 3.43,
+     "strength": 23.93,
+     "not_explained_by": "recurs every weekend, not a one-off",
+     "examples": [
+      {
+       "ticket_id": "T007097",
+       "created_at": "2026-09-05 23:20",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T008162",
+       "created_at": "2026-09-06 20:39",
+       "text": "",
+       "wait_min": 18.9,
+       "breached": false
+      },
+      {
+       "ticket_id": "T008245",
+       "created_at": "2026-09-06 21:14",
+       "text": "",
+       "wait_min": 46.8,
+       "breached": false
+      }
+     ],
+     "recommendation": "Add Team B capacity on weekend dinner: move agents trained on refund, payment failure from a quieter team (see Recommendations)"
+    },
+    {
+     "id": "F2",
+     "title": "Hindi \u00d7 Team B wait 5.0\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 829.97,
+     "comparison_value": 165.88,
+     "comparison_text": "Hindi \u00d7 Team B: 830 min mean wait vs 58 min (Hindi, other team) and 166 min (Team B, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "B"
+     },
+     "affected_tickets": 2960,
+     "affected_share_pct": 5.62,
+     "strength": 17.37,
+     "not_explained_by": "only 2 agents (B01, B02) speak hi and handle refund, payment failure",
+     "examples": [
+      {
+       "ticket_id": "T051166",
+       "created_at": "2026-10-10 22:15",
+       "text": "",
+       "wait_min": 2384.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T051157",
+       "created_at": "2026-10-10 22:09",
+       "text": "",
+       "wait_min": 2381.7,
+       "breached": true
+      },
+      {
+       "ticket_id": "T051214",
+       "created_at": "2026-10-10 22:45",
+       "text": "",
+       "wait_min": 2372.9,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on refund, payment failure; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F3",
+     "title": "Payment failure spike on Wed 09 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 181.0,
+     "comparison_value": 114.0,
+     "comparison_text": "181 payment failure tickets on Wed 09 Sep vs 114 on a usual day (robust z 5.0), concentrated 14:00-19:00",
+     "segment": {
+      "category": "payment_failure",
+      "day": 10,
+      "hour": [
+       14,
+       15,
+       16,
+       17,
+       18
+      ]
+     },
+     "affected_tickets": 181,
+     "affected_share_pct": 0.34,
+     "strength": 5.02,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T011340",
+       "created_at": "2026-09-09 14:37",
+       "text": "",
+       "wait_min": 74.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T011421",
+       "created_at": "2026-09-09 15:44",
+       "text": "",
+       "wait_min": 54.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T011478",
+       "created_at": "2026-09-09 16:20",
+       "text": "",
+       "wait_min": 29.3,
+       "breached": true
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 19,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "call"
+     }
+    },
+    {
+     "id": "R2",
+     "name": "app_bug spike day 26",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "app_bug",
+      "day": 26,
+      "hour": [
+       10,
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "call menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R2",
+     "name": "app_bug spike day 26",
+     "found": true,
+     "diagnosed": true,
+     "card": "F4"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Hindi \u00d7 Team C wait 5.9\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 911.35,
+     "comparison_value": 154.04,
+     "comparison_text": "Hindi \u00d7 Team C: 911 min mean wait vs 154 min (Hindi, other team) and 26 min (Team C, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "C"
+     },
+     "affected_tickets": 2837,
+     "affected_share_pct": 5.35,
+     "strength": 20.43,
+     "not_explained_by": "only 2 agents (C02, C04) speak hi and handle missing item, wrong item",
+     "examples": [
+      {
+       "ticket_id": "T010437",
+       "created_at": "2026-09-08 14:52",
+       "text": "",
+       "wait_min": 2472.5,
+       "breached": true
+      },
+      {
+       "ticket_id": "T010431",
+       "created_at": "2026-09-08 14:47",
+       "text": "",
+       "wait_min": 2472.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T011710",
+       "created_at": "2026-09-09 15:12",
+       "text": "",
+       "wait_min": 2457.8,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on missing item, wrong item; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F2",
+     "title": "phone (IVR) tickets are transferred 4.6\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 11.9,
+     "comparison_value": 2.59,
+     "comparison_text": "11.9 transfers per 100 phone (IVR) tickets vs 2.6 for the rest",
+     "segment": {
+      "channel": "call"
+     },
+     "affected_tickets": 10650,
+     "affected_share_pct": 20.07,
+     "strength": 18.49,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000058",
+       "created_at": "2026-08-31 04:49",
+       "text": "",
+       "wait_min": 236.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000109",
+       "created_at": "2026-08-31 08:12",
+       "text": "",
+       "wait_min": 24.0,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000144",
+       "created_at": "2026-08-31 09:12",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F3",
+     "title": "late delivery \u00d7 Hindi wait 2.1\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 790.24,
+     "comparison_value": 382.23,
+     "comparison_text": "late delivery \u00d7 Hindi: 790 min mean wait vs 17 min (late delivery, other language) and 382 min (Hindi, other category)",
+     "segment": {
+      "category": "late_delivery",
+      "language": "hi"
+     },
+     "affected_tickets": 3364,
+     "affected_share_pct": 6.34,
+     "strength": 7.29,
+     "not_explained_by": "only 0 agents () speak hi and handle late delivery",
+     "examples": [
+      {
+       "ticket_id": "T026834",
+       "created_at": "2026-09-21 16:20",
+       "text": "",
+       "wait_min": 2419.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T010512",
+       "created_at": "2026-09-08 16:33",
+       "text": "",
+       "wait_min": 2384.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T011893",
+       "created_at": "2026-09-09 18:18",
+       "text": "",
+       "wait_min": 2353.9,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on late delivery; meanwhile route these tickets to the 0 capable agents first"
+    },
+    {
+     "id": "F4",
+     "title": "App bug spike on Fri 25 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 121.0,
+     "comparison_value": 68.0,
+     "comparison_text": "121 app bug tickets on Fri 25 Sep vs 68 on a usual day (robust z 6.0), concentrated 10:00-16:00",
+     "segment": {
+      "category": "app_bug",
+      "day": 26,
+      "hour": [
+       10,
+       13,
+       14,
+       15
+      ]
+     },
+     "affected_tickets": 121,
+     "affected_share_pct": 0.23,
+     "strength": 5.96,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T031561",
+       "created_at": "2026-09-25 05:37",
+       "text": "",
+       "wait_min": 351.1,
+       "breached": false
+      },
+      {
+       "ticket_id": "T031719",
+       "created_at": "2026-09-25 10:54",
+       "text": "",
+       "wait_min": 159.6,
+       "breached": false
+      },
+      {
+       "ticket_id": "T031497",
+       "created_at": "2026-09-25 00:18",
+       "text": "",
+       "wait_min": 196.7,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    },
+    {
+     "id": "F5",
+     "title": "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
+     "cause_type": "other",
+     "metric": "mean wait (min)",
+     "value": 173.82,
+     "comparison_value": 86.03,
+     "comparison_text": "regional-language \u00d7 weekday morning: 174 min mean wait vs 64 min (regional-language, other when) and 86 min (weekday morning, other language)",
+     "segment": {
+      "language": "other",
+      "when": "weekday morning"
+     },
+     "affected_tickets": 402,
+     "affected_share_pct": 0.76,
+     "strength": 5.26,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T045857",
+       "created_at": "2026-10-06 11:03",
+       "text": "",
+       "wait_min": 892.1,
+       "breached": true
+      },
+      {
+       "ticket_id": "T001233",
+       "created_at": "2026-09-01 07:37",
+       "text": "",
+       "wait_min": 862.4,
+       "breached": true
+      },
+      {
+       "ticket_id": "T001282",
+       "created_at": "2026-09-01 09:09",
+       "text": "",
+       "wait_min": 787.6,
+       "breached": true
+      }
+     ],
+     "recommendation": "Review this group with the team lead"
+    },
+    {
+     "id": "F6",
+     "title": "Late delivery spike on Thu 01 Oct",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 444.0,
+     "comparison_value": 335.0,
+     "comparison_text": "444 late delivery tickets on Thu 01 Oct vs 335 on a usual day (robust z 4.1)",
+     "segment": {
+      "category": "late_delivery",
+      "day": 32,
+      "hour": []
+     },
+     "affected_tickets": 444,
+     "affected_share_pct": 0.84,
+     "strength": 4.08,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T038983",
+       "created_at": "2026-10-01 06:34",
+       "text": "",
+       "wait_min": 549.2,
+       "breached": true
+      },
+      {
+       "ticket_id": "T038988",
+       "created_at": "2026-10-01 06:59",
+       "text": "",
+       "wait_min": 322.6,
+       "breached": true
+      },
+      {
+       "ticket_id": "T039021",
+       "created_at": "2026-10-01 07:51",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  },
+  {
+   "set": 20,
+   "plants": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 29",
+     "cause_type": "volume_spike",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 29,
+      "hour": [
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     }
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "cause_type": "process",
+     "segment": {
+      "channel": "email"
+     }
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "cause_type": "skill_gap",
+     "segment": {
+      "language": "hi",
+      "category": [
+       "missing_item",
+       "wrong_item"
+      ]
+     }
+    }
+   ],
+   "details": [
+    {
+     "id": "R1",
+     "name": "restaurant_partner spike day 29",
+     "found": true,
+     "diagnosed": true,
+     "card": "F3"
+    },
+    {
+     "id": "R2",
+     "name": "email menu mislabels",
+     "found": true,
+     "diagnosed": true,
+     "card": "F2"
+    },
+    {
+     "id": "R3",
+     "name": "hi x Team C skill gap",
+     "found": true,
+     "diagnosed": true,
+     "card": "F1"
+    }
+   ],
+   "cards": [
+    {
+     "id": "F1",
+     "title": "Hindi \u00d7 Team C wait 6.6\u00d7 longer",
+     "cause_type": "skill_gap",
+     "metric": "mean wait (min)",
+     "value": 850.71,
+     "comparison_value": 128.97,
+     "comparison_text": "Hindi \u00d7 Team C: 851 min mean wait vs 129 min (Hindi, other team) and 15 min (Team C, other language)",
+     "segment": {
+      "language": "hi",
+      "team": "C"
+     },
+     "affected_tickets": 2730,
+     "affected_share_pct": 5.22,
+     "strength": 22.67,
+     "not_explained_by": "only 2 agents (C02, C04) speak hi and handle missing item, wrong item",
+     "examples": [
+      {
+       "ticket_id": "T009839",
+       "created_at": "2026-09-07 21:16",
+       "text": "",
+       "wait_min": 3558.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T009872",
+       "created_at": "2026-09-07 21:36",
+       "text": "",
+       "wait_min": 3547.9,
+       "breached": true
+      },
+      {
+       "ticket_id": "T009834",
+       "created_at": "2026-09-07 21:13",
+       "text": "",
+       "wait_min": 3543.2,
+       "breached": true
+      }
+     ],
+     "recommendation": "Cross-train hi-speaking agents on missing item, wrong item; meanwhile route these tickets to the 2 capable agents first"
+    },
+    {
+     "id": "F2",
+     "title": "email tickets are transferred 5.1\u00d7 more",
+     "cause_type": "process",
+     "metric": "transfers per 100 tickets",
+     "value": 12.23,
+     "comparison_value": 2.41,
+     "comparison_text": "12.2 transfers per 100 email tickets vs 2.4 for the rest",
+     "segment": {
+      "channel": "email"
+     },
+     "affected_tickets": 7848,
+     "affected_share_pct": 15.02,
+     "strength": 19.79,
+     "not_explained_by": "",
+     "examples": [
+      {
+       "ticket_id": "T000002",
+       "created_at": "2026-08-31 00:00",
+       "text": "",
+       "wait_min": 419.3,
+       "breached": true
+      },
+      {
+       "ticket_id": "T000105",
+       "created_at": "2026-08-31 06:31",
+       "text": "",
+       "wait_min": 152.7,
+       "breached": false
+      },
+      {
+       "ticket_id": "T000134",
+       "created_at": "2026-08-31 08:04",
+       "text": "",
+       "wait_min": 91.2,
+       "breached": false
+      }
+     ],
+     "recommendation": "Route these tickets by the text classifier instead of the menu choice"
+    },
+    {
+     "id": "F3",
+     "title": "Restaurant partner spike on Mon 28 Sep",
+     "cause_type": "volume_spike",
+     "metric": "tickets per day",
+     "value": 267.0,
+     "comparison_value": 113.0,
+     "comparison_text": "267 restaurant partner tickets on Mon 28 Sep vs 113 on a usual day (robust z 8.7), concentrated 11:00-16:00",
+     "segment": {
+      "category": "restaurant_partner",
+      "day": 29,
+      "hour": [
+       11,
+       12,
+       13,
+       14,
+       15
+      ]
+     },
+     "affected_tickets": 267,
+     "affected_share_pct": 0.51,
+     "strength": 8.66,
+     "not_explained_by": "not a known sale or event day",
+     "examples": [
+      {
+       "ticket_id": "T035504",
+       "created_at": "2026-09-28 11:15",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      },
+      {
+       "ticket_id": "T035515",
+       "created_at": "2026-09-28 11:18",
+       "text": "",
+       "wait_min": 5.4,
+       "breached": false
+      },
+      {
+       "ticket_id": "T035599",
+       "created_at": "2026-09-28 12:10",
+       "text": "",
+       "wait_min": 0.0,
+       "breached": false
+      }
+     ],
+     "recommendation": "Check what changed that day (app release, payment gateway, outage)"
+    }
+   ]
+  }
+ ]
+}

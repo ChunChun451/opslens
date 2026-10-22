@@ -225,6 +225,9 @@ def assemble(timings: dict[str, float]) -> dict:
         results["plan"] = part("plan_items")
     if (PARTS / "concurrency.json").exists():  # Plan v4 W2: agents with 2-3 chats at once
         results["concurrency"] = part("concurrency")
+    if (PARTS / "llm_eval.json").exists():  # Plan v4 W6: NLP/LLM benchmark; not a STEP (LLM quota), run once
+        results["nlp_bench"] = {"banking77": part("nlp_bench") if (PARTS / "nlp_bench.json").exists() else None,
+                                **part("llm_eval")}  # + routing (c), attribution (b)
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)

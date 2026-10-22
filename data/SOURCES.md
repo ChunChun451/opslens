@@ -45,3 +45,15 @@ Raw files live in `data/public/` and are not committed to git.
   and SLAs for 56 days, with planted problems recorded in `data/planted.json`.
   Parameters: `config/generator.yaml`. Fixed seed. Public datasets do not contain this
   layer, so we generate it — **and say so openly in the pitch.**
+
+## 4. BANKING77 (W6 NLP benchmark, eval only)
+
+- **What:** 13,083 real online-banking customer queries labelled with 77 intents; official split
+  10,003 train / 3,080 test. Used only by `eval/run_nlp_bench.py`; the product never reads it.
+- **URL:** https://github.com/PolyAI-LDN/task-specific-datasets (`banking_data/train.csv`, `test.csv`)
+  → `data/public/banking77/` (download: `python scripts/download_banking77.py`)
+- **SHA-256:** train `b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b`,
+  test `d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d` (22 Oct 2026)
+- **Licence:** CC BY 4.0 (the repository's LICENSE file, checked 22 Oct 2026). Citation: Casanueva,
+  I., Temčinas, T., Gerz, D., Henderson, M., Vulić, I. (2020). Efficient Intent Detection with Dual
+  Sentence Encoders. NLP4ConvAI. arXiv:2003.04807.
