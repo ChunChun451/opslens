@@ -921,5 +921,724 @@
    }
   ],
   "rule_llm_beats_rules": true
+ },
+ "attribution": {
+  "cards": 62,
+  "rules": {
+   "n": 62,
+   "correct": 62,
+   "pct": 100.0,
+   "ci95": [
+    100.0,
+    100.0
+   ]
+  },
+  "llm": {
+   "n": 62,
+   "correct": 61,
+   "pct": 98.4,
+   "ci95": [
+    95.2,
+    100.0
+   ]
+  },
+  "llm_minus_rules": {
+   "diff_pts": -1.6,
+   "ci95": [
+    -4.8,
+    0.0
+   ],
+   "above_zero": false
+  },
+  "rule_llm_beats_rules": false,
+  "replies_with_digits": 0,
+  "unanswered": 0,
+  "models": [
+   "gemini-3.1-flash-lite"
+  ],
+  "rows": [
+   {
+    "world": "main",
+    "plant": "Hindi payments and refunds wait long",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle payment and refund related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "Team C overloaded at weekend dinner",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of order accuracy tickets.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "Payment-failure spike (bad app release)",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in payment failure reports occurred during evening hours without a clear external event trigger.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "Wrong items from one restaurant cluster",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to pack orders correctly leading to increased customer complaints",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "IVR menu mislabels call tickets",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is failing to route customer calls to the correct support queues efficiently",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind1",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and extended customer wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind1",
+    "plant": "missing_item spike day 13",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in missing item reports occurred during peak lunch hours on a Saturday",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind1",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle order accuracy tickets causes significant queue delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind2",
+    "plant": "Team C weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of order accuracy tickets.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind2",
+    "plant": "cluster 17 restaurant_partner",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is generating a disproportionately high volume of partner related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind2",
+    "plant": "hi x Team A skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle late delivery tickets causes significant queue delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind3",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind3",
+    "plant": "cluster 11 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to include items in orders leading to higher ticket volumes",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind4",
+    "plant": "other x Team A skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in the regional language to handle the volume of late delivery tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind4",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Incorrect initial routing of email tickets necessitates frequent manual transfers between support teams",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind4",
+    "plant": "cluster 13 restaurant_partner",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is generating a disproportionately high volume of partner related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind5",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind5",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to teams that lack the authority to resolve them.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind5",
+    "plant": "cluster 9 restaurant_partner",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurant partners is generating a disproportionately high volume of support tickets.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind6",
+    "plant": "app_bug spike day 20",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unusual surge in application bug reports occurred during the morning hours on a Saturday",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind6",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind6",
+    "plant": "cluster 6 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind7",
+    "plant": "cluster 16 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind7",
+    "plant": "hi x Team D skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle account and restaurant partner support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind7",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind8",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind8",
+    "plant": "cluster 12 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind8",
+    "plant": "Team A weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind9",
+    "plant": "Team A weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind9",
+    "plant": "payment_failure spike day 29",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in payment failure reports occurred during the evening peak hours without a clear external trigger",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind9",
+    "plant": "cluster 15 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "Specific restaurant cluster is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind10",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog of unresolved support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind10",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle order accuracy issues causes significant queue delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind10",
+    "plant": "late_delivery spike day 13",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing during peak weekend hours led to significant delays in processing live order tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind11",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams before reaching the correct resolution queue.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind11",
+    "plant": "wrong_item spike day 13",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in order accuracy complaints occurred during peak lunch hours on a Saturday",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind12",
+    "plant": "restaurant_partner spike day 19",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in restaurant partner inquiries occurred during peak evening hours on Friday.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind12",
+    "plant": "cluster 4 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "Specific restaurant cluster consistently fails to provide accurate orders leading to higher ticket volumes",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind13",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Incorrect initial routing of email tickets necessitates frequent manual transfers between support teams",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind13",
+    "plant": "cluster 12 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind13",
+    "plant": "other x Team A skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in the regional language to handle the volume of late delivery tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind14",
+    "plant": "app_bug spike day 40",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in application bug reports occurred during peak evening hours without a clear external trigger.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind14",
+    "plant": "cluster 16 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to include all items in customer orders",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind14",
+    "plant": "Team A weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind15",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to teams that lack the authority to resolve them",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind15",
+    "plant": "cluster 9 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind15",
+    "plant": "account spike day 18",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in account related inquiries occurred during the evening peak hours",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind16",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog and extended wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind16",
+    "plant": "cluster 20 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind16",
+    "plant": "hi x Team D skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle technical and partner related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind17",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog and extended wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind17",
+    "plant": "cluster 20 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to pack orders correctly leading to increased customer complaints",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind17",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to the wrong support queues requiring frequent agent transfers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind18",
+    "plant": "payment_failure spike day 10",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in payment failure tickets occurred during the afternoon hours without a clear external event trigger",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind18",
+    "plant": "hi x Team B skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle payment and refund related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind18",
+    "plant": "Team B weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of payment tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind19",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to the wrong departments requiring frequent agent transfers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind19",
+    "plant": "app_bug spike day 26",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in application bug reports occurred during midday hours without a clear external event trigger.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind19",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind20",
+    "plant": "restaurant_partner spike day 29",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in restaurant partner inquiries occurred during the midday hours on a specific day",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind20",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind20",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   }
+  ]
  }
 }
