@@ -1,0 +1,218 @@
+{
+ "dataset": {
+  "name": "BANKING77",
+  "licence": "CC BY 4.0",
+  "train": 10003,
+  "test": 3080,
+  "intents": 77,
+  "source": "github.com/PolyAI-LDN/task-specific-datasets"
+ },
+ "settings": {
+  "full": {
+   "learn_queries": 10003,
+   "validation_queries": 1998,
+   "test_queries": 3080,
+   "local": {
+    "pct": 90.32,
+    "ci95": [
+     89.29,
+     91.33
+    ],
+    "ms_per_query": 0.328
+   },
+   "threshold_table": [
+    {
+     "threshold": 0.3,
+     "escalated_pct": 1.6016,
+     "accuracy": 0.8979
+    },
+    {
+     "threshold": 0.4,
+     "escalated_pct": 5.6557,
+     "accuracy": 0.9079
+    },
+    {
+     "threshold": 0.5,
+     "escalated_pct": 14.3143,
+     "accuracy": 0.9039
+    },
+    {
+     "threshold": 0.6,
+     "escalated_pct": 24.2242,
+     "accuracy": 0.8934
+    },
+    {
+     "threshold": 0.7,
+     "escalated_pct": 35.9359,
+     "accuracy": 0.8934
+    },
+    {
+     "threshold": 0.8,
+     "escalated_pct": 50.6507,
+     "accuracy": 0.8934
+    },
+    {
+     "threshold": 0.9,
+     "escalated_pct": 68.969,
+     "accuracy": 0.8934
+    }
+   ],
+   "threshold": 0.4,
+   "escalated_pct": 5.58,
+   "llm_answered_pct": 5.58,
+   "cascade": {
+    "pct": 91.04,
+    "ci95": [
+     90.1,
+     92.01
+    ]
+   },
+   "cascade_minus_local": {
+    "diff_pts": 0.71,
+    "ci95": [
+     0.16,
+     1.27
+    ],
+    "excludes_zero": true
+   },
+   "on_escalated": {
+    "n": 172,
+    "local_pct": 45.35,
+    "cascade_pct": 58.14
+   },
+   "rule_llm_adds_value": true
+  },
+  "10-shot": {
+   "learn_queries": 770,
+   "validation_queries": 385,
+   "test_queries": 3080,
+   "local": {
+    "pct": 68.54,
+    "ci95": [
+     66.95,
+     70.16
+    ],
+    "ms_per_query": 0.308
+   },
+   "threshold_table": [
+    {
+     "threshold": 0.3,
+     "escalated_pct": 11.4286,
+     "accuracy": 0.6987
+    },
+    {
+     "threshold": 0.4,
+     "escalated_pct": 29.8701,
+     "accuracy": 0.7403
+    },
+    {
+     "threshold": 0.5,
+     "escalated_pct": 48.5714,
+     "accuracy": 0.7403
+    },
+    {
+     "threshold": 0.6,
+     "escalated_pct": 64.4156,
+     "accuracy": 0.7403
+    },
+    {
+     "threshold": 0.7,
+     "escalated_pct": 76.3636,
+     "accuracy": 0.7403
+    },
+    {
+     "threshold": 0.8,
+     "escalated_pct": 85.974,
+     "accuracy": 0.7403
+    },
+    {
+     "threshold": 0.9,
+     "escalated_pct": 96.1039,
+     "accuracy": 0.7403
+    }
+   ],
+   "threshold": 0.4,
+   "escalated_pct": 25.36,
+   "llm_answered_pct": 25.23,
+   "cascade": {
+    "pct": 78.67,
+    "ci95": [
+     77.24,
+     80.1
+    ]
+   },
+   "cascade_minus_local": {
+    "diff_pts": 10.13,
+    "ci95": [
+     8.93,
+     11.4
+    ],
+    "excludes_zero": true
+   },
+   "on_escalated": {
+    "n": 781,
+    "local_pct": 36.24,
+    "cascade_pct": 76.18
+   },
+   "rule_llm_adds_value": true
+  }
+ },
+ "llm_only": {
+  "sample": 500,
+  "answered": 493,
+  "pct": 79.0,
+  "ci95": [
+   75.4,
+   82.8
+  ],
+  "note": "zero-shot: intent names only, no training examples; unanswered counts as wrong"
+ },
+ "llm": {
+  "provider": "gemini",
+  "models": [
+   "gemini-3.1-flash-lite"
+  ],
+  "requests": 94,
+  "failed_batches": 0,
+  "test_queries_escalated": 953,
+  "est_input_tokens_per_request": 858,
+  "est_output_tokens_per_request": 279,
+  "median_uncached_s_per_batch": 9.68,
+  "price": {
+   "usd_per_m_input": 0.25,
+   "usd_per_m_output": 1.5,
+   "source": "ai.google.dev/gemini-api/docs/pricing, Gemini 3.1 Flash-Lite Standard, read 22 Oct 2026; we run on the free tier"
+  },
+  "cost": {
+   "full": {
+    "llm_requests_per_m_tickets": 2232,
+    "est_tokens_per_m_tickets": 2537469,
+    "usd_per_m_tickets_paid_tier": 1.41
+   },
+   "10-shot": {
+    "llm_requests_per_m_tickets": 10144,
+    "est_tokens_per_m_tickets": 11532298,
+    "usd_per_m_tickets_paid_tier": 6.42
+   }
+  }
+ },
+ "published": {
+  "source": "Casanueva et al. (2020), Efficient Intent Detection with Dual Sentence Encoders, Table 3",
+  "full": {
+   "BERT-fixed": 87.19,
+   "BERT-tuned": 93.66,
+   "USE": 92.81,
+   "ConveRT": 93.01,
+   "USE+ConveRT": 93.36
+  },
+  "10-shot": {
+   "BERT-fixed": 67.55,
+   "BERT-tuned": 83.42,
+   "USE": 84.23,
+   "ConveRT": 83.32,
+   "USE+ConveRT": 85.19
+  }
+ },
+ "no_llm": false,
+ "seconds": 2887.3
+}

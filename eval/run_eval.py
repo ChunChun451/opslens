@@ -233,6 +233,9 @@ def assemble(timings: dict[str, float]) -> dict:
         results["faithfulness"] = part("w8")
     if (PARTS / "roster_opt.json").exists():  # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
         results["staffing_opt"] = part("roster_opt")
+    if (PARTS / "llm_eval.json").exists():  # Plan v4 W6: NLP/LLM benchmark; not a STEP (LLM quota), run once
+        results["nlp_bench"] = {"banking77": part("nlp_bench") if (PARTS / "nlp_bench.json").exists() else None,
+                                **part("llm_eval")}  # + routing (c), attribution (b)
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
