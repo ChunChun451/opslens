@@ -341,6 +341,8 @@ class Results(Strict):
     prediction_baselines: dict[str, Any] | None = None
     # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
     faithfulness: dict[str, Any] | None = None
+    # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
+    staffing_opt: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

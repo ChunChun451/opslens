@@ -231,6 +231,8 @@ def assemble(timings: dict[str, float]) -> dict:
         results["prediction_baselines"] = part("w7")
     if (PARTS / "w8.json").exists():  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
         results["faithfulness"] = part("w8")
+    if (PARTS / "roster_opt.json").exists():  # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
+        results["staffing_opt"] = part("roster_opt")
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
