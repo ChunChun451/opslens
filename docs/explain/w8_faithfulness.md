@@ -34,7 +34,7 @@ calibrated P(breach) ≥ 0.5 (the ones a lead would look at); a random sample of
   gap between segment and control is the evidence.
 
 ## (c) "Why this agent and not another"
-- `opslens/policies.py` (reason text only): each assignment's reason line also names the runner-up
+- `opslens/optimize.py` `with_runner_up` (reason text only; one call in `policies.py`): each assignment's reason line also names the runner-up
   free agent who could have taken the same ticket and its value gap ("runner-up B03, value 0.31
   lower"), or says no other free agent could (language/skill).
 - **Regression test:** the same simulation with and without the runner-up text makes exactly the
@@ -44,4 +44,5 @@ calibrated P(breach) ≥ 0.5 (the ones a lead would look at); a random sample of
 `eval/run_w8.py` → `eval/parts/w8.json`; proposed `results.faithfulness`.
 
 ## Amendments
-(none yet)
+1. 22 Oct: the runner-up helper lives in `opslens/optimize.py` (as Claude 1's brief asks) and is
+   called from `policies.py`, where the candidate pairs are built. Same code, same test.

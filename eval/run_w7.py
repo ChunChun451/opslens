@@ -245,57 +245,72 @@ def alerts_compare() -> dict:
     outcome_true = {(t, hi) for (t, hi), r in by_hour.iterrows() if r["size"] >= 5 and r["mean"] >= 2 * team_rate[t]}
 
     shifts = S.shifts_from_agents(pd.read_csv(ROOT / "data" / "generated" / "agents.csv"))
-    alerts = {name: [] for name in forecasters}  # (team, absolute hour index, lead hours)
-    workload_true = set()
+    # Two alert rules. "erlang_gap" is the pre-registered one (Erlang-C need >= scheduled + 1.5).
+    # "rho_085" was added after the first run, from Claude 1's brief (issue #8) and the dashboard's
+    # 48-hour view: P80 work (agent-hours) > scheduled agents x 0.85. Each rule is scored against
+    # the same rule applied to the ACTUAL arrivals, and both against the breach outcome.
+    rules = ("erlang_gap", "rho_085")
+    alerts = {(rule, name): [] for rule in rules for name in forecasters}  # (team, hour, lead hours)
+    workload_true = {rule: set() for rule in rules}
     for first_day in (sp["validation_last_day"] + 1, sp["validation_last_day"] + 8):
         part = rows[rows["day"].isin(range(first_day, first_day + 7))]
         cov = S.coverage(shifts, TEAMS, first_day, 7, first_weekday)
         offset = (first_day - 1) * 24
         plan_hour = offset  # plan made at the end of the day before (00:00 of first_day)
 
-        def gaps(arrivals_workload: pd.DataFrame) -> pd.DataFrame:
+        def flags(arrivals_workload: pd.DataFrame, rule: str) -> pd.DataFrame:
             wl = arrivals_workload.copy()
             wl["hour_index"] = wl["hour_index"] - offset
-            return S.needed_per_hour(wl).reindex_like(cov).fillna(0) - cov
+            if rule == "erlang_gap":
+                return (S.needed_per_hour(wl).reindex_like(cov).fillna(0) - cov) >= 1.5
+            work = wl.pivot(index="hour_index", columns="team", values="agent_hours").reindex_like(cov).fillna(0)
+            return work > cov * S.MAX_RHO
 
-        actual = gaps(team_workload(part, part["count"].to_numpy(), aht))
-        for team in TEAMS:
-            for hr, g in actual[team].items():
-                if hr % 24 in S.DAY_HOURS and g >= 1.5:
-                    workload_true.add((team, hr + offset))
+        def add(flagged: pd.DataFrame, sink, with_lead: bool) -> None:
+            for team in TEAMS:
+                for hr, on in flagged[team].items():
+                    if on and hr % 24 in S.DAY_HOURS:
+                        if with_lead:
+                            sink.append((team, hr + offset, hr + offset - plan_hour))
+                        else:
+                            sink.add((team, hr + offset))
+
+        actual_wl = team_workload(part, part["count"].to_numpy(), aht)
+        for rule in rules:
+            add(flags(actual_wl, rule), workload_true[rule], False)
         for name, fc in forecasters.items():
             wl = team_workload(part, fc(part), aht)
             wl["arrivals"] = F.interval(wl["arrivals"].to_numpy(), q_team[name])[1]
-            gap = gaps(wl)
-            for team in TEAMS:
-                for hr, g in gap[team].items():
-                    if hr % 24 in S.DAY_HOURS and g >= 1.5:
-                        alerts[name].append((team, hr + offset, hr + offset - plan_hour))
+            wl["agent_hours"] = wl["arrivals"] * wl["aht_min"] / 60.0  # work at the upper band
+            for rule in rules:
+                add(flags(wl, rule), alerts[(rule, name)], True)
 
     n_day_hours = 14 * len(list(S.DAY_HOURS)) * len(TEAMS)
-    out = {"team_hours_scored": n_day_hours, "truth_workload_hours": len(workload_true),
-           "truth_outcome_hours": len(outcome_true & {(t, hi) for t in TEAMS for hi in range(42 * 24, 56 * 24)
-                                                       if hi % 24 in S.DAY_HOURS}),
-           "q80_team": {k: round(v, 3) for k, v in q_team.items()}, "predictors": {}}
     day_truth_outcome = {(t, hi) for (t, hi) in outcome_true if hi % 24 in S.DAY_HOURS}
-    for name, items in alerts.items():
-        predicted = {(t, hi) for t, hi, _ in items}
-        lead = {(t, hi): ld for t, hi, ld in items}
-        res = {"alert_hours": len(predicted)}
-        for truth_name, truth in (("workload", workload_true), ("outcome", day_truth_outcome)):
-            hits = predicted & truth
-            p = len(hits) / len(predicted) if predicted else 0.0
-            r = len(hits) / len(truth) if truth else 0.0
-            blocks = alert_blocks(sorted(predicted))
-            block_hits = sum(any(x in truth for x in b) for b in blocks)
-            res[truth_name] = {"precision": round(p, 3), "recall": round(r, 3),
-                               "f1": round(2 * p * r / (p + r), 3) if p + r else 0.0,
-                               "blocks": len(blocks), "block_precision": round(block_hits / len(blocks), 3) if blocks else None,
-                               "median_lead_hours_of_hits": float(np.median([lead[k] for k in hits])) if hits else None}
-        out["predictors"][name] = res
-        print(f"  alerts {name:16s} {len(predicted):3d} hours | workload P {res['workload']['precision']:.2f} "
-              f"R {res['workload']['recall']:.2f} | outcome P {res['outcome']['precision']:.2f} "
-              f"R {res['outcome']['recall']:.2f} | blocks {res['workload']['blocks']}", flush=True)
+    out = {"team_hours_scored": n_day_hours, "truth_outcome_hours": len(day_truth_outcome),
+           "q80_team": {k: round(v, 3) for k, v in q_team.items()}, "rules": {}}
+    for rule in rules:
+        block = {"truth_workload_hours": len(workload_true[rule]), "predictors": {}}
+        for name in forecasters:
+            items = alerts[(rule, name)]
+            predicted = {(t, hi) for t, hi, _ in items}
+            lead = {(t, hi): ld for t, hi, ld in items}
+            res = {"alert_hours": len(predicted)}
+            for truth_name, truth in (("workload", workload_true[rule]), ("outcome", day_truth_outcome)):
+                hits = predicted & truth
+                p = len(hits) / len(predicted) if predicted else 0.0
+                r = len(hits) / len(truth) if truth else 0.0
+                blocks = alert_blocks(sorted(predicted))
+                block_hits = sum(any(x in truth for x in b) for b in blocks)
+                res[truth_name] = {"precision": round(p, 3), "recall": round(r, 3),
+                                   "f1": round(2 * p * r / (p + r), 3) if p + r else 0.0, "blocks": len(blocks),
+                                   "block_precision": round(block_hits / len(blocks), 3) if blocks else None,
+                                   "median_lead_hours_of_hits": float(np.median([lead[k] for k in hits])) if hits else None}
+            block["predictors"][name] = res
+            print(f"  alerts {rule:10s} {name:16s} {len(predicted):3d} hours | workload P {res['workload']['precision']:.2f} "
+                  f"R {res['workload']['recall']:.2f} | outcome P {res['outcome']['precision']:.2f} "
+                  f"R {res['outcome']['recall']:.2f} | lead {res['workload']['median_lead_hours_of_hits']}", flush=True)
+        out["rules"][rule] = block
     return out
 
 
@@ -316,11 +331,19 @@ def alert_blocks(hours: list[tuple[str, int]]) -> list[list[tuple[str, int]]]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-dispatch", action="store_true")
+    parser.add_argument("--alerts-only", action="store_true", help="recompute (b) only; keep the rest of w7.json")
     args = parser.parse_args()
     started = time.perf_counter()
     # Use the importable module (not __main__) so the pickled model and the worker function
     # resolve by the same name inside the worker processes.
     import eval.run_w7 as me
+    path = ROOT / "eval" / "parts" / "w7.json"
+    if args.alerts_only:
+        out = json.loads(path.read_text(encoding="utf-8"))
+        out["alerts"] = me.alerts_compare()
+        path.write_text(json.dumps(out, indent=1), encoding="utf-8")
+        print(f"updated the alerts in {path.relative_to(ROOT)}")
+        return 0
     print("(a) risk models on the test snapshots", flush=True)
     offline, logreg = me.offline_compare()
     me.LOGREG_FILE.write_bytes(pickle.dumps(logreg))
@@ -332,7 +355,6 @@ def main() -> int:
         dispatch = me.dispatch_compare()
     out = {"risk_offline": offline, "risk_in_dispatch": dispatch, "alerts": alerts,
            "seconds": round(time.perf_counter() - started, 1)}
-    path = ROOT / "eval" / "parts" / "w7.json"
     path.write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(f"wrote {path.relative_to(ROOT)} ({out['seconds']:.0f}s)")
     return 0

@@ -6,8 +6,7 @@ import pandas as pd
 import pytest
 
 from opslens import policies
-from opslens.optimize import Candidate
-from opslens.policies import with_runner_up
+from opslens.optimize import Candidate, with_runner_up
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATED = ROOT / "data" / "generated"

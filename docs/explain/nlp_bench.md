@@ -22,7 +22,7 @@ did not write, and does the LLM add anything?"
   - *Cascade:* local first; tickets with calibrated confidence below a threshold go to the LLM
     (the product's main provider, `gemini`, batches of 25, intent names as the label list,
     PII masking and cache as in production). LLM answers outside the 77 intents fall back to local.
-  - *LLM only:* the same prompt on a fixed random sample of 400 test queries (seed 77).
+  - *LLM only:* the same prompt on a fixed random sample of 500 test queries (seed 77).
 - **Threshold:** chosen on a validation split, never on test: candidates 0.30, 0.40, …, 0.90;
   best validation accuracy with at most 30% of queries escalated (the product's rule; ties → the
   lower threshold). Validation = a stratified 20% of the official train set (seed 77); the local
@@ -85,3 +85,5 @@ did not write, and does the LLM add anything?"
 ## Amendments
 1. 22 Oct, after (c) ran: the design said "40 English, 20 Hinglish"; the committed file has 42 and 18 (a counting slip in the text, not a change to the questions).
 2. 22 Oct, before (a) ran with the LLM: Gemini answered 503 "high demand" for several minutes. A batch with no answer would silently stay local and bias (a) against the LLM, so the bench waits and retries (up to ~13 min per batch) and records any batch that still fails.
+3. 22 Oct, before LLM-only ran: sample 400 → 500 queries, to match Claude 1's brief (issue #8),
+   which I had not read when writing this design.

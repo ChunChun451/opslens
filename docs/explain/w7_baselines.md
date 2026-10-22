@@ -55,4 +55,8 @@ not the boosting".
 `eval/run_w7.py` → `eval/parts/w7.json`; proposed `results.prediction_baselines`.
 
 ## Amendments
-(none yet)
+1. 22 Oct, after the first run: a second alert rule, from Claude 1's brief (issue #8, which I had not
+   read when writing this design) and the dashboard's 48-hour view: **P80 work (agent-hours) >
+   scheduled agents × 0.85**, scored against the same rule on actual arrivals and against breaches.
+   It is reported next to the pre-registered rule, not instead of it; the pre-registered numbers
+   did not change.
