@@ -337,6 +337,8 @@ class Results(Strict):
     # Plan v4 W1 (eval/run_worlds.py): 30 random worlds drawn from pre-registered ranges, every policy
     # on each world's test days, and the pre-registered rule. Run once; not a make-eval step.
     worlds: dict[str, Any] | None = None
+    # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
+    staffing_opt: dict[str, Any] | None = None
     # Supporting numbers behind the headline ones (tuning history, blind-test breakdown,
     # classification and forecast details, real-data findings). Free-form so each milestone
     # can add evidence without a schema change; the UI shows it under "How we tested".

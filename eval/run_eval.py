@@ -225,6 +225,8 @@ def assemble(timings: dict[str, float]) -> dict:
         results["plan"] = part("plan_items")
     if (PARTS / "concurrency.json").exists():  # Plan v4 W2: agents with 2-3 chats at once
         results["concurrency"] = part("concurrency")
+    if (PARTS / "roster_opt.json").exists():  # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
+        results["staffing_opt"] = part("roster_opt")
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
