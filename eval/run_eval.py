@@ -40,8 +40,8 @@ STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/ru
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
          ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
          ("realdesk", "eval/run_realdesk.py"),
-         ("plan_items", "eval/run_plan_items.py"),
-         ("w8", "eval/run_w8.py")]  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)  # needs forecast + playbooks (added 19 Oct)
+         ("plan_items", "eval/run_plan_items.py"),  # needs forecast + playbooks (added 19 Oct)
+         ("w8", "eval/run_w8.py")]  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
