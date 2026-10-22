@@ -66,7 +66,7 @@ did not write, and does the LLM add anything?"
 
 ## (c) Ask OpsLens routing accuracy
 
-- **Questions:** `eval/llm_eval/route_questions.json` — 60 questions (40 English, 20 Hinglish)
+- **Questions:** `eval/llm_eval/route_questions.json` — 60 questions (42 English, 18 Hinglish)
   with the correct tool and arguments, committed with this file before either router ran. Caveat:
   written by Claude 2, who had read both routers' code.
 - **Routers:** the LLM route used by the product (`groq_route` provider, same SYSTEM prompt and
@@ -83,4 +83,5 @@ did not write, and does the LLM add anything?"
 `results.llm_eval` (one step line each in `eval/run_eval.py`).
 
 ## Amendments
-(none yet)
+1. 22 Oct, after (c) ran: the design said "40 English, 20 Hinglish"; the committed file has 42 and 18 (a counting slip in the text, not a change to the questions).
+2. 22 Oct, before (a) ran with the LLM: Gemini answered 503 "high demand" for several minutes. A batch with no answer would silently stay local and bias (a) against the LLM, so the bench waits and retries (up to ~13 min per batch) and records any batch that still fails.
