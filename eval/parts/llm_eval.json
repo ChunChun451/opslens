@@ -1,0 +1,925 @@
+{
+ "routing": {
+  "questions": 60,
+  "all": {
+   "rules_tool": {
+    "n": 60,
+    "correct": 39,
+    "pct": 65.0,
+    "ci95": [
+     53.3,
+     76.7
+    ]
+   },
+   "rules_full": {
+    "n": 60,
+    "correct": 37,
+    "pct": 61.7,
+    "ci95": [
+     50.0,
+     73.3
+    ]
+   },
+   "llm_tool": {
+    "n": 60,
+    "correct": 56,
+    "pct": 93.3,
+    "ci95": [
+     86.7,
+     98.3
+    ]
+   },
+   "llm_full": {
+    "n": 60,
+    "correct": 56,
+    "pct": 93.3,
+    "ci95": [
+     86.7,
+     98.3
+    ]
+   },
+   "llm_minus_rules_full": {
+    "diff_pts": 31.7,
+    "ci95": [
+     18.3,
+     45.0
+    ],
+    "above_zero": true
+   }
+  },
+  "english": {
+   "rules_tool": {
+    "n": 42,
+    "correct": 31,
+    "pct": 73.8,
+    "ci95": [
+     59.5,
+     85.7
+    ]
+   },
+   "rules_full": {
+    "n": 42,
+    "correct": 30,
+    "pct": 71.4,
+    "ci95": [
+     57.1,
+     85.7
+    ]
+   },
+   "llm_tool": {
+    "n": 42,
+    "correct": 38,
+    "pct": 90.5,
+    "ci95": [
+     81.0,
+     97.6
+    ]
+   },
+   "llm_full": {
+    "n": 42,
+    "correct": 38,
+    "pct": 90.5,
+    "ci95": [
+     81.0,
+     97.6
+    ]
+   },
+   "llm_minus_rules_full": {
+    "diff_pts": 19.0,
+    "ci95": [
+     2.4,
+     35.7
+    ],
+    "above_zero": true
+   }
+  },
+  "hinglish": {
+   "rules_tool": {
+    "n": 18,
+    "correct": 8,
+    "pct": 44.4,
+    "ci95": [
+     22.2,
+     66.7
+    ]
+   },
+   "rules_full": {
+    "n": 18,
+    "correct": 7,
+    "pct": 38.9,
+    "ci95": [
+     16.7,
+     61.1
+    ]
+   },
+   "llm_tool": {
+    "n": 18,
+    "correct": 18,
+    "pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ]
+   },
+   "llm_full": {
+    "n": 18,
+    "correct": 18,
+    "pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ]
+   },
+   "llm_minus_rules_full": {
+    "diff_pts": 61.1,
+    "ci95": [
+     38.9,
+     83.3
+    ],
+    "above_zero": true
+   }
+  },
+  "models": [
+   "qwen/qwen3.8-27b"
+  ],
+  "median_uncached_latency_s": 0.66,
+  "rows": [
+   {
+    "id": 1,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "agents_delta": {
+      "C": -2
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "friday",
+     "volume_change_pct": 25
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 3,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "sunday",
+     "agents_delta": {
+      "A": 3
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 4,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "monday",
+     "volume_change_pct": -10,
+     "agents_delta": {
+      "B": -1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 5,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "thursday",
+     "volume_change_pct": 15
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": false,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 7,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "tuesday",
+     "agents_delta": {
+      "A": 2,
+      "C": 1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 8,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "volume_change_pct": 40
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 9,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "sunday",
+     "volume_change_pct": -30
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "headline",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "friday",
+     "agents_delta": {
+      "C": 1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 11,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "thursday",
+     "agents_delta": {
+      "B": -3
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 12,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "monday"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 13,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "agents_delta": {
+      "C": -2
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 14,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "friday",
+     "volume_change_pct": 20
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 15,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "sunday",
+     "agents_delta": {
+      "A": 2
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 16,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "monday",
+     "volume_change_pct": -10
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 17,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "wednesday",
+     "volume_change_pct": 50
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 18,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "agents_delta": {
+      "B": -1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 19,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "refund",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 20,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "missing_item",
+     "effect": "wait",
+     "language": "hi"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "app_bug",
+     "effect": "transfers"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 22,
+    "lang": "en",
+    "want": "plant",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "late_delivery",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "payment_failure",
+     "effect": "wait",
+     "language": "hi"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 24,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "wrong_item",
+     "effect": "transfers"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 25,
+    "lang": "hi",
+    "want": "plant",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "account",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 26,
+    "lang": "hi",
+    "want": "plant",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "restaurant_partner",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 27,
+    "lang": "hi",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "refund",
+     "effect": "transfers"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 28,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "late_delivery",
+     "effect": "wait",
+     "language": "hi"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T060582"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 30,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T061200"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 31,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T058870"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 32,
+    "lang": "hi",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T062014"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 33,
+    "lang": "hi",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T059931"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T063450"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 35,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 37,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 38,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 39,
+    "lang": "hi",
+    "want": "fix_first",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 40,
+    "lang": "hi",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "whatif",
+    "rules_full": false,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 42,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 43,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 44,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 45,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 46,
+    "lang": "hi",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 47,
+    "lang": "hi",
+    "want": "top_problems",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 48,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "fix_first",
+    "rules_full": false,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 49,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 50,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 51,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 52,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 53,
+    "lang": "hi",
+    "want": "headline",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 54,
+    "lang": "hi",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 55,
+    "lang": "en",
+    "want": "headline",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 56,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 57,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 58,
+    "lang": "hi",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 59,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 60,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   }
+  ],
+  "rule_llm_beats_rules": true
+ }
+}
