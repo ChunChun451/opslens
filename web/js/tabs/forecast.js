@@ -164,12 +164,22 @@ function runsOf(flags, label) {
   return ranges;
 }
 
+// A window that lies entirely in the night (00:00-07:00). Staffing plans day hours only: three
+// cross-trained night agents cover every team at night by design (opslens/staffing.py DAY_HOURS),
+// so a team-by-team night gap is not a real shortage. Shown folded, not deleted.
+function isNight(b) {
+  const startHour = Number(b.start.slice(11, 13));
+  const endHour = Number(b.end.slice(11, 13));
+  const sameDay = b.start.slice(0, 10) === b.end.slice(0, 10);
+  return sameDay && startHour < 7 && endHour <= 7;
+}
+
 // The engine's bottleneck windows for this team that fall inside the chart.
 // ISO strings of the same format compare correctly as text.
 function bottleneckRanges(points) {
   const ranges = [];
   state.results.forecast.bottlenecks.forEach((b) => {
-    if (b.team !== selectedTeam) return;
+    if (b.team !== selectedTeam || isNight(b)) return;
     const inside = points.map(({ p }) => p.time >= b.start && p.time < b.end);
     runsOf(inside, "bottleneck").forEach((r) => {
       ranges.push({ ...r, color: "rgba(194, 43, 51, 0.12)" });
@@ -188,7 +198,8 @@ function bottleneckCard(f) {
   // Older results gave peak_rho; the real engine gives the agent gap instead. Show what exists.
   const hasGap = f.bottlenecks.some((b) => typeof b.peak_gap_agents === "number");
   const hasRho = f.bottlenecks.some((b) => typeof b.peak_rho === "number");
-  const rows = f.bottlenecks.map((b, i) => {
+  const night = f.bottlenecks.filter(isNight).length;
+  const rows = f.bottlenecks.map((b, i) => (isNight(b) ? "" : (() => {
     const base = `forecast.bottlenecks[${i}]`;
     const inChart = !(b.end <= first || b.start > last);
     return `<tr>
@@ -198,17 +209,32 @@ function bottleneckCard(f) {
         ${hasRho ? `<td class="num">${ev(base + ".peak_rho", "ratio")}</td>` : ""}
         <td>${inChart ? `<span class="pill">in chart</span>` : ""}</td>
       </tr>`;
-  }).join("");
+  })())).join("");
   return card({
     id: "fc-bottlenecks",
     title: "Bottlenecks flagged by the engine",
     sub: "Hours where the forecast's upper band needs more agents than the roster has",
-    body: `<div class="table-wrap"><table>
+    body: `${alertHitRate()}<div class="table-wrap"><table>
         <thead><tr><th>Where and when</th><th>Team</th>
           ${hasGap ? `<th class="num">Peak gap (agents)</th><th class="num">Agent-hours short</th>` : ""}
           ${hasRho ? `<th class="num">Peak ρ</th>` : ""}<th></th></tr></thead>
-        <tbody>${rows}</tbody></table></div>`,
+        <tbody>${rows}</tbody></table></div>
+      ${night ? `<p class="small muted">${night} night ${night === 1 ? "window" : "windows"} (00:00-07:00) not listed:
+        three cross-trained night agents cover every team at night, so staffing plans day hours only.</p>` : ""}`,
   });
+}
+
+// Did alerts like these come true? Scored on the test days, made 1-7 days ahead (Plan v4 W7).
+function alertHitRate() {
+  const a = state.results.prediction_baselines && state.results.prediction_baselines.alerts;
+  if (!a || !a.rules) return "";
+  const r = (rule, who, key) => `prediction_baselines.alerts.rules.${rule}.predictors.${who}.workload.${key}`;
+  return `<p class="alert-score">Alerts like these, made one to seven days ahead, came true for
+    <strong>${ev(r("erlang_gap", "opslens", "precision"), "frac_pct")}</strong> of alert hours
+    (a same-hour-last-week forecast: ${ev(r("erlang_gap", "naive_last_week", "precision"), "frac_pct")}) and caught
+    ${ev(r("erlang_gap", "opslens", "recall"), "frac_pct")} of the real shortage hours. The simpler test "work above 85% of the
+    agents on shift" is right ${ev(r("rho_085", "opslens", "precision"), "frac_pct")} of the time
+    (${ev(r("rho_085", "naive_last_week", "precision"), "frac_pct")}). Cautious by design: better to staff an hour that turns out calm.</p>`;
 }
 
 function teamCell(base) {

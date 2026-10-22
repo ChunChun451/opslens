@@ -34,7 +34,7 @@ export function render(section) {
   const plantButton = `<button type="button" class="btn btn-primary" id="plant-open">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Plant a problem</button>`;
   section.innerHTML = `
-    ${pageHeader("Patterns",
+    ${pageHeader("Recurring problems",
       `Recurring problems found in the history (days ${ev("meta.train_days[0]", "int")}–${ev("meta.validation_days[1]", "int")}), strongest first. Each finding carries its own evidence.`,
       plantButton)}
     ${p ? summaryStats(p) : ""}

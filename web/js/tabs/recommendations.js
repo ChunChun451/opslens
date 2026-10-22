@@ -10,7 +10,7 @@
 // waiting 12 min; low risk - served in turn". Staffing, days 43-49: six shift changes with the
 // same people and hours cut the forecast shortage from 654.2 to 635.9 agent-hours.
 
-import { state } from "../data.js";
+import { state, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, missing, initials } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
@@ -75,12 +75,12 @@ function playbooksCard() {
         <p>${evText(base + ".message.text")}
           <span class="small muted">(${pb.message.source === "llm" ? "drafted by the LLM, numbers filled in by code" : "template"})</span></p>
         <div class="table-wrap"><table>
-          <thead><tr><th>Measured on test days</th><th class="num">Priority-first</th><th class="num">OpsLens</th></tr></thead>
+          <thead><tr><th>Measured on test days</th><th class="num">With OpsLens</th><th class="num">With priority-first</th></tr></thead>
           <tbody>
-            <tr><td>Tickets</td><td class="num">${diff(fx("baseline_b", "tickets"), "count")}</td><td class="num">${ops("tickets", "tickets", "count")}</td></tr>
-            <tr><td>Customers who missed the SLA</td><td class="num">${diff(fx("baseline_b", "breaches"), "count")}</td><td class="num">${ops("breaches", "breaches", "count")}</td></tr>
-            <tr><td>Transfers</td><td class="num">${diff(fx("baseline_b", "transfers"), "count")}</td><td class="num">${ops("transfers", "transfers", "count")}</td></tr>
-            <tr><td>Agent-hours of work</td><td class="num">${diff(fx("baseline_b", "agent_hours"), "hours")}</td><td class="num">${ops("agent_hours", "busy_agent_hours", "hours")}</td></tr>
+            <tr><td>Customers who missed the SLA</td><td class="num">${ops("breaches", "breaches", "count")}</td><td class="num">${diff(fx("baseline_b", "breaches"), "count")}</td></tr>
+            <tr><td>Tickets</td><td class="num">${ops("tickets", "tickets", "count")}</td><td class="num">${diff(fx("baseline_b", "tickets"), "count")}</td></tr>
+            <tr><td>Transfers</td><td class="num">${ops("transfers", "transfers", "count")}</td><td class="num">${diff(fx("baseline_b", "transfers"), "count")}</td></tr>
+            <tr><td>Agent-hours of work</td><td class="num">${ops("agent_hours", "busy_agent_hours", "hours")}</td><td class="num">${diff(fx("baseline_b", "agent_hours"), "hours")}</td></tr>
           </tbody></table></div>
         <ul class="small muted">${assumptions}</ul>
         ${planButtons(pb.id)}
@@ -90,8 +90,8 @@ function playbooksCard() {
   return card({
     id: "rec-playbooks",
     title: "Fix problems at their source",
-    sub: "Each problem OpsLens found gets an action for the team that can remove it, not just route it faster. Each action was replayed alone on the 14 held-out days (5 seeds, same tickets and luck, today's roster); numbers are the change against the same floor without it, with a 95% interval.",
-    body: `<div class="grid cols-2">${pbs.playbooks.map(item).join("")}</div>
+    sub: "Each problem OpsLens found gets an action for the team that can remove it, not just route it faster. Each action was replayed alone on the 14 held-out days (5 seeds, same tickets and luck, today's roster); numbers are the change against the same floor without it, with a 95% interval. Biggest effect with OpsLens first.",
+    body: `<div class="grid cols-2">${byOpsLensEffect(pbs.playbooks).map((i) => item(pbs.playbooks[i], i)).join("")}</div>
       <p><strong>All six fixes together</strong> under priority-first: ${diff(all("baseline_b"), "count")} customers who missed the SLA.
         OpsLens with every fix and this week's staffing, against priority-first today:
         ${diff("playbooks.opslens_all_vs_baseline_b.breaches", "count")}.</p>`,
@@ -125,6 +125,49 @@ function assignmentsCard(rec) {
   });
 }
 
+// Playbook indexes, most missed SLAs saved with OpsLens first (results.plan; JSON order if absent).
+function byOpsLensEffect(playbooks) {
+  const saved = (pb) => {
+    const j = planIndex(pb.id);
+    const v = j >= 0 ? lookup(`plan.items[${j}].effect.breaches.diff`) : undefined;
+    return typeof v === "number" ? v : 0;
+  };
+  return playbooks.map((pb, i) => i).sort((a, b) => saved(playbooks[a]) - saved(playbooks[b]));
+}
+
+// A staffing move whose own replay shows a clear effect (its 95% interval excludes 0).
+function moveIsClear(m, i) {
+  const id = movePlanId(m, i);
+  const j = id ? planIndex(id) : -1;
+  if (j < 0) return true; // nothing measured: show it
+  const low = lookup(`plan.items[${j}].effect.breaches.ci_low`);
+  const high = lookup(`plan.items[${j}].effect.breaches.ci_high`);
+  return !(typeof low === "number" && low <= 0 && high >= 0);
+}
+
+// Moves listed in full when they have a clear effect; the rest folded under one line, so the
+// screen recommends what pays and still shows everything it tried.
+function movesHtml(rec, indexes) {
+  const clear = indexes.filter((i) => moveIsClear(rec.staffing_moves[i], i));
+  const unclear = indexes.filter((i) => !clear.includes(i));
+  return clear.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")
+    + (unclear.length ? `<details class="disclosure moves-unclear"><summary>${unclear.length} more
+        ${unclear.length === 1 ? "move" : "moves"} with no clear effect</summary>
+        ${unclear.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")}</details>` : "");
+}
+
+// Why staffing is a small lever here, from the CP-SAT experiment (Plan v4 W5), if it is in the file.
+function staffingNote() {
+  const so = state.results.staffing_opt;
+  if (!so || !so.test) return "";
+  const p = "staffing_opt.test.candidate_minus_greedy.breach_pct";
+  return `<p class="small muted staffing-note">Staffing is a small lever on this floor: the dispatcher's rescues decide most of
+    the outcome. We also tried an exact roster optimiser (CP-SAT): it beats these moves on the planning score but not
+    on customers (test days ${ev(p + ".mean_diff", "ratio", { signed: true })} pts
+    [${ev(p + ".ci95[0]", "ratio", { signed: true, bare: true })}, ${ev(p + ".ci95[1]", "ratio", { signed: true, bare: true })}]), so these simple moves stay.
+    <a href="#proof/ledger">See the rule we set first</a>.</p>`;
+}
+
 function staffingCard(rec) {
   if (!rec.staffing_moves.length) {
     return card({ title: "Staffing moves", body: `<p class="muted">No staffing change needed.</p>` });
@@ -141,10 +184,10 @@ function staffingCard(rec) {
             <strong>${ev(`details.forecast.plans[${p}].shortage_before`, "num")}</strong> →
             <strong>${ev(`details.forecast.plans[${p}].shortage_after`, "num")}</strong></span>
         </div>
-        ${moveIndexes.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")}
-      </div>`).join("")}</div>`;
+        ${movesHtml(rec, moveIndexes)}
+      </div>`).join("")}</div>${staffingNote()}`;
   } else {
-    body = rec.staffing_moves.map((m, i) => moveHtml(m, i)).join("");
+    body = movesHtml(rec, rec.staffing_moves.map((m, i) => i)) + staffingNote();
   }
   return card({
     id: "rec-staffing",

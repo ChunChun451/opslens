@@ -1175,3 +1175,201 @@ tr.hot td { background: var(--bad-soft); }
 .plan-table td.delta-bad .ev { color: var(--bad); font-weight: 700; }
 .plan-table th, .plan-table td { padding: 7px 8px; }
 .plan-table td:first-child { width: 42%; }
+
+/* =============================================================================================
+   Ledger of rules (Claude 2, 23 Oct) — Proof → "Rules we wrote first" (js/tabs/ledger.js).
+   The one bold element of this pass: a record of sealed rules with rubber stamps. Kept uses
+   saffron (a promise kept), missed uses chilli (a promise missed), reported stays neutral. The
+   stamps press in once, in order; nothing else on the view moves.
+   ============================================================================================= */
+
+:root {
+  --kept: #b67800;      /* saffron, darkened to read on white */
+  --missed: var(--chilli);
+  --reported: #7a7f96;
+}
+
+.ledger-tally {
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(242, 160, 7, 0.16), transparent 55%),
+    var(--night);
+  color: #ecebff;
+  border-radius: var(--radius);
+  padding: 30px 34px 26px;
+  margin-bottom: 28px;
+}
+.ledger-tally p { margin: 0; }
+.ledger-tally-line {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #c9c7ef;
+}
+.ledger-tally-split {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.2vw, 3.3rem);
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  margin: 6px 0 14px !important;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.45em;
+}
+.ledger-tally .t-kept { color: var(--saffron); }
+.ledger-tally .t-missed { color: #ff6b7d; }
+.ledger-tally .t-reported { color: #9a98c4; }
+.ledger-tally-note { max-width: 62ch; color: #b4b2dc; font-size: 0.95rem; line-height: 1.5; }
+
+.ledger {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+/* The rail: one thin line through every entry's dot. */
+.ledger::before {
+  content: "";
+  position: absolute;
+  left: 158px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: var(--border-strong);
+}
+
+.ledger-entry {
+  display: grid;
+  grid-template-columns: 140px 1fr 120px;
+  column-gap: 40px;
+  align-items: start;
+  padding: 20px 0 22px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.ledger-entry:last-child { border-bottom: 0; }
+/* The dot on the rail, coloured by the verdict. */
+.ledger-entry::before {
+  content: "";
+  position: absolute;
+  left: 153px;
+  top: 27px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--reported);
+}
+.ledger-entry.is-kept::before { border-color: var(--kept); background: var(--saffron); }
+.ledger-entry.is-missed::before { border-color: var(--missed); }
+
+.ledger-when {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: right;
+  padding-top: 4px;
+}
+.ledger-when time {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-size: 1rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.ledger-when a { color: var(--blue); text-decoration: none; font-variant-numeric: tabular-nums; }
+.ledger-when a:hover, .ledger-when a:focus-visible { text-decoration: underline; }
+.ledger-owner { font-size: 0.8rem; }
+
+.ledger-claim {
+  font-family: var(--font-display);
+  font-size: 1.22rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0 0 6px;
+  max-width: 60ch;
+}
+.ledger-rule {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.93rem;
+  max-width: 70ch;
+}
+.ledger-measured {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+  max-width: 72ch;
+}
+.ledger-measured .ev { font-weight: 700; }
+.ledger-measured .ci { display: inline; color: var(--muted); font-size: 0.9em; margin-left: 2px; }
+
+/* The stamp: a double ring, slightly turned, like ink pressed by hand. */
+.ledger-stamp {
+  justify-self: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 4px double currentColor;
+  display: grid;
+  place-items: center;
+  transform: rotate(-9deg);
+  color: var(--reported);
+  font-family: var(--font-display);
+  font-weight: 750;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+.ledger-stamp span {
+  border-top: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  padding: 1px 8px 2px;
+}
+.is-kept .ledger-stamp { color: var(--kept); background: rgba(242, 160, 7, 0.07); }
+.is-missed .ledger-stamp { color: var(--missed); background: rgba(215, 38, 61, 0.05); }
+.is-reported .ledger-stamp { border-style: dashed; border-width: 2px; }
+
+.ledger-stamp.press {
+  animation: stamp-press 420ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+@keyframes stamp-press {
+  0% { opacity: 0; transform: rotate(-9deg) scale(1.7); }
+  70% { opacity: 1; transform: rotate(-9deg) scale(0.94); }
+  100% { opacity: 1; transform: rotate(-9deg) scale(1); }
+}
+
+@media (max-width: 860px) {
+  .ledger::before, .ledger-entry::before { display: none; }
+  .ledger-entry { grid-template-columns: 1fr 76px; column-gap: 16px; row-gap: 6px; }
+  .ledger-when { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; gap: 10px; text-align: left; }
+  .ledger-body { grid-column: 1; }
+  .ledger-stamp { grid-column: 2; grid-row: 2; width: 70px; height: 70px; font-size: 0.85rem; }
+  .ledger-tally { padding: 22px 20px; }
+}
+
+/* Risks: the two questions a judge asks, answered on the screen (Plan v4 W7/W8). */
+.challenge-strip { margin-bottom: 4px; }
+.challenge {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+}
+.challenge-q { font-family: var(--font-display); font-weight: 650; font-size: 1.05rem; margin-bottom: 4px; }
+.challenge p { margin: 0; color: var(--ink-2); line-height: 1.5; }
+.challenge .ev { font-weight: 700; }
+.ticket .action.warn { background: var(--saffron-soft); border-color: transparent; }
+
+/* Actions: moves without a clear effect are folded; the note says why staffing is a small lever. */
+.moves-unclear { margin-top: 8px; }
+.moves-unclear summary { cursor: pointer; color: var(--muted); font-size: 0.92rem; padding: 6px 0; }
+.staffing-note { margin: 14px 2px 0; max-width: 90ch; line-height: 1.5; }
+
+/* Next 48 hours: how often such alerts came true (Plan v4 W7). */
+.alert-score { margin: 0 0 14px; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--blue-soft); color: var(--ink-2); line-height: 1.5; max-width: 110ch; }
+.alert-score .ev { font-weight: 700; }

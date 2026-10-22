@@ -30,7 +30,41 @@ export function render(section) {
       ${card({ body: stat("Top-10% precision", ev("risk.top10_precision", "frac_pct"), "of the riskiest tenth, share that breached") })}
       ${card({ body: stat("Brier score", ev("risk.brier", "ratio"), "lower = better calibrated") })}
     </div>
+    ${challengeStrip()}
     <div id="ticket-list" class="grid">${ticketsHtml(risk)}</div>`;
+}
+
+// The two questions a sharp judge asks about this screen, answered from Plan v4 W7 and W8
+// (shown only when those results are in the file).
+function challengeStrip() {
+  const r = state.results;
+  const items = [];
+  const pb = "prediction_baselines";
+  if (r.prediction_baselines) {
+    const lr = `${pb}.risk_in_dispatch.variants.logistic_regression.minus_lightgbm`;
+    items.push(`<div class="challenge">
+        <div class="challenge-q">Would a simpler model do?</div>
+        <p>On the same rows a logistic regression scores AUC ${ev(`${pb}.risk_offline.models.logistic_regression.all_rows.auc`, "ratio")}
+          and "least time left" ${ev(`${pb}.risk_offline.models.time_left_rule.all_rows.auc`, "ratio")}. Ranking is close;
+          deciding is not: dispatching with the regression misses ${ev(lr + ".mean", "pts", { signed: true })} more SLAs.</p>
+      </div>`);
+  }
+  if (r.faithfulness) {
+    items.push(`<div class="challenge">
+        <div class="challenge-q">Are these reasons the real ones?</div>
+        <p>Remove a ticket's top reason and its risk falls more than when a random fact is removed, for
+          ${ev("faithfulness.deletion.top1_vs_random1.share_top_drops_more_logodds", "frac_pct")} of
+          ${ev("faithfulness.deletion.rows", "int")} at-risk tickets.</p>
+      </div>`);
+  }
+  return items.length ? `<div class="grid cols-${items.length} stretch challenge-strip">${items.join("")}</div>` : "";
+}
+
+// Calibrated probabilities saturate near 1, and "100%" reads as a certainty no model has.
+// The button still opens the exact value.
+function riskText(path, p) {
+  if (p < 0.995) return ev(path, "frac_pct");
+  return `<button type="button" class="ev" data-path="${escapeHtml(path)}" data-unit="frac_pct">≥ 99%</button>`;
 }
 
 function ticketsHtml(risk) {
@@ -57,14 +91,20 @@ function ticketHtml(t, i, biggest) {
         <div>${evText(`${base}.reasons[${j}].text`)}</div>
       </div>`;
   }).join("");
-  const action = t.action
-    ? `<div class="action"><strong>What would reduce this risk:</strong> ${evText(base + ".action")}
-         ${typeof t.probability_after_action === "number" ? ` → <strong>${ev(base + ".probability_after_action", "frac_pct")}</strong>` : ""}</div>`
-    : "";
+  // When nobody who can serve the ticket is on shift, "assign now to a capable agent" is not an
+  // action a lead can take: say so, show the number as what it is (a what-if), and say what
+  // OpsLens does instead (v5: a cross-skill rescue when no capable agent arrives in time).
+  const nobody = t.reasons.some((r) => r.feature === "capable_on_shift" && /^no agent/.test(r.text));
+  const after = typeof t.probability_after_action === "number"
+    ? ` → <strong>${ev(base + ".probability_after_action", "frac_pct")}</strong>` : "";
+  const action = !t.action ? "" : nobody
+    ? `<div class="action warn"><strong>No one who can serve this is on shift.</strong> If such an agent were free now${after}.
+         OpsLens weighs a cross-skill rescue instead: slower, but it can still keep the promise.</div>`
+    : `<div class="action"><strong>What would reduce this risk:</strong> ${evText(base + ".action")}${after}</div>`;
   return `<article class="card ticket" id="ticket-${escapeHtml(t.ticket_id)}">
       <div>
         <div class="ring" style="--p: ${percent}; --c: ${t.probability >= 0.5 ? "var(--bad)" : "var(--warn)"}">
-          <span class="ring-value">${ev(base + ".probability", "frac_pct")}</span>
+          <span class="ring-value">${riskText(base + ".probability", t.probability)}</span>
         </div>
         <div class="ring-sub">${ev(base + ".minutes_to_sla", "min")} to SLA</div>
       </div>
