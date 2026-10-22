@@ -70,3 +70,28 @@ add sealed-world + Baseline C to the dashboard's How we tested and Overview.
   in brackets for engineers.
 - Palette indigo night / saffron / chilli / electric indigo; Bricolage Grotesque headlines (vendored, OFL).
 - Removed v2 generic tells: per-section stagger, card hover lift, gradient half-headline, ALL-CAPS labels.
+
+## Session 2 — 22 Oct 2026 — Plan v4: W6, W7, W8, W5 + dashboard review
+
+**How I worked:** every design (`docs/explain/nlp_bench.md`, `w7_baselines.md`, `w8_faithfulness.md`,
+`roster_opt.md`) was committed and pushed BEFORE its first run (branch `claude2/w6-nlp-bench` keeps
+the original timestamps); changes after a run are listed as amendments. Claude 1's brief (issue #8)
+was read after the first designs: I aligned to it (one branch per item, LLM-only sample 500, runner-up
+helper in `optimize.py`, the ρ 0.85 alert rule added next to my pre-registered one).
+
+**Results**
+- **W7 (#9):** AUC LightGBM 0.977 / logistic regression 0.957 / time-left rule 0.884. Inside the
+  dispatcher LR misses 3.87% vs 2.05% (+1.83 [+1.66, +2.00]); no model 4.19%. Alerts 1–7 days ahead
+  (ρ 0.85): precision 0.58 / recall 0.98 vs naive 0.56 / 0.91.
+- **W8 (#10), rule passed:** top reason beats a random feature in 98.9% [98.5, 99.2]; planted Hindi
+  segment 98.6% vs control 63.0%; runner-up agent in every reason, regression-tested.
+- **W5 (#11), not adopted:** CP-SAT wins on its own objective every week but missed SLAs: design
+  −0.016 [−0.131, +0.099], confirm −0.034 [−0.071, +0.002], test +0.21 [+0.05, +0.37].
+- **W6:** routing LLM 93.3% vs rules 61.7% (+31.7 [18.3, 45.0], rule passed). Banking77 local 90.3% /
+  68.5% (10-shot). Cascade + attribution blocked by a Gemini 3.1 Flash-Lite outage (503 on every
+  request for hours); the scripts now refuse to write a result with any unanswered call.
+- **Bug found and fixed (#12):** "Two agents…" was simulated without the change (number words).
+- **Dashboard review: issue #13** (5 fixes before the demo, clarity, missing Plan v4 proof).
+
+**Setup notes (this laptop):** venv `~/.venvs/opslens`; `.claude/launch.json` points at `.venv`, so
+the server was started by hand; a worktree `../o-split` builds the per-item branches.
