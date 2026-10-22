@@ -53,3 +53,15 @@ def test_answer_numbers_come_from_the_tool() -> None:
     out = answer(Q, None, {"whatif": fake_whatif}, {}, (43, 56), 0)
     text = " ".join(out["lines"])
     assert "4.2%" in text and "9.8%" in text and "+5.5 points" in text  # no baseline_d here → urgent-first
+
+
+def test_numbers_written_as_words_ground_the_route() -> None:
+    # Found 22 Oct (W6 routing test, question 6): "Two" did not ground the LLM's 2.
+    route = {"tool": "whatif", "args": {"weekday": "wednesday", "agents_delta": {"D": -2}}}
+    assert check_route(route, "Two agents from team D are on leave Wednesday. Impact?") == route
+    assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": -2}}}, "Team C mein do log kam ho gaye") is not None
+    assert check_route({"tool": "whatif", "args": {"volume_change_pct": 20}}, "volume up twenty percent") is not None
+    # Still strict: "do" as an English verb grounds nothing, and an unrelated number is still rejected.
+    assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": 2}}}, "do breaches fall on friday?") is None
+    assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": 3}}}, "Two agents leave team C") is None
+

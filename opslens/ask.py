@@ -37,6 +37,28 @@ CATEGORIES = ("late_delivery", "refund", "payment_failure", "missing_item", "wro
               "restaurant_partner")
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
+# Numbers written as words count as typed: "Two agents" grounds a 2 (found 22 Oct: the LLM answered
+# {"D": -2} correctly, the check rejected it, and the keyword rules then simulated the day WITHOUT
+# the change). English and common Hinglish words. "do" (Hindi 2) is also an English word, so it
+# counts only right before a people word ("do log", "do agents").
+NUMBER_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+    "ten": 10, "eleven": 11, "twelve": 12, "fifteen": 15, "twenty": 20, "thirty": 30, "forty": 40,
+    "fifty": 50, "hundred": 100, "ek": 1, "teen": 3, "char": 4, "chaar": 4, "paanch": 5, "panch": 5,
+    "chhe": 6, "saat": 7, "aath": 8, "nau": 9, "das": 10, "bees": 20, "pachaas": 50,
+}
+HINDI_DO = re.compile(r"\bdo\s+(?:log|logon|agents?|bande|banda|aur|people)\b")
+
+
+def typed_numbers(question: str) -> set[float]:
+    """Every number the user wrote, as digits or as a word."""
+    q = question.lower()
+    typed = {float(m) for m in NUMBER.findall(q)}
+    typed |= {float(NUMBER_WORDS[w]) for w in re.findall(r"[a-z]+", q) if w in NUMBER_WORDS}
+    if HINDI_DO.search(q):
+        typed.add(2.0)
+    return typed
+
 
 SYSTEM = (
     "You route a support-operations manager's question to ONE tool of a decision engine. "
@@ -80,7 +102,7 @@ def check_route(route: Any, question: str) -> dict | None:
     args = route.get("args") or {}
     if not isinstance(args, dict):
         return None
-    typed = {float(m) for m in NUMBER.findall(question)}
+    typed = typed_numbers(question)
     if any(n not in typed for n in numbers_in(args)):
         return None  # the LLM added a number the user never wrote
     tool = route["tool"]
