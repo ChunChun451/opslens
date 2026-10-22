@@ -1,0 +1,82 @@
+{
+ "shown_threshold": 0.5,
+ "shown_rows": 8264,
+ "deletion": {
+  "rows": 3000,
+  "tickets": 1719,
+  "background_rows": 30,
+  "top1_vs_random1": {
+   "share_top_drops_more_logodds": 0.989,
+   "share_top_drops_more_probability": 0.983,
+   "mean_drop_top_logodds": 3.1807,
+   "mean_drop_random_logodds": 0.1675,
+   "mean_drop_top_probability": 0.3737,
+   "mean_drop_random_probability": 0.0182,
+   "top_minus_random_logodds": {
+    "mean": 3.0132,
+    "ci95": [
+     2.9535,
+     3.0783
+    ]
+   },
+   "share_ci95": [
+    0.9852,
+    0.9923
+   ]
+  },
+  "top3_vs_random3": {
+   "share_top_drops_more_logodds": 1.0,
+   "share_top_drops_more_probability": 0.9987,
+   "mean_drop_top_logodds": 5.2087,
+   "mean_drop_random_logodds": 0.1171,
+   "mean_drop_top_probability": 0.5631,
+   "mean_drop_random_probability": 0.0137,
+   "top_minus_random_logodds": {
+    "mean": 5.0916,
+    "ci95": [
+     5.0098,
+     5.1709
+    ]
+   },
+   "share_ci95": [
+    1.0,
+    1.0
+   ]
+  },
+  "rule_faithful": true
+ },
+ "reasons_vs_plant": {
+  "planted_hindi_refund_payment": {
+   "rows": 1499,
+   "tickets": 296,
+   "share_skill_reason_in_top3": 0.986,
+   "ci95": [
+    0.9797,
+    0.9917
+   ]
+  },
+  "control_team_b_not_hindi": {
+   "rows": 637,
+   "tickets": 260,
+   "share_skill_reason_in_top3": 0.6295,
+   "ci95": [
+    0.5658,
+    0.6852
+   ]
+  },
+  "skill_features": [
+   "capable_on_shift",
+   "language",
+   "queue_team_language"
+  ],
+  "planted_top1_reason_counts": {
+   "capable_on_shift": 811,
+   "time_left_min": 659,
+   "queue_team_language": 15,
+   "language": 12,
+   "ahead_in_team_queue": 2
+  }
+ },
+ "runner_up": "opslens/policies.py with_runner_up; regression: tests/test_w8.py (same assignments)",
+ "seconds": 113.4
+}
