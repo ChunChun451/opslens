@@ -2303,5 +2303,273 @@
    }
   ]
  },
- "seconds": 77.57878370000981
+ "fasttrack_second_look": {
+  "why": "W3: risk ranking tied 'still unassigned'. Rescue (would fast-track save it?) is what OpsLens's dispatcher uses in the food world; these pickers bring it to the real desk.",
+  "label": "Second look, pre-registered 23 Oct: chosen on the check weeks, run once on test months that W3 had already used. W3's verdict stays 'missed'.",
+  "candidates": [
+   {
+    "id": "unassigned_then_risk",
+    "label": "Still unassigned first, then OpsLens risk"
+   },
+   {
+    "id": "rescue_model",
+    "label": "Rescue model (LightGBM: would fast-track save it?)"
+   },
+   {
+    "id": "unassigned_then_rescue",
+    "label": "Still unassigned first, then the rescue model"
+   }
+  ],
+  "check_saved_20": {
+   "unassigned": 59,
+   "opslens": 64,
+   "unassigned_then_risk": 76,
+   "rescue_model": 77,
+   "unassigned_then_rescue": 77
+  },
+  "check_incidents": 3328,
+  "chosen_on_check": "rescue_model",
+  "chosen_label": "Rescue model (LightGBM: would fast-track save it?)",
+  "rescue_model_rounds": 75,
+  "results": {
+   "10": {
+    "unassigned": {
+     "saved": 46,
+     "ci_low": 32.66966292134831,
+     "ci_high": 55.64929109274658
+    },
+    "opslens": {
+     "saved": 36,
+     "ci_low": 26.287907826017726,
+     "ci_high": 45.59376679038079
+    },
+    "rescue_model": {
+     "saved": 92,
+     "ci_low": 74.02460948782131,
+     "ci_high": 107.44451139078521
+    }
+   },
+   "20": {
+    "unassigned": {
+     "saved": 115,
+     "ci_low": 102.75028419307175,
+     "ci_high": 120.27602219399189
+    },
+    "opslens": {
+     "saved": 108,
+     "ci_low": 86.52638931650247,
+     "ci_high": 136.94712354376273
+    },
+    "rescue_model": {
+     "saved": 160,
+     "ci_low": 117.93438068883772,
+     "ci_high": 208.62735122971822
+    }
+   },
+   "30": {
+    "unassigned": {
+     "saved": 175,
+     "ci_low": 152.7491941812186,
+     "ci_high": 193.93867673394877
+    },
+    "opslens": {
+     "saved": 151,
+     "ci_low": 115.72127320784662,
+     "ci_high": 196.2981698609737
+    },
+    "rescue_model": {
+     "saved": 200,
+     "ci_low": 160.68908963924545,
+     "ci_high": 243.75118475997002
+    }
+   }
+  },
+  "chosen_minus_unassigned": {
+   "10": {
+    "diff": 46,
+    "ci_low": 30.822447317673777,
+    "ci_high": 66.6900493374108
+   },
+   "20": {
+    "diff": 45,
+    "ci_low": 0.0,
+    "ci_high": 100.53313960097432
+   },
+   "30": {
+    "diff": 25,
+    "ci_low": 5.131404739428583,
+    "ci_high": 62.579333168038744
+   }
+  },
+  "rule": {
+   "text": "The chosen picker is better than 'still unassigned at 1 hour' only if it saves more misses at the 20% budget with a 95% CI (whole test weeks resampled) above 0.",
+   "budget": 20,
+   "diff": 45,
+   "ci_low": 0.0,
+   "ci_high": 100.53313960097432,
+   "passed": false
+  }
+ },
+ "detector_second_look": {
+  "label": "Second look, pre-registered 23 Oct: chosen on the check weeks, run once on fresh test plants. The 19 Oct result (blind_plants) stays as it is.",
+  "max_false_alarms_per_30_days": 10,
+  "candidates": [
+   {
+    "name": "open_24h_pool1_z3.5",
+    "slow_flag": "open_24h",
+    "pool_days": 1,
+    "z": 3.5,
+    "check_found": 9,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 15.0
+   },
+   {
+    "name": "open_24h_pool1_z3.0",
+    "slow_flag": "open_24h",
+    "pool_days": 1,
+    "z": 3.0,
+    "check_found": 13,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 21.428571428571427
+   },
+   {
+    "name": "open_24h_pool3_z3.5",
+    "slow_flag": "open_24h",
+    "pool_days": 3,
+    "z": 3.5,
+    "check_found": 18,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 23.571428571428573
+   },
+   {
+    "name": "open_24h_pool3_z3.0",
+    "slow_flag": "open_24h",
+    "pool_days": 3,
+    "z": 3.0,
+    "check_found": 21,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 32.142857142857146
+   },
+   {
+    "name": "open_2h_pool1_z3.5",
+    "slow_flag": "open_2h",
+    "pool_days": 1,
+    "z": 3.5,
+    "check_found": 9,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 15.0
+   },
+   {
+    "name": "open_2h_pool1_z3.0",
+    "slow_flag": "open_2h",
+    "pool_days": 1,
+    "z": 3.0,
+    "check_found": 13,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 21.428571428571427
+   },
+   {
+    "name": "open_2h_pool3_z3.5",
+    "slow_flag": "open_2h",
+    "pool_days": 3,
+    "z": 3.5,
+    "check_found": 18,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 17.142857142857142
+   },
+   {
+    "name": "open_2h_pool3_z3.0",
+    "slow_flag": "open_2h",
+    "pool_days": 3,
+    "z": 3.0,
+    "check_found": 21,
+    "check_plants": 60,
+    "check_false_alarms_per_30_days": 23.571428571428573
+   }
+  ],
+  "chosen_on_check": "open_24h_pool1_z3.5",
+  "chosen": {
+   "name": "open_24h_pool1_z3.5",
+   "slow_flag": "open_24h",
+   "pool_days": 1,
+   "z": 3.5
+  },
+  "test_seeds": [
+   9201,
+   9220
+  ],
+  "test_plants": 60,
+  "found_v1": 11,
+  "found_v2": 11,
+  "recall_v1_pct": 18.333333333333332,
+  "recall_v2_pct": 18.333333333333332,
+  "v2_minus_v1": {
+   "diff": 0,
+   "ci_low": 0.0,
+   "ci_high": 0.0
+  },
+  "clean_alerts_v2": 9,
+  "false_alarms_per_30_days_v2": 7.714285714285714,
+  "clean_alert_list_v2": [
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-02",
+    "z": 9.9
+   },
+   {
+    "type": "spike",
+    "segment": "Category 42",
+    "known_on": "2016-05-02",
+    "z": 5.2
+   },
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-03",
+    "z": 9.9
+   },
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-04",
+    "z": 9.2
+   },
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-05",
+    "z": 13.7
+   },
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-06",
+    "z": 9.7
+   },
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-09",
+    "z": 5.4
+   },
+   {
+    "type": "spike",
+    "segment": "Category 28",
+    "known_on": "2016-05-10",
+    "z": 4.1
+   },
+   {
+    "type": "spike",
+    "segment": "Category 20",
+    "known_on": "2016-05-30",
+    "z": 4.5
+   }
+  ],
+  "rule": {
+   "text": "v2 is better only if it finds more of the same fresh test plants than v1 with a 95% CI (plant sets resampled) above 0, with at most 10 false alarms per 30 clean test days.",
+   "passed": false
+  }
+ },
+ "seconds": 114.61431660002563
 }
