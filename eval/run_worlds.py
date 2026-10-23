@@ -46,9 +46,11 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "eval" / "parts" / "worlds"
+DIAG_DIR = ROOT / "eval" / "parts" / "worlds_diag"  # the overload diagnosis (23 Oct); never counted
 WORLD_SEEDS = list(range(7001, 7031))
 SKIP = {".git", ".venv", ".venv-challengers", ".claude", "data/generated",
-        "cache", ".pytest_tmp", ".pytest_cache", "__pycache__", "eval/parts/worlds", "eval/challengers"}
+        "cache", ".pytest_tmp", ".pytest_cache", "__pycache__", "eval/parts/worlds", "eval/parts/worlds_diag",
+        "eval/challengers"}
 CATEGORIES = ["late_delivery", "missing_item", "wrong_item", "refund", "payment_failure", "app_bug",
               "account", "restaurant_partner"]
 OTHERS = ["baseline_a", "baseline_b", "baseline_c", "baseline_d", "least_slack"]
@@ -178,9 +180,11 @@ def run_step(dest: Path, log, *args: str) -> None:
     log.write(f"\n== {' '.join(args)} done in {time.perf_counter() - started:.0f}s\n".encode())
 
 
-def run_world(seed: int, workers: int) -> dict:
-    """The whole pipeline for one world; returns (and saves) its result."""
-    out_path = OUT_DIR / f"{seed}.json"
+def run_world(seed: int, workers: int, diagnose: bool = False) -> dict:
+    """The whole pipeline for one world; returns (and saves) its result. With diagnose=True (added
+    23 Oct, after the result): the same world rebuilt, only industry standard, least slack and
+    OpsLens, with misses by priority / tier / language recorded, saved apart in worlds_diag/."""
+    out_path = (DIAG_DIR if diagnose else OUT_DIR) / f"{seed}.json"
     if out_path.exists():
         return json.loads(out_path.read_text(encoding="utf-8"))
     world = sample_world(seed)
@@ -189,12 +193,13 @@ def run_world(seed: int, workers: int) -> dict:
         dest = Path(tmp) / "repo"
         copy_repo(dest)
         volume = apply_world(dest, world)
-        with open(OUT_DIR / f"{seed}.log", "wb") as log:
+        with open((DIAG_DIR if diagnose else OUT_DIR) / f"{seed}.log", "wb") as log:
             run_step(dest, log, "data/generate_ops.py")
             run_step(dest, log, "eval/run_classification.py", "--no-llm")
             run_step(dest, log, "eval/run_risk.py")
             run_step(dest, log, "eval/run_forecast.py")
-            run_step(dest, log, "eval/run_world_compare.py", "--workers", str(workers))
+            run_step(dest, log, "eval/run_world_compare.py", "--workers", str(workers),
+                     *(["--diagnose"] if diagnose else []))
         parts = dest / "eval" / "parts"
         compare = json.loads((parts / "world_compare.json").read_text(encoding="utf-8"))
         risk = json.loads((parts / "risk.json").read_text(encoding="utf-8"))
@@ -243,7 +248,32 @@ def summarize(results: list[dict]) -> dict:
             "classifier": "local only (no LLM) in every world", "seeds": [1, 2, 3], "test_days": [43, 56]}
 
 
+def diagnose_losses() -> int:
+    """Rebuild the worlds where OpsLens was not lowest and record who misses the deadline. Checks
+    first that the rebuilt runs reproduce the counted ones exactly (same seeds, same worlds)."""
+    DIAG_DIR.mkdir(parents=True, exist_ok=True)
+    summary = json.loads((ROOT / "eval" / "parts" / "worlds.json").read_text(encoding="utf-8"))
+    seeds = [row["seed"] for row in summary["worlds"] if not row["wins"]]
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        list(pool.map(lambda s: run_world(s, workers=4, diagnose=True), seeds))
+    rows = []
+    for seed in seeds:
+        counted = json.loads((OUT_DIR / f"{seed}.json").read_text(encoding="utf-8"))["compare"]["per_seed"]
+        diag = json.loads((DIAG_DIR / f"{seed}.json").read_text(encoding="utf-8"))["compare"]
+        same = all([r["turnaround.breach_pct"] for r in counted[p]] == [r["turnaround.breach_pct"] for r in diag["per_seed"][p]]
+                   for p in diag["per_seed"])
+        rows.append({"seed": seed, "reproduced": same, "mean": diag["mean"]})
+    out = {"note": "Added 23 Oct after the 30-world result: the worlds OpsLens did not win, rebuilt from the same "
+                   "seeds, with misses by priority, tier and language. Analysis, not a pre-registered test.",
+           "worlds": rows, "all_reproduced": all(r["reproduced"] for r in rows)}
+    (ROOT / "eval" / "parts" / "worlds_diagnosis.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    print(f"diagnosis: {len(rows)} worlds, reproduced exactly: {out['all_reproduced']}")
+    return 0
+
+
 def main() -> int:
+    if "--diagnose" in sys.argv:
+        return diagnose_losses()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     seeds = WORLD_SEEDS
     if "--only" in sys.argv:

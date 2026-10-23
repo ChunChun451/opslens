@@ -33,23 +33,29 @@ SEEDS = [1, 2, 3]
 FIRST, LAST = 43, 56
 KEEP = ["turnaround.breach_pct", "turnaround.p90_resolution_min", "quality.late_minutes_per_100",
         "quality.mean_utilisation", "quality.p99_wait_min", "productivity.transfers_per_100"]
+# Recorded only by the overload diagnosis (--diagnose, added 23 Oct after the 30-world result):
+# who misses the deadline, by priority, tier and language. Same runs, more columns.
+DIAGNOSE = ["segment.p1_breach_pct", "segment.gold_breach_pct", "segment.hindi_breach_pct", "quality.mean_minutes_late"]
 
 
 def main() -> int:
     workers = int(sys.argv[sys.argv.index("--workers") + 1]) if "--workers" in sys.argv else 4
+    diagnose = "--diagnose" in sys.argv
+    policies = ["baseline_d", "least_slack", "opslens"] if diagnose else POLICIES
+    keep = KEEP + DIAGNOSE if diagnose else KEEP
     started = time.perf_counter()
     jobs = [{"policy": p, "seed": s, "first_day": FIRST, "last_day": LAST, "staffing": p == "opslens",
-             "tag": p} for p in POLICIES for s in SEEDS]
+             "tag": p} for p in policies for s in SEEDS]
     results = run_jobs(jobs, workers=workers)
-    per_seed: dict[str, list[dict]] = {p: [] for p in POLICIES}
+    per_seed: dict[str, list[dict]] = {p: [] for p in policies}
     for r in sorted(results, key=lambda r: (r["job"]["policy"], r["job"]["seed"])):
-        per_seed[r["job"]["policy"]].append({"seed": r["job"]["seed"], **{k: float(r["kpis"][k]) for k in KEEP}})
-    mean = {p: {k: float(np.mean([row[k] for row in rows])) for k in KEEP} for p, rows in per_seed.items()}
+        per_seed[r["job"]["policy"]].append({"seed": r["job"]["seed"], **{k: float(r["kpis"][k]) for k in keep}})
+    mean = {p: {k: float(np.mean([row[k] for row in rows])) for k in keep} for p, rows in per_seed.items()}
     out = {"seeds": SEEDS, "first_day": FIRST, "last_day": LAST, "per_seed": per_seed, "mean": mean,
            "seconds": round(time.perf_counter() - started, 1)}
     PARTS.mkdir(parents=True, exist_ok=True)
     (PARTS / "world_compare.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
-    print("  " + "  ".join(f"{p} {mean[p]['turnaround.breach_pct']:.2f}%" for p in POLICIES))
+    print("  " + "  ".join(f"{p} {mean[p]['turnaround.breach_pct']:.2f}%" for p in policies))
     return 0
 
 
