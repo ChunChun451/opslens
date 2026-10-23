@@ -121,7 +121,7 @@ def run_one(job: dict) -> dict:
         ms = policy.stats.solve_ms or [0.0]
         out["solver"] = {"solves": policy.stats.solves, "fallbacks": policy.stats.fallbacks,
                          "median_ms": float(np.median(ms)), "max_ms": float(np.max(ms))}
-    if getattr(policy, "handle", None):
+    if hasattr(policy, "overload_minutes") and policy.handle:  # OpsLens v6 candidates only
         out["overload_minutes"] = policy.overload_minutes
     return out
 
