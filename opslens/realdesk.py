@@ -178,7 +178,8 @@ def train_early_warning(incidents: pd.DataFrame, events: pd.DataFrame) -> dict:
     booster = lgb.train({**risk.PARAMS, "num_threads": 4}, lgb.Dataset(X[learn], y[learn], categorical_feature=RISK_CATS), 2000,
                         valid_sets=[lgb.Dataset(X[check], y[check], categorical_feature=RISK_CATS)],
                         callbacks=[lgb.early_stopping(50, verbose=False)])
-    return {"feats": feats, "X": X, "y": y, "booster": booster, "learn": learn, "check": check, "test": test}
+    return {"feats": feats, "X": X, "y": y, "booster": booster, "learn": learn, "check": check, "test": test,
+            "cats": RISK_CATS}
 
 
 def early_warning(incidents: pd.DataFrame, events: pd.DataFrame, model: dict | None = None) -> dict:

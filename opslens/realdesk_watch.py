@@ -67,6 +67,7 @@ def as_of_table(incidents: pd.DataFrame, events: pd.DataFrame, hours: float = 24
     out["team"] = inc["first_team"]
     out["resolution_h"] = inc["resolution_min"] / 60.0
     out["open_24h"] = ~(out["resolution_h"] <= hours)  # NaN (never resolved) → still open
+    out["open_2h"] = ~(out["resolution_h"] <= 2.0)     # v2 candidate signal: not closed within 2 h
     out["bounced_24h"] = reassigned.reindex(out.index).fillna(0).to_numpy() >= 1
     return out.reset_index().rename(columns={"index": "ticket_id"})
 
@@ -92,7 +93,7 @@ def comparable_days(dates: pd.DatetimeIndex, day: pd.Timestamp) -> np.ndarray:
     return np.flatnonzero(ok)
 
 
-def spike_alerts(table: pd.DataFrame, days: pd.DatetimeIndex) -> list[dict]:
+def spike_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, z_alert: float = Z) -> list[dict]:
     """Spike detector: a category's new incidents on a day vs its usual day (known that evening)."""
     counts = table.groupby(["category", "date"]).size().unstack(fill_value=0)
     all_dates = pd.date_range(days[0] - pd.Timedelta(days=WINDOW_DAYS), days[-1])
@@ -111,49 +112,79 @@ def spike_alerts(table: pd.DataFrame, days: pd.DatetimeIndex) -> list[dict]:
             if median < MIN_USUAL_COUNT or x - median < MIN_EXCESS_COUNT:
                 continue
             z = robust_z(x, usual)
-            if z >= Z:
+            if z >= z_alert:
                 alerts.append({"type": "spike", "segment": str(category), "day": day, "known_on": day,
                                "value": int(x), "usual": median, "z": round(float(z), 1)})
     return alerts
 
 
-def share_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, by: str, flag: str, kind: str) -> list[dict]:
+def pooled_windows(all_dates: pd.DatetimeIndex, opened: pd.Timestamp, pool_days: int) -> tuple[np.ndarray, np.ndarray]:
+    """Positions of today's window (the last `pool_days` days of the same kind up to `opened`) and of
+    every comparable past window that ends in the 28 days before and does not overlap today's.
+    Example: pool 3, opened Wed → today = Mon, Tue, Wed; a past window = e.g. Wed, Thu, Fri a week earlier.
+    With pool 1 this is exactly v1: today = the opened day, past = comparable_days()."""
+    weekend = opened.weekday() >= 5
+    same = np.flatnonzero((all_dates <= opened) & ((all_dates.weekday >= 5) == weekend))
+    today = same[-pool_days:]
+    windows = []
+    for end in comparable_days(all_dates, opened):
+        rank = int(np.searchsorted(same, end))
+        if rank >= pool_days - 1 and rank <= len(same) - 1 - pool_days:
+            windows.append(same[rank - pool_days + 1: rank + 1])
+    return today, np.array(windows, dtype=int).reshape(-1, pool_days)
+
+
+def share_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, by: str, flag: str, kind: str,
+                 z_alert: float = Z, pool_days: int = 1) -> list[dict]:
     """Share detector: incidents opened on a day with `flag` true, per `by` (known the next day).
-    `days` are the days the alert can be raised on; the incidents opened the day before."""
+    `days` are the days the alert can be raised on; the incidents opened the day before.
+    `pool_days` > 1 pools the last few days of the same kind (v2 candidates; v1 uses 1)."""
     n = table.groupby([by, "date"]).size().unstack(fill_value=0)
     k = table[table[flag]].groupby([by, "date"]).size().unstack(fill_value=0)
-    all_dates = pd.date_range(days[0] - pd.Timedelta(days=WINDOW_DAYS + 1), days[-1])
+    all_dates = pd.date_range(days[0] - pd.Timedelta(days=WINDOW_DAYS + 1 + 7 * pool_days), days[-1])
     n = n.reindex(columns=all_dates, fill_value=0)
     k = k.reindex(index=n.index, columns=all_dates, fill_value=0)
     n_val, k_val = n.to_numpy(dtype=float), k.to_numpy(dtype=float)
     alerts = []
     for known_on in days:
         opened = known_on - pd.Timedelta(days=1)
-        col = all_dates.get_loc(opened)
-        past = comparable_days(all_dates, opened)
+        today, windows = pooled_windows(all_dates, opened, pool_days)
+        if len(today) < pool_days:
+            continue
         for row, segment in enumerate(n.index):
-            today_n, today_k = n_val[row, col], k_val[row, col]
+            today_n, today_k = n_val[row, today].sum(), k_val[row, today].sum()
             if today_n < MIN_DAY_COUNT:
                 continue
-            usable = past[n_val[row, past] >= MIN_HISTORY_COUNT]
-            if len(usable) < MIN_HISTORY_DAYS:
+            past_n, past_k = n_val[row][windows].sum(axis=1), k_val[row][windows].sum(axis=1)
+            usable = past_n >= MIN_HISTORY_COUNT
+            if usable.sum() < MIN_HISTORY_DAYS:
                 continue
-            shares = k_val[row, usable] / n_val[row, usable]
+            shares = past_k[usable] / past_n[usable]
             if today_k - today_n * float(np.median(shares)) < MIN_EXCESS_SHARE:
                 continue
             z = share_z(int(today_k), int(today_n), shares)
-            if z >= Z:
+            if z >= z_alert:
                 alerts.append({"type": kind, "segment": str(segment), "day": opened, "known_on": known_on,
                                "value": round(float(today_k / today_n), 3), "usual": round(float(np.median(shares)), 3),
                                "z": round(float(z), 1), "incidents": int(today_n)})
     return alerts
 
 
-def watch(table: pd.DataFrame, first_day: str, last_day: str) -> pd.DataFrame:
+# Detector settings. v1 is what ran on 19 Oct. The v2 candidates (pre-registered 23 Oct, before any
+# of them ran) change three things the v1 result pointed at: the slowdown signal ("not resolved
+# within 2 h" moves when a team that usually closes incidents in minutes slows down; "still open
+# after 24 h" barely does), pooling 3 days for the share detectors, and the threshold.
+V1 = {"name": "v1", "slow_flag": "open_24h", "pool_days": 1, "z": 3.5}
+V2_CANDIDATES = [{"name": f"{flag}_pool{pool}_z{z}", "slow_flag": flag, "pool_days": pool, "z": z}
+                 for flag in ("open_24h", "open_2h") for pool in (1, 3) for z in (3.5, 3.0)]
+
+
+def watch(table: pd.DataFrame, first_day: str, last_day: str, settings: dict | None = None) -> pd.DataFrame:
     """All three detectors over the days first_day..last_day (alerts raised on these days)."""
+    s = settings or V1
     days = pd.date_range(first_day, last_day)
-    alerts = spike_alerts(table, days)
-    alerts += share_alerts(table, days[1:], "team", "open_24h", "slowdown")
-    alerts += share_alerts(table, days[1:], "category", "bounced_24h", "bounce")
+    alerts = spike_alerts(table, days, s["z"])
+    alerts += share_alerts(table, days[1:], "team", s["slow_flag"], "slowdown", s["z"], s["pool_days"])
+    alerts += share_alerts(table, days[1:], "category", "bounced_24h", "bounce", s["z"], s["pool_days"])
     columns = ["type", "segment", "day", "known_on", "value", "usual", "z", "incidents"]
     return pd.DataFrame(alerts, columns=columns).sort_values(["known_on", "type", "segment"], kind="stable").reset_index(drop=True)

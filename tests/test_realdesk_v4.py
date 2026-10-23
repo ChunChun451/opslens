@@ -147,3 +147,43 @@ def test_card_groups_split_waits_pickups_and_bounces() -> None:
     assert g["R1"][0].tolist() == [False, True, False]
     assert g["R2"][0].tolist() == [True, False, False]
     assert g["R3"][0].tolist() == [True, False, False] and g["R3"][1].tolist() == [False, True, False]
+
+
+# ---- second looks (23 Oct) -------------------------------------------------------------------
+
+def test_pool_of_one_is_exactly_the_v1_comparison() -> None:
+    dates = pd.date_range("2016-04-01", "2016-05-10")
+    opened = pd.Timestamp("2016-05-09")
+    today, windows = W.pooled_windows(dates, opened, 1)
+    assert today.tolist() == [dates.get_loc(opened)]
+    assert windows[:, 0].tolist() == W.comparable_days(dates, opened).tolist()
+
+
+def test_pooled_windows_skip_weekends_and_never_overlap_today() -> None:
+    dates = pd.date_range("2016-04-01", "2016-05-10")
+    today, windows = W.pooled_windows(dates, pd.Timestamp("2016-05-09"), 3)   # a Monday
+    assert [str(dates[i].date()) for i in today] == ["2016-05-05", "2016-05-06", "2016-05-09"]
+    assert windows.max() < today.min()
+
+
+def test_pooling_finds_a_steady_rise_that_one_day_misses() -> None:
+    days = pd.date_range("2016-03-20", "2016-05-12")
+    days = days[days.weekday < 5]
+    table = weekday_table(days, 10)                       # 3 of 10 open after 24 h on a usual day
+    slow = table["date"].isin(pd.to_datetime(["2016-05-09", "2016-05-10", "2016-05-11"])).to_numpy()
+    for d in ("2016-05-09", "2016-05-10", "2016-05-11"):  # 6 of 10 for three days in a row
+        rows = (table["date"] == pd.Timestamp(d)).to_numpy()
+        table.loc[rows, "open_24h"] = [True] * 6 + [False] * 4
+    assert slow.sum() == 30
+    one = W.share_alerts(table, pd.DatetimeIndex(["2016-05-12"]), "team", "open_24h", "slowdown", 3.5, 1)
+    three = W.share_alerts(table, pd.DatetimeIndex(["2016-05-12"]), "team", "open_24h", "slowdown", 3.5, 3)
+    assert one == [] and len(three) == 1                  # 6/10 alone: z 2.1; 18/30 pooled: z 3.6
+
+
+def test_slowdown_plant_also_updates_the_two_hour_signal() -> None:
+    days = pd.date_range("2016-05-09", "2016-05-13")
+    table = weekday_table(days, 10)
+    table["open_2h"] = ~(table["resolution_h"] <= 2.0)
+    plant = {"type": "slowdown", "segment": "G1", "first_day": days[0], "last_day": days[-1], "size": 1.5}
+    out = P.plant_slowdown(table, plant)
+    assert out["open_2h"].all() and out["open_24h"].sum() == 15   # 2 h × 1.5 = 3 h: not within 2 h, still within 24 h

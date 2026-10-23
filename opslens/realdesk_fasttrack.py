@@ -37,10 +37,13 @@ missed too). It still waited 74.4 h for a pickup after its 14:24 mark; fast-trac
 
 from __future__ import annotations
 
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
+
+from opslens import risk
 
 SCORED_PRIORITIES = ["3 - Moderate", "4 - Low"]
 LEFT_OUT_PRIORITIES = ["1 - Critical", "2 - High"]
@@ -351,4 +354,84 @@ def impact(ft: dict) -> dict:
                             "met_deadline_pct_ceiling": 100.0 - ft["ceiling"]["missed_pct_after"]},
         "money": {"shown": False, "why": "No cost per missed deadline exists for this desk (config/impact.yaml is not "
                                          "part of the project), and we do not invent one."},
+    }
+
+
+# ---- Second look (pre-registered 23 Oct, after W3 missed its rule) ----------------------------
+# W3 showed that ranking by RISK ties the plain "still unassigned" rule: fast-track can only help
+# an incident that is still waiting, and risk does not know that. OpsLens's dispatcher in the food
+# world ranks by RESCUE (risk if it waits minus risk if served now). These candidates bring that
+# idea to the real desk. They are chosen on the CHECK part only and run once on the test months.
+# The test months were already used by W3, so this is labelled a second look and W3 stays "missed".
+SECOND_LOOK = ["unassigned_then_risk", "rescue_model", "unassigned_then_rescue"]
+SECOND_LOOK_LABELS = {
+    "unassigned_then_risk": "Still unassigned first, then OpsLens risk",
+    "rescue_model": "Rescue model (LightGBM: would fast-track save it?)",
+    "unassigned_then_rescue": "Still unassigned first, then the rescue model",
+}
+
+
+def daily_saved(day: np.ndarray, created: np.ndarray, score: np.ndarray, savable: np.ndarray, share_pct: float) -> np.ndarray:
+    """Which incidents a picker fast-tracks AND saves (same daily budget as the benchmark)."""
+    return savable & pick_daily(day, created, score, share_pct)
+
+
+def second_look(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limits: dict[str, float],
+                learn: np.ndarray, check: np.ndarray, test: np.ndarray) -> dict:
+    """Choose one rescue-style picker on the check part (most misses saved at the 20% budget), then
+    compare it once on the test months with "still unassigned at 1 hour" (W3's best picker).
+    Rule: better only if it saves more at 20% with a 95% CI (whole test weeks resampled) above 0."""
+    hours = incidents["resolution_min"].to_numpy() / 60.0
+    priority = incidents["priority_raw"].astype(str).to_numpy()
+    wait = pickup_wait_after(incidents, events)
+    savable = missed_by_rule(hours, priority, limits) & ~missed_by_rule(hours - wait, priority, limits)
+    X, feats = model["X"], model["feats"]
+    unassigned = (feats["state_now"].isna() | (feats["state_now"] == "New")).to_numpy().astype(float)
+    p_risk = model["booster"].predict(X)
+    rescue = lgb.train(risk.PARAMS, lgb.Dataset(X[learn], savable[learn].astype(int), categorical_feature=model["cats"]), 2000,
+                       valid_sets=[lgb.Dataset(X[check], savable[check].astype(int), categorical_feature=model["cats"])],
+                       callbacks=[lgb.early_stopping(50, verbose=False)])
+    p_rescue = rescue.predict(X)
+    # Unassigned is 0 or 1 and a probability is below 1, so "1 + p" ranks every unassigned incident first.
+    scores = {"unassigned": unassigned, "opslens": p_risk, "unassigned_then_risk": unassigned + p_risk,
+              "rescue_model": p_rescue, "unassigned_then_rescue": unassigned + p_rescue}
+
+    def part(mask: np.ndarray) -> dict:
+        m = mask & np.isin(priority, SCORED_PRIORITIES)
+        inc = incidents[m]
+        return {"m": m, "day": inc["created_at"].dt.normalize().to_numpy().astype("int64"),
+                "created": inc["created_at"].to_numpy().astype("int64"),
+                "weeks": inc["created_at"].dt.to_period("W").astype(str).to_numpy()}
+
+    chk, tst = part(check), part(test)
+    check_saved = {c: int(daily_saved(chk["day"], chk["created"], scores[c][chk["m"]], savable[chk["m"]], RULE_BUDGET).sum())
+                   for c in ["unassigned", "opslens"] + SECOND_LOOK}
+    chosen = max(SECOND_LOOK, key=lambda c: check_saved[c])     # ties: the first in the list
+    n_pool = int(tst["m"].sum())
+    results, vs_unassigned = {}, {}
+    for b in BUDGETS:
+        saved = {c: daily_saved(tst["day"], tst["created"], scores[c][tst["m"]], savable[tst["m"]], b)
+                 for c in ["unassigned", "opslens", chosen]}
+        totals = week_totals(tst["weeks"], {"n": np.ones(n_pool), **saved})
+        results[str(b)] = {}
+        for c, s in saved.items():
+            low, high = bootstrap_ci(totals, c, None, n_pool)
+            results[str(b)][c] = {"saved": int(s.sum()), "ci_low": low, "ci_high": high}
+        low, high = bootstrap_ci(totals, chosen, "unassigned", n_pool)
+        vs_unassigned[str(b)] = {"diff": int(saved[chosen].sum() - saved["unassigned"].sum()), "ci_low": low, "ci_high": high}
+    d = vs_unassigned[str(RULE_BUDGET)]
+    return {
+        "why": "W3: risk ranking tied 'still unassigned'. Rescue (would fast-track save it?) is what OpsLens's "
+               "dispatcher uses in the food world; these pickers bring it to the real desk.",
+        "label": "Second look, pre-registered 23 Oct: chosen on the check weeks, run once on test months that W3 had "
+                 "already used. W3's verdict stays 'missed'.",
+        "candidates": [{"id": c, "label": SECOND_LOOK_LABELS[c]} for c in SECOND_LOOK],
+        "check_saved_20": check_saved, "check_incidents": int(chk["m"].sum()),
+        "chosen_on_check": chosen, "chosen_label": SECOND_LOOK_LABELS[chosen],
+        "rescue_model_rounds": int(rescue.best_iteration),
+        "results": results, "chosen_minus_unassigned": vs_unassigned,
+        "rule": {"text": "The chosen picker is better than 'still unassigned at 1 hour' only if it saves more misses at "
+                         "the 20% budget with a 95% CI (whole test weeks resampled) above 0.",
+                 "budget": RULE_BUDGET, "diff": d["diff"], "ci_low": d["ci_low"], "ci_high": d["ci_high"],
+                 "passed": bool(d["diff"] > 0 and d["ci_low"] > 0)},
     }

@@ -42,11 +42,20 @@ BOUNCE_SHARE = (0.15, 0.40)
 ELIGIBLE_FROM, ELIGIBLE_TO = "2016-04-04", "2016-05-01"
 MIN_WEEKDAY_MEDIAN = 8
 MATCH_SLACK_DAYS = 2
+# Where plants go. "test" is the 19 Oct run (the constants above). "check" (added 23 Oct for the
+# detector v2 choice, before any v2 candidate ran) is the last 20% of the learning period: the same
+# ranges and rules, shorter windows so a 7-day plant and its 2 days of slack fit inside it.
+TEST = {"first_day": FIRST_DAY, "last_day": LAST_DAY, "spike_days": SPIKE_DAYS, "window_starts": WINDOW_STARTS,
+        "eligible": (ELIGIBLE_FROM, ELIGIBLE_TO)}
+CHECK = {"first_day": "2016-04-18", "last_day": "2016-05-01", "spike_days": ("2016-04-18", "2016-04-29"),
+         "window_starts": ("2016-04-18", "2016-04-22"), "eligible": ("2016-03-21", "2016-04-17")}
+CHECK_SEEDS = list(range(9301, 9321))    # plants on the check weeks, to choose detector v2
+SECOND_SEEDS = list(range(9201, 9221))   # fresh plants on the test weeks, v1 and v2 on the same plants
 
 
-def usual_weekday(table: pd.DataFrame, by: str) -> pd.Series:
-    """Median incidents per weekday per segment in the 4 weeks before the test period."""
-    days = pd.date_range(ELIGIBLE_FROM, ELIGIBLE_TO)
+def usual_weekday(table: pd.DataFrame, by: str, period: dict = TEST) -> pd.Series:
+    """Median incidents per weekday per segment in the 4 weeks before the plant period."""
+    days = pd.date_range(*period["eligible"])
     days = days[days.weekday < 5]
     window = table[table["date"].isin(days)]
     counts = window.groupby([by, "date"]).size().unstack(fill_value=0).reindex(columns=days, fill_value=0)
@@ -58,18 +67,18 @@ def weekdays(first: str, last: str) -> list[pd.Timestamp]:
     return list(days[days.weekday < 5])
 
 
-def random_plant_set(rng: np.random.Generator, table: pd.DataFrame) -> list[dict]:
+def random_plant_set(rng: np.random.Generator, table: pd.DataFrame, period: dict = TEST) -> list[dict]:
     """One spike, one slowdown, one bounce with random place, day and size (ranges above)."""
-    cats = usual_weekday(table, "category")
-    teams = usual_weekday(table, "team")
+    cats = usual_weekday(table, "category", period)
+    teams = usual_weekday(table, "team", period)
     cats, teams = cats[cats >= MIN_WEEKDAY_MEDIAN], teams[teams >= MIN_WEEKDAY_MEDIAN]
     spike_cat = str(rng.choice(cats.index.to_numpy()))
     multiplier = float(rng.uniform(*SPIKE_MULTIPLIER))
-    spike_day = rng.choice(weekdays(*SPIKE_DAYS))
+    spike_day = rng.choice(weekdays(*period["spike_days"]))
     slow_team = str(rng.choice(teams.index.to_numpy()))
-    slow_start = rng.choice(weekdays(*WINDOW_STARTS))
+    slow_start = rng.choice(weekdays(*period["window_starts"]))
     bounce_cat = str(rng.choice(cats.index.to_numpy()))
-    bounce_start = rng.choice(weekdays(*WINDOW_STARTS))
+    bounce_start = rng.choice(weekdays(*period["window_starts"]))
     week = pd.Timedelta(days=WINDOW_DAYS - 1)
     return [
         {"type": "spike", "segment": spike_cat, "first_day": pd.Timestamp(spike_day), "last_day": pd.Timestamp(spike_day),
@@ -81,12 +90,12 @@ def random_plant_set(rng: np.random.Generator, table: pd.DataFrame) -> list[dict
     ]
 
 
-def apply_plants(table: pd.DataFrame, plants: list[dict], rng: np.random.Generator) -> pd.DataFrame:
+def apply_plants(table: pd.DataFrame, plants: list[dict], rng: np.random.Generator, period: dict = TEST) -> pd.DataFrame:
     """The real table with the plants injected (the input is not changed)."""
     out = table.copy()
     for plant in plants:
         if plant["type"] == "spike":
-            out = plant_spike(out, plant, rng)
+            out = plant_spike(out, plant, rng, period)
         elif plant["type"] == "slowdown":
             out = plant_slowdown(out, plant)
         else:
@@ -94,10 +103,10 @@ def apply_plants(table: pd.DataFrame, plants: list[dict], rng: np.random.Generat
     return out
 
 
-def plant_spike(table: pd.DataFrame, plant: dict, rng: np.random.Generator) -> pd.DataFrame:
-    """Copies of real incidents of the category from other test weekdays, moved to the spike day."""
+def plant_spike(table: pd.DataFrame, plant: dict, rng: np.random.Generator, period: dict = TEST) -> pd.DataFrame:
+    """Copies of real incidents of the category from other weekdays of the period, moved to the spike day."""
     day = plant["first_day"]
-    test_days = pd.DatetimeIndex(weekdays(FIRST_DAY, LAST_DAY))
+    test_days = pd.DatetimeIndex(weekdays(period["first_day"], period["last_day"]))
     pool = table[(table["category"] == plant["segment"]) & table["date"].isin(test_days) & (table["date"] != day)]
     picks = pool.iloc[rng.integers(0, len(pool), plant["extra_incidents"])].copy()
     picks["created_at"] = day + (picks["created_at"] - picks["date"])
@@ -116,6 +125,8 @@ def plant_slowdown(table: pd.DataFrame, plant: dict) -> pd.DataFrame:
     hit = in_window(out, plant) & (out["team"] == plant["segment"]).to_numpy()
     out.loc[hit, "resolution_h"] = out.loc[hit, "resolution_h"] * plant["size"]
     out.loc[hit, "open_24h"] = ~(out.loc[hit, "resolution_h"] <= 24.0)
+    if "open_2h" in out:
+        out.loc[hit, "open_2h"] = ~(out.loc[hit, "resolution_h"] <= 2.0)
     return out
 
 
