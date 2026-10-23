@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-22T23:45:25 (commit 9f29bfe). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-23T22:01:33 (commit cd1233e). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -314,5 +314,5 @@ Breakdown (from the same runs, added after them): OpsLens beats the industry sta
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.037 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.064 s.
 - Full evaluation pipeline: 48.5 min.
