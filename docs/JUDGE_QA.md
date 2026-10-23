@@ -439,3 +439,11 @@ Zero-shot it scored 79.0%, below our local model (90.3%) on full data, and slowe
 
 **Q79. Does the LLM diagnose root causes better than your rules?**
 No: 61 of 62 cards vs 62 of 62. We use it for the readable one-line cause, never for numbers (0 of 62 replies contained a digit).
+
+**Q80. If risk ties a simple rule, is OpsLens's idea of 'rescue' any better on the real desk?**
+We wrote three rescue pickers down first and let the check weeks choose. The rescue model saved the most
+at every budget: 160 vs 115 at 20%, but +45 [0.0, 100.5] does not exclude zero, so we do not claim it.
+At 10% the gap is +46 [30.8, 66.7].
+
+**Q81. (Attack) Did a second, better-tuned detector find more planted problems?**
+No. Detector v2 was designed on the check weeks with a limit of 10 false alarms per 30 days fixed first. No setting met it, so the fallback rule kept v1: on 60 fresh test plants both found 11. We report it as missed.

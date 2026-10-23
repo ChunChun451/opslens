@@ -484,3 +484,5 @@ UI for Plan v4 ('Rules we wrote first' ledger, review fixes from issue #13).
 - W8 (Claude 2, 22 Oct): deletion test passed (top reason beats a random feature in 98.9% of shown tickets); planted Hindi segment names language/skill in 98.6% (control 63%); runner-up agent in every assignment reason, regression-tested. `eval/run_w8.py`, `results.faithfulness`.
 - W5 (Claude 2, 22 Oct): CP-SAT weekly roster built and tested with the v5 discipline. Not adopted: design −0.016 [−0.131, +0.099], confirm −0.034 [−0.071, +0.002], test +0.21 [+0.05, +0.37]. Wins on its own objective; the Erlang-C objective, not the search, limits staffing gains. `opslens/roster_opt.py`, `results.staffing_opt`.
 - W6 (Claude 2, 22 Oct): BANKING77 cascade beats local (+0.71 full, +10.1 10-shot; rule passed); LLM-only 79.0%; attribution ties rules (61/62 vs 62/62); routing LLM 93.3% vs rules 61.7%. `results.nlp_bench`.
+
+**Update 23 Oct — real desk second looks (both pre-registered, both NOT passed):** rescue picker 160 vs 115 at 20% (+45 [0.0, 100.5]; +46 [30.8, 66.7] at 10%); detector v2 fell back to v1 (11 of 60 fresh test plants, 7.7 false alarms per 30 days). 202 tests pass.
