@@ -99,8 +99,14 @@ def run_one(job: dict) -> dict:
         if job.get("log"):
             day0 = (REPLAY_DAY - 1) * MINUTES_PER_DAY
             log_window = (day0 + 20 * 60 + 30, day0 + 20 * 60 + 45)
+        handle = None
+        if weights.get("overload"):  # v6 candidate: expected minutes of work, history days 1-35 only
+            history = pd.read_csv(GENERATED / "history.csv", usecols=["created_at", "final_category", "channel",
+                                                                     "handled_min", "reopens", "resolution_min"])
+            handle = expected_handle_minutes(history, load_config("calendar")["start_date"], last_day=35)
         policy = OpsLensPolicy(world, dict(zip(preds.ticket_id, preds.pred_final)), risk.load(GENERATED / "models"),
-                               weights, OpsLensSettings(**job.get("settings", {})), log_window=log_window)
+                               weights, OpsLensSettings(**job.get("settings", {})), log_window=log_window,
+                               handle=handle)
     started = time.perf_counter()
     day0 = (REPLAY_DAY - 1) * MINUTES_PER_DAY
     floor_window = (day0 + REPLAY_FROM_H * 60, day0 + REPLAY_TO_H * 60) if job.get("log") else None
@@ -115,6 +121,8 @@ def run_one(job: dict) -> dict:
         ms = policy.stats.solve_ms or [0.0]
         out["solver"] = {"solves": policy.stats.solves, "fallbacks": policy.stats.fallbacks,
                          "median_ms": float(np.median(ms)), "max_ms": float(np.max(ms))}
+    if getattr(policy, "handle", None):
+        out["overload_minutes"] = policy.overload_minutes
     return out
 
 
