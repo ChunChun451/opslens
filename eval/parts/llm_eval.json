@@ -1,0 +1,1644 @@
+{
+ "routing": {
+  "questions": 60,
+  "all": {
+   "rules_tool": {
+    "n": 60,
+    "correct": 39,
+    "pct": 65.0,
+    "ci95": [
+     53.3,
+     76.7
+    ]
+   },
+   "rules_full": {
+    "n": 60,
+    "correct": 37,
+    "pct": 61.7,
+    "ci95": [
+     50.0,
+     73.3
+    ]
+   },
+   "llm_tool": {
+    "n": 60,
+    "correct": 56,
+    "pct": 93.3,
+    "ci95": [
+     86.7,
+     98.3
+    ]
+   },
+   "llm_full": {
+    "n": 60,
+    "correct": 56,
+    "pct": 93.3,
+    "ci95": [
+     86.7,
+     98.3
+    ]
+   },
+   "llm_minus_rules_full": {
+    "diff_pts": 31.7,
+    "ci95": [
+     18.3,
+     45.0
+    ],
+    "above_zero": true
+   }
+  },
+  "english": {
+   "rules_tool": {
+    "n": 42,
+    "correct": 31,
+    "pct": 73.8,
+    "ci95": [
+     59.5,
+     85.7
+    ]
+   },
+   "rules_full": {
+    "n": 42,
+    "correct": 30,
+    "pct": 71.4,
+    "ci95": [
+     57.1,
+     85.7
+    ]
+   },
+   "llm_tool": {
+    "n": 42,
+    "correct": 38,
+    "pct": 90.5,
+    "ci95": [
+     81.0,
+     97.6
+    ]
+   },
+   "llm_full": {
+    "n": 42,
+    "correct": 38,
+    "pct": 90.5,
+    "ci95": [
+     81.0,
+     97.6
+    ]
+   },
+   "llm_minus_rules_full": {
+    "diff_pts": 19.0,
+    "ci95": [
+     2.4,
+     35.7
+    ],
+    "above_zero": true
+   }
+  },
+  "hinglish": {
+   "rules_tool": {
+    "n": 18,
+    "correct": 8,
+    "pct": 44.4,
+    "ci95": [
+     22.2,
+     66.7
+    ]
+   },
+   "rules_full": {
+    "n": 18,
+    "correct": 7,
+    "pct": 38.9,
+    "ci95": [
+     16.7,
+     61.1
+    ]
+   },
+   "llm_tool": {
+    "n": 18,
+    "correct": 18,
+    "pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ]
+   },
+   "llm_full": {
+    "n": 18,
+    "correct": 18,
+    "pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ]
+   },
+   "llm_minus_rules_full": {
+    "diff_pts": 61.1,
+    "ci95": [
+     38.9,
+     83.3
+    ],
+    "above_zero": true
+   }
+  },
+  "models": [
+   "qwen/qwen3.8-27b"
+  ],
+  "median_uncached_latency_s": 0.66,
+  "rows": [
+   {
+    "id": 1,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "agents_delta": {
+      "C": -2
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "friday",
+     "volume_change_pct": 25
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 3,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "sunday",
+     "agents_delta": {
+      "A": 3
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 4,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "monday",
+     "volume_change_pct": -10,
+     "agents_delta": {
+      "B": -1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 5,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "thursday",
+     "volume_change_pct": 15
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": false,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 7,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "tuesday",
+     "agents_delta": {
+      "A": 2,
+      "C": 1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 8,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "volume_change_pct": 40
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 9,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "sunday",
+     "volume_change_pct": -30
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "headline",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "friday",
+     "agents_delta": {
+      "C": 1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 11,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "thursday",
+     "agents_delta": {
+      "B": -3
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 12,
+    "lang": "en",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "monday"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 13,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "agents_delta": {
+      "C": -2
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 14,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "whatif",
+    "rules_full": true,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "friday",
+     "volume_change_pct": 20
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 15,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "sunday",
+     "agents_delta": {
+      "A": 2
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 16,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "monday",
+     "volume_change_pct": -10
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 17,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "wednesday",
+     "volume_change_pct": 50
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 18,
+    "lang": "hi",
+    "want": "whatif",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "whatif",
+    "llm_full": true,
+    "llm_args": {
+     "weekday": "saturday",
+     "agents_delta": {
+      "B": -1
+     }
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 19,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "refund",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 20,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "missing_item",
+     "effect": "wait",
+     "language": "hi"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "app_bug",
+     "effect": "transfers"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 22,
+    "lang": "en",
+    "want": "plant",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "late_delivery",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "payment_failure",
+     "effect": "wait",
+     "language": "hi"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 24,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "wrong_item",
+     "effect": "transfers"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 25,
+    "lang": "hi",
+    "want": "plant",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "account",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 26,
+    "lang": "hi",
+    "want": "plant",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "restaurant_partner",
+     "effect": "volume"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 27,
+    "lang": "hi",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": false,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "refund",
+     "effect": "transfers"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 28,
+    "lang": "en",
+    "want": "plant",
+    "rules": "plant",
+    "rules_full": true,
+    "llm": "plant",
+    "llm_full": true,
+    "llm_args": {
+     "category": "late_delivery",
+     "effect": "wait",
+     "language": "hi"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T060582"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 30,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T061200"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 31,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T058870"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 32,
+    "lang": "hi",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T062014"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 33,
+    "lang": "hi",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T059931"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "want": "explain_ticket",
+    "rules": "explain_ticket",
+    "rules_full": true,
+    "llm": "explain_ticket",
+    "llm_full": true,
+    "llm_args": {
+     "ticket_id": "T063450"
+    },
+    "llm_answered": true
+   },
+   {
+    "id": 35,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 37,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 38,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 39,
+    "lang": "hi",
+    "want": "fix_first",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 40,
+    "lang": "hi",
+    "want": "fix_first",
+    "rules": "fix_first",
+    "rules_full": true,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "want": "fix_first",
+    "rules": "whatif",
+    "rules_full": false,
+    "llm": "fix_first",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 42,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 43,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 44,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 45,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": false,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 46,
+    "lang": "hi",
+    "want": "top_problems",
+    "rules": "top_problems",
+    "rules_full": true,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 47,
+    "lang": "hi",
+    "want": "top_problems",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 48,
+    "lang": "en",
+    "want": "top_problems",
+    "rules": "fix_first",
+    "rules_full": false,
+    "llm": "top_problems",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 49,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 50,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 51,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 52,
+    "lang": "en",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 53,
+    "lang": "hi",
+    "want": "headline",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 54,
+    "lang": "hi",
+    "want": "headline",
+    "rules": "headline",
+    "rules_full": true,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 55,
+    "lang": "en",
+    "want": "headline",
+    "rules": "none",
+    "rules_full": false,
+    "llm": "headline",
+    "llm_full": true,
+    "llm_args": {},
+    "llm_answered": true
+   },
+   {
+    "id": 56,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 57,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 58,
+    "lang": "hi",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 59,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   },
+   {
+    "id": 60,
+    "lang": "en",
+    "want": "none",
+    "rules": "none",
+    "rules_full": true,
+    "llm": "none",
+    "llm_full": true,
+    "llm_args": null,
+    "llm_answered": true
+   }
+  ],
+  "rule_llm_beats_rules": true
+ },
+ "attribution": {
+  "cards": 62,
+  "rules": {
+   "n": 62,
+   "correct": 62,
+   "pct": 100.0,
+   "ci95": [
+    100.0,
+    100.0
+   ]
+  },
+  "llm": {
+   "n": 62,
+   "correct": 61,
+   "pct": 98.4,
+   "ci95": [
+    95.2,
+    100.0
+   ]
+  },
+  "llm_minus_rules": {
+   "diff_pts": -1.6,
+   "ci95": [
+    -4.8,
+    0.0
+   ],
+   "above_zero": false
+  },
+  "rule_llm_beats_rules": false,
+  "replies_with_digits": 0,
+  "unanswered": 0,
+  "models": [
+   "gemini-3.1-flash-lite"
+  ],
+  "rows": [
+   {
+    "world": "main",
+    "plant": "Hindi payments and refunds wait long",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle payment and refund related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "Team C overloaded at weekend dinner",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of order accuracy tickets.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "Payment-failure spike (bad app release)",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in payment failure reports occurred during evening hours without a clear external event trigger.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "Wrong items from one restaurant cluster",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to pack orders correctly leading to increased customer complaints",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "main",
+    "plant": "IVR menu mislabels call tickets",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is failing to route customer calls to the correct support queues efficiently",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind1",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and extended customer wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind1",
+    "plant": "missing_item spike day 13",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in missing item reports occurred during peak lunch hours on a Saturday",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind1",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle order accuracy tickets causes significant queue delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind2",
+    "plant": "Team C weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of order accuracy tickets.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind2",
+    "plant": "cluster 17 restaurant_partner",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is generating a disproportionately high volume of partner related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind2",
+    "plant": "hi x Team A skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle late delivery tickets causes significant queue delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind3",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind3",
+    "plant": "cluster 11 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to include items in orders leading to higher ticket volumes",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind4",
+    "plant": "other x Team A skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in the regional language to handle the volume of late delivery tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind4",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Incorrect initial routing of email tickets necessitates frequent manual transfers between support teams",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind4",
+    "plant": "cluster 13 restaurant_partner",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is generating a disproportionately high volume of partner related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind5",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind5",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to teams that lack the authority to resolve them.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind5",
+    "plant": "cluster 9 restaurant_partner",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurant partners is generating a disproportionately high volume of support tickets.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind6",
+    "plant": "app_bug spike day 20",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unusual surge in application bug reports occurred during the morning hours on a Saturday",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind6",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind6",
+    "plant": "cluster 6 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind7",
+    "plant": "cluster 16 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind7",
+    "plant": "hi x Team D skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle account and restaurant partner support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind7",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind8",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind8",
+    "plant": "cluster 12 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind8",
+    "plant": "Team A weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind9",
+    "plant": "Team A weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind9",
+    "plant": "payment_failure spike day 29",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in payment failure reports occurred during the evening peak hours without a clear external trigger",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind9",
+    "plant": "cluster 15 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "Specific restaurant cluster is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind10",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog of unresolved support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind10",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle order accuracy issues causes significant queue delays",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind10",
+    "plant": "late_delivery spike day 13",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing during peak weekend hours led to significant delays in processing live order tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind11",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams before reaching the correct resolution queue.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind11",
+    "plant": "wrong_item spike day 13",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in order accuracy complaints occurred during peak lunch hours on a Saturday",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind12",
+    "plant": "restaurant_partner spike day 19",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in restaurant partner inquiries occurred during peak evening hours on Friday.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind12",
+    "plant": "cluster 4 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "Specific restaurant cluster consistently fails to provide accurate orders leading to higher ticket volumes",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind13",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Incorrect initial routing of email tickets necessitates frequent manual transfers between support teams",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind13",
+    "plant": "cluster 12 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind13",
+    "plant": "other x Team A skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in the regional language to handle the volume of late delivery tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind14",
+    "plant": "app_bug spike day 40",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in application bug reports occurred during peak evening hours without a clear external trigger.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind14",
+    "plant": "cluster 16 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific restaurant cluster is consistently failing to include all items in customer orders",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind14",
+    "plant": "Team A weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind15",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to teams that lack the authority to resolve them",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind15",
+    "plant": "cluster 9 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to provide accurate orders to customers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind15",
+    "plant": "account spike day 18",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in account related inquiries occurred during the evening peak hours",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind16",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog and extended wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind16",
+    "plant": "cluster 20 missing_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind16",
+    "plant": "hi x Team D skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle technical and partner related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind17",
+    "plant": "Team D weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog and extended wait times",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind17",
+    "plant": "cluster 20 wrong_item",
+    "truth": "partner_issue",
+    "rules": "partner_issue",
+    "llm": "partner_issue",
+    "root_cause": "A specific cluster of restaurants is consistently failing to pack orders correctly leading to increased customer complaints",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind17",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to the wrong support queues requiring frequent agent transfers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind18",
+    "plant": "payment_failure spike day 10",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in payment failure tickets occurred during the afternoon hours without a clear external event trigger",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind18",
+    "plant": "hi x Team B skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle payment and refund related support tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind18",
+    "plant": "Team B weekend dinner overload",
+    "truth": "capacity",
+    "rules": "capacity",
+    "llm": "capacity",
+    "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of payment tickets",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind19",
+    "plant": "call menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "The interactive voice response system is incorrectly routing calls to the wrong departments requiring frequent agent transfers",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind19",
+    "plant": "app_bug spike day 26",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexpected surge in application bug reports occurred during midday hours without a clear external event trigger.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind19",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind20",
+    "plant": "restaurant_partner spike day 29",
+    "truth": "volume_spike",
+    "rules": "volume_spike",
+    "llm": "volume_spike",
+    "root_cause": "An unexplained surge in restaurant partner inquiries occurred during the midday hours on a specific day",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind20",
+    "plant": "email menu mislabels",
+    "truth": "process",
+    "rules": "process",
+    "llm": "process",
+    "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   },
+   {
+    "world": "blind20",
+    "plant": "hi x Team C skill gap",
+    "truth": "skill_gap",
+    "rules": "skill_gap",
+    "llm": "skill_gap",
+    "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays.",
+    "had_digits": false,
+    "answered": true,
+    "model": "gemini-3.1-flash-lite"
+   }
+  ]
+ }
+}

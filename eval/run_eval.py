@@ -40,7 +40,9 @@ STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/ru
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
          ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
          ("realdesk", "eval/run_realdesk.py"),
-         ("plan_items", "eval/run_plan_items.py")]  # needs forecast + playbooks (added 19 Oct)
+         ("plan_items", "eval/run_plan_items.py"),  # needs forecast + playbooks (added 19 Oct)
+         ("w7", "eval/run_w7.py"),  # Plan v4: W7 risk model vs LR vs time-left rule (offline + in dispatch), bottleneck alerts scored (eval/run_w7.py)
+         ("w8", "eval/run_w8.py")]  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -225,6 +227,15 @@ def assemble(timings: dict[str, float]) -> dict:
         results["plan"] = part("plan_items")
     if (PARTS / "concurrency.json").exists():  # Plan v4 W2: agents with 2-3 chats at once
         results["concurrency"] = part("concurrency")
+    if (PARTS / "w7.json").exists():  # Plan v4: W7 risk model vs LR vs time-left rule (offline + in dispatch), bottleneck alerts scored (eval/run_w7.py)
+        results["prediction_baselines"] = part("w7")
+    if (PARTS / "w8.json").exists():  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
+        results["faithfulness"] = part("w8")
+    if (PARTS / "roster_opt.json").exists():  # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
+        results["staffing_opt"] = part("roster_opt")
+    if (PARTS / "llm_eval.json").exists():  # Plan v4 W6: NLP/LLM benchmark; not a STEP (LLM quota), run once
+        results["nlp_bench"] = {"banking77": part("nlp_bench") if (PARTS / "nlp_bench.json").exists() else None,
+                                **part("llm_eval")}  # + routing (c), attribution (b)
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)

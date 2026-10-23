@@ -472,3 +472,15 @@ Bugs found and fixed before counting: world volume ignored team size / handle ti
 world 7000); partner cluster 40 out of range (world 7005 crashed; same draws, finished worlds unchanged).
 **Open:** why least slack wins the count under sustained overload (diagnosis), and whether an overload
 mode is worth a v6 (would need design on these 30 + confirmation on fresh worlds, run once).
+
+---
+
+## W5–W8 — Claude 2's Plan v4 items, merged 23 Oct (PR #15, stacked on #9–#14)
+
+Reviewed by Claude 1: every rule committed before its run, 0 of 25,860 existing values moved, 198 tests pass,
+the runner-up reason text changes no decision (regression test). Also #12 (Ask OpsLens number words) and the
+UI for Plan v4 ('Rules we wrote first' ledger, review fixes from issue #13).
+- W7 (Claude 2, 22 Oct): LightGBM vs logistic regression vs time-left rule on the same test snapshots (AUC 0.977 / 0.957 / 0.884; Brier 0.055 / 0.080 / 0.131) and inside the dispatcher (2.05% / 3.87% / 4.19% no model). Bottleneck alerts scored vs naive (ρ 0.85: P 0.58 R 0.98 vs 0.56 / 0.91). `eval/run_w7.py`, `results.prediction_baselines`.
+- W8 (Claude 2, 22 Oct): deletion test passed (top reason beats a random feature in 98.9% of shown tickets); planted Hindi segment names language/skill in 98.6% (control 63%); runner-up agent in every assignment reason, regression-tested. `eval/run_w8.py`, `results.faithfulness`.
+- W5 (Claude 2, 22 Oct): CP-SAT weekly roster built and tested with the v5 discipline. Not adopted: design −0.016 [−0.131, +0.099], confirm −0.034 [−0.071, +0.002], test +0.21 [+0.05, +0.37]. Wins on its own objective; the Erlang-C objective, not the search, limits staffing gains. `opslens/roster_opt.py`, `results.staffing_opt`.
+- W6 (Claude 2, 22 Oct): BANKING77 cascade beats local (+0.71 full, +10.1 10-shot; rule passed); LLM-only 79.0%; attribution ties rules (61/62 vs 62/62); routing LLM 93.3% vs rules 61.7%. `results.nlp_bench`.

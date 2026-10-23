@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-19T21:00:50",
-  "git_commit": "a38d52b",
+  "generated_at": "2026-10-22T23:45:25",
+  "git_commit": "9f29bfe",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -11610,7 +11610,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.047
+   "seconds": 0.037
   }
  },
  "details": {
@@ -31950,6 +31950,3303 @@
     "ci_high": 0.06781435935047854,
     "n": 5
    }
+  }
+ },
+ "prediction_baselines": {
+  "risk_offline": {
+   "rows": 26811,
+   "tickets": 8982,
+   "models": {
+    "lightgbm": {
+     "all_rows": {
+      "auc": 0.9768186973599103,
+      "pr_auc": 0.9600709739805573,
+      "top10_precision": 0.9973890339425587,
+      "brier": 0.05543983349601183,
+      "base_rate": 0.3340792958114207,
+      "n": 26811,
+      "calibration": [
+       {
+        "predicted": 0.00021099655573736712,
+        "observed": 0.0011429659967615963,
+        "n": 10499
+       },
+       {
+        "predicted": 0.02136939330310272,
+        "observed": 0.03978779840848806,
+        "n": 2262
+       },
+       {
+        "predicted": 0.0845162659150613,
+        "observed": 0.12010705921712947,
+        "n": 2989
+       },
+       {
+        "predicted": 0.28608975008439436,
+        "observed": 0.3187991422444603,
+        "n": 2798
+       },
+       {
+        "predicted": 0.7370339340128426,
+        "observed": 0.7785429503443276,
+        "n": 2759
+       },
+       {
+        "predicted": 0.9850870808637262,
+        "observed": 0.9838872104733132,
+        "n": 1986
+       },
+       {
+        "predicted": 0.9984494406731457,
+        "observed": 0.9954519613416714,
+        "n": 3518
+       }
+      ]
+     },
+     "at_arrival": {
+      "auc": 0.9662538602414494,
+      "pr_auc": 0.9304887602337188,
+      "top10_precision": 0.9922048997772829,
+      "brier": 0.0605731647287392,
+      "base_rate": 0.27466043197506124,
+      "n": 8982,
+      "calibration": [
+       {
+        "predicted": 0.00033619051453421324,
+        "observed": 0.0014858841010401188,
+        "n": 3365
+       },
+       {
+        "predicted": 0.021501717599797306,
+        "observed": 0.04055299539170507,
+        "n": 1085
+       },
+       {
+        "predicted": 0.051075078604913074,
+        "observed": 0.08801020408163265,
+        "n": 784
+       },
+       {
+        "predicted": 0.14067284104462485,
+        "observed": 0.17917917917917917,
+        "n": 999
+       },
+       {
+        "predicted": 0.374801261285937,
+        "observed": 0.4358353510895884,
+        "n": 826
+       },
+       {
+        "predicted": 0.8294584819097808,
+        "observed": 0.8776722090261283,
+        "n": 842
+       },
+       {
+        "predicted": 0.9971669401039421,
+        "observed": 0.9907493061979649,
+        "n": 1081
+       }
+      ]
+     },
+     "bootstrap": {
+      "auc_ci95": [
+       0.9738,
+       0.9794
+      ],
+      "brier_ci95": [
+       0.0518,
+       0.0596
+      ]
+     }
+    },
+    "logistic_regression": {
+     "all_rows": {
+      "auc": 0.9570450602275744,
+      "pr_auc": 0.9180119428720027,
+      "top10_precision": 0.9847071988064156,
+      "brier": 0.07985767751538465,
+      "base_rate": 0.3340792958114207,
+      "n": 26811,
+      "calibration": [
+       {
+        "predicted": 0.0008002495192975245,
+        "observed": 0.0020764511562057575,
+        "n": 10595
+       },
+       {
+        "predicted": 0.03540098436135425,
+        "observed": 0.05042918454935622,
+        "n": 1864
+       },
+       {
+        "predicted": 0.13423184130736762,
+        "observed": 0.18937784522003034,
+        "n": 3295
+       },
+       {
+        "predicted": 0.41007117418018174,
+        "observed": 0.40721102863202546,
+        "n": 2829
+       },
+       {
+        "predicted": 0.6590803754241455,
+        "observed": 0.6737006643220008,
+        "n": 2559
+       },
+       {
+        "predicted": 0.8463773321367735,
+        "observed": 0.8980044345898004,
+        "n": 2706
+       },
+       {
+        "predicted": 0.9924018000029259,
+        "observed": 0.9824502193722578,
+        "n": 2963
+       }
+      ]
+     },
+     "at_arrival": {
+      "auc": 0.9404794087791543,
+      "pr_auc": 0.8651296744634178,
+      "top10_precision": 0.9599109131403119,
+      "brier": 0.08731030260409742,
+      "base_rate": 0.27466043197506124,
+      "n": 8982,
+      "calibration": [
+       {
+        "predicted": 0.0021817329012549192,
+        "observed": 0.003639417693169093,
+        "n": 3572
+       },
+       {
+        "predicted": 0.04044735052420981,
+        "observed": 0.0535966149506347,
+        "n": 709
+       },
+       {
+        "predicted": 0.08949947757458751,
+        "observed": 0.14357429718875503,
+        "n": 996
+       },
+       {
+        "predicted": 0.2809718130633657,
+        "observed": 0.2654774396642183,
+        "n": 953
+       },
+       {
+        "predicted": 0.5299948652920043,
+        "observed": 0.48134328358208955,
+        "n": 804
+       },
+       {
+        "predicted": 0.7381968222071384,
+        "observed": 0.7106382978723405,
+        "n": 940
+       },
+       {
+        "predicted": 0.9719829138670791,
+        "observed": 0.9573412698412699,
+        "n": 1008
+       }
+      ]
+     },
+     "bootstrap": {
+      "auc_ci95": [
+       0.9528,
+       0.961
+      ],
+      "brier_ci95": [
+       0.0757,
+       0.0843
+      ],
+      "lightgbm_minus_this_auc_ci95": [
+       0.0171,
+       0.0224
+      ],
+      "lightgbm_minus_this_brier_ci95": [
+       -0.0271,
+       -0.0218
+      ]
+     }
+    },
+    "time_left_rule": {
+     "all_rows": {
+      "auc": 0.883754494905204,
+      "pr_auc": 0.7847154963312815,
+      "top10_precision": 0.9063782170831779,
+      "brier": 0.1307819270692449,
+      "base_rate": 0.3340792958114207,
+      "n": 26811,
+      "calibration": [
+       {
+        "predicted": 0.01635702829424533,
+        "observed": 0.025060386473429952,
+        "n": 9936
+       },
+       {
+        "predicted": 0.1859832275253787,
+        "observed": 0.21465968586387435,
+        "n": 3438
+       },
+       {
+        "predicted": 0.2810419364464357,
+        "observed": 0.2917558886509636,
+        "n": 1868
+       },
+       {
+        "predicted": 0.39825956060822165,
+        "observed": 0.4283349884144323,
+        "n": 3021
+       },
+       {
+        "predicted": 0.5326806956747469,
+        "observed": 0.581668625146886,
+        "n": 851
+       },
+       {
+        "predicted": 0.5725960641406342,
+        "observed": 0.6349108789182545,
+        "n": 4881
+       },
+       {
+        "predicted": 0.8815268382622033,
+        "observed": 0.9009232954545454,
+        "n": 2816
+       }
+      ]
+     },
+     "at_arrival": {
+      "auc": 0.8172953749275549,
+      "pr_auc": 0.6128662949339332,
+      "top10_precision": 0.7082405345211581,
+      "brier": 0.14890773644794325,
+      "base_rate": 0.27466043197506124,
+      "n": 8982,
+      "calibration": [
+       {
+        "predicted": 0.017679420818483737,
+        "observed": 0.034322033898305085,
+        "n": 2360
+       },
+       {
+        "predicted": 0.11428571428571431,
+        "observed": 0.15894039735099338,
+        "n": 1057
+       },
+       {
+        "predicted": 0.14537186848318573,
+        "observed": 0.17439862542955326,
+        "n": 1164
+       },
+       {
+        "predicted": 0.19882384805194372,
+        "observed": 0.22422494592645997,
+        "n": 1387
+       },
+       {
+        "predicted": 0.5329441201000833,
+        "observed": 0.44370860927152317,
+        "n": 1208
+       },
+       {
+        "predicted": 0.5806095827782188,
+        "observed": 0.5782556750298686,
+        "n": 837
+       },
+       {
+        "predicted": 0.7022066895541983,
+        "observed": 0.7058823529411765,
+        "n": 969
+       }
+      ]
+     },
+     "bootstrap": {
+      "auc_ci95": [
+       0.8773,
+       0.8895
+      ],
+      "brier_ci95": [
+       0.1264,
+       0.136
+      ],
+      "lightgbm_minus_this_auc_ci95": [
+       0.0879,
+       0.0989
+      ],
+      "lightgbm_minus_this_brier_ci95": [
+       -0.0797,
+       -0.0712
+      ]
+     }
+    }
+   }
+  },
+  "risk_in_dispatch": {
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "days": [
+    43,
+    56
+   ],
+   "variants": {
+    "lightgbm": {
+     "breach_pct": {
+      "mean": 2.0463620230700976,
+      "std": 0.3580519177793183
+     },
+     "per_seed": [
+      1.85226264418811,
+      2.129547471162378,
+      1.9687222715173025,
+      2.6120230700976044,
+      1.6692546583850931
+     ],
+     "late_minutes_per_100": 482.6766754349329,
+     "p90_resolution_min": 140.44010230746557,
+     "minus_lightgbm": {
+      "mean": 0.0,
+      "ci95": [
+       0.0,
+       0.0
+      ]
+     }
+    },
+    "logistic_regression": {
+     "breach_pct": {
+      "mean": 3.873114463176575,
+      "std": 0.3384374622104466
+     },
+     "per_seed": [
+      3.8376220053238685,
+      3.9818101153504877,
+      3.5880656610470276,
+      4.392191659272405,
+      3.5658828748890863
+     ],
+     "late_minutes_per_100": 1288.0909246632696,
+     "p90_resolution_min": 162.40100873970275,
+     "minus_lightgbm": {
+      "mean": 1.8267524401064776,
+      "ci95": [
+       1.6557655775762403,
+       1.997739302636715
+      ]
+     }
+    },
+    "no_risk_model": {
+     "breach_pct": {
+      "mean": 4.191437444543035,
+      "std": 0.5732678546976931
+     },
+     "per_seed": [
+      4.503105590062112,
+      4.320097604259095,
+      3.5658828748890863,
+      4.913487133984028,
+      3.654614019520852
+     ],
+     "late_minutes_per_100": 1450.2701823002776,
+     "p90_resolution_min": 169.75780714129215,
+     "minus_lightgbm": {
+      "mean": 2.145075421472937,
+      "ci95": [
+       1.6610449681107804,
+       2.6291058748350933
+      ]
+     }
+    }
+   }
+  },
+  "alerts": {
+   "team_hours_scored": 952,
+   "truth_outcome_hours": 136,
+   "q80_team": {
+    "opslens": 1.281,
+    "naive_last_week": 1.732
+   },
+   "rules": {
+    "erlang_gap": {
+     "truth_workload_hours": 136,
+     "predictors": {
+      "opslens": {
+       "alert_hours": 372,
+       "workload": {
+        "precision": 0.309,
+        "recall": 0.846,
+        "f1": 0.453,
+        "blocks": 93,
+        "block_precision": 0.677,
+        "median_lead_hours_of_hits": 115.0
+       },
+       "outcome": {
+        "precision": 0.183,
+        "recall": 0.5,
+        "f1": 0.268,
+        "blocks": 93,
+        "block_precision": 0.344,
+        "median_lead_hours_of_hits": 116.5
+       }
+      },
+      "naive_last_week": {
+       "alert_hours": 419,
+       "workload": {
+        "precision": 0.26,
+        "recall": 0.801,
+        "f1": 0.393,
+        "blocks": 104,
+        "block_precision": 0.577,
+        "median_lead_hours_of_hits": 115.0
+       },
+       "outcome": {
+        "precision": 0.146,
+        "recall": 0.449,
+        "f1": 0.22,
+        "blocks": 104,
+        "block_precision": 0.26,
+        "median_lead_hours_of_hits": 117.0
+       }
+      }
+     }
+    },
+    "rho_085": {
+     "truth_workload_hours": 421,
+     "predictors": {
+      "opslens": {
+       "alert_hours": 715,
+       "workload": {
+        "precision": 0.578,
+        "recall": 0.981,
+        "f1": 0.727,
+        "blocks": 109,
+        "block_precision": 0.991,
+        "median_lead_hours_of_hits": 90.0
+       },
+       "outcome": {
+        "precision": 0.155,
+        "recall": 0.816,
+        "f1": 0.261,
+        "blocks": 109,
+        "block_precision": 0.422,
+        "median_lead_hours_of_hits": 104.0
+       }
+      },
+      "naive_last_week": {
+       "alert_hours": 683,
+       "workload": {
+        "precision": 0.559,
+        "recall": 0.907,
+        "f1": 0.692,
+        "blocks": 116,
+        "block_precision": 0.948,
+        "median_lead_hours_of_hits": 92.0
+       },
+       "outcome": {
+        "precision": 0.154,
+        "recall": 0.772,
+        "f1": 0.256,
+        "blocks": 116,
+        "block_precision": 0.362,
+        "median_lead_hours_of_hits": 104.0
+       }
+      }
+     }
+    }
+   }
+  },
+  "seconds": 1159.6
+ },
+ "faithfulness": {
+  "shown_threshold": 0.5,
+  "shown_rows": 8264,
+  "deletion": {
+   "rows": 3000,
+   "tickets": 1719,
+   "background_rows": 30,
+   "top1_vs_random1": {
+    "share_top_drops_more_logodds": 0.989,
+    "share_top_drops_more_probability": 0.983,
+    "mean_drop_top_logodds": 3.1807,
+    "mean_drop_random_logodds": 0.1675,
+    "mean_drop_top_probability": 0.3737,
+    "mean_drop_random_probability": 0.0182,
+    "top_minus_random_logodds": {
+     "mean": 3.0132,
+     "ci95": [
+      2.9535,
+      3.0783
+     ]
+    },
+    "share_ci95": [
+     0.9852,
+     0.9923
+    ]
+   },
+   "top3_vs_random3": {
+    "share_top_drops_more_logodds": 1.0,
+    "share_top_drops_more_probability": 0.9987,
+    "mean_drop_top_logodds": 5.2087,
+    "mean_drop_random_logodds": 0.1171,
+    "mean_drop_top_probability": 0.5631,
+    "mean_drop_random_probability": 0.0137,
+    "top_minus_random_logodds": {
+     "mean": 5.0916,
+     "ci95": [
+      5.0098,
+      5.1709
+     ]
+    },
+    "share_ci95": [
+     1.0,
+     1.0
+    ]
+   },
+   "rule_faithful": true
+  },
+  "reasons_vs_plant": {
+   "planted_hindi_refund_payment": {
+    "rows": 1499,
+    "tickets": 296,
+    "share_skill_reason_in_top3": 0.986,
+    "ci95": [
+     0.9797,
+     0.9917
+    ]
+   },
+   "control_team_b_not_hindi": {
+    "rows": 637,
+    "tickets": 260,
+    "share_skill_reason_in_top3": 0.6295,
+    "ci95": [
+     0.5658,
+     0.6852
+    ]
+   },
+   "skill_features": [
+    "capable_on_shift",
+    "language",
+    "queue_team_language"
+   ],
+   "planted_top1_reason_counts": {
+    "capable_on_shift": 811,
+    "time_left_min": 659,
+    "queue_team_language": 15,
+    "language": 12,
+    "ahead_in_team_queue": 2
+   }
+  },
+  "runner_up": "opslens/optimize.py with_runner_up, called in policies.py; regression: tests/test_w8.py (same assignments)",
+  "seconds": 113.4
+ },
+ "staffing_opt": {
+  "design": {
+   "days": [
+    36,
+    42
+   ],
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "forecast": "fit days 8-28, stop/conformal 29-35",
+   "rosters": {
+    "published": [
+     {
+      "first_day": 36,
+      "weighted_shortage": 1366.25,
+      "changes": []
+     }
+    ],
+    "greedy": [
+     {
+      "first_day": 36,
+      "weighted_shortage": 1308.06,
+      "changes": [
+       {
+        "agent_id": "C02",
+        "team": "C",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1366.3,
+        "shortage_after": 1352.7
+       },
+       {
+        "agent_id": "B02",
+        "team": "B",
+        "change": "day off on Mon instead of Fri",
+        "shortage_before": 1352.7,
+        "shortage_after": 1341.2
+       },
+       {
+        "agent_id": "A03",
+        "team": "A",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1341.2,
+        "shortage_after": 1329.8
+       },
+       {
+        "agent_id": "C06",
+        "team": "C",
+        "change": "day off on Mon instead of Tue",
+        "shortage_before": 1329.8,
+        "shortage_after": 1321.3
+       },
+       {
+        "agent_id": "C05",
+        "team": "C",
+        "change": "day off on Fri instead of Sat",
+        "shortage_before": 1321.3,
+        "shortage_after": 1314.3
+       },
+       {
+        "agent_id": "C03",
+        "team": "C",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1314.3,
+        "shortage_after": 1308.1
+       }
+      ]
+     }
+    ],
+    "cpsat_n1": [
+     {
+      "first_day": 36,
+      "weighted_shortage": 1321.93,
+      "changes": 4,
+      "status": "OPTIMAL",
+      "objective_agent_hours": 1325.9,
+      "best_bound_agent_hours": 1325.9,
+      "wall_s": 2.34
+     }
+    ],
+    "cpsat_n2": [
+     {
+      "first_day": 36,
+      "weighted_shortage": 1298.12,
+      "changes": 8,
+      "status": "OPTIMAL",
+      "objective_agent_hours": 1306.06,
+      "best_bound_agent_hours": 1306.06,
+      "wall_s": 13.54
+     }
+    ],
+    "cpsat_n3": [
+     {
+      "first_day": 36,
+      "weighted_shortage": 1283.27,
+      "changes": 10,
+      "status": "FEASIBLE",
+      "objective_agent_hours": 1293.24,
+      "best_bound_agent_hours": 1287.01,
+      "wall_s": 30.06
+     }
+    ],
+    "cpsat_n4": [
+     {
+      "first_day": 36,
+      "weighted_shortage": 1273.46,
+      "changes": 14,
+      "status": "FEASIBLE",
+      "objective_agent_hours": 1287.39,
+      "best_bound_agent_hours": 1281.27,
+      "wall_s": 30.07
+     }
+    ]
+   },
+   "means": {
+    "published": {
+     "breach_pct": 1.9211,
+     "late_minutes_per_100": 315.8176,
+     "p90_resolution_min": 119.3595
+    },
+    "greedy": {
+     "breach_pct": 1.8228,
+     "late_minutes_per_100": 270.755,
+     "p90_resolution_min": 108.6988
+    },
+    "cpsat_n1": {
+     "breach_pct": 1.8959,
+     "late_minutes_per_100": 304.8466,
+     "p90_resolution_min": 113.2939
+    },
+    "cpsat_n2": {
+     "breach_pct": 1.8296,
+     "late_minutes_per_100": 282.3133,
+     "p90_resolution_min": 106.5507
+    },
+    "cpsat_n3": {
+     "breach_pct": 1.9142,
+     "late_minutes_per_100": 299.0979,
+     "p90_resolution_min": 107.5559
+    },
+    "cpsat_n4": {
+     "breach_pct": 1.8067,
+     "late_minutes_per_100": 267.7666,
+     "p90_resolution_min": 106.7145
+    }
+   },
+   "per_seed": {
+    "published": {
+     "breach_pct": [
+      1.921097770154374,
+      2.035448827901658,
+      2.115494568324757,
+      1.9096626643796455,
+      1.623785020011435
+     ],
+     "late_minutes_per_100": [
+      286.69034531793415,
+      440.6917009827293,
+      254.73532152258966,
+      348.4521384613076,
+      248.51845540636342
+     ],
+     "p90_resolution_min": [
+      121.21844434148967,
+      134.24928659955054,
+      117.82402644593678,
+      126.86465380125446,
+      96.64090973409476
+     ]
+    },
+    "greedy": {
+     "breach_pct": [
+      1.8410520297312751,
+      1.726700971983991,
+      2.104059462550029,
+      1.8410520297312751,
+      1.6009148084619784
+     ],
+     "late_minutes_per_100": [
+      251.1744375947357,
+      315.4148830466323,
+      264.5691767596499,
+      301.55647816926233,
+      221.06023046895342
+     ],
+     "p90_resolution_min": [
+      109.52661799843045,
+      122.63722389853213,
+      109.06357885141189,
+      110.78389666585281,
+      91.48266818344419
+     ]
+    },
+    "cpsat_n1": {
+     "breach_pct": [
+      1.87535734705546,
+      1.7495711835334475,
+      2.184105202973128,
+      1.921097770154374,
+      1.7495711835334475
+     ],
+     "late_minutes_per_100": [
+      285.7998173375927,
+      319.4856983791971,
+      285.9447709420275,
+      323.7344990202665,
+      309.2683140251202
+     ],
+     "p90_resolution_min": [
+      115.38623945891312,
+      117.25719136113476,
+      116.9111422402246,
+      117.75696362066242,
+      99.15785092887236
+     ]
+    },
+    "cpsat_n2": {
+     "breach_pct": [
+      1.8867924528301887,
+      1.6580903373356204,
+      2.115494568324757,
+      1.7724413950829045,
+      1.7152658662092626
+     ],
+     "late_minutes_per_100": [
+      316.95675441513197,
+      263.6452617978481,
+      287.42574675785465,
+      282.37078053655256,
+      261.16812224448745
+     ],
+     "p90_resolution_min": [
+      114.53958853512015,
+      104.55737120955456,
+      116.49987852130882,
+      105.28516553063383,
+      91.87166629281128
+     ]
+    },
+    "cpsat_n3": {
+     "breach_pct": [
+      1.863922241280732,
+      1.726700971983991,
+      2.355631789594054,
+      1.87535734705546,
+      1.7495711835334475
+     ],
+     "late_minutes_per_100": [
+      267.8490444253269,
+      278.9541415226435,
+      376.75670574009644,
+      297.5873421074434,
+      274.34225943882024
+     ],
+     "p90_resolution_min": [
+      110.2130719899012,
+      102.32266947473843,
+      125.33306891442784,
+      107.15268232933015,
+      92.75813057950892
+     ]
+    },
+    "cpsat_n4": {
+     "breach_pct": [
+      1.703830760434534,
+      1.7610062893081762,
+      2.206975414522584,
+      1.7724413950829045,
+      1.58947970268725
+     ],
+     "late_minutes_per_100": [
+      218.9347206628297,
+      311.3936722352546,
+      287.8142011581836,
+      294.57477379391077,
+      226.11547471044298
+     ],
+     "p90_resolution_min": [
+      97.91957771297324,
+      110.0875716761657,
+      129.4798784124578,
+      112.35864823225427,
+      83.7266427300478
+     ]
+    }
+   },
+   "chosen": "cpsat_n4",
+   "chosen_minus_greedy": {
+    "breach_pct": {
+     "mean_diff": -0.01600914808461993,
+     "ci95": [
+      -0.1307270608001583,
+      0.09870876463091846
+     ]
+    },
+    "late_minutes_per_100": {
+     "mean_diff": -2.9884726957224075,
+     "ci95": [
+      -28.015198041904334,
+      22.03825265045952
+     ]
+    },
+    "p90_resolution_min": {
+     "mean_diff": -1.984333366754535,
+     "ci95": [
+      -19.006333497191438,
+      15.037666763682369
+     ]
+    }
+   },
+   "greedy_minus_published": {
+    "breach_pct": {
+     "mean_diff": -0.09834190966266423,
+     "ci95": [
+      -0.24878232506043693,
+      0.052098505735108463
+     ]
+    },
+    "late_minutes_per_100": {
+     "mean_diff": -45.06255113033808,
+     "ci95": [
+      -106.6758539999606,
+      16.550751739284436
+     ]
+    },
+    "p90_resolution_min": {
+     "mean_diff": -10.660667064930951,
+     "ci95": [
+      -15.674146892252445,
+      -5.647187237609459
+     ]
+    }
+   }
+  },
+  "seconds": {
+   "design": 397.0,
+   "confirm": 364.6,
+   "test": 326.0
+  },
+  "confirm": {
+   "seeds": [
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45
+   ],
+   "candidate": "cpsat_n4",
+   "means": {
+    "greedy": {
+     "breach_pct": 1.8148,
+     "late_minutes_per_100": 266.8139,
+     "p90_resolution_min": 104.9086
+    },
+    "cpsat_n4": {
+     "breach_pct": 1.7804,
+     "late_minutes_per_100": 250.5938,
+     "p90_resolution_min": 97.601
+    }
+   },
+   "per_seed": {
+    "greedy": {
+     "breach_pct": [
+      1.783876500857633,
+      1.6580903373356204,
+      1.6352201257861636,
+      1.8181818181818181,
+      1.3722126929674099,
+      1.8296169239565465,
+      1.646655231560892,
+      1.8867924528301887,
+      1.8867924528301887,
+      1.7152658662092626,
+      2.035448827901658,
+      1.8296169239565465,
+      1.87535734705546,
+      1.6009148084619784,
+      1.7724413950829045,
+      2.0468839336763867,
+      1.978273299028016,
+      1.8067467124070897,
+      1.921097770154374,
+      2.1955403087478556
+     ],
+     "late_minutes_per_100": [
+      276.5358440710019,
+      204.76469096272015,
+      211.83786630422372,
+      267.6889598224111,
+      158.59135470512206,
+      298.1657916093355,
+      251.03153759165218,
+      249.16289331766617,
+      305.7977212121617,
+      201.25901719210748,
+      359.7468480468618,
+      267.120078791948,
+      217.59570473064346,
+      206.66514905932172,
+      256.09949305865223,
+      527.169155563976,
+      284.93973817662203,
+      279.0580527612221,
+      251.4329562604896,
+      261.61441821028103
+     ],
+     "p90_resolution_min": [
+      110.06716314290396,
+      97.87130392471445,
+      92.29276336114133,
+      116.97500575888265,
+      80.64534564447392,
+      97.1212983675767,
+      129.50640469372158,
+      97.2641916743335,
+      116.30601235257784,
+      104.03395648535954,
+      127.86987844694816,
+      116.15099781454337,
+      90.16303062132647,
+      99.73267093158503,
+      84.28419684198165,
+      119.83182632150425,
+      115.28331815092979,
+      106.42018929440823,
+      101.01897144730613,
+      95.33273799587624
+     ]
+    },
+    "cpsat_n4": {
+     "breach_pct": [
+      1.726700971983991,
+      1.7152658662092626,
+      1.7610062893081762,
+      1.8296169239565465,
+      1.3836477987421385,
+      1.7495711835334475,
+      1.509433962264151,
+      1.863922241280732,
+      1.8067467124070897,
+      1.783876500857633,
+      1.955403087478559,
+      1.8181818181818181,
+      1.8181818181818181,
+      1.5780445969125214,
+      1.8524871355060035,
+      1.7953116066323616,
+      1.8867924528301887,
+      1.7953116066323616,
+      1.8524871355060035,
+      2.1269296740994856
+     ],
+     "late_minutes_per_100": [
+      259.4043008597569,
+      190.82539062247787,
+      239.70136303470105,
+      262.97677650050605,
+      162.69922619850053,
+      261.70459512837914,
+      194.73188778073333,
+      238.19089285902174,
+      283.5505926102091,
+      180.45555117115802,
+      363.8873204116811,
+      288.54888118483177,
+      179.81861756463087,
+      219.89225534044002,
+      300.4300520483722,
+      298.13380661970257,
+      315.8651270602214,
+      254.5347231980154,
+      239.66069664504522,
+      276.86348970708184
+     ],
+     "p90_resolution_min": [
+      110.23332865410634,
+      93.01879214139048,
+      101.00128009254992,
+      103.03345070683868,
+      72.16056166724884,
+      88.91446337116506,
+      111.90664932455856,
+      83.70599915508792,
+      109.67654821601914,
+      100.64464712240738,
+      108.83974939415057,
+      115.90415283835466,
+      87.21450216723174,
+      92.24089423953706,
+      76.6873714137968,
+      104.42525027512752,
+      108.28461294079317,
+      101.44710162692064,
+      95.03352953000578,
+      87.64745509608187
+     ]
+    }
+   },
+   "candidate_minus_greedy": {
+    "breach_pct": {
+     "mean_diff": -0.0343053173241852,
+     "ci95": [
+      -0.07109740551331091,
+      0.0024867708649405074
+     ]
+    },
+    "late_minutes_per_100": {
+     "mean_diff": -16.22008624514769,
+     "ci95": [
+      -40.85244787312851,
+      8.412275382833126
+     ]
+    },
+    "p90_resolution_min": {
+     "mean_diff": -7.307546164936134,
+     "ci95": [
+      -10.159995981166283,
+      -4.455096348705985
+     ]
+    }
+   },
+   "adopted": false
+  },
+  "test": {
+   "days": [
+    43,
+    56
+   ],
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "greedy_equals_product_plan": true,
+   "rosters": {
+    "published": [
+     {
+      "first_day": 43,
+      "weighted_shortage": 1394.03,
+      "changes": []
+     },
+     {
+      "first_day": 50,
+      "weighted_shortage": 1477.29,
+      "changes": []
+     }
+    ],
+    "greedy": [
+     {
+      "first_day": 43,
+      "weighted_shortage": 1339.62,
+      "changes": [
+       {
+        "agent_id": "C02",
+        "team": "C",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1394.0,
+        "shortage_after": 1381.1
+       },
+       {
+        "agent_id": "A03",
+        "team": "A",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1381.1,
+        "shortage_after": 1369.3
+       },
+       {
+        "agent_id": "B02",
+        "team": "B",
+        "change": "day off on Mon instead of Fri",
+        "shortage_before": 1369.3,
+        "shortage_after": 1358.7
+       },
+       {
+        "agent_id": "C05",
+        "team": "C",
+        "change": "day off on Mon instead of Sat",
+        "shortage_before": 1358.7,
+        "shortage_after": 1351.5
+       },
+       {
+        "agent_id": "C06",
+        "team": "C",
+        "change": "day off on Fri instead of Tue",
+        "shortage_before": 1351.5,
+        "shortage_after": 1345.3
+       },
+       {
+        "agent_id": "A02",
+        "team": "A",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1345.3,
+        "shortage_after": 1339.6
+       }
+      ]
+     },
+     {
+      "first_day": 50,
+      "weighted_shortage": 1426.27,
+      "changes": [
+       {
+        "agent_id": "C02",
+        "team": "C",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1477.3,
+        "shortage_after": 1464.1
+       },
+       {
+        "agent_id": "A02",
+        "team": "A",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1464.1,
+        "shortage_after": 1452.9
+       },
+       {
+        "agent_id": "B02",
+        "team": "B",
+        "change": "day off on Thu instead of Fri",
+        "shortage_before": 1452.9,
+        "shortage_after": 1444.0
+       },
+       {
+        "agent_id": "C05",
+        "team": "C",
+        "change": "day off on Fri instead of Sat",
+        "shortage_before": 1444.0,
+        "shortage_after": 1437.0
+       },
+       {
+        "agent_id": "C03",
+        "team": "C",
+        "change": "start 07:00 instead of 08:00",
+        "shortage_before": 1437.0,
+        "shortage_after": 1431.5
+       },
+       {
+        "agent_id": "B01",
+        "team": "B",
+        "change": "start 08:00 instead of 10:00",
+        "shortage_before": 1431.5,
+        "shortage_after": 1426.3
+       }
+      ]
+     }
+    ],
+    "cpsat_n4": [
+     {
+      "first_day": 43,
+      "weighted_shortage": 1307.91,
+      "changes": 11,
+      "status": "FEASIBLE",
+      "objective_agent_hours": 1319.18,
+      "best_bound_agent_hours": 1312.06,
+      "wall_s": 30.06
+     },
+     {
+      "first_day": 50,
+      "weighted_shortage": 1388.7,
+      "changes": 12,
+      "status": "FEASIBLE",
+      "objective_agent_hours": 1400.79,
+      "best_bound_agent_hours": 1396.62,
+      "wall_s": 30.06
+     }
+    ]
+   },
+   "means": {
+    "published": {
+     "breach_pct": 2.1063,
+     "late_minutes_per_100": 518.5478,
+     "p90_resolution_min": 151.2945
+    },
+    "greedy": {
+     "breach_pct": 2.0464,
+     "late_minutes_per_100": 482.6767,
+     "p90_resolution_min": 140.4401
+    },
+    "cpsat_n4": {
+     "breach_pct": 2.2549,
+     "late_minutes_per_100": 517.93,
+     "p90_resolution_min": 149.5889
+    }
+   },
+   "per_seed": {
+    "published": {
+     "breach_pct": [
+      1.9687222715173025,
+      2.146184560780834,
+      1.9409937888198756,
+      2.6785714285714284,
+      1.7968056787932567
+     ],
+     "late_minutes_per_100": [
+      403.9772524364076,
+      503.2057113858305,
+      325.34284963392577,
+      1027.3250590950088,
+      332.88813918431737
+     ],
+     "p90_resolution_min": [
+      169.8021576947343,
+      138.43898862680138,
+      127.37908527392428,
+      201.3287751372787,
+      119.52344428755895
+     ]
+    },
+    "greedy": {
+     "breach_pct": [
+      1.85226264418811,
+      2.129547471162378,
+      1.9687222715173025,
+      2.6120230700976044,
+      1.6692546583850931
+     ],
+     "late_minutes_per_100": [
+      377.35294920426685,
+      467.78293626565505,
+      315.312060075291,
+      994.5101678592715,
+      258.42526377018027
+     ],
+     "p90_resolution_min": [
+      156.15069154058727,
+      129.07541295232366,
+      119.59395627599295,
+      185.80457904286303,
+      111.57587172556086
+     ]
+    },
+    "cpsat_n4": {
+     "breach_pct": [
+      2.0463620230700976,
+      2.54547471162378,
+      2.0297249334516416,
+      2.7728482697426795,
+      1.8799911268855367
+     ],
+     "late_minutes_per_100": [
+      475.03844426355306,
+      607.3184108879549,
+      354.8380798399487,
+      818.3993301119999,
+      334.0556912774742
+     ],
+     "p90_resolution_min": [
+      157.08406999709692,
+      141.26863932529884,
+      138.85900660045954,
+      186.66156070970607,
+      124.07125604283792
+     ]
+    }
+   },
+   "candidate_minus_greedy": {
+    "breach_pct": {
+     "mean_diff": 0.20851818988464946,
+     "ci95": [
+      0.047525997783379764,
+      0.3695103819859191
+     ]
+    },
+    "late_minutes_per_100": {
+     "mean_diff": 35.25331584125321,
+     "ci95": [
+      -118.1767820215244,
+      188.68341370403084
+     ]
+    },
+    "p90_resolution_min": {
+     "mean_diff": 9.148804227614301,
+     "ci95": [
+      -0.8419823932639616,
+      19.139590848492563
+     ]
+    }
+   },
+   "greedy_minus_published": {
+    "breach_pct": {
+     "mean_diff": -0.059893522626441834,
+     "ci95": [
+      -0.14170380831745327,
+      0.021916763064569605
+     ]
+    },
+    "late_minutes_per_100": {
+     "mean_diff": -35.87112691216506,
+     "ci95": [
+      -65.32873453338871,
+      -6.413519290941416
+     ]
+    },
+    "p90_resolution_min": {
+     "mean_diff": -10.854387896593966,
+     "ci95": [
+      -15.231463097081866,
+      -6.4773126961060665
+     ]
+    }
+   },
+   "candidate_minus_published": {
+    "breach_pct": {
+     "mean_diff": 0.1486246672582076,
+     "ci95": [
+      -0.025507392129393736,
+      0.32275672664580896
+     ]
+    },
+    "late_minutes_per_100": {
+     "mean_diff": -0.6178110709118527,
+     "ci95": [
+      -153.18234984145855,
+      151.94672769963486
+     ]
+    },
+    "p90_resolution_min": {
+     "mean_diff": -1.7055836689796648,
+     "ci95": [
+      -15.898655212979005,
+      12.487487875019674
+     ]
+    }
+   }
+  }
+ },
+ "nlp_bench": {
+  "banking77": {
+   "dataset": {
+    "name": "BANKING77",
+    "licence": "CC BY 4.0",
+    "train": 10003,
+    "test": 3080,
+    "intents": 77,
+    "source": "github.com/PolyAI-LDN/task-specific-datasets"
+   },
+   "settings": {
+    "full": {
+     "learn_queries": 10003,
+     "validation_queries": 1998,
+     "test_queries": 3080,
+     "local": {
+      "pct": 90.32,
+      "ci95": [
+       89.29,
+       91.33
+      ],
+      "ms_per_query": 0.328
+     },
+     "threshold_table": [
+      {
+       "threshold": 0.3,
+       "escalated_pct": 1.6016,
+       "accuracy": 0.8979
+      },
+      {
+       "threshold": 0.4,
+       "escalated_pct": 5.6557,
+       "accuracy": 0.9079
+      },
+      {
+       "threshold": 0.5,
+       "escalated_pct": 14.3143,
+       "accuracy": 0.9039
+      },
+      {
+       "threshold": 0.6,
+       "escalated_pct": 24.2242,
+       "accuracy": 0.8934
+      },
+      {
+       "threshold": 0.7,
+       "escalated_pct": 35.9359,
+       "accuracy": 0.8934
+      },
+      {
+       "threshold": 0.8,
+       "escalated_pct": 50.6507,
+       "accuracy": 0.8934
+      },
+      {
+       "threshold": 0.9,
+       "escalated_pct": 68.969,
+       "accuracy": 0.8934
+      }
+     ],
+     "threshold": 0.4,
+     "escalated_pct": 5.58,
+     "llm_answered_pct": 5.58,
+     "cascade": {
+      "pct": 91.04,
+      "ci95": [
+       90.1,
+       92.01
+      ]
+     },
+     "cascade_minus_local": {
+      "diff_pts": 0.71,
+      "ci95": [
+       0.16,
+       1.27
+      ],
+      "excludes_zero": true
+     },
+     "on_escalated": {
+      "n": 172,
+      "local_pct": 45.35,
+      "cascade_pct": 58.14
+     },
+     "rule_llm_adds_value": true
+    },
+    "10-shot": {
+     "learn_queries": 770,
+     "validation_queries": 385,
+     "test_queries": 3080,
+     "local": {
+      "pct": 68.54,
+      "ci95": [
+       66.95,
+       70.16
+      ],
+      "ms_per_query": 0.308
+     },
+     "threshold_table": [
+      {
+       "threshold": 0.3,
+       "escalated_pct": 11.4286,
+       "accuracy": 0.6987
+      },
+      {
+       "threshold": 0.4,
+       "escalated_pct": 29.8701,
+       "accuracy": 0.7403
+      },
+      {
+       "threshold": 0.5,
+       "escalated_pct": 48.5714,
+       "accuracy": 0.7403
+      },
+      {
+       "threshold": 0.6,
+       "escalated_pct": 64.4156,
+       "accuracy": 0.7403
+      },
+      {
+       "threshold": 0.7,
+       "escalated_pct": 76.3636,
+       "accuracy": 0.7403
+      },
+      {
+       "threshold": 0.8,
+       "escalated_pct": 85.974,
+       "accuracy": 0.7403
+      },
+      {
+       "threshold": 0.9,
+       "escalated_pct": 96.1039,
+       "accuracy": 0.7403
+      }
+     ],
+     "threshold": 0.4,
+     "escalated_pct": 25.36,
+     "llm_answered_pct": 25.23,
+     "cascade": {
+      "pct": 78.67,
+      "ci95": [
+       77.24,
+       80.1
+      ]
+     },
+     "cascade_minus_local": {
+      "diff_pts": 10.13,
+      "ci95": [
+       8.93,
+       11.4
+      ],
+      "excludes_zero": true
+     },
+     "on_escalated": {
+      "n": 781,
+      "local_pct": 36.24,
+      "cascade_pct": 76.18
+     },
+     "rule_llm_adds_value": true
+    }
+   },
+   "llm_only": {
+    "sample": 500,
+    "answered": 493,
+    "pct": 79.0,
+    "ci95": [
+     75.4,
+     82.8
+    ],
+    "note": "zero-shot: intent names only, no training examples; unanswered counts as wrong"
+   },
+   "llm": {
+    "provider": "gemini",
+    "models": [
+     "gemini-3.1-flash-lite"
+    ],
+    "requests": 94,
+    "failed_batches": 0,
+    "test_queries_escalated": 953,
+    "est_input_tokens_per_request": 858,
+    "est_output_tokens_per_request": 279,
+    "median_uncached_s_per_batch": 9.68,
+    "price": {
+     "usd_per_m_input": 0.25,
+     "usd_per_m_output": 1.5,
+     "source": "ai.google.dev/gemini-api/docs/pricing, Gemini 3.1 Flash-Lite Standard, read 22 Oct 2026; we run on the free tier"
+    },
+    "cost": {
+     "full": {
+      "llm_requests_per_m_tickets": 2232,
+      "est_tokens_per_m_tickets": 2537469,
+      "usd_per_m_tickets_paid_tier": 1.41
+     },
+     "10-shot": {
+      "llm_requests_per_m_tickets": 10144,
+      "est_tokens_per_m_tickets": 11532298,
+      "usd_per_m_tickets_paid_tier": 6.42
+     }
+    }
+   },
+   "published": {
+    "source": "Casanueva et al. (2020), Efficient Intent Detection with Dual Sentence Encoders, Table 3",
+    "full": {
+     "BERT-fixed": 87.19,
+     "BERT-tuned": 93.66,
+     "USE": 92.81,
+     "ConveRT": 93.01,
+     "USE+ConveRT": 93.36
+    },
+    "10-shot": {
+     "BERT-fixed": 67.55,
+     "BERT-tuned": 83.42,
+     "USE": 84.23,
+     "ConveRT": 83.32,
+     "USE+ConveRT": 85.19
+    }
+   },
+   "no_llm": false,
+   "seconds": 2887.3
+  },
+  "routing": {
+   "questions": 60,
+   "all": {
+    "rules_tool": {
+     "n": 60,
+     "correct": 39,
+     "pct": 65.0,
+     "ci95": [
+      53.3,
+      76.7
+     ]
+    },
+    "rules_full": {
+     "n": 60,
+     "correct": 37,
+     "pct": 61.7,
+     "ci95": [
+      50.0,
+      73.3
+     ]
+    },
+    "llm_tool": {
+     "n": 60,
+     "correct": 56,
+     "pct": 93.3,
+     "ci95": [
+      86.7,
+      98.3
+     ]
+    },
+    "llm_full": {
+     "n": 60,
+     "correct": 56,
+     "pct": 93.3,
+     "ci95": [
+      86.7,
+      98.3
+     ]
+    },
+    "llm_minus_rules_full": {
+     "diff_pts": 31.7,
+     "ci95": [
+      18.3,
+      45.0
+     ],
+     "above_zero": true
+    }
+   },
+   "english": {
+    "rules_tool": {
+     "n": 42,
+     "correct": 31,
+     "pct": 73.8,
+     "ci95": [
+      59.5,
+      85.7
+     ]
+    },
+    "rules_full": {
+     "n": 42,
+     "correct": 30,
+     "pct": 71.4,
+     "ci95": [
+      57.1,
+      85.7
+     ]
+    },
+    "llm_tool": {
+     "n": 42,
+     "correct": 38,
+     "pct": 90.5,
+     "ci95": [
+      81.0,
+      97.6
+     ]
+    },
+    "llm_full": {
+     "n": 42,
+     "correct": 38,
+     "pct": 90.5,
+     "ci95": [
+      81.0,
+      97.6
+     ]
+    },
+    "llm_minus_rules_full": {
+     "diff_pts": 19.0,
+     "ci95": [
+      2.4,
+      35.7
+     ],
+     "above_zero": true
+    }
+   },
+   "hinglish": {
+    "rules_tool": {
+     "n": 18,
+     "correct": 8,
+     "pct": 44.4,
+     "ci95": [
+      22.2,
+      66.7
+     ]
+    },
+    "rules_full": {
+     "n": 18,
+     "correct": 7,
+     "pct": 38.9,
+     "ci95": [
+      16.7,
+      61.1
+     ]
+    },
+    "llm_tool": {
+     "n": 18,
+     "correct": 18,
+     "pct": 100.0,
+     "ci95": [
+      100.0,
+      100.0
+     ]
+    },
+    "llm_full": {
+     "n": 18,
+     "correct": 18,
+     "pct": 100.0,
+     "ci95": [
+      100.0,
+      100.0
+     ]
+    },
+    "llm_minus_rules_full": {
+     "diff_pts": 61.1,
+     "ci95": [
+      38.9,
+      83.3
+     ],
+     "above_zero": true
+    }
+   },
+   "models": [
+    "qwen/qwen3.8-27b"
+   ],
+   "median_uncached_latency_s": 0.66,
+   "rows": [
+    {
+     "id": 1,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "whatif",
+     "rules_full": true,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "saturday",
+      "agents_delta": {
+       "C": -2
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 2,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "whatif",
+     "rules_full": true,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "friday",
+      "volume_change_pct": 25
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 3,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "sunday",
+      "agents_delta": {
+       "A": 3
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 4,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "monday",
+      "volume_change_pct": -10,
+      "agents_delta": {
+       "B": -1
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 5,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "thursday",
+      "volume_change_pct": 15
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 6,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "whatif",
+     "rules_full": false,
+     "llm": "none",
+     "llm_full": false,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 7,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "tuesday",
+      "agents_delta": {
+       "A": 2,
+       "C": 1
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 8,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "whatif",
+     "rules_full": true,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "saturday",
+      "volume_change_pct": 40
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 9,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "whatif",
+     "rules_full": true,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "sunday",
+      "volume_change_pct": -30
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 10,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "headline",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "friday",
+      "agents_delta": {
+       "C": 1
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 11,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "thursday",
+      "agents_delta": {
+       "B": -3
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 12,
+     "lang": "en",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "monday"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 13,
+     "lang": "hi",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "saturday",
+      "agents_delta": {
+       "C": -2
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 14,
+     "lang": "hi",
+     "want": "whatif",
+     "rules": "whatif",
+     "rules_full": true,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "friday",
+      "volume_change_pct": 20
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 15,
+     "lang": "hi",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "sunday",
+      "agents_delta": {
+       "A": 2
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 16,
+     "lang": "hi",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "monday",
+      "volume_change_pct": -10
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 17,
+     "lang": "hi",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "wednesday",
+      "volume_change_pct": 50
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 18,
+     "lang": "hi",
+     "want": "whatif",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "whatif",
+     "llm_full": true,
+     "llm_args": {
+      "weekday": "saturday",
+      "agents_delta": {
+       "B": -1
+      }
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 19,
+     "lang": "en",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": true,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "refund",
+      "effect": "volume"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 20,
+     "lang": "en",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": true,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "missing_item",
+      "effect": "wait",
+      "language": "hi"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 21,
+     "lang": "en",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": true,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "app_bug",
+      "effect": "transfers"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 22,
+     "lang": "en",
+     "want": "plant",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "late_delivery",
+      "effect": "volume"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 23,
+     "lang": "en",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": true,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "payment_failure",
+      "effect": "wait",
+      "language": "hi"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 24,
+     "lang": "en",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": true,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "wrong_item",
+      "effect": "transfers"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 25,
+     "lang": "hi",
+     "want": "plant",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "account",
+      "effect": "volume"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 26,
+     "lang": "hi",
+     "want": "plant",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "restaurant_partner",
+      "effect": "volume"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 27,
+     "lang": "hi",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": false,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "refund",
+      "effect": "transfers"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 28,
+     "lang": "en",
+     "want": "plant",
+     "rules": "plant",
+     "rules_full": true,
+     "llm": "plant",
+     "llm_full": true,
+     "llm_args": {
+      "category": "late_delivery",
+      "effect": "wait",
+      "language": "hi"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 29,
+     "lang": "en",
+     "want": "explain_ticket",
+     "rules": "explain_ticket",
+     "rules_full": true,
+     "llm": "explain_ticket",
+     "llm_full": true,
+     "llm_args": {
+      "ticket_id": "T060582"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 30,
+     "lang": "en",
+     "want": "explain_ticket",
+     "rules": "explain_ticket",
+     "rules_full": true,
+     "llm": "explain_ticket",
+     "llm_full": true,
+     "llm_args": {
+      "ticket_id": "T061200"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 31,
+     "lang": "en",
+     "want": "explain_ticket",
+     "rules": "explain_ticket",
+     "rules_full": true,
+     "llm": "explain_ticket",
+     "llm_full": true,
+     "llm_args": {
+      "ticket_id": "T058870"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 32,
+     "lang": "hi",
+     "want": "explain_ticket",
+     "rules": "explain_ticket",
+     "rules_full": true,
+     "llm": "explain_ticket",
+     "llm_full": true,
+     "llm_args": {
+      "ticket_id": "T062014"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 33,
+     "lang": "hi",
+     "want": "explain_ticket",
+     "rules": "explain_ticket",
+     "rules_full": true,
+     "llm": "explain_ticket",
+     "llm_full": true,
+     "llm_args": {
+      "ticket_id": "T059931"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 34,
+     "lang": "en",
+     "want": "explain_ticket",
+     "rules": "explain_ticket",
+     "rules_full": true,
+     "llm": "explain_ticket",
+     "llm_full": true,
+     "llm_args": {
+      "ticket_id": "T063450"
+     },
+     "llm_answered": true
+    },
+    {
+     "id": 35,
+     "lang": "en",
+     "want": "fix_first",
+     "rules": "fix_first",
+     "rules_full": true,
+     "llm": "fix_first",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 36,
+     "lang": "en",
+     "want": "fix_first",
+     "rules": "fix_first",
+     "rules_full": true,
+     "llm": "fix_first",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 37,
+     "lang": "en",
+     "want": "fix_first",
+     "rules": "fix_first",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": false,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 38,
+     "lang": "en",
+     "want": "fix_first",
+     "rules": "fix_first",
+     "rules_full": true,
+     "llm": "fix_first",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 39,
+     "lang": "hi",
+     "want": "fix_first",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "fix_first",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 40,
+     "lang": "hi",
+     "want": "fix_first",
+     "rules": "fix_first",
+     "rules_full": true,
+     "llm": "fix_first",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 41,
+     "lang": "en",
+     "want": "fix_first",
+     "rules": "whatif",
+     "rules_full": false,
+     "llm": "fix_first",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 42,
+     "lang": "en",
+     "want": "top_problems",
+     "rules": "top_problems",
+     "rules_full": true,
+     "llm": "top_problems",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 43,
+     "lang": "en",
+     "want": "top_problems",
+     "rules": "top_problems",
+     "rules_full": true,
+     "llm": "top_problems",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 44,
+     "lang": "en",
+     "want": "top_problems",
+     "rules": "top_problems",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": false,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 45,
+     "lang": "en",
+     "want": "top_problems",
+     "rules": "top_problems",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": false,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 46,
+     "lang": "hi",
+     "want": "top_problems",
+     "rules": "top_problems",
+     "rules_full": true,
+     "llm": "top_problems",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 47,
+     "lang": "hi",
+     "want": "top_problems",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "top_problems",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 48,
+     "lang": "en",
+     "want": "top_problems",
+     "rules": "fix_first",
+     "rules_full": false,
+     "llm": "top_problems",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 49,
+     "lang": "en",
+     "want": "headline",
+     "rules": "headline",
+     "rules_full": true,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 50,
+     "lang": "en",
+     "want": "headline",
+     "rules": "headline",
+     "rules_full": true,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 51,
+     "lang": "en",
+     "want": "headline",
+     "rules": "headline",
+     "rules_full": true,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 52,
+     "lang": "en",
+     "want": "headline",
+     "rules": "headline",
+     "rules_full": true,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 53,
+     "lang": "hi",
+     "want": "headline",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 54,
+     "lang": "hi",
+     "want": "headline",
+     "rules": "headline",
+     "rules_full": true,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 55,
+     "lang": "en",
+     "want": "headline",
+     "rules": "none",
+     "rules_full": false,
+     "llm": "headline",
+     "llm_full": true,
+     "llm_args": {},
+     "llm_answered": true
+    },
+    {
+     "id": 56,
+     "lang": "en",
+     "want": "none",
+     "rules": "none",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": true,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 57,
+     "lang": "en",
+     "want": "none",
+     "rules": "none",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": true,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 58,
+     "lang": "hi",
+     "want": "none",
+     "rules": "none",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": true,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 59,
+     "lang": "en",
+     "want": "none",
+     "rules": "none",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": true,
+     "llm_args": null,
+     "llm_answered": true
+    },
+    {
+     "id": 60,
+     "lang": "en",
+     "want": "none",
+     "rules": "none",
+     "rules_full": true,
+     "llm": "none",
+     "llm_full": true,
+     "llm_args": null,
+     "llm_answered": true
+    }
+   ],
+   "rule_llm_beats_rules": true
+  },
+  "attribution": {
+   "cards": 62,
+   "rules": {
+    "n": 62,
+    "correct": 62,
+    "pct": 100.0,
+    "ci95": [
+     100.0,
+     100.0
+    ]
+   },
+   "llm": {
+    "n": 62,
+    "correct": 61,
+    "pct": 98.4,
+    "ci95": [
+     95.2,
+     100.0
+    ]
+   },
+   "llm_minus_rules": {
+    "diff_pts": -1.6,
+    "ci95": [
+     -4.8,
+     0.0
+    ],
+    "above_zero": false
+   },
+   "rule_llm_beats_rules": false,
+   "replies_with_digits": 0,
+   "unanswered": 0,
+   "models": [
+    "gemini-3.1-flash-lite"
+   ],
+   "rows": [
+    {
+     "world": "main",
+     "plant": "Hindi payments and refunds wait long",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle payment and refund related support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "main",
+     "plant": "Team C overloaded at weekend dinner",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of order accuracy tickets.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "main",
+     "plant": "Payment-failure spike (bad app release)",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexpected surge in payment failure reports occurred during evening hours without a clear external event trigger.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "main",
+     "plant": "Wrong items from one restaurant cluster",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is consistently failing to pack orders correctly leading to increased customer complaints",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "main",
+     "plant": "IVR menu mislabels call tickets",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "The interactive voice response system is failing to route customer calls to the correct support queues efficiently",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind1",
+     "plant": "Team D weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and extended customer wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind1",
+     "plant": "missing_item spike day 13",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexplained surge in missing item reports occurred during peak lunch hours on a Saturday",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind1",
+     "plant": "hi x Team C skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle order accuracy tickets causes significant queue delays",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind2",
+     "plant": "Team C weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of order accuracy tickets.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind2",
+     "plant": "cluster 17 restaurant_partner",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is generating a disproportionately high volume of partner related support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind2",
+     "plant": "hi x Team A skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle late delivery tickets causes significant queue delays",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind3",
+     "plant": "Team D weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog and increased wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind3",
+     "plant": "cluster 11 missing_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is consistently failing to include items in orders leading to higher ticket volumes",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind4",
+     "plant": "other x Team A skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in the regional language to handle the volume of late delivery tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind4",
+     "plant": "email menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "Incorrect initial routing of email tickets necessitates frequent manual transfers between support teams",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind4",
+     "plant": "cluster 13 restaurant_partner",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is generating a disproportionately high volume of partner related support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind5",
+     "plant": "hi x Team C skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind5",
+     "plant": "call menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "The interactive voice response system is incorrectly routing calls to teams that lack the authority to resolve them.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind5",
+     "plant": "cluster 9 restaurant_partner",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific cluster of restaurant partners is generating a disproportionately high volume of support tickets.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind6",
+     "plant": "app_bug spike day 20",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unusual surge in application bug reports occurred during the morning hours on a Saturday",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind6",
+     "plant": "hi x Team C skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind6",
+     "plant": "cluster 6 missing_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind7",
+     "plant": "cluster 16 wrong_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is consistently failing to provide accurate orders to customers",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind7",
+     "plant": "hi x Team D skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle account and restaurant partner support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind7",
+     "plant": "email menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind8",
+     "plant": "email menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind8",
+     "plant": "cluster 12 missing_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind8",
+     "plant": "Team A weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind9",
+     "plant": "Team A weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind9",
+     "plant": "payment_failure spike day 29",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexpected surge in payment failure reports occurred during the evening peak hours without a clear external trigger",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind9",
+     "plant": "cluster 15 wrong_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "Specific restaurant cluster is consistently failing to provide accurate orders to customers",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind10",
+     "plant": "Team D weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog of unresolved support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind10",
+     "plant": "hi x Team C skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle order accuracy issues causes significant queue delays",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind10",
+     "plant": "late_delivery spike day 13",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing during peak weekend hours led to significant delays in processing live order tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind11",
+     "plant": "email menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams before reaching the correct resolution queue.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind11",
+     "plant": "wrong_item spike day 13",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexpected surge in order accuracy complaints occurred during peak lunch hours on a Saturday",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind12",
+     "plant": "restaurant_partner spike day 19",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexplained surge in restaurant partner inquiries occurred during peak evening hours on Friday.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind12",
+     "plant": "cluster 4 wrong_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "Specific restaurant cluster consistently fails to provide accurate orders leading to higher ticket volumes",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind13",
+     "plant": "email menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "Incorrect initial routing of email tickets necessitates frequent manual transfers between support teams",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind13",
+     "plant": "cluster 12 wrong_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is consistently failing to provide accurate orders to customers",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind13",
+     "plant": "other x Team A skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in the regional language to handle the volume of late delivery tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind14",
+     "plant": "app_bug spike day 40",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexpected surge in application bug reports occurred during peak evening hours without a clear external trigger.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind14",
+     "plant": "cluster 16 missing_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific restaurant cluster is consistently failing to include all items in customer orders",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind14",
+     "plant": "Team A weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to significant backlog and increased wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind15",
+     "plant": "call menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "The interactive voice response system is incorrectly routing calls to teams that lack the authority to resolve them",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind15",
+     "plant": "cluster 9 wrong_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific cluster of restaurants is consistently failing to provide accurate orders to customers",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind15",
+     "plant": "account spike day 18",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexplained surge in account related inquiries occurred during the evening peak hours",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind16",
+     "plant": "Team D weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog and extended wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind16",
+     "plant": "cluster 20 missing_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific cluster of restaurants is consistently failing to include all items in customer orders",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind16",
+     "plant": "hi x Team D skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle technical and partner related support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind17",
+     "plant": "Team D weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient staffing levels during peak weekend dinner hours lead to a significant backlog and extended wait times",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind17",
+     "plant": "cluster 20 wrong_item",
+     "truth": "partner_issue",
+     "rules": "partner_issue",
+     "llm": "partner_issue",
+     "root_cause": "A specific cluster of restaurants is consistently failing to pack orders correctly leading to increased customer complaints",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind17",
+     "plant": "call menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "The interactive voice response system is incorrectly routing calls to the wrong support queues requiring frequent agent transfers",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind18",
+     "plant": "payment_failure spike day 10",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexpected surge in payment failure tickets occurred during the afternoon hours without a clear external event trigger",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind18",
+     "plant": "hi x Team B skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Insufficient number of agents proficient in Hindi assigned to handle payment and refund related support tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind18",
+     "plant": "Team B weekend dinner overload",
+     "truth": "capacity",
+     "rules": "capacity",
+     "llm": "capacity",
+     "root_cause": "Insufficient agent staffing levels during peak weekend dinner hours lead to a persistent backlog of payment tickets",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind19",
+     "plant": "call menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "The interactive voice response system is incorrectly routing calls to the wrong departments requiring frequent agent transfers",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind19",
+     "plant": "app_bug spike day 26",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexpected surge in application bug reports occurred during midday hours without a clear external event trigger.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind19",
+     "plant": "hi x Team C skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind20",
+     "plant": "restaurant_partner spike day 29",
+     "truth": "volume_spike",
+     "rules": "volume_spike",
+     "llm": "volume_spike",
+     "root_cause": "An unexplained surge in restaurant partner inquiries occurred during the midday hours on a specific day",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind20",
+     "plant": "email menu mislabels",
+     "truth": "process",
+     "rules": "process",
+     "llm": "process",
+     "root_cause": "Inefficient routing logic causes excessive ticket transfers between support teams for email inquiries",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    },
+    {
+     "world": "blind20",
+     "plant": "hi x Team C skill gap",
+     "truth": "skill_gap",
+     "rules": "skill_gap",
+     "llm": "skill_gap",
+     "root_cause": "Extremely limited number of agents proficient in Hindi within the order accuracy team causes significant processing delays.",
+     "had_digits": false,
+     "answered": true,
+     "model": "gemini-3.1-flash-lite"
+    }
+   ]
   }
  },
  "worlds": {

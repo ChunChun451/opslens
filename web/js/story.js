@@ -1,4 +1,4 @@
-// story.js — the guided 6-step walkthrough for the demo, on the real numbers.
+// story.js — the guided 7-step walkthrough for the demo, on the real numbers.
 //
 // Why: in a five-minute pitch the order matters. Story mode walks the judges through
 // problem -> Saturday replay -> one pattern with evidence -> one at-risk ticket -> impact with
@@ -19,6 +19,7 @@ import { showTab, setWorld } from "./router.js";
 import { startReplay, pauseReplay } from "./replay.js";
 import { escapeHtml, prettyKey } from "./format.js";
 import { CAUSE_LABELS } from "./tabs/patterns.js";
+import { ledgerSummary } from "./tabs/ledger.js";
 
 const BREACH = "turnaround.breach_pct";
 
@@ -30,6 +31,7 @@ const STEPS = [
   { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
   { tab: "compare", target: () => "kpi-table-panel", title: "What it is worth, with confidence intervals", body: impactText },
+  { tab: "ledger", target: () => "ledger-tally", title: "What we bet on, and what we lost", body: ledgerText },
   { tab: "whatif", target: () => "whatif-form", title: "Your turn", body: yourTurnText },
 ];
 
@@ -220,9 +222,14 @@ function ticketText() {
   const { ticket: t, index: top } = storyTicket();
   const base = `risk.at_risk[${top}]`;
   const reasons = t.reasons.slice(0, 2).map((_, j) => evText(`${base}.reasons[${j}].text`)).join("; ");
-  const action = t.action && typeof t.probability_after_action === "number"
-    ? ` If we ${evText(base + ".action")}, the risk falls to ${ev(base + ".probability_after_action", "frac_pct")}.`
-    : "";
+  // Same honesty rule as the Risks screen: with nobody capable on shift, "assign now" is a what-if.
+  const nobody = t.reasons.some((r) => r.feature === "capable_on_shift" && /^no agent/.test(r.text));
+  const after = typeof t.probability_after_action === "number" ? ev(base + ".probability_after_action", "frac_pct") : "";
+  const action = !t.action || !after ? ""
+    : nobody
+      ? ` Nobody who can serve it is on shift; if one were free now the risk would be ${after}. So OpsLens weighs a
+        cross-skill rescue: slower, but it can still keep the promise.`
+      : ` If we ${evText(base + ".action")}, the risk falls to ${after}.`;
   return `${evText(base + ".ticket_id")}, a ${escapeHtml(t.priority)} ${escapeHtml(prettyKey(t.category).toLowerCase())}
     ticket, has a ${ev(base + ".probability", "frac_pct")} chance of breaching, ${ev(base + ".minutes_to_sla", "min")}
     before its SLA. Why: ${reasons}.${action}`;
@@ -238,6 +245,15 @@ function impactText() {
     ${diffText(best, BREACH, "pts")} against ${escapeHtml(shortLabel(best))}, and
     ${diffText("baseline_a", BREACH, "pts")} against ${escapeHtml(shortLabel("baseline_a"))}.${hindi}
     Every row of this table is a paired comparison over the same seeds.`;
+}
+
+function ledgerText() {
+  const n = ledgerSummary();
+  if (!n.total) return "The pre-registered rules are not in the results file yet.";
+  return `Before every experiment we wrote down the rule that decides it, and git keeps the time. Of
+    ${n.total} rules, ${n.kept} were kept and ${n.missed} were missed, and the misses stay on screen: an exact roster
+    optimiser lost to our simple one, and OpsLens is not the best policy in every random world. A team that only
+    shows wins is not testing hard enough.`;
 }
 
 function yourTurnText() {

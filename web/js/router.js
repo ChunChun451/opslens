@@ -18,6 +18,7 @@ import * as recommendations from "./tabs/recommendations.js";
 import * as compare from "./tabs/compare.js";
 import * as whatif from "./tabs/whatif.js";
 import * as tested from "./tabs/tested.js";
+import * as ledger from "./tabs/ledger.js";
 import * as upload from "./tabs/upload.js";
 import * as realdesk from "./tabs/realdesk.js";
 import { state, store } from "./data.js";
@@ -49,8 +50,10 @@ export const TABS = [
   { id: "proof", label: "Proof", views: {
     food: [{ id: "compare", label: "Side by side", module: compare },
            { id: "whatif", label: "Try a what-if", module: whatif },
+           { id: "ledger", label: "Rules we wrote first", module: ledger },
            { id: "tested", label: "How we tested", module: tested }],
-    real: [{ id: "rd-proof", label: "Against the real desk", module: realdesk.proof }] } },
+    real: [{ id: "rd-proof", label: "Against the real desk", module: realdesk.proof },
+           { id: "ledger", label: "Rules we wrote first", module: ledger }] } },
   { id: "upload", label: "Your data", views: {
     food: [{ id: "upload", label: "Use your own data", module: upload }],
     real: [{ id: "upload", label: "Use your own data", module: upload }] } },
@@ -58,7 +61,7 @@ export const TABS = [
 
 // Old tab names (before Plan v3) → the screen that now holds them.
 const ALIAS = { patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
-                compare: "proof", whatif: "proof", tested: "proof" };
+                compare: "proof", whatif: "proof", ledger: "proof", tested: "proof" };
 
 const framed = new Set(); // screens whose frame (sub-tabs + empty views) is drawn
 const drawn = new Set(); // views already drawn (Chart.js needs a visible canvas, so we wait)

@@ -35,7 +35,8 @@ import pandas as pd
 
 from opslens.classify import TEAM_OF
 from opslens.features import WAITING_COLUMNS, QueueSnapshot, capability_table, features_for_snapshot
-from opslens.optimize import Candidate, SolveStats, solve, ticket_value, top_k, urgency_impact
+from opslens.optimize import (Candidate, SolveStats, solve, ticket_value, top_k, urgency_impact,
+                              with_runner_up)
 from opslens.risk import risk_if_assigned_now
 from opslens.floor import shift_intervals
 from opslens.simulate import MINUTES_PER_DAY, AgentView, Assignment, SimState, TicketView, World
@@ -558,6 +559,8 @@ class OpsLensPolicy:
             chosen = solve(candidates, slots, self.w["time_budget_s"], self.stats)
         else:
             chosen = greedy_by_agent(candidates, free)
+        # W8 (c): name the runner-up agent in the reason (text only, the same decisions)
+        chosen = with_runner_up(chosen, candidates, lambda i: self.world.ticket_ids[i])
         if self.log_window and self.log_window[0] <= now < self.log_window[1]:
             for c in chosen:
                 self.decision_log.append({"minute": now, "ticket_idx": c.ticket_idx, "agent_id": c.agent_id,

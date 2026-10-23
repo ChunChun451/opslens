@@ -114,7 +114,20 @@ function proofStrip() {
         <div class="proof-s">Minutes past the promise per 100 tickets, OpsLens vs ${r.baseline_c.test.means.baseline_d ? "the industry standard" : "urgent first"}</div>
       </div>`,
   ];
-  if (r.sealed_world && r.sealed_world.test.means) {
+  // The newest world generated after the freeze (seed 6262, corrected simulator), against the
+  // industry standard; the first sealed world (4242, old simulator, vs due time first) only if
+  // the new one is missing.
+  const sealedNew = r.sealed_world_new && r.sealed_world_new.test && r.sealed_world_new.test.opslens_minus_d;
+  if (sealedNew) {
+    const s = "sealed_world_new.test";
+    tiles.push(`<div class="proof">
+        <div class="proof-q">Still wins on data made after we froze it</div>
+        <div class="proof-a">${ev(`${s}.means.opslens.${BREACH}`, "pct")} <span class="muted">vs</span> ${ev(`${s}.means.baseline_d.${BREACH}`, "pct")}</div>
+        <div class="proof-s">Missed promises, OpsLens vs the industry standard, on a new world (seed ${evText("sealed_world_new.data_seed")}) tested once. 95% CI
+          ${ev(`${s}.opslens_minus_d.${BREACH}.ci_low`, "pts", { signed: true, bare: true })} to
+          ${ev(`${s}.opslens_minus_d.${BREACH}.ci_high`, "pts", { signed: true, bare: true })} pts</div>
+      </div>`);
+  } else if (r.sealed_world && r.sealed_world.test.means) {
     const s = "sealed_world.test.means";
     tiles.push(`<div class="proof">
         <div class="proof-q">Still wins on data made after we froze it</div>
@@ -144,15 +157,17 @@ function briefCard() {
   });
 }
 
-// One supporting KPI: OpsLens's value, its difference from Baseline B, and both baselines.
+// One supporting KPI: OpsLens's value, its difference from the lead baseline, and the others.
 function kpiCard(kpi) {
   const sim = state.results.sim;
   if (!sim.policies.opslens || !sim.policies.opslens.kpis[kpi]) return "";
   const info = kpiInfo(kpi);
-  const i = comparisonIndex("opslens", "baseline_b", kpi);
-  const delta = i >= 0 ? `${deltaPill(`sim.comparisons[${i}]`, spreadUnit(info.unit), info.better)} vs ${escapeHtml(shortLabel("baseline_b"))}` : "";
-  // The two baselines as a small two-row list under the number, for context.
-  const others = ["baseline_a", "baseline_b"].filter((k) => sim.policies[k])
+  // The lead comparison is the industry standard (D) when it is in the run, as in the hero.
+  const lead = sim.policies.baseline_d ? "baseline_d" : "baseline_b";
+  const i = comparisonIndex("opslens", lead, kpi);
+  const delta = i >= 0 ? `${deltaPill(`sim.comparisons[${i}]`, spreadUnit(info.unit), info.better)} vs ${escapeHtml(shortLabel(lead))}` : "";
+  // The other ways of working as a small list under the number, for context.
+  const others = ["baseline_a", "baseline_b", "baseline_d"].filter((k) => sim.policies[k])
     .map((k) => `<div class="pair"><span>${escapeHtml(shortLabel(k))}</span>${ev(`sim.policies.${k}.kpis.${kpi}.mean`, info.unit)}</div>`).join("");
   return card({
     body: stat(info.label, ev(`sim.policies.opslens.kpis.${kpi}.mean`, info.unit), `${delta}<div class="pairs">${others}</div>`, "md"),
