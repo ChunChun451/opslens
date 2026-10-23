@@ -45,6 +45,7 @@ import numpy as np
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))  # so eval.run_design_v6 imports (W13)
 OUT_DIR = ROOT / "eval" / "parts" / "worlds"
 DIAG_DIR = ROOT / "eval" / "parts" / "worlds_diag"  # the overload diagnosis (23 Oct); never counted
 WORLD_SEEDS = list(range(7001, 7031))
