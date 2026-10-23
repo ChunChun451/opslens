@@ -50,6 +50,7 @@ DIAG_DIR = ROOT / "eval" / "parts" / "worlds_diag"  # the overload diagnosis (23
 WORLD_SEEDS = list(range(7001, 7031))
 SKIP = {".git", ".venv", ".venv-challengers", ".claude", "data/generated",
         "cache", ".pytest_tmp", ".pytest_cache", "__pycache__", "eval/parts/worlds", "eval/parts/worlds_diag",
+        "eval/parts/worlds_v6design", "eval/parts/worlds_v6confirm",
         "eval/challengers"}
 CATEGORIES = ["late_delivery", "missing_item", "wrong_item", "refund", "payment_failure", "app_bug",
               "account", "restaurant_partner"]
@@ -180,11 +181,13 @@ def run_step(dest: Path, log, *args: str) -> None:
     log.write(f"\n== {' '.join(args)} done in {time.perf_counter() - started:.0f}s\n".encode())
 
 
-def run_world(seed: int, workers: int, diagnose: bool = False) -> dict:
+def run_world(seed: int, workers: int, diagnose: bool = False, mode: str = "") -> dict:
     """The whole pipeline for one world; returns (and saves) its result. With diagnose=True (added
     23 Oct, after the result): the same world rebuilt, only industry standard, least slack and
     OpsLens, with misses by priority / tier / language recorded, saved apart in worlds_diag/."""
-    out_path = (DIAG_DIR if diagnose else OUT_DIR) / f"{seed}.json"
+    folder = DIAG_DIR if diagnose else (ROOT / "eval" / "parts" / f"worlds_{mode}" if mode else OUT_DIR)
+    folder.mkdir(parents=True, exist_ok=True)
+    out_path = folder / f"{seed}.json"
     if out_path.exists():
         return json.loads(out_path.read_text(encoding="utf-8"))
     world = sample_world(seed)
@@ -193,13 +196,13 @@ def run_world(seed: int, workers: int, diagnose: bool = False) -> dict:
         dest = Path(tmp) / "repo"
         copy_repo(dest)
         volume = apply_world(dest, world)
-        with open((DIAG_DIR if diagnose else OUT_DIR) / f"{seed}.log", "wb") as log:
+        with open(folder / f"{seed}.log", "wb") as log:
             run_step(dest, log, "data/generate_ops.py")
             run_step(dest, log, "eval/run_classification.py", "--no-llm")
             run_step(dest, log, "eval/run_risk.py")
             run_step(dest, log, "eval/run_forecast.py")
             run_step(dest, log, "eval/run_world_compare.py", "--workers", str(workers),
-                     *(["--diagnose"] if diagnose else []))
+                     *(["--diagnose"] if diagnose else []), *MODE_ARGS.get(mode, []))
         parts = dest / "eval" / "parts"
         compare = json.loads((parts / "world_compare.json").read_text(encoding="utf-8"))
         risk = json.loads((parts / "risk.json").read_text(encoding="utf-8"))
@@ -271,9 +274,31 @@ def diagnose_losses() -> int:
     return 0
 
 
+MODE_ARGS: dict[str, list[str]] = {"v6design": ["--v6-design"]}  # "v6confirm" is added by --v6-confirm
+CONFIRM_SEEDS = list(range(7101, 7131))  # W13: 30 new worlds, same ranges as W1
+
+
+def run_world_safe_mode(seed: int, mode: str) -> dict | None:
+    try:
+        return run_world(seed, workers=4, mode=mode)
+    except Exception as exc:  # noqa: BLE001 — logged; a failed world must be fixed and re-run
+        print(f"world {seed} FAILED: {exc!r}", flush=True)
+        return None
+
+
 def main() -> int:
     if "--diagnose" in sys.argv:
         return diagnose_losses()
+    if "--v6-design" in sys.argv:  # W13 design: the 20 design worlds, candidates only
+        from eval.run_design_v6 import DESIGN_WORLDS
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            list(pool.map(lambda s: run_world_safe_mode(s, "v6design"), DESIGN_WORLDS))
+        return 0
+    if "--v6-confirm" in sys.argv:  # W13 confirmation: 30 NEW worlds, every policy + the chosen v6, once
+        MODE_ARGS["v6confirm"] = ["--v6", sys.argv[sys.argv.index("--v6-confirm") + 1]]
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            list(pool.map(lambda s: run_world_safe_mode(s, "v6confirm"), CONFIRM_SEEDS))
+        return 0
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     seeds = WORLD_SEEDS
     if "--only" in sys.argv:
