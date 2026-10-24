@@ -4,7 +4,7 @@
 // Diwali, cricket and FIFA days"): a logo that knows today's date makes the product feel alive,
 // and the finale (29–31 Oct 2026) falls in Diwali season. The season comes from the calendar on
 // this laptop; clicking the logo shows the next doodle (for the demo), and ?doodle=cricket in the
-// address picks one (?doodle=classic shows the plain OpsLens mark). The splash screen (js/splash.js) and the festival layer (js/fest.js) read
+// address picks one (?doodle=classic shows the plain OpsLens mark). The splash screen (js/splash.js) reads
 // currentSeason() too. Pure SVG + CSS (web/neon.css, "Doodles").
 //
 // Outside festivals the side menu shows the OpsLens mark (js/logo.js: OPS inside a lens, with eyes).

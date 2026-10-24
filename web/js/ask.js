@@ -82,7 +82,7 @@ async function ask(question, panel) {
   panel.querySelector(".ask-close").addEventListener("click", () => { panel.hidden = true; });
 }
 
-function factsTable(facts) {
+export function factsTable(facts) { // also used by the bot (js/bot.js)
   if (!facts || !facts.length) return "";
   const rows = facts.map((f) => `<tr><td>${escapeHtml(f.label)}</td>
       <td class="num">${f.breach_pct.toFixed(1)}%</td><td class="num">${f.p90_min.toFixed(0)}</td>

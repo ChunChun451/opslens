@@ -22,7 +22,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md"]
+DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md", "docs/BOT_QA.md"]  # BOT_QA: the bot's extra answers
 # Records of earlier policy versions: true numbers, but not ones to quote as current.
 HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2")
 # Bulk data nobody quotes (single seeds, replay frames, chart points). Leaving them out matters:

@@ -9,7 +9,7 @@
 // numbers. It shows once per browser session; any click or key skips it; reduced-motion users see it still, briefly. The cold open
 // (js/intro.js) plays after it.
 //
-// Example on 24 Oct 2026: "Festive Ops Fest · The festive rush is here · Grand finale in 5 days".
+// Example on 24 Oct 2026: "Festive season · The festive rush is here · Grand finale in 5 days".
 
 import { currentSeason } from "./season.js";
 import { logoSvg, TEAM } from "./logo.js";
@@ -21,13 +21,13 @@ const FINALE = new Date(2026, 9, 29, 9, 0); // 29 Oct 2026, 09:00 (local time)
 const FINALE_END = new Date(2026, 9, 31, 23, 59);
 
 const COPY = {
-  diwali: { kicker: "Festive Ops Fest", big: "The festive rush is here", sub: "Orders spike. Promises shouldn't break.", sky: "fireworks" },
-  newyear: { kicker: "New Year Ops Fest", big: "Midnight orders incoming", sub: "Start the year with every promise kept.", sky: "fireworks" },
-  tricolour: { kicker: "Freedom Ops Fest", big: "A nation orders dinner", sub: "Every ticket is a promise.", sky: "fireworks" },
-  cricket: { kicker: "Match Night Ops Fest", big: "Every over, a flood of orders", sub: "Keep every promise till the last ball.", sky: "confetti" },
-  football: { kicker: "World Cup Ops Fest", big: "Kick-off means order rush", sub: "No ticket left offside.", sky: "confetti" },
-  holi: { kicker: "Holi Ops Fest", big: "Colours outside, rush inside", sub: "Every ticket is a promise.", sky: "colours" },
-  christmas: { kicker: "Winter Ops Fest", big: "The year-end rush is here", sub: "Every ticket is a promise.", sky: "snow" },
+  diwali: { kicker: "Festive season", big: "The festive rush is here", sub: "Orders spike. Promises shouldn't break.", sky: "fireworks" },
+  newyear: { kicker: "New Year", big: "Midnight orders incoming", sub: "Start the year with every promise kept.", sky: "fireworks" },
+  tricolour: { kicker: "Celebrating India", big: "A nation orders dinner", sub: "Every ticket is a promise.", sky: "fireworks" },
+  cricket: { kicker: "Match night", big: "Every over, a flood of orders", sub: "Keep every promise till the last ball.", sky: "confetti" },
+  football: { kicker: "World Cup", big: "Kick-off means order rush", sub: "No ticket left offside.", sky: "confetti" },
+  holi: { kicker: "Holi", big: "Colours outside, rush inside", sub: "Every ticket is a promise.", sky: "colours" },
+  christmas: { kicker: "Winter rush", big: "The year-end rush is here", sub: "Every ticket is a promise.", sky: "snow" },
   classic: { kicker: "OpsLens", big: "Every ticket is a promise", sub: "Let's keep them all.", sky: "confetti" },
 };
 

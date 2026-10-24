@@ -191,25 +191,26 @@ def plant(request: dict) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
-@app.post("/api/ask")
-def ask(request: dict) -> JSONResponse:
-    """Ask OpsLens: a plain-words question → one engine tool → an answer (opslens/ask.py)."""
+def _route_client():
+    """The LLM used only to understand questions (routing), or None when offline."""
+    from opslens.llm.base import LLMUnavailable
+    from opslens.llm.client import build_client
+
+    try:
+        return build_client(["groq_route", "gemini"])
+    except LLMUnavailable:
+        return None  # offline: keyword rules and word matching still answer
+
+
+def _run_ask(question: str, client) -> dict:
+    """Ask OpsLens on one question (opslens/ask.py): understand → one engine tool → the answer."""
     import pandas as pd
 
     from opslens.ask import answer
     from opslens.config import load_config
-    from opslens.llm.base import LLMUnavailable
-    from opslens.llm.client import build_client
     from opslens.whatif import run_whatif
     from server.plant_demo import run_plant
 
-    question = str(request.get("question", "")).strip()[:300]
-    if not question:
-        return JSONResponse({"error": "empty question"}, status_code=400)
-    try:
-        client = build_client(["groq_route", "gemini"])
-    except LLMUnavailable:
-        client = None  # offline: keyword rules still answer the common questions
     inputs = engine_inputs()
     tools = {
         "whatif": lambda req: run_whatif(req, inputs["tickets"], inputs["agents"], inputs["preds"], inputs["model"],
@@ -218,8 +219,44 @@ def ask(request: dict) -> JSONResponse:
     }
     results = json.loads(results_path().read_text(encoding="utf-8"))
     first_weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
+    return answer(question, client, tools, results, inputs["test_days"], first_weekday)
+
+
+@app.post("/api/ask")
+def ask(request: dict) -> JSONResponse:
+    """Ask OpsLens: a plain-words question → one engine tool → an answer (opslens/ask.py)."""
+    question = str(request.get("question", "")).strip()[:300]
+    if not question:
+        return JSONResponse({"error": "empty question"}, status_code=400)
     try:
-        return JSONResponse(answer(question, client, tools, results, inputs["test_days"], first_weekday))
+        return JSONResponse(_run_ask(question, _route_client()))
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
+# ---- The OpsLens assistant (server/bot.py, 24 Oct): the bot in the side menu --------------------------
+
+@app.get("/api/bot/warm")
+def bot_warm() -> dict:
+    """Load (or, the very first time, train in the background) the bot's text classifier."""
+    from server.bot import warm_up
+
+    warm_up()
+    return {"ok": True}
+
+
+@app.post("/api/bot")
+def bot(request: dict) -> JSONResponse:
+    """One question for the assistant: a customer complaint, an engine question or a judge question."""
+    from server.bot import respond
+
+    question = str(request.get("question", "")).strip()[:400]
+    if not question:
+        return JSONResponse({"error": "empty question"}, status_code=400)
+    client = _route_client()
+    results = json.loads(results_path().read_text(encoding="utf-8"))
+    try:
+        return JSONResponse(respond(question, lambda q: _run_ask(q, client), results, client))
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
 

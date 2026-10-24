@@ -293,8 +293,9 @@ function ledgerText() {
 }
 
 function yourTurnText() {
-  return `Your turn. Type a question in <strong>Ask OpsLens</strong> at the top, in English or Hinglish
-    ("What if Team C loses 2 agents on Saturday?"): the LLM only understands the question, the simulator
-    answers it. Or change the staffing here, or open Patterns and press <strong>Plant a problem</strong>:
-    we hide a problem in fresh data and OpsLens has to find it without being told where it is.`;
+  return `Your turn. Open <strong>Ask OpsLens AI</strong> in the side menu and ask it anything, in English or
+    Hinglish: a tough question about our method, a what-if ("What if Team C loses 2 agents on Saturday?") or a
+    customer's complaint to triage. It answers from tested results and never makes up a number. Or change the
+    staffing here, or open Problems and press <strong>Plant a problem</strong>: we hide a problem in fresh data
+    and OpsLens has to find it without being told where it is.`;
 }
