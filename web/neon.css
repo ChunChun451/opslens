@@ -1586,3 +1586,21 @@ html[data-theme="light"] .bot-launch { background: linear-gradient(135deg, rgba(
   @keyframes bm-in { from { opacity: 0; transform: translateY(8px); } }
 }
 @media (max-width: 760px) { .sidebar .bot-launch .bl-text small { display: none; } }
+
+/* The assistant has its own colour (owner, 24 Oct): emerald, so it stands apart from the cyan/violet screens. */
+.bot-launch { border: 0; color: #fff; background: linear-gradient(135deg, #10b981, #0d9488 60%, #0f766e); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+.bot-launch:hover { box-shadow: 0 8px 26px rgba(16, 185, 129, 0.6); filter: brightness(1.08); }
+.bot-launch .bl-text small { color: rgba(236, 253, 245, 0.85); }
+.bot-launch .mascot { border-radius: 50%; background: rgba(255, 255, 255, 0.9); }
+.bot-launch .bl-ping { background: #fef08a; box-shadow: 0 0 0 2px #0f766e; }
+html[data-theme="light"] .bot-launch { background: linear-gradient(135deg, #10b981, #0d9488 60%, #0f766e); }
+.bot-panel { border-left-color: rgba(16, 185, 129, 0.45); }
+.bp-head { background: linear-gradient(135deg, rgba(16, 185, 129, 0.28), rgba(13, 148, 136, 0.18)); }
+.bm-user .bm-bubble { background: linear-gradient(135deg, #10b981, #0f766e); }
+.bp-send { background: linear-gradient(135deg, #10b981, #0f766e); }
+.bp-form input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); }
+.bot-chip { border-color: rgba(16, 185, 129, 0.45); background: rgba(16, 185, 129, 0.08); }
+.bot-chip:hover { background: rgba(16, 185, 129, 0.2); }
+.bot-launch .bl-text { min-width: 0; }
+.bot-launch .bl-text b, .bot-launch .bl-text small { white-space: nowrap; }
+.bot-launch .bl-text b { font-size: 0.92rem; }

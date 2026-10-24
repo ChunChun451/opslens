@@ -52,7 +52,7 @@ let busy = false;
 export function initBot() {
   const launch = `<button type="button" class="bot-launch" id="bot-launch" aria-label="Open the OpsLens AI assistant">
       ${characterHtml("bot-mini", "robot", "happy")}
-      <span class="bl-text"><b>Ask OpsLens AI</b><small>jury · managers · customers</small></span>
+      <span class="bl-text"><b>Ask OpsLens AI</b><small>ask me anything</small></span>
       <i class="bl-ping" aria-hidden="true"></i>
     </button>`;
   const foot = document.querySelector(".sidebar .sidebar-foot");
