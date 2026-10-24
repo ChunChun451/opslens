@@ -22,14 +22,20 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md"]
+DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md", "README.md", "docs/OWNER_CHEATSHEET.md"]
 # Records of earlier policy versions: true numbers, but not ones to quote as current.
 HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2")
 # Bulk data nobody quotes (single seeds, replay frames, chart points). Leaving them out matters:
 # with all ~7,600 values, 199 of 200 random one-decimal numbers matched something by chance;
 # with these out, 55% of random one-decimal numbers are caught.
 BULK = re.compile(r"per_seed|replay|horizon|series|confusion|assignments|alerts_used|step_seconds|"
-                  r"sensitivity|bottlenecks|clusters|examples|shown_days\[\d+\]\.incidents")
+                  r"sensitivity|bottlenecks|clusters|examples|shown_days\[\d+\]\.incidents|"
+                  # 24 Oct: detail nobody quotes: each random world's generator settings, the per-world
+                  # diagnosis rows, the twin's calibration grid, day-by-day team rows. Measured limit after
+                  # this (24 Oct, ~5,800 distinct values): a made-up two-decimal number is caught 76% of the
+                  # time, a one-decimal one only 12% (almost every x.y exists somewhere). So quote two
+                  # decimals where it matters, and read new docs against results.json by eye as well.
+                  r"worlds\[\d+\]\.params|diagnosis\.worlds|twin\.validation\.grid|\.teams\.|next_week")
 NAMES_A_VERSION = re.compile(r"\bv[12]\b")  # a line about v1 or v2 may quote their history records
 # Numbers that come from somewhere other than results.json, each with its source.
 OTHER_SOURCES = {
@@ -37,6 +43,7 @@ OTHER_SOURCES = {
     "10.97": "Erlang-C check, simulator average wait (tests/test_simulate.py)",
     "10.79": "Erlang-C check, formula average wait (tests/test_simulate.py)",
     "36.6": "UCI breach rate, computed live by /api/upload (tests/test_upload.py)",
+    "1,000": "the DEV_103 problem statement's own example (tickets a day), quoted in README.md",
 }
 NUMBER = re.compile(r"(?<![\w.])[−-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?|(?<![\w.])[−-]?\d+\.\d+")
 

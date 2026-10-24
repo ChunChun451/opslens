@@ -53,9 +53,29 @@ This page says, plainly, what a real deployment at a company like Eternal would 
 - P99 wait (no customer left behind), reopen rate (cost of cross-skill rescues), transfers per 100.
 - Agent-side: load fairness and override rate.
 
-## 7. Known limits of the prototype
-- The operations data is generated; real floors are messier (breaks, chats in parallel,
-  customers who give up). The real-data checks (risk AUC 0.857 on ServiceNow) are the honest
-  guide to what transfers.
-- The value formula is hand-built with tuned weights, not learned end to end.
-- Staffing moves are greedy and weekly; a full scheduling solver would do better.
+## 7. Week one at a real company: shadow mode (already on screen)
+*IT service desk → Shadow mode* is exactly the first week of a deployment: real incidents at their
+real times, OpsLens's warning one hour after each opens, next to the desk's own priority field,
+and the real outcome when it happens. On the busiest day of the public log, OpsLens flagged 53 of
+the 102 real misses in time, the priority field 16. Nothing is switched on until shadow mode has
+run for two weeks on the company's own data and the numbers hold.
+
+## 8. Beyond support tickets
+The engine works on *work items*: something arrives at a time, has a type, a deadline, and is
+handled by someone with the right skill. Support tickets and IT incidents are two such kinds
+(both on screen); sales leads with a response-time promise, insurance claims, or internal
+approval requests have the same shape, and `Your data` maps any CSV export onto it. We have
+tested two kinds, not these others: their first step is the same shadow mode.
+
+## 9. Known limits of the prototype (updated 24 Oct)
+- The food-delivery operations data is generated; real floors are messier (breaks, customers who
+  give up). The real public desk is the honest guide to what transfers: early warning AUC 0.857
+  vs 0.552 for its own priority field.
+- Under sustained overload (1.06× today's load or more for weeks) a published rule, least slack
+  first, misses fewer deadlines than OpsLens; OpsLens protects gold and late customers there. An
+  overload switch was designed and tested (W13) and is reported with its result.
+- The value formula is hand-built with weights chosen on validation days, not learned end to end.
+- Staffing moves are greedy and weekly; an exact CP-SAT roster was built and did not beat them on
+  missed deadlines (it is reported, not shipped).
+- A digital twin of the real desk failed its validation gate, so OpsLens's routing gain on real
+  data is not claimed; only its warnings (shadow mode) and the fast-track estimate are.
