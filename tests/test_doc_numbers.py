@@ -22,7 +22,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md", "README.md", "docs/OWNER_CHEATSHEET.md"]
+DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md", "README.md", "docs/OWNER_CHEATSHEET.md", "docs/GUIDE.md"]
 # Records of earlier policy versions: true numbers, but not ones to quote as current.
 HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2")
 # Bulk data nobody quotes (single seeds, replay frames, chart points). Leaving them out matters:
@@ -43,6 +43,7 @@ OTHER_SOURCES = {
     "10.97": "Erlang-C check, simulator average wait (tests/test_simulate.py)",
     "10.79": "Erlang-C check, formula average wait (tests/test_simulate.py)",
     "36.6": "UCI breach rate, computed live by /api/upload (tests/test_upload.py)",
+    "4.0": "the licence name CC BY 4.0 (data/SOURCES.md), not a result",
     "1,000": "the DEV_103 problem statement's own example (tickets a day), quoted in README.md",
 }
 NUMBER = re.compile(r"(?<![\w.])[−-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?|(?<![\w.])[−-]?\d+\.\d+")
