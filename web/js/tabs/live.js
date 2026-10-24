@@ -1,71 +1,84 @@
 // tabs/live.js — "Live now": today's support day, simulated on this laptop, at the real clock.
 //
-// Why (24 Oct, the owner asked for "everything running live"): the other screens are exam results
-// measured on fixed days, so they show fixed dates. This screen is the opposite: it shows TODAY'S
-// date and the current time, and asks the engine every few seconds what the floor looks like now
-// (GET /api/live). The engine simulated the whole day once when it was first asked (both the
-// industry standard and OpsLens, same tickets, same luck), so each answer is instant. The tickets
-// are the practice company's tickets for the test day with today's weekday (a day OpsLens never
-// studied), and the screen says so.
-// Interactive: change today (fewer or more agents per team, more or fewer customers) and the engine
-// simulates the day again on this laptop; "New luck" re-runs it with another seed; "Play the day
-// fast" runs the clock at 3 minutes per second. Every number is a live answer, clickable ("live.…").
+// Why (24 Oct, the owner asked for "everything running live", then for less clutter): this is the
+// first screen a judge sees, so it is built as one command centre that fits a 1366x768 projector:
+// one big result (customers helped in time today), the two floors side by side, one-click "What
+// if…" scenarios, and two short live feeds. Details open on demand instead of filling the page.
+// Data: GET /api/live answers "the floor at this minute" from a day the engine simulated once on
+// this laptop (industry standard and OpsLens, same customers, same luck). The customers are the
+// practice company's tickets for the test day with today's weekday (a day OpsLens never studied).
+// Every number is a live answer, clickable like the others ("live.…").
 //
-// Example (a Saturday, 21:14): industry standard 61 waiting, 23 promises missed so far; OpsLens
-// 24 waiting, 6 missed; in danger now T060597, Hindi payment failure, 99.6% (→ 31% if served now).
+// Example (Saturday 14:39): "3 more customers helped in time today" — industry standard 12 missed
+// so far, OpsLens 9; "Team C loses 2 agents" re-simulates today in about half a minute.
 
 import { state } from "../data.js";
 import { ev } from "../evidence.js";
-import { drawFrameInto, floorLegend } from "../floormap.js";
+import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey } from "../format.js";
 
-const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock itself ticks every second
-const WAIT_MS = 2500; // while the day is still being simulated
-const LANGUAGE = { hi: "Hindi", en: "English", other: "regional language" };
-const TEAMS = { A: "Live orders", B: "Payments & refunds", C: "Order accuracy", D: "Account, app & partners" };
+const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
+const WAIT_MS = 2500; // while a day is being simulated
+const LANGUAGE = { hi: "Hindi", en: "English", other: "Regional" };
+const TEAMS = { A: "Live orders", B: "Payments & refunds", C: "Order accuracy", D: "Account & app" };
+const NORMAL = { agents: { A: 0, B: 0, C: 0, D: 0 }, volume: 100 };
+// One-click scenarios (a layout choice; the engine computes their effect live).
+const PRESETS = [
+  { id: "normal", label: "Normal day", s: NORMAL },
+  { id: "c-2", label: "Team C loses 2 agents", s: { agents: { A: 0, B: 0, C: -2, D: 0 }, volume: 100 } },
+  { id: "sale", label: "Sale rush +40%", s: { agents: { A: 0, B: 0, C: 0, D: 0 }, volume: 140 } },
+  { id: "storm", label: "Short-staffed rush", s: { agents: { A: 0, B: -1, C: -1, D: 0 }, volume: 130 } },
+];
+
 let seed = 1;
 let tick = null;
 let poll = null;
-let speed = 1; // 1 = real time; "fast" plays the day at 180x so a judge can watch an evening in minutes
+let speed = 1; // 1 = real time; fast = 3 simulated minutes per second, from 17:00
 let fastMinute = null;
-let listening = false; // the tab-shown listener is added once, however often the view is drawn
-// Today's change, as chosen in the panel (applied) and as being edited (draft).
-let applied = { agents: { A: 0, B: 0, C: 0, D: 0 }, volume: 100 };
-let draft = { agents: { ...applied.agents }, volume: 100 };
-let waitingSince = null; // when the current simulation was asked for (for the progress line)
+let listening = false;
+let applied = clone(NORMAL);
+let draft = clone(NORMAL);
+let waitingSince = null;
+let seenDecisions = new Set(); // decisions already shown, so new ones can light up
 
 export function render(section) {
   section.innerHTML = `
-    <section class="mission live-band" aria-label="Live now">
-      <div>
-        <div class="mission-eyebrow"><span class="live-dot"></span><span id="lv-date">Live</span></div>
-        <h2 id="lv-clock" class="live-clock">--:--:--</h2>
-        <p class="mission-sub">Today's support day, running on this laptop now: the same customers and the same agents
-          under two ways of working. The customers are the practice company's (its test
-          <span id="lv-weekday">day</span>, which OpsLens never studied); every number is computed here, live.</p>
-        <div class="mission-score">
-          <div class="theirs"><div class="k">Promises missed so far today, industry standard</div><div class="v" id="lv-m-theirs">…</div></div>
-          <div class="ours"><div class="k">Promises missed so far today, OpsLens</div><div class="v" id="lv-m-ours">…</div></div>
+    <section class="lv" aria-label="Live now">
+      <header class="lv-hero">
+        <div class="lv-when">
+          <div class="lv-live"><span class="live-dot"></span><span id="lv-mode">Live</span> · <span id="lv-date"></span></div>
+          <div class="lv-clock" id="lv-clock">--:--:--</div>
+          <div class="lv-fine" id="lv-status">Starting…</div>
         </div>
-        <div class="live-saved" id="lv-saved"></div>
-        <div class="mission-actions">
-          <button type="button" class="btn" id="lv-speed">Play the day fast</button>
-          <button type="button" class="btn ghost" id="lv-luck">New luck</button>
+        <div class="lv-impact">
+          <div class="lv-big"><span id="lv-saved">…</span></div>
+          <div class="lv-big-label" id="lv-saved-label">more customers helped in time today, with the same agents</div>
+          <div class="lv-bars">
+            <div class="lv-bar theirs"><span class="lv-bar-name">Industry standard</span><span class="lv-bar-track"><i id="lv-bar-theirs"></i></span><b id="lv-m-theirs">…</b><small>missed</small></div>
+            <div class="lv-bar ours"><span class="lv-bar-name">OpsLens</span><span class="lv-bar-track"><i id="lv-bar-ours"></i></span><b id="lv-m-ours">…</b><small>missed</small></div>
+          </div>
         </div>
-        <p class="live-status" id="lv-status" role="status"></p>
-        <div class="live-progress" id="lv-progress" hidden><i></i></div>
+        <div class="lv-actions">
+          <button type="button" class="btn btn-primary" id="lv-speed">▶ Play the evening</button>
+          <button type="button" class="btn" id="lv-luck">↻ New luck</button>
+        </div>
+      </header>
+
+      <div class="lv-floors">
+        <div class="lv-lane"><div class="lv-lane-head"><b>Industry standard</b><span id="lv-w-theirs"></span></div><div class="floor" id="lv-f-theirs"></div></div>
+        <div class="lv-lane is-ours"><div class="lv-lane-head"><b>OpsLens</b><span id="lv-w-ours"></span></div><div class="floor" id="lv-f-ours"></div></div>
+        <div class="lv-wait" id="lv-wait" hidden><div class="lv-wait-box"><div class="spinner"></div>
+          <div id="lv-wait-text">Simulating today on this laptop…</div><div class="live-progress"><i id="lv-progress"></i></div></div></div>
       </div>
-      <div class="mission-floors">
-        <div><div class="mission-lane-title">Industry standard<small id="lv-w-theirs"></small></div><div class="floor" id="lv-f-theirs"></div></div>
-        <div><div class="mission-lane-title">OpsLens<small id="lv-w-ours"></small></div><div class="floor" id="lv-f-ours"></div></div>
-        ${floorLegend()}
+      <div class="lv-key"><span><i class="tile busy"></i>agent at work</span><span><i class="tile cross"></i>rescue from another team</span>
+        <span><i class="tile idle"></i>free</span><span><i class="dot"></i>customer waiting</span><span><i class="dot late"></i>promise missed</span></div>
+
+      <div class="lv-whatif">
+        <span class="lv-whatif-q">What if…</span>
+        ${PRESETS.map((p) => `<button type="button" class="chip-btn" data-preset="${p.id}">${escapeHtml(p.label)}</button>`).join("")}
+        <button type="button" class="chip-btn ghost" id="lv-custom-toggle" aria-expanded="false">Custom…</button>
       </div>
-    </section>
-    <section class="card live-controls" aria-label="Change today">
-      <div class="card-head"><div><h3 class="card-title">Change today, and watch it run</h3>
-        <div class="card-sub">Take agents away or bring more customers: the engine simulates today again on this laptop
-          (about half a minute) and both floors above follow your change.</div></div></div>
-      <div class="live-controls-grid">
+      <div class="lv-custom" id="lv-custom" hidden>
         ${Object.entries(TEAMS).map(([team, name]) => `
           <div class="stepper" data-team="${team}">
             <div class="stepper-label"><b>Team ${team}</b> ${name}</div>
@@ -75,53 +88,63 @@ export function render(section) {
               <button type="button" class="btn btn-sm" data-step="1" aria-label="One agent more in team ${team}">+</button>
             </div>
           </div>`).join("")}
-        <label class="live-volume">
-          <span><b>Customers today</b> <output id="lv-vol-out">100%</output></span>
-          <input type="range" id="lv-volume" min="50" max="200" step="10" value="100" aria-label="Customers today, percent of normal">
-        </label>
+        <label class="live-volume"><span><b>Customers</b> <output id="lv-vol-out">100%</output></span>
+          <input type="range" id="lv-volume" min="50" max="200" step="10" value="100" aria-label="Customers today, percent of normal"></label>
+        <button type="button" class="btn btn-primary" id="lv-apply">Run today</button>
       </div>
-      <div class="live-controls-actions">
-        <button type="button" class="btn btn-primary" id="lv-apply">Run today with my change</button>
-        <button type="button" class="btn ghost" id="lv-reset">Back to a normal day</button>
-        <span class="small muted" id="lv-scenario">A normal day.</span>
+
+      <div class="lv-feeds">
+        <section class="lv-feed"><h3>In danger right now</h3><div id="lv-danger"></div></section>
+        <section class="lv-feed"><h3>Just decided by OpsLens</h3><ul class="lv-decisions" id="lv-decisions"></ul></section>
       </div>
-    </section>
-    <div class="grid cols-2 stretch live-panels">
-      <section class="card"><div class="card-head"><div><h3 class="card-title">In danger right now</h3>
-        <div class="card-sub">The waiting customers OpsLens sees as most likely to miss their promise, why, and what serving them now would change.</div></div></div>
-        <div id="lv-danger"></div></section>
-      <section class="card"><div class="card-head"><div><h3 class="card-title">What OpsLens just decided</h3>
-        <div class="card-sub">The last few minutes of assignments, each with its reason.</div></div></div>
-        <div id="lv-decisions"></div></section>
-    </div>`;
+    </section>`;
+
   section.querySelector("#lv-speed").addEventListener("click", toggleSpeed);
   section.querySelector("#lv-luck").addEventListener("click", () => { seed = (seed % 99) + 1; refresh(); });
-  section.querySelectorAll(".stepper [data-step]").forEach((button) => button.addEventListener("click", () => {
-    const team = button.closest(".stepper").dataset.team;
-    draft.agents[team] = Math.max(-5, Math.min(5, draft.agents[team] + Number(button.dataset.step)));
-    showDraft();
-  }));
-  section.querySelector("#lv-volume").addEventListener("input", (event) => { draft.volume = Number(event.target.value); showDraft(); });
-  section.querySelector("#lv-apply").addEventListener("click", () => { applied = clone(draft); showDraft(); refresh(); });
-  section.querySelector("#lv-reset").addEventListener("click", () => {
-    applied = { agents: { A: 0, B: 0, C: 0, D: 0 }, volume: 100 };
+  section.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => {
+    applied = clone(PRESETS.find((p) => p.id === b.dataset.preset).s);
     draft = clone(applied);
     showDraft();
     refresh();
+  }));
+  section.querySelector("#lv-custom-toggle").addEventListener("click", (event) => {
+    const box = document.getElementById("lv-custom");
+    box.hidden = !box.hidden;
+    event.currentTarget.setAttribute("aria-expanded", String(!box.hidden));
+  });
+  section.querySelectorAll(".stepper [data-step]").forEach((b) => b.addEventListener("click", () => {
+    const team = b.closest(".stepper").dataset.team;
+    draft.agents[team] = Math.max(-5, Math.min(5, draft.agents[team] + Number(b.dataset.step)));
+    showDraft();
+  }));
+  section.querySelector("#lv-volume").addEventListener("input", (e) => { draft.volume = Number(e.target.value); showDraft(); });
+  section.querySelector("#lv-apply").addEventListener("click", () => { applied = clone(draft); showDraft(); refresh(); });
+  // The danger cards open to show every reason.
+  section.querySelector("#lv-danger").addEventListener("click", (e) => {
+    const card = e.target.closest(".lv-card");
+    if (card && !e.target.closest(".ev")) card.classList.toggle("open");
   });
   showDraft();
   start();
   if (!listening) {
     listening = true;
-    document.addEventListener("tab-shown", (event) => (event.detail === "live" ? start() : stop()));
+    document.addEventListener("tab-shown", (event) => {
+      document.body.classList.toggle("on-live", event.detail === "live");
+      if (event.detail === "live") start(); else stop();
+    });
   }
+  document.body.classList.add("on-live");
 }
 
 function clone(s) {
   return { agents: { ...s.agents }, volume: s.volume };
 }
 
-// The panel shows the draft; the button lights up when the draft differs from what is running.
+function same(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+// Steppers show the draft; the preset chip that matches what is running is lit.
 function showDraft() {
   Object.keys(TEAMS).forEach((team) => {
     const out = document.getElementById(`lv-a-${team}`);
@@ -130,17 +153,20 @@ function showDraft() {
     out.textContent = k > 0 ? `+${k}` : String(k);
     out.className = k < 0 ? "minus" : k > 0 ? "plus" : "";
   });
-  document.getElementById("lv-volume").value = draft.volume;
-  document.getElementById("lv-vol-out").textContent = `${draft.volume}%`;
-  const changed = JSON.stringify(draft) !== JSON.stringify(applied);
-  document.getElementById("lv-apply").classList.toggle("is-ready", changed);
-  document.getElementById("lv-scenario").textContent = describe(applied);
+  const vol = document.getElementById("lv-volume");
+  if (vol) vol.value = draft.volume;
+  const out = document.getElementById("lv-vol-out");
+  if (out) out.textContent = `${draft.volume}%`;
+  const preset = PRESETS.find((p) => same(p.s, applied));
+  document.querySelectorAll("[data-preset]").forEach((b) => b.setAttribute("aria-pressed", String(preset && b.dataset.preset === preset.id)));
+  const custom = document.getElementById("lv-custom-toggle");
+  if (custom) custom.classList.toggle("is-on", !preset);
 }
 
 function describe(s) {
-  const parts = Object.entries(s.agents).filter(([, k]) => k).map(([t, k]) => `Team ${t} ${k > 0 ? "+" : "−"}${Math.abs(k)} agent${Math.abs(k) === 1 ? "" : "s"}`);
+  const parts = Object.entries(s.agents).filter(([, k]) => k).map(([t, k]) => `Team ${t} ${k > 0 ? "+" : "−"}${Math.abs(k)}`);
   if (s.volume !== 100) parts.push(`${s.volume > 100 ? "+" : "−"}${Math.abs(s.volume - 100)}% customers`);
-  return parts.length ? `Running now: ${parts.join(", ")}.` : "Running now: a normal day.";
+  return parts.length ? parts.join(", ") : "a normal day";
 }
 
 function query() {
@@ -148,7 +174,6 @@ function query() {
   return `seed=${seed}&agents=${encodeURIComponent(agents)}&volume=${(applied.volume / 100).toFixed(2)}`;
 }
 
-// The minute of the day shown: the real clock, or the fast-forward clock.
 function minuteNow() {
   if (speed > 1 && fastMinute !== null) return fastMinute;
   const now = new Date();
@@ -178,11 +203,11 @@ function toggleSpeed() {
   if (speed > 1) {
     speed = 1;
     fastMinute = null;
-    button.textContent = "Play the day fast";
+    button.textContent = "▶ Play the evening";
   } else {
-    speed = 180; // one real second = three simulated minutes: the evening in about 2.5 minutes
-    fastMinute = 17 * 60; // start before the dinner rush
-    button.textContent = "Back to real time";
+    speed = 180; // one real second = three simulated minutes: 17:00-24:00 in about 2.5 minutes
+    fastMinute = 17 * 60;
+    button.textContent = "■ Back to real time";
   }
   showClock();
   refresh();
@@ -197,19 +222,17 @@ function showClock() {
   const mm = String(Math.floor(m % 60)).padStart(2, "0");
   const ss = speed > 1 ? "00" : String(today.getSeconds()).padStart(2, "0");
   clock.textContent = `${hh}:${mm}:${ss}`;
-  document.getElementById("lv-date").textContent = (speed > 1 ? "Fast replay · " : "Live · ")
-    + today.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  document.getElementById("lv-weekday").textContent = today.toLocaleDateString(undefined, { weekday: "long" });
+  document.getElementById("lv-mode").textContent = speed > 1 ? "Fast replay" : "Live";
+  document.getElementById("lv-date").textContent = today.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 }
 
-// While the engine simulates, a bar fills over ~30 s so the wait feels like work, not a freeze.
 function showProgress() {
-  const bar = document.getElementById("lv-progress");
-  if (!bar) return;
-  bar.hidden = waitingSince === null;
+  const wait = document.getElementById("lv-wait");
+  if (!wait) return;
+  wait.hidden = waitingSince === null;
   if (waitingSince !== null) {
     const done = Math.min(0.95, (Date.now() - waitingSince) / 30000);
-    bar.firstElementChild.style.width = `${Math.round(done * 100)}%`;
+    document.getElementById("lv-progress").style.width = `${Math.round(done * 100)}%`;
   }
 }
 
@@ -219,7 +242,7 @@ async function refresh() {
   const status = document.getElementById("lv-status");
   if (!status) return;
   if (state.staticServer) {
-    status.textContent = "Live now needs the OpsLens server (start it with uvicorn, not a static file server).";
+    status.textContent = "Live now needs the OpsLens server.";
     return;
   }
   let data;
@@ -227,7 +250,7 @@ async function refresh() {
     const response = await fetch(`/api/live?weekday=${weekday}&minute=${minuteNow().toFixed(2)}&${query()}`, { cache: "no-store" });
     data = await response.json();
   } catch (error) {
-    status.textContent = "The engine did not answer. Is the server still running?";
+    status.textContent = "The engine is not answering. Is the server running?";
     poll = setTimeout(refresh, POLL_MS * 2);
     return;
   }
@@ -237,7 +260,7 @@ async function refresh() {
   }
   if (!data.ready) {
     if (waitingSince === null) waitingSince = Date.now();
-    status.textContent = `Simulating today on this laptop (${describe(applied).replace("Running now: ", "").replace(".", "")}, luck ${seed}): two ways of working, every customer, every minute…`;
+    document.getElementById("lv-wait-text").textContent = `Simulating today on this laptop: ${describe(applied)}, every customer, every minute…`;
     showProgress();
     poll = setTimeout(refresh, WAIT_MS);
     return;
@@ -245,49 +268,79 @@ async function refresh() {
   waitingSince = null;
   showProgress();
   state.live = data;
-  status.textContent = `Simulated on this laptop · the practice company's test day ${data.day} · luck ${data.seed}`;
+  status.textContent = `Running on this laptop · ${describe(applied)} · practice customers, test day ${data.day} · luck ${data.seed}`;
   draw(data);
   poll = setTimeout(refresh, speed > 1 ? 1000 : POLL_MS);
 }
 
 function draw(d) {
-  const lanes = [["baseline_d", "theirs"], ["opslens", "ours"]];
-  lanes.forEach(([key, side]) => {
-    const p = d.policies[key];
-    if (!p) return;
-    bump(`lv-m-${side}`, ev(`live.policies.${key}.missed`, "int"));
-    document.getElementById(`lv-w-${side}`).innerHTML = ` ${ev(`live.policies.${key}.waiting`, "int")} waiting now`;
-    drawFrameInto(document.getElementById(`lv-f-${side}`), d.agents, p.status, p.queues);
-  });
-  const theirs = d.policies.baseline_d ? d.policies.baseline_d.missed : 0;
-  const ours = d.policies.opslens ? d.policies.opslens.missed : 0;
-  document.getElementById("lv-saved").innerHTML = theirs > ours
-    ? `<b>${theirs - ours}</b> more customer${theirs - ours === 1 ? "" : "s"} helped in time today, so far, with the same agents.`
-    : theirs === ours ? "Even so far today." : `OpsLens is behind by ${ours - theirs} so far today.`;
-  document.getElementById("lv-danger").innerHTML = d.danger.length ? d.danger.map((t, i) => `
-      <div class="live-ticket">
-        <div class="live-risk">${ev(`live.danger[${i}].probability`, "frac_pct")}
-          <div class="live-after">${t.nobody_capable ? "nobody capable on shift"
-            : `→ ${ev(`live.danger[${i}].if_served_now`, "frac_pct")} if served now`}</div></div>
-        <div>
-          <div class="live-ticket-head"><strong>${escapeHtml(t.ticket_id)}</strong>
-            <span class="pill ${t.priority === "P1" ? "p1" : ""}">${escapeHtml(t.priority)}</span>
-            <span class="pill">${escapeHtml(prettyKey(t.category))}</span>
-            <span class="pill">${escapeHtml(LANGUAGE[t.language] || t.language)}</span>
-            <span class="small muted">${ev(`live.danger[${i}].minutes_left`, "min")} left</span></div>
-          <div class="live-text">“${escapeHtml(t.text)}”</div>
-          <ul class="live-reasons">${t.reasons.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
-        </div>
-      </div>`).join("")
-    : `<p class="muted">Nobody is in danger right now. Quiet hours: press “Play the day fast” for the dinner rush.</p>`;
-  document.getElementById("lv-decisions").innerHTML = d.decisions.length ? `<ul class="live-decisions">${d.decisions.map((x) => `
-      <li><span class="live-when">${clockOf(x.minute)}</span>
-        <strong>${escapeHtml(x.ticket_id)}</strong> → <strong>${escapeHtml(agentName(d.agents, x.agent))}</strong>
-        <div class="small muted">${escapeHtml(x.reason)}</div></li>`).join("")}</ul>`
-    : `<p class="muted">No assignment in the last 15 minutes.</p>`;
+  const theirs = d.policies.baseline_d;
+  const ours = d.policies.opslens;
+  if (!theirs || !ours) return;
+  const top = Math.max(theirs.missed, ours.missed, 1);
+  bump("lv-m-theirs", ev("live.policies.baseline_d.missed", "int"));
+  bump("lv-m-ours", ev("live.policies.opslens.missed", "int"));
+  document.getElementById("lv-bar-theirs").style.width = `${(100 * theirs.missed) / top}%`;
+  document.getElementById("lv-bar-ours").style.width = `${(100 * ours.missed) / top}%`;
+  const diff = theirs.missed - ours.missed;
+  bump("lv-saved", String(Math.abs(diff)));
+  document.getElementById("lv-saved-label").textContent = diff >= 0
+    ? `more customer${diff === 1 ? "" : "s"} helped in time today, with the same agents`
+    : `fewer helped in time so far today: the industry standard is ahead`;
+  document.getElementById("lv-w-theirs").innerHTML = `${ev("live.policies.baseline_d.waiting", "int")} waiting`;
+  document.getElementById("lv-w-ours").innerHTML = `${ev("live.policies.opslens.waiting", "int")} waiting`;
+  drawFrameInto(document.getElementById("lv-f-theirs"), d.agents, theirs.status, theirs.queues);
+  drawFrameInto(document.getElementById("lv-f-ours"), d.agents, ours.status, ours.queues);
+  drawDanger(d);
+  drawDecisions(d);
 }
 
-// Replace a counter and flash it when its value changed (motion that answers a change in the data).
+// Three cards: risk, who, one reason; click a card to see every reason.
+function drawDanger(d) {
+  const box = document.getElementById("lv-danger");
+  const open = new Set([...box.querySelectorAll(".lv-card.open")].map((c) => c.dataset.id));
+  box.innerHTML = d.danger.length ? d.danger.slice(0, 3).map((t, i) => `
+      <article class="lv-card ${open.has(t.ticket_id) ? "open" : ""}" data-id="${escapeHtml(t.ticket_id)}" tabindex="0">
+        <div class="lv-risk">${ev(`live.danger[${i}].probability`, "frac_pct")}</div>
+        <div class="lv-card-main">
+          <div class="lv-card-head"><span class="pill ${t.priority === "P1" ? "p1" : ""}">${escapeHtml(t.priority)}</span>
+            <b>${escapeHtml(prettyKey(t.category))}</b><span class="muted">${escapeHtml(LANGUAGE[t.language] || t.language)}</span>
+            <span class="muted lv-left">${ev(`live.danger[${i}].minutes_left`, "min")} left</span></div>
+          <div class="lv-quote">“${escapeHtml(t.text)}”</div>
+          <div class="lv-why">${escapeHtml(t.reasons[0] || "")}</div>
+          <ul class="lv-more">${t.reasons.slice(1).map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
+        </div>
+        <div class="lv-fix">${t.nobody_capable ? `<span class="lv-fix-no">nobody capable on shift → rescue</span>`
+          : `<span>if served now</span>${ev(`live.danger[${i}].if_served_now`, "frac_pct")}`}</div>
+      </article>`).join("")
+    : `<p class="muted lv-empty">Nobody in danger right now. Press “Play the evening” for the dinner rush.</p>`;
+}
+
+// One line per decision with a short tag; decisions not seen before light up.
+function drawDecisions(d) {
+  const list = document.getElementById("lv-decisions");
+  list.innerHTML = d.decisions.length ? d.decisions.slice(0, 5).map((x) => {
+    const key = `${x.ticket_id}|${x.minute}`;
+    const fresh = !seenDecisions.has(key);
+    seenDecisions.add(key);
+    const [tagClass, tagText] = tagOf(x.reason);
+    return `<li class="${fresh ? "fresh" : ""}" title="${escapeHtml(x.reason)}">
+        <span class="lv-time">${clockOf(x.minute)}</span>
+        <span class="lv-who"><b>${escapeHtml(x.ticket_id)}</b> → ${escapeHtml(agentName(d.agents, x.agent))}</span>
+        <span class="lv-tag ${tagClass}">${escapeHtml(tagText)}</span></li>`;
+  }).join("") : `<li class="muted lv-empty">No assignment in the last 15 minutes.</li>`;
+  if (seenDecisions.size > 400) seenDecisions = new Set([...seenDecisions].slice(-200));
+}
+
+// A short tag from the engine's reason line (the full line is the tooltip).
+function tagOf(reason) {
+  const risk = reason.match(/breach risk ([\d.]+) -> ([\d.]+)/);
+  if (/cross-skill/.test(reason)) return ["rescue", "cross-team rescue"];
+  if (/past its SLA/.test(reason)) return ["late", "late: not forgotten"];
+  if (risk) return ["save", `risk ${Math.round(risk[1] * 100)}% → ${Math.round(risk[2] * 100)}%`];
+  return ["turn", "in turn"];
+}
+
 function bump(id, html) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -295,7 +348,7 @@ function bump(id, html) {
   el.innerHTML = html;
   if (before !== el.textContent && before !== "…") {
     el.classList.remove("bumped");
-    void el.offsetWidth; // restart the animation
+    void el.offsetWidth;
     el.classList.add("bumped");
   }
 }
@@ -307,5 +360,5 @@ function clockOf(minute) {
 
 function agentName(agents, id) {
   const a = agents.find((x) => x.id === id);
-  return a && a.name && a.name !== id ? `${a.name} (${id})` : id;
+  return a && a.name && a.name !== id ? a.name : id;
 }

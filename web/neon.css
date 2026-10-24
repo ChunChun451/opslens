@@ -319,3 +319,25 @@ html[data-theme="neon"] #plan-button .count {
   color: #06101f;
   box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
 }
+
+/* ---- 14. Live now command centre, neon details ---------------------------------------------- */
+html[data-theme="neon"] .lv-hero {
+  background:
+    radial-gradient(90% 140% at 0% 0%, rgba(34, 211, 238, 0.16), transparent 55%),
+    radial-gradient(90% 140% at 100% 100%, rgba(168, 85, 247, 0.22), transparent 55%),
+    rgba(9, 13, 27, 0.92);
+  box-shadow: 0 0 0 1px rgba(130, 145, 255, 0.22), 0 0 50px -12px rgba(124, 58, 237, 0.55);
+}
+html[data-theme="neon"] .lv-big { text-shadow: 0 0 40px rgba(34, 211, 238, 0.5); }
+html[data-theme="neon"] .lv-clock { text-shadow: 0 0 26px rgba(34, 211, 238, 0.3); }
+html[data-theme="neon"] .lv-bar.ours i { box-shadow: 0 0 12px rgba(34, 211, 238, 0.7); }
+html[data-theme="neon"] .lv-bar.theirs i { box-shadow: 0 0 12px rgba(255, 77, 141, 0.6); }
+html[data-theme="neon"] .lv-lane,
+html[data-theme="neon"] .lv-feed { background: linear-gradient(180deg, rgba(25, 32, 55, 0.78), rgba(15, 20, 36, 0.78)); backdrop-filter: blur(10px); }
+html[data-theme="neon"] .lv-lane.is-ours { border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 0 30px -12px rgba(34, 211, 238, 0.6); }
+html[data-theme="neon"] .chip-btn { background: rgba(18, 24, 41, 0.8); }
+html[data-theme="neon"] .chip-btn[aria-pressed="true"],
+html[data-theme="neon"] .chip-btn.is-on { background: rgba(34, 211, 238, 0.14); box-shadow: 0 0 18px rgba(34, 211, 238, 0.35); color: #fff; }
+html[data-theme="neon"] .lv-risk,
+html[data-theme="neon"] .lv-risk .ev { text-shadow: 0 0 14px rgba(255, 77, 141, 0.45); }
+html[data-theme="neon"] .brand-logo { filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.55)); }

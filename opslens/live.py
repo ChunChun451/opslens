@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 
 from opslens import policies
+from opslens.privacy import mask_pii
 from opslens.risk import risk_if_assigned_now, top_reasons
 from opslens.simulate import FLOOR_EVERY_MIN, MINUTES_PER_DAY, simulate
 from opslens.whatif import change_agents, change_volume, make_policy
@@ -158,7 +159,8 @@ def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dic
                          "nobody_capable": bool(row["capable_on_shift"] < 0.5),
                          "minutes_left": round(float(row["time_left_min"]), 1),
                          "priority": str(row["priority"]), "language": str(row["language"]),
-                         "category": str(row["category_pred"]), "text": str(info["text"])[:140],
+                         "category": str(row["category_pred"]),
+                         "text": mask_pii(str(info["text"])).text[:140],  # never show a phone number
                          "reasons": [r["text"] for r in why]})
         live.danger.append({"minute": now, "tickets": rows})
 
