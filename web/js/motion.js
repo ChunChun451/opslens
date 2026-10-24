@@ -6,7 +6,7 @@
 //
 // Example: "2.2%" counts 0.0% → 2.2% in 0.9 s; "−4.6 pts" counts −0.0 → −4.6 pts; "10,788" keeps its comma.
 
-const SELECTOR = ".stat-value .ev, .proof-a .ev, .cbar-value .ev";
+const SELECTOR = ".stat-value .ev, .proof-a .ev, .cbar-value .ev, .fact b .ev, .fix-number .ev, .lv-o .ev";
 const DURATION_MS = 900;
 const NUMBER = /[−-]?\d[\d,]*(?:\.\d+)?/;
 

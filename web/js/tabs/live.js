@@ -16,6 +16,7 @@ import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey } from "../format.js";
+import { mascotHtml, cheer } from "../mascot.js";
 
 const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
 const WAIT_MS = 2500; // while a day is being simulated
@@ -39,7 +40,9 @@ let listening = false;
 let applied = clone(NORMAL);
 let draft = clone(NORMAL);
 let waitingSince = null;
-let seenDecisions = new Set(); // decisions already shown, so new ones can light up
+let seenDecisions = new Set();
+let lastGap = null; // the live gap last drawn (for the mascot's cheer)
+let lastRun = ""; // decisions already shown, so new ones can light up
 
 export function render(section) {
   section.innerHTML = `
@@ -52,7 +55,7 @@ export function render(section) {
         </div>
         <div class="lv-impact">
           <div class="lv-col-title"><span class="live-dot"></span>Today so far, live</div>
-          <div class="lv-big"><span id="lv-saved">…</span></div>
+          <div class="lv-big-row"><div class="lv-big"><span id="lv-saved">…</span></div>${mascotHtml("lv-mascot")}</div>
           <div class="lv-big-label" id="lv-saved-label">more customers helped in time today, with the same agents</div>
           <div class="lv-bars">
             <div class="lv-bar theirs"><span class="lv-bar-name">Industry standard</span><span class="lv-bar-track"><i id="lv-bar-theirs"></i></span><b id="lv-m-theirs">…</b><small>missed</small></div>
@@ -286,6 +289,11 @@ function draw(d) {
   document.getElementById("lv-bar-theirs").style.width = `${(100 * theirs.missed) / top}%`;
   document.getElementById("lv-bar-ours").style.width = `${(100 * ours.missed) / top}%`;
   const diff = theirs.missed - ours.missed;
+  // The mascot cheers when the gap grows (same scenario and luck; a new run starts fresh).
+  const runKey = query();
+  if (lastGap !== null && lastRun === runKey && diff > lastGap) cheer("lv-mascot", `+${diff - lastGap} helped!`);
+  lastGap = diff;
+  lastRun = runKey;
   bump("lv-saved", String(Math.abs(diff)));
   document.getElementById("lv-saved-label").textContent = diff >= 0
     ? `more customer${diff === 1 ? "" : "s"} helped in time today, with the same agents`
@@ -337,7 +345,8 @@ function drawDanger(d) {
         <div class="lv-fix">${t.nobody_capable ? `<span class="lv-fix-no">nobody capable on shift → rescue</span>`
           : `<span>if served now</span>${ev(`live.danger[${i}].if_served_now`, "frac_pct")}`}</div>
       </article>`).join("")
-    : `<p class="muted lv-empty">Nobody in danger right now. Press “Play the evening” for the dinner rush.</p>`;
+    : `<div class="lv-empty lv-sleep">${mascotHtml("lv-mascot-sleep", "sleep")}<p class="muted">Nobody in danger right now.
+        Press “Play the evening” for the dinner rush.</p></div>`;
 }
 
 // One line per decision with a short tag; decisions not seen before light up.
@@ -370,7 +379,11 @@ function bump(id, html) {
   if (!el) return;
   const before = el.textContent;
   el.innerHTML = html;
-  if (before !== el.textContent && before !== "…") {
+  if (before === "…") {
+    countUp(el, "0", el.textContent); // the first value rolls up from 0
+    return;
+  }
+  if (before !== el.textContent) {
     countUp(el, before, el.textContent);
     el.classList.remove("bumped");
     void el.offsetWidth;

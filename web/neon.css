@@ -454,3 +454,121 @@ html[data-theme="neon"] .risk-cards .ticket:hover { border-color: rgba(255, 77, 
   /* The bars of the live hero grow smoothly to their new length. */
   .lv-bar-track i { transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
 }
+
+/* ---- Motion, stronger (owner: "I can't see any animation"). Still off for reduced motion. ---- */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* A glowing light travels around the Live hero's border. */
+  @property --spin { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  html[data-theme="neon"] .lv-hero { position: relative; isolation: isolate; }
+  html[data-theme="neon"] .lv-hero::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: calc(var(--radius) + 2px);
+    padding: 2px;
+    background: conic-gradient(from var(--spin), transparent 0deg, #22d3ee 40deg, #a78bfa 90deg, transparent 150deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: spin-border 5s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.8));
+  }
+  @keyframes spin-border { to { --spin: 360deg; } }
+
+  /* The aurora: stronger colours, bigger and quicker drift. */
+  html[data-theme="neon"] body::before {
+    background:
+      radial-gradient(42% 38% at 18% 82%, rgba(34, 211, 238, 0.3), transparent 70%),
+      radial-gradient(40% 36% at 82% 18%, rgba(168, 85, 247, 0.34), transparent 70%),
+      radial-gradient(32% 30% at 62% 58%, rgba(236, 72, 153, 0.16), transparent 70%);
+    animation: aurora-strong 22s ease-in-out infinite alternate;
+  }
+  @keyframes aurora-strong {
+    0% { transform: translate3d(-6%, 4%, 0) rotate(-8deg) scale(1); }
+    50% { transform: translate3d(8%, -6%, 0) rotate(10deg) scale(1.12); }
+    100% { transform: translate3d(-4%, 7%, 0) rotate(-4deg) scale(1.04); }
+  }
+
+  /* Busy agents breathe: their tiles glow brighter and dimmer, slightly out of step. */
+  html[data-theme="neon"] .floor .tile.busy { animation: breathe 2.8s ease-in-out infinite; }
+  html[data-theme="neon"] .floor .tile.busy:nth-child(2n) { animation-delay: -0.9s; }
+  html[data-theme="neon"] .floor .tile.busy:nth-child(3n) { animation-delay: -1.7s; }
+  html[data-theme="neon"] .floor .tile.cross { animation: breathe 1.6s ease-in-out infinite; }
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 4px rgba(34, 211, 238, 0.35); filter: brightness(0.85); }
+    50% { box-shadow: 0 0 14px rgba(34, 211, 238, 0.95); filter: brightness(1.2); }
+  }
+
+  /* Page titles: a slow shimmer runs through the gradient. */
+  html[data-theme="neon"] .page-title {
+    background-image: linear-gradient(90deg, #ffffff 0%, #c9d4ff 30%, #7ee8fa 50%, #c9d4ff 70%, #ffffff 100%);
+    background-size: 220% 100%;
+    animation: title-shimmer 7s ease-in-out infinite;
+  }
+  @keyframes title-shimmer { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+
+  /* The live clock's seconds feel alive: a soft glow breathes on the clock. */
+  html[data-theme="neon"] .lv-clock { animation: clock-glow 2s ease-in-out infinite; }
+  @keyframes clock-glow { 0%, 100% { text-shadow: 0 0 18px rgba(34, 211, 238, 0.25); } 50% { text-shadow: 0 0 34px rgba(34, 211, 238, 0.6); } }
+}
+
+/* =============================================================================================
+   Mascot "Lenny" (Claude 2, 24 Oct, "cartoon animation, minimal") — js/mascot.js.
+   Idle: floats and blinks. Cheer: hops with a speech bubble. Sleep: eyes closed, z z z.
+   ============================================================================================= */
+.lv-big-row { display: flex; align-items: center; gap: 14px; }
+.mascot { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+.mascot svg { display: block; overflow: visible; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.45)); }
+.mascot .mascot-closed { display: none; }
+.mascot.is-sleep .mascot-eyes, .mascot.is-sleep .mascot-smile { display: none; }
+.mascot.is-sleep .mascot-closed { display: inline; }
+.mascot-bubble {
+  position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, 6px) scale(0.6);
+  padding: 4px 10px; border-radius: 12px; white-space: nowrap;
+  background: #fff; color: #0d1428; font-weight: 750; font-size: 0.85rem;
+  opacity: 0; pointer-events: none;
+}
+.mascot-bubble::after {
+  content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: #fff;
+}
+.mascot-z { display: none; position: absolute; right: -4px; top: -6px; color: #a78bfa; font-weight: 800; }
+.mascot.is-sleep .mascot-z { display: block; }
+.mascot-z span { position: absolute; font-size: 0.8rem; opacity: 0; }
+.lv-sleep { display: flex; align-items: center; gap: 14px; }
+.lv-sleep .mascot { transform: scale(0.8); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .mascot svg { animation: mascot-float 3.2s ease-in-out infinite; }
+  .mascot .mascot-eye { transform-box: fill-box; transform-origin: center; animation: mascot-blink 4.2s infinite; }
+  .mascot .mascot-handle { transform-origin: 52px 52px; animation: mascot-wag 3.2s ease-in-out infinite; }
+  .mascot.cheer svg { animation: mascot-hop 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 2; }
+  .mascot.cheer .mascot-bubble { animation: mascot-say 2.2s ease-out forwards; }
+  .mascot.is-sleep svg { animation: mascot-breathe 3.6s ease-in-out infinite; }
+  .mascot.is-sleep .mascot-z span { animation: mascot-z 3s ease-in infinite; }
+  .mascot.is-sleep .mascot-z span:nth-child(2) { animation-delay: 1s; }
+  .mascot.is-sleep .mascot-z span:nth-child(3) { animation-delay: 2s; }
+}
+@keyframes mascot-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+@keyframes mascot-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes mascot-wag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-8deg); } }
+@keyframes mascot-hop {
+  0% { transform: translateY(0) scale(1, 1); }
+  25% { transform: translateY(2px) scale(1.1, 0.88); }
+  55% { transform: translateY(-18px) scale(0.94, 1.08) rotate(-6deg); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes mascot-say {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(0.6); }
+  15% { opacity: 1; transform: translate(-50%, -4px) scale(1.05); }
+  25%, 80% { opacity: 1; transform: translate(-50%, -6px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -14px) scale(0.95); }
+}
+@keyframes mascot-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04, 0.97); } }
+@keyframes mascot-z {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(14px, -26px) scale(1.2); }
+}
