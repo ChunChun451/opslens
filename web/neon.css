@@ -880,3 +880,28 @@ html[data-theme="neon"] .lv-scene { background: linear-gradient(90deg, rgba(255,
 html[data-theme="neon"] .sc {
   background: linear-gradient(90deg, rgba(34, 211, 238, 0.07), rgba(18, 24, 41, 0.75) 40%, rgba(18, 24, 41, 0.75) 70%, rgba(167, 139, 250, 0.08));
 }
+
+/* The wrong order (24 Oct, "also make biryani"): a steaming biryani plate in the customer's
+   hands-reach, and a thought cloud of the crossed-out dosa they wanted. js/mascot.js. */
+.biryani { position: relative; width: 88px; height: 60px; flex-shrink: 0; margin-top: 26px; }
+.biryani-plate { display: block; overflow: visible; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.45)); }
+.biryani-wish { position: absolute; left: 18px; bottom: 100%; margin-bottom: 4px; }
+.biryani-wish svg { display: block; overflow: visible; }
+.biryani-wish i { position: absolute; border-radius: 50%; background: #fff; }
+.biryani-wish i:nth-of-type(1) { width: 6px; height: 6px; left: 4px; bottom: -6px; }
+.biryani-wish i:nth-of-type(2) { width: 4px; height: 4px; left: 0; bottom: -11px; }
+.biryani .steam { opacity: 0.8; }
+@media (prefers-reduced-motion: no-preference) {
+  .biryani-plate { animation: plate-wobble 2.6s ease-in-out infinite; transform-origin: 50% 90%; }
+  @keyframes plate-wobble { 0%, 60%, 100% { transform: rotate(0deg); } 68% { transform: rotate(-6deg) translateY(-2px); } 78% { transform: rotate(5deg); } 88% { transform: rotate(-2deg); } }
+  .biryani .steam { animation: biryani-steam 2.4s ease-out infinite; opacity: 0; }
+  .biryani .steam.s2 { animation-delay: 0.8s; } .biryani .steam.s3 { animation-delay: 1.6s; }
+  @keyframes biryani-steam { 0% { opacity: 0; transform: translateY(4px) scaleY(0.7); } 30% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(-8px) scaleY(1.1); } }
+  .biryani .leg { transform-origin: 38px 26px; animation: leg-bob 1.3s ease-in-out infinite; }
+  @keyframes leg-bob { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-7deg) translateY(-1px); } }
+  .biryani-wish { animation: wish-float 3s ease-in-out infinite; }
+  @keyframes wish-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  .biryani-wish .no { stroke-dasharray: 30; animation: cross-out 3.6s ease-out infinite; }
+  @keyframes cross-out { 0%, 30% { stroke-dashoffset: 30; } 50%, 100% { stroke-dashoffset: 0; } }
+}
+@media (max-width: 760px) { .biryani-wish { display: none; } }

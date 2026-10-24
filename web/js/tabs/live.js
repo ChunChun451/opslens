@@ -16,7 +16,7 @@ import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey } from "../format.js";
-import { mascotHtml, customerHtml, cheer, setMood } from "../mascot.js";
+import { mascotHtml, customerHtml, biryaniHtml, cheer, setMood } from "../mascot.js";
 
 const BUSY_WAITING = 60; // customers waiting on the OpsLens floor above which Lenny sweats (a look, not a result)
 const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
@@ -75,7 +75,7 @@ export function render(section) {
       </header>
 
       <div class="lv-scene" aria-hidden="true">
-        <div class="lv-scene-customer">${customerHtml("lv-customer")}<div class="lv-say" id="lv-say">${escapeHtml(JOKE)}</div></div>
+        <div class="lv-scene-customer">${customerHtml("lv-customer")}${biryaniHtml("lv-biryani")}<div class="lv-say" id="lv-say">${escapeHtml(JOKE)}</div></div>
         <div class="lv-scene-track"><i class="tk"></i><i class="tk"></i><i class="tk"></i><i class="tk"></i></div>
         <div class="lv-scene-lenny"><div class="lv-scene-status" id="lv-scene-status">Lenny is on shift</div>${mascotHtml("lv-mascot", "tired")}</div>
       </div>

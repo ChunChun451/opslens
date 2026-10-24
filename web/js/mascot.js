@@ -69,6 +69,38 @@ export function customerHtml(id) {
     </div>`;
 }
 
+// The wrong order: a steaming plate of biryani (rice, a chicken leg, mint, lemon), with a thought
+// cloud of the crossed-out dosa the customer wanted. Decoration only, like the rest of the scene.
+export function biryaniHtml(id) {
+  return `<div class="biryani" id="${id}" aria-hidden="true">
+      <div class="biryani-wish">
+        <svg viewBox="0 0 44 30" width="58" height="40">
+          <path d="M8 22a7 7 0 01-1-14a9 9 0 0116-4a8 8 0 0114 5a6 6 0 01-2 13z" fill="#fff"/>
+          <path class="dosa" d="M11 17 L33 9 L31 18 Z" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+          <path d="M14 15 l3 -1 M20 13 l3 -1 M26 11 l3 -1" stroke="#b45309" stroke-width="0.8"/>
+          <path class="no" d="M12 6 L32 22 M32 6 L12 22" stroke="#ff4d8d" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+        <i></i><i></i>
+      </div>
+      <svg class="biryani-plate" viewBox="0 0 64 44" width="88" height="60">
+        <path class="steam s1" d="M22 12 q-3 -4 0 -8 q3 -4 0 -8" stroke="#cbd5e1" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path class="steam s2" d="M32 10 q-3 -4 0 -8 q3 -4 0 -8" stroke="#cbd5e1" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path class="steam s3" d="M42 12 q-3 -4 0 -8 q3 -4 0 -8" stroke="#cbd5e1" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="32" cy="36" rx="30" ry="7" fill="#e2e8f0" stroke="#22d3ee" stroke-width="1.4"/>
+        <path d="M8 34 Q12 14 32 13 Q52 14 56 34 Z" fill="#fbbf24"/>
+        <path d="M14 33 Q18 22 30 20 Q22 26 22 33 Z" fill="#fde68a"/>
+        <path d="M38 22 Q48 24 50 33 L44 33 Q44 27 38 22 Z" fill="#f97316" opacity="0.75"/>
+        <g fill="#fff"><circle cx="20" cy="28" r="1"/><circle cx="27" cy="24" r="1"/><circle cx="34" cy="19" r="1"/>
+          <circle cx="40" cy="27" r="1"/><circle cx="46" cy="30" r="1"/><circle cx="31" cy="29" r="1"/><circle cx="24" cy="31" r="1"/></g>
+        <g class="leg"><path d="M30 22 q8 -9 16 -5 q4 6 -4 10 q-8 2 -12 -5z" fill="#92400e"/>
+          <path d="M44 16 l5 -5" stroke="#fef3c7" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="10" r="2.2" fill="#fef3c7"/></g>
+        <path d="M17 22 q3 -5 7 -3 q-3 4 -7 3z" fill="#22c55e"/>
+        <circle cx="52" cy="35" r="3.4" fill="#facc15" stroke="#a16207" stroke-width="0.8"/>
+      </svg>
+    </div>`;
+}
+
 // Set Lenny's mood: "idle", "tired", "sleep", "worried" or "happy" (keeps a running cheer).
 // worried = frown and sweat without the towel (Risks); happy = smiling closed eyes (Results).
 export function setMood(id, mood) {
