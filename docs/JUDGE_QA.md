@@ -447,3 +447,6 @@ At 10% the gap is +46 [30.8, 66.7].
 
 **Q81. (Attack) Did a second, better-tuned detector find more planted problems?**
 No. Detector v2 was designed on the check weeks with a limit of 10 false alarms per 30 days fixed first. No setting met it, so the fallback rule kept v1: on 60 fresh test plants both found 11. We report it as missed.
+
+**Q82. (Attack) Why not just simulate the real desk with OpsLens's routing and show fewer misses?**
+We tried, the honest way: a digital twin of the desk, with a validation gate fixed before any run. Running the desk's own policy, the twin had to reproduce reality on months it was not fitted to. It missed 27.9% vs 22.4% real, so it failed and we show no twin result. A log does not record real work time; a twin that cannot reproduce reality would only show our assumptions. What we do show on real data: the warnings (shadow mode) and the fast-track estimate.

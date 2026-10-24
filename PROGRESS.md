@@ -486,3 +486,5 @@ UI for Plan v4 ('Rules we wrote first' ledger, review fixes from issue #13).
 - W6 (Claude 2, 22 Oct): BANKING77 cascade beats local (+0.71 full, +10.1 10-shot; rule passed); LLM-only 79.0%; attribution ties rules (61/62 vs 62/62); routing LLM 93.3% vs rules 61.7%. `results.nlp_bench`.
 
 **Update 23 Oct — real desk second looks (both pre-registered, both NOT passed):** rescue picker 160 vs 115 at 20% (+45 [0.0, 100.5]; +46 [30.8, 66.7] at 10%); detector v2 fell back to v1 (11 of 60 fresh test plants, 7.7 false alarms per 30 days). 202 tests pass.
+
+**Update 24 Oct — W14 real-desk digital twin (real-desk session): validation gate FAILED, not shown.** Pre-registered (e53d623) before any run. Desk policy in the twin on the check months: missed 27.9% vs 22.4% real, median pickup 0.00 h vs 0.13 h (both fail), picked up within 1 h 63.8% vs 66.2% (pass). No test-month run, no comparison. A v2 would need a fresh gate (the check months are now seen). 214 tests pass.
