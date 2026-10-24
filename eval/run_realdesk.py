@@ -191,6 +191,9 @@ def main() -> int:
     # ---- Shadow mode on real days (W11, 24 Oct): frozen models, test months only ----
     out["shadow"] = S.shadow(incidents, events, model, out["fasttrack"]["deadline_rule"]["limits_h"], test)
     check_shadow_against_benchmark(out["shadow"], out["fasttrack"])
+    twin_part = PARTS / "realdesk_twin.json"   # W14, its own step (eval/run_realdesk_twin.py)
+    if twin_part.exists():
+        out["twin"] = json.loads(twin_part.read_text(encoding="utf-8"))
     out["seconds"] = time.perf_counter() - started
     report(out)
     (PARTS / "realdesk.json").write_text(json.dumps(out, indent=1, default=str), encoding="utf-8")

@@ -8,6 +8,8 @@ Steps: 1. calibrate share and k on the LEARNING months (desk policy, 20 runs);
 2. the gate on the CHECK months; if it fails, stop: nothing runs on the test months;
 3. (gate passed) choose OpsLens's form on the check months, compare on the test months once,
    sensitivity, hours equivalent.
+Result (24 Oct): the gate FAILED (missed 27.9% vs 22.4% real, median pickup 0.00 h vs 0.13 h), so the
+twin is reported as "built, did not match reality" and steps 3-5 were not run.
 """
 
 from __future__ import annotations
@@ -86,18 +88,13 @@ def main() -> int:
     if not g["passed"]:
         out["status"] = "built, did not match reality: not shown, nothing ran on the test months"
     else:
-        out["status"] = "gate passed"
-        out.update(compare(incidents, events, inp, best, learn, check, test, scored, recorded))
+        # Steps 3-5 (OpsLens form chosen on check, test once, sensitivity, hours) are written only
+        # if a twin passes the gate; this one did not (24 Oct), so they were never built or run.
+        raise SystemExit("gate passed: build the pre-registered comparison before going on")
     out["seconds"] = time.perf_counter() - started
     (PARTS / "realdesk_twin.json").write_text(json.dumps(out, indent=1, default=str), encoding="utf-8")
     print(f"wrote eval/parts/realdesk_twin.json ({out['seconds']:.0f}s)")
     return 0
-
-
-def compare(*args) -> dict:
-    """Steps 3-5 (only after the gate passed). Written once the gate result is known; the rules are
-    the pre-registered ones."""
-    raise NotImplementedError("gate passed: implement the pre-registered comparison")
 
 
 if __name__ == "__main__":

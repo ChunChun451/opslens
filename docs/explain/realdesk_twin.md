@@ -72,5 +72,52 @@ prediction on the learning incidents.
   − desk(full) ≤ 0, and **c_proven = largest c whose CI is entirely below 0**; only c_proven is claimed,
   as "measured inside the validated twin".
 
-## For the dashboard: exact shape (`results.realdesk.twin`) — filled after the run
-(see below)
+## For the dashboard: exact shape (`results.realdesk.twin`)
+```
+twin = {
+  pre_registration: "docs/explain/realdesk_twin.md (commit e53d623)",
+  status: "built, did not match reality: not shown, nothing ran on the test months",
+  limits_h: {"3 - Moderate": 91.0, "4 - Low": 325.0},
+  validation: {
+    grid: [{share, k, loss, learning: METRICS}],          // the 20 calibration runs (desk policy)
+    calibrated: {share: 0.1, k: 1, loss},
+    real: {learning: METRICS, check: METRICS},
+    twin_learning: METRICS, twin_check: METRICS,
+    tolerances: {missed_points: 3, median_pickup_ratio: 0.25, within_1h_points: 5},
+    checks: {missed: bool, median_pickup: bool, within_1h: bool}, passed: bool
+  },
+  seconds
+}
+METRICS = {scored, missed_pct, pickup_incidents, median_pickup_h, picked_within_1h_pct}
+```
+`comparison`, `sensitivity` and `hours_equivalent` exist only if `validation.passed` is true. Today it is
+false: **the screen must not show any twin comparison**; at most "we built a digital twin of the real
+desk; it did not reproduce the check months, so we do not use it" with the three numbers.
+
+## Result (24 Oct, run once): the gate FAILED
+Calibrated on the learning months: share 0.1, k 1 (loss 5.50; even there missed 45.9% vs 38.6% real).
+On the check months:
+
+| Gate check | Twin | Real | Tolerance | |
+|---|---|---|---|---|
+| Missed % (deadline rule) | 27.9 | 22.4 | ±3 points | fail |
+| Median pickup wait | 0.00 h | 0.13 h | ±25% | fail |
+| Picked up within 1 h | 63.8% | 66.2% | ±5 points | pass |
+
+As pre-registered: the twin is not shown, and nothing was run on the test months (OpsLens's form,
+the comparison, the sensitivity and the hours test were never built).
+
+**Why it failed (diagnosis, learning months only).** The model has two regimes and nothing between:
+when capacity is short the queue explodes (median pickups of 12–1,009 h in the grid), when it is not,
+every incident is picked up the moment it arrives (median 0.00 h). The real desk sits in between: a
+few minutes for most incidents (median 8 minutes on the check months, the time to read and assign),
+very long waits for a few. A queue of identical agents with fixed slots cannot make that mix; the real
+desk has triage time, agents who ignore part of their queue, and Active time that is not all work.
+Also the learning months are March (38.6% missed by the rule) while the check months are late April
+(22.4%): parameters fitted in one regime do not carry to the other.
+
+**What a v2 would need (not done, owner's call).** A fixed real triage delay per incident (opening to
+first event, which no policy changes), and per-agent slot counts from each agent's own history. But
+the check months have now been seen, so a v2 gated on them again would be tuned on its own gate;
+an honest v2 needs a new pre-registration that says so, or a gate on data no one has looked at.
+
