@@ -3,14 +3,12 @@
 // Why (24 Oct, the owner: "change the OpsLens logo according to season, like Google does on
 // Diwali, cricket and FIFA days"): a logo that knows today's date makes the product feel alive,
 // and the finale (29–31 Oct 2026) falls in Diwali season. The season comes from the calendar on
-// this laptop; clicking the logo shows the next doodle (for the demo), and ?doodle=cricket in the
-// address picks one (?doodle=classic shows the plain OpsLens mark). The splash screen (js/splash.js) reads
-// currentSeason() too. Pure SVG + CSS (web/neon.css, "Doodles").
+// this laptop, and ?doodle=cricket in the address picks one. Since 24 Oct (the owner) the season
+// shows on the splash only (js/splash.js reads currentSeason()); the side menu always shows the
+// OpsLens mark (js/logo.js: OPS inside a lens, with eyes) and "Every ticket is a promise".
+// Pure SVG + CSS (web/neon.css, "Doodles").
 //
-// Outside festivals the side menu shows the OpsLens mark (js/logo.js: OPS inside a lens, with eyes).
-//
-// Example: 24 Oct 2026 → "diwali": the lens becomes a diya whose flame flickers, with sparkles,
-// and the tag line says "Shubh Deepavali · every ticket is a promise".
+// Example: 24 Oct 2026 → "diwali": the splash opens on fireworks and diyas; the side menu keeps the mark.
 
 import { logoBody } from "./logo.js";
 
@@ -27,8 +25,6 @@ const SEASONS = [
   { id: "christmas", name: "Christmas", tag: "Merry Christmas · ho ho ho-lding SLAs", from: "12-20", to: "12-26" },
 ];
 const CLASSIC = { id: "classic", name: "OpsLens", tag: "Every ticket is a promise" };
-const DEMO_ORDER = ["diwali", "cricket", "football", "holi", "tricolour", "christmas", "newyear", "classic"];
-const PICK_KEY = "opslens.doodle";
 
 function mmdd(date) {
   return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -51,15 +47,10 @@ function byId(id) {
   return SEASONS.find((s) => s.id === id) || CLASSIC;
 }
 
-// The season shown now: the address (?doodle=), then a click-picked one, then the calendar.
+// The season shown now: the address (?doodle=), else the calendar.
 export function currentSeason() {
   const asked = new URLSearchParams(location.search).get("doodle");
-  if (asked) return byId(asked);
-  try {
-    const picked = sessionStorage.getItem(PICK_KEY);
-    if (picked) return byId(picked);
-  } catch { /* private mode: the calendar decides */ }
-  return seasonFor();
+  return asked ? byId(asked) : seasonFor();
 }
 
 const GRAD = `<defs><linearGradient id="lens-g" x1="0" y1="0" x2="1" y2="1">
@@ -122,35 +113,13 @@ function apply(season) {
   [...brand.classList].filter((c) => c.startsWith("doodle-")).forEach((c) => brand.classList.remove(c));
   brand.classList.add(`doodle-${season.id}`);
   brand.querySelector(".brand-tag").textContent = season.tag;
-  brand.title = `${season.name} doodle. Click the logo for the next one.`;
+  brand.title = season.id === "classic" ? "OpsLens by SoyaChaap" : `${season.name} doodle`;
   document.documentElement.dataset.season = season.id;
 }
 
-// Show the next doodle (demo): Diwali → Cricket → Football → … → classic.
-function next() {
-  const now = currentSeason().id;
-  const id = DEMO_ORDER[(DEMO_ORDER.indexOf(now) + 1) % DEMO_ORDER.length];
-  try { sessionStorage.setItem(PICK_KEY, id); } catch { /* ignore */ }
-  const season = byId(id);
-  apply(season);
-  const brand = document.querySelector(".sidebar .brand");
-  brand.classList.remove("doodle-pop");
-  void brand.offsetWidth;
-  brand.classList.add("doodle-pop");
-  document.dispatchEvent(new CustomEvent("season-changed", { detail: season }));
-}
-
-export function setSeason(id) {
-  try { sessionStorage.setItem(PICK_KEY, id); } catch { /* ignore */ }
-  apply(byId(id));
-  document.dispatchEvent(new CustomEvent("season-changed", { detail: byId(id) }));
-}
-
+// The side menu always shows the OpsLens mark (OPS inside the lens, with eyes) and "Every ticket is
+// a promise" (owner, 24 Oct): the season lives on the splash only. ?doodle=<id> still shows a doodle.
 export function initSeason() {
-  apply(currentSeason());
-  const logo = document.querySelector(".sidebar .brand-logo");
-  if (logo) {
-    logo.style.cursor = "pointer";
-    logo.addEventListener("click", next);
-  }
+  const asked = new URLSearchParams(location.search).get("doodle");
+  apply(asked ? byId(asked) : CLASSIC);
 }
