@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-24T15:31:50 (commit a0353b8). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-24T17:42:43 (commit e494df4). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -272,6 +272,7 @@ Pre-registered rule (OpsLens beats industry standard in all four equal-load sett
 
 OpsLens lowest (within 0.05 points) in 19 of 30 worlds (rule needs 27); median OpsLens - industry standard -8.19 points, 95% CI [-12.20, -3.28]. Rule NOT passed.
 Breakdown (from the same runs, added after them): OpsLens beats the industry standard in 29 of 30; it is lowest in 13 of 13 worlds up to x1.05 today's load and 6 of 17 heavier ones. All 11 losses are to least_slack, at x1.06 load or more; in 10 of them OpsLens keeps late customers less late.
+Diagnosis of the 11 losses (same worlds rebuilt, reproduced exactly: True; analysis after the result): OpsLens misses fewer gold customers in 11, keeps late customers less late in 11, fewer P1 in 4, fewer Hindi in 5.
 
 | World | Volume | Chats | Mismatch | Industry std | Least slack | OpsLens | Best other |
 |---|---|---|---|---|---|---|---|
@@ -314,5 +315,5 @@ Breakdown (from the same runs, added after them): OpsLens beats the industry sta
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.071 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.04 s.
 - Full evaluation pipeline: 48.5 min.

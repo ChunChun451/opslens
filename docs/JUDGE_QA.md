@@ -450,3 +450,6 @@ No. Detector v2 was designed on the check weeks with a limit of 10 false alarms 
 
 **Q82. (Attack) Why not just simulate the real desk with OpsLens's routing and show fewer misses?**
 We tried, the honest way: a digital twin of the desk, with a validation gate fixed before any run. Running the desk's own policy, the twin had to reproduce reality on months it was not fitted to. It missed 27.9% vs 22.4% real, so it failed and we show no twin result. A log does not record real work time; a twin that cannot reproduce reality would only show our assumptions. What we do show on real data: the warnings (shadow mode) and the fast-track estimate.
+
+**Q83. When least slack beats you under overload, who pays for OpsLens's extra misses?**
+We rebuilt the 11 worlds and looked (analysis after the result, labelled as such). OpsLens misses fewer gold customers in 11 of 11 and keeps late customers less late in 11 of 11: it follows its business-impact weights and never abandons the late. It does not protect P1 better (4 of 11). Least slack wins the raw count by letting the already-late wait much longer.
