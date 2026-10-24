@@ -1451,3 +1451,148 @@ html[data-theme="light"] .brand-by { color: #fff; }
     48%, 62% { transform: translate(-2.4px, 0.4px); } 70%, 85% { transform: translate(0.6px, -2px); } }
   .lg-spark { transform-box: fill-box; transform-origin: center; animation: twinkle 1.8s ease-in-out infinite; }
 }
+
+/* =============================================================================================
+   Plan v4 W10 (Claude 2, 24 Oct, issue #16): every proof visible. Beyond our world, the
+   real-desk outcome blocks, Shadow mode, "Does the AI earn its place?", the Results lead.
+   ============================================================================================= */
+/* Results: the three big numbers lead; the first tile is the headline. */
+.proof-strip .proof.is-lead .proof-a { font-size: 2.6rem; }
+.proof-strip .proof.is-lead { border-color: color-mix(in srgb, #22d3ee 45%, var(--border)); }
+
+/* Beyond our world */
+.wd-verdict { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 20px; align-items: center; margin-bottom: 14px; }
+.wd-label { display: block; font-size: 0.78rem; font-weight: 750; color: var(--muted); margin-bottom: 4px; }
+.wd-said p, .wd-got p { margin: 0; font-size: 1.05rem; }
+.wd-got b { font-size: 2.4rem; line-height: 1; }
+.wd-verdict.is-missed .wd-got b { color: #ff4d8d; }
+.wd-verdict.is-kept .wd-got b { color: #22c55e; }
+.wd-stamp { position: static; }
+.wd-chart { height: 320px; }
+.wd-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.wd-zone { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); line-height: 1.45; }
+.wd-zone b { display: block; font-size: 1.5rem; }
+.wd-zone.is-good { border-color: rgba(34, 211, 238, 0.5); background: rgba(34, 211, 238, 0.06); }
+.wd-zone.is-good b { color: #22d3ee; }
+.wd-zone.is-bad { border-color: rgba(255, 77, 141, 0.45); background: rgba(255, 77, 141, 0.05); }
+.wd-zone.is-bad b { color: #ff4d8d; }
+.wd-diag { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.wd-diag div { padding: 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); }
+.wd-diag b { display: block; font-size: 1.6rem; }
+.wd-diag span { font-size: 0.85rem; color: var(--muted); }
+tr.hot td { color: #ff8fb5; }
+tr.is-chosen td { background: rgba(34, 211, 238, 0.07); }
+tr.is-ceiling td { color: var(--muted); font-style: italic; }
+
+/* Real desk: the fast-track lead, replication, alerts, plants */
+.ft-bars { display: grid; gap: 10px; margin: 6px 0 12px; }
+.ft-row { display: grid; grid-template-columns: minmax(150px, 260px) minmax(0, 1fr) 56px; gap: 12px; align-items: center; }
+.ft-row > span { font-size: 0.9rem; }
+.ft-row > b { text-align: right; font-size: 1.25rem; }
+.ft-track { height: 14px; border-radius: 8px; background: color-mix(in srgb, var(--muted) 18%, transparent); overflow: hidden; }
+.ft-track i { display: block; height: 100%; border-radius: 8px; background: #94a3b8; }
+.ft-row.is-ours .ft-track i { background: linear-gradient(90deg, #22d3ee, #a78bfa); }
+.ft-row.is-ours > b { color: #22d3ee; }
+.ft-row.is-ceiling .ft-track i { background: repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.5) 0 6px, transparent 6px 10px); }
+.ft-row.is-ceiling { opacity: 0.8; }
+.ft-verdict { margin: 4px 0 10px; line-height: 1.5; }
+.ft-assume, .sh-honest { padding: 10px 14px; border-radius: 10px; border: 1px dashed rgba(251, 191, 36, 0.55); background: rgba(251, 191, 36, 0.06);
+  font-size: 0.9rem; line-height: 1.45; margin-bottom: 12px; }
+.ft-assume b { color: #fbbf24; margin-right: 6px; }
+.rep-line { margin: 10px 0; font-size: 0.92rem; }
+.rep-line .pill { margin-right: 6px; }
+.second-look { margin-top: 12px; padding: 10px 14px; border-left: 3px solid #a78bfa; background: rgba(167, 139, 250, 0.07); border-radius: 0 10px 10px 0; font-size: 0.9rem; }
+.second-look p { margin: 6px 0 0; }
+.pill.bad { background: rgba(255, 77, 141, 0.15); color: #ff8fb5; border-color: rgba(255, 77, 141, 0.4); }
+.plant-types { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 10px 0; list-style: none; }
+.plant-types li { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: 0.85rem; }
+.plant-types b { text-transform: capitalize; }
+
+/* Shadow mode */
+.sh-days { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.sh-day { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text); font: inherit; font-size: 0.85rem; font-weight: 650; cursor: pointer; }
+.sh-day[aria-pressed="true"] { background: #22d3ee; border-color: #22d3ee; color: #0d1428; }
+.sh-stage { padding: 18px 20px; }
+.sh-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; }
+.sh-clock span { display: block; font-size: 0.85rem; color: var(--muted); }
+.sh-clock b { font-size: 2.4rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.sh-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.sh-progress { position: relative; height: 6px; margin: 14px 0 16px; border-radius: 4px; background: color-mix(in srgb, var(--muted) 20%, transparent); }
+.sh-progress i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: linear-gradient(90deg, #22d3ee, #a78bfa); }
+.sh-midnight { position: absolute; top: -4px; width: 2px; height: 14px; background: #fbbf24; }
+.sh-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); gap: 18px; }
+.sh-tally { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.sh-t { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); }
+.sh-t span { display: block; font-size: 0.8rem; color: var(--muted); }
+.sh-t b { font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.sh-t small { display: block; font-size: 0.75rem; color: var(--muted); min-height: 1em; }
+.sh-t.is-miss b { color: #ff4d8d; } .sh-t.is-ours b { color: #22d3ee; } .sh-t.is-theirs b { color: #cbd5e1; }
+.sh-wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(10px, 1fr)); gap: 3px; }
+.sh-wall i { aspect-ratio: 1; border-radius: 50%; background: rgba(148, 163, 184, 0.12); transition: background 0.4s, box-shadow 0.4s, transform 0.4s; }
+.sh-wall i.is-out { opacity: 0.45; }
+.sh-wall i.is-open { background: rgba(226, 232, 240, 0.55); }
+.sh-wall i.is-flag { box-shadow: 0 0 0 2px #22d3ee; }
+.sh-wall i.is-made { background: rgba(34, 197, 94, 0.75); }
+.sh-wall i.is-miss { background: #ff4d8d; }
+.sh-wall i.is-caught { background: #ff4d8d; box-shadow: 0 0 0 2px #22d3ee, 0 0 8px rgba(34, 211, 238, 0.8); transform: scale(1.15); }
+.sh-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 0; margin: 10px 0 0; list-style: none; font-size: 0.78rem; color: var(--muted); }
+.sh-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.sh-legend .d-open { background: rgba(226, 232, 240, 0.55); } .sh-legend .d-flag { box-shadow: 0 0 0 2px #22d3ee; }
+.sh-legend .d-made { background: rgba(34, 197, 94, 0.75); } .sh-legend .d-miss { background: #ff4d8d; }
+.sh-legend .d-caught { background: #ff4d8d; box-shadow: 0 0 0 2px #22d3ee; }
+.sh-feed-box { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); min-height: 260px; }
+.sh-feed-title { font-weight: 750; margin-bottom: 8px; }
+.sh-feed { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 0.82rem; }
+.sh-feed li { padding: 5px 8px; border-radius: 8px; background: rgba(148, 163, 184, 0.06); line-height: 1.35; }
+.sh-feed time { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 4px; }
+.sh-feed .f-flag { border-left: 3px solid #22d3ee; }
+.sh-feed .f-caught { border-left: 3px solid #22c55e; }
+.sh-feed .f-miss { border-left: 3px solid #ff4d8d; }
+.sh-final { margin-top: 12px; }
+.sh-final p { margin: 0; padding: 12px 14px; border-radius: 12px; background: rgba(34, 211, 238, 0.07); border: 1px solid rgba(34, 211, 238, 0.35); line-height: 1.5; }
+.sh-final .t-ours { color: #22d3ee; }
+.sh-fast { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.sh-fast div { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); }
+.sh-fast b { display: block; font-size: 1.6rem; }
+.sh-fast span { font-size: 0.85rem; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) {
+  .sh-feed li:first-child { animation: say-pop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
+}
+
+/* Does the AI earn its place? */
+.ai-panel { margin-bottom: 18px; }
+.ai-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ai-test { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); }
+.ai-test h3 { margin: 0 0 6px; font-size: 1rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ai-vs { display: flex; gap: 16px; margin: 8px 0; }
+.ai-vs b { display: block; font-size: 1.7rem; line-height: 1.1; }
+.ai-vs div:first-child b { color: #22d3ee; }
+.ai-vs span { font-size: 0.8rem; color: var(--muted); }
+
+@media (max-width: 1100px) {
+  .ai-grid { grid-template-columns: 1fr; }
+  .wd-diag { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .sh-grid, .wd-split { grid-template-columns: 1fr; }
+  .wd-verdict { grid-template-columns: 1fr; }
+  .ft-row { grid-template-columns: minmax(0, 1fr) 48px; }
+  .ft-row > .ft-track { grid-column: 1 / -1; grid-row: 2; }
+  .sh-tally, .sh-fast { grid-template-columns: 1fr; }
+}
+.wd-got b .ev, .wd-zone b .ev, .wd-diag b .ev, .ai-vs b .ev, .sh-fast b .ev, .ft-row > b .ev { color: inherit; }
+
+/* The gift button lives in the side menu, above the team line (never over content). */
+.sidebar .fest-fab { position: static; align-self: stretch; justify-content: center; margin: 8px 12px 0; padding: 8px 12px; font-size: 0.85rem;
+  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.35); }
+.sidebar .fest-fab .ff-gift { font-size: 1rem; }
+.sidebar .fest-fab { position: relative; inset: auto; } /* the floating offsets do not apply here */
+@media (max-width: 760px) { .sidebar .fest-fab { display: none; } }
+/* Phone width (issue #16 check): the journey chips wrap; the AI tests and the hero bars shrink with their box. */
+#ov-journey .card-head { flex-wrap: wrap; gap: 10px; }
+.jr-chips { min-width: 0; }
+.ai-grid > *, .ai-test, .tale-card, .fold-body { min-width: 0; }
+@media (max-width: 760px) { .cbars .cbar { grid-template-columns: minmax(0, 1fr) auto; } .cbars .cbar .cbar-track { grid-column: 1 / -1; } }
+#ov-journey .jr-chips { flex: 1 1 240px; }
+@media (max-width: 760px) { .segmented { flex-wrap: wrap; max-width: 100%; } .verdict { white-space: normal; } }
+@media (max-width: 760px) { .card-head { flex-wrap: wrap; } .card-head > * { flex-shrink: 1; min-width: 0; max-width: 100%; } }

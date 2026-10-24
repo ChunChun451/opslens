@@ -38,7 +38,9 @@ export function render(section) {
     ${pageHeader("Recurring problems",
       "What keeps going wrong, and why. Strongest first; open a card for its proof.", plantButton)}
     ${p ? summaryStats(p) : ""}
-    ${p ? `<div class="finding-grid">${findings(p)}</div>` : missing("Patterns", "M4")}
+    ${p ? `<div class="finding-grid">${findings(p, false)}</div>` : missing("Patterns", "M4")}
+    ${p && p.cards.some((c) => c.cause_type === "other") ? fold("A weaker pattern with no clear cause yet",
+      `<div class="finding-grid">${findings(p, true)}</div>`, { hint: "for the team lead to look at" }) : ""}
     ${hasDelay ? fold("Where the time goes, per team", decompositionCard(), { id: "fold-delay", hint: "waiting vs working vs transfers" }) : ""}
     ${clustersCard()}
     ${plantDialog()}`;
@@ -64,9 +66,11 @@ function summaryStats(p) {
   ]);
 }
 
-function findings(p) {
+// Findings with a named cause lead; "other" (no clear cause) sits in a fold (review #13, item 10).
+function findings(p, other) {
   return p.cards
     .map((c, index) => ({ c, index }))
+    .filter(({ c }) => (c.cause_type === "other") === other)
     .sort((a, b) => b.c.strength - a.c.strength)
     .map(({ c, index }) => findingCard(c, index))
     .join("");

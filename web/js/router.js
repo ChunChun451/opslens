@@ -22,6 +22,8 @@ import * as ledger from "./tabs/ledger.js";
 import * as live from "./tabs/live.js";
 import * as upload from "./tabs/upload.js";
 import * as realdesk from "./tabs/realdesk.js";
+import * as worlds from "./tabs/worlds.js";
+import * as shadow from "./tabs/shadow.js";
 import { state, store } from "./data.js";
 import { addScene } from "./scenes.js";
 
@@ -39,7 +41,8 @@ export const TABS = [
   { id: "overview", label: "Overview", views: {
     food: [{ id: "live", label: "Live now", module: live },
            { id: "overview", label: "Results on the test days", module: overview }],
-    real: [{ id: "rd-overview", label: "Overview", module: realdesk.overview }] } },
+    real: [{ id: "rd-overview", label: "Overview", module: realdesk.overview },
+           { id: "rd-shadow", label: "Shadow mode", module: shadow }] } },
   { id: "problems", label: "Problems", views: {
     food: [{ id: "patterns", label: "Why it goes wrong", module: patterns }],
     real: [{ id: "rd-problems", label: "Why it goes wrong", module: realdesk.problems }] } },
@@ -52,6 +55,7 @@ export const TABS = [
     real: [{ id: "rd-actions", label: "What to do", module: realdesk.actions }] } },
   { id: "proof", label: "Proof", views: {
     food: [{ id: "compare", label: "Side by side", module: compare },
+           { id: "worlds", label: "Beyond our world", module: worlds },
            { id: "whatif", label: "Try a what-if", module: whatif },
            { id: "ledger", label: "Rules we wrote first", module: ledger },
            { id: "tested", label: "How we tested", module: tested }],
@@ -64,7 +68,12 @@ export const TABS = [
 
 // Old tab names (before Plan v3) → the screen that now holds them.
 const ALIAS = { patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
-                compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview" };
+                compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview",
+                worlds: "proof", "rd-shadow": "overview", shadow: "overview", next48: "risks" };
+
+// Friendly names for views in links (review #13, item 12): #risks/next48 opens Next 48 hours.
+const VIEW_ALIAS = { next48: "forecast", "next-48-hours": "forecast", "at-risk": "atrisk", shadow: "rd-shadow",
+                     "beyond-our-world": "worlds", rules: "ledger" };
 
 const framed = new Set(); // screens whose frame (sub-tabs + empty views) is drawn
 const drawn = new Set(); // views already drawn (Chart.js needs a visible canvas, so we wait)
@@ -122,6 +131,7 @@ export function showTab(id, viewId) {
     screenId = ALIAS[id];
     viewId = viewId || id;
   }
+  viewId = VIEW_ALIAS[viewId] || viewId;
   const tab = TABS.find((t) => t.id === screenId) || TABS[0];
   TABS.forEach((t) => {
     document.getElementById("tab-" + t.id).hidden = t.id !== tab.id;

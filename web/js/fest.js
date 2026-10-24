@@ -15,6 +15,7 @@ import { mascotHtml } from "./mascot.js";
 import { characterHtml } from "./characters.js";
 import { setSeason } from "./season.js";
 import { escapeHtml } from "./format.js";
+import { state } from "./data.js";
 
 const SLIDE_MS = 4200;
 const MEMBER_KEY = "opslens.member";
@@ -110,6 +111,8 @@ function showSlide(i) {
 
 function ensureBanner() {
   const section = document.getElementById("tab-overview");
+  // The banner advertises the food floor's features; the real desk stays plain.
+  if (state.world !== "food") return;
   if (!section || section.hidden || section.querySelector(".fest-banner")) return;
   section.insertAdjacentHTML("afterbegin", bannerHtml());
   const banner = section.querySelector(".fest-banner");
@@ -225,8 +228,13 @@ function applyCoupon(code) {
 }
 
 function initHub() {
-  document.body.insertAdjacentHTML("beforeend", `<button type="button" class="fest-fab" id="fest-fab" aria-label="Open Festive Ops Fest: spin, coupons, membership">
-      <span class="ff-gift">🎁</span><span class="ff-text">Fest</span><span class="ff-crown" hidden>👑</span></button>${hubHtml()}`);
+  // The gift button sits in the side menu (issue #16 check: a floating button covered numbers).
+  const fabHtml = `<button type="button" class="fest-fab" id="fest-fab" aria-label="Open Festive Ops Fest: spin, coupons, membership">
+      <span class="ff-gift">🎁</span><span class="ff-text">Festive Ops Fest</span><span class="ff-crown" hidden>👑</span></button>`;
+  const foot = document.querySelector(".sidebar .sidebar-foot");
+  if (foot) foot.insertAdjacentHTML("beforebegin", fabHtml);
+  else document.body.insertAdjacentHTML("beforeend", fabHtml);
+  document.body.insertAdjacentHTML("beforeend", hubHtml());
   const fab = document.getElementById("fest-fab");
   const crown = fab.querySelector(".ff-crown");
   try { crown.hidden = localStorage.getItem(MEMBER_KEY) !== "1"; } catch { /* ignore */ }

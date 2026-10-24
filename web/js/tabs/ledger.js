@@ -102,7 +102,7 @@ const ENTRIES = [
     show: () => lookup("realdesk.fasttrack.rule.passed") !== undefined,
     verdict: () => (lookup("realdesk.fasttrack.rule.passed") ? "kept" : "missed"),
     measured: () => `Misses saved, OpsLens minus the best other picker: ${ev("realdesk.fasttrack.rule.diff", "int")}
-      ${ci("realdesk.fasttrack.rule.ci_low", "realdesk.fasttrack.rule.ci_high", "num")}. A tie.`,
+      ${ci("realdesk.fasttrack.rule.ci_low", "realdesk.fasttrack.rule.ci_high", "int")}. ${ciWords("realdesk.fasttrack.rule")}`,
   },
   {
     when: "19 Oct 15:28", commit: "4706f8f", owner: "real-desk session",
@@ -111,6 +111,16 @@ const ENTRIES = [
     show: () => lookup("realdesk.replication.replicated") !== undefined,
     verdict: () => (lookup("realdesk.replication.replicated") === lookup("realdesk.replication.of") ? "kept" : "missed"),
     measured: () => `${ev("realdesk.replication.replicated", "int")} of ${ev("realdesk.replication.of", "int")} findings replicate.`,
+  },
+  {
+    when: "19 Oct 15:28", commit: "4706f8f", owner: "real-desk session",
+    claim: "Problems planted at random in the real desk's later weeks are found",
+    rule: "20 random plant sets fixed before the run; report how many are found and the false alarms on clean weeks.",
+    show: () => lookup("realdesk.blind_plants.found") !== undefined,
+    verdict: () => "reported",
+    measured: () => `Found ${ev("realdesk.blind_plants.found", "int")} of ${ev("realdesk.blind_plants.plants", "int")}
+      (${ev("realdesk.blind_plants.recall_pct", "pct")}); ${ev("realdesk.blind_plants.false_alarms_per_30_days", "num")}
+      false alarms per 30 clean days. Weak, and shown as weak.`,
   },
   {
     when: "22 Oct 21:20", commit: "b2e1b97", owner: "Claude 2",
@@ -178,7 +188,51 @@ const ENTRIES = [
         ${ci(p + ".ci95[0]", p + ".ci95[1]")}. Greedy stays.`;
     },
   },
+  {
+    when: "23 Oct 21:58", commit: "f9b5e02", owner: "real-desk session",
+    claim: "Second look: a rescue picker (would fast-track save it?) beats 'still unassigned at 1 hour'",
+    rule: "Chosen on the check weeks, run once at the 20% budget; better only with a 95% interval above zero. The first verdict stays.",
+    show: () => lookup("realdesk.fasttrack_second_look.rule.passed") !== undefined,
+    verdict: () => (lookup("realdesk.fasttrack_second_look.rule.passed") ? "kept" : "missed"),
+    measured: () => {
+      const r = "realdesk.fasttrack_second_look.results.20";
+      return `Misses saved: rescue model ${ev(r + ".rescue_model.saved", "int")}, still unassigned ${ev(r + ".unassigned.saved", "int")};
+        difference ${ev("realdesk.fasttrack_second_look.rule.diff", "int")}
+        ${ci("realdesk.fasttrack_second_look.rule.ci_low", "realdesk.fasttrack_second_look.rule.ci_high", "int")}.
+        ${lookup("realdesk.fasttrack_second_look.rule.ci_low") > 0 ? "" : "The interval does not stay above zero."}`;
+    },
+  },
+  {
+    when: "23 Oct 21:58", commit: "f9b5e02", owner: "real-desk session",
+    claim: "Second look: a retuned problem detector finds more of fresh planted problems",
+    rule: "Chosen on the check weeks; better only if it finds more of the same fresh plants (95% interval above zero) with at most 10 false alarms per 30 days.",
+    show: () => lookup("realdesk.detector_second_look.rule.passed") !== undefined,
+    verdict: () => (lookup("realdesk.detector_second_look.rule.passed") ? "kept" : "missed"),
+    measured: () => `Found ${ev("realdesk.detector_second_look.found_v2", "int")} of ${ev("realdesk.detector_second_look.test_plants", "int")},
+      ${lookup("realdesk.detector_second_look.found_v2") === lookup("realdesk.detector_second_look.found_v1") ? "the same as" : "against"}
+      the first detector's ${ev("realdesk.detector_second_look.found_v1", "int")};
+      ${ev("realdesk.detector_second_look.false_alarms_per_30_days_v2", "num")} false alarms per 30 days.`,
+  },
+  {
+    when: "24 Oct 15:24", commit: "e53d623", owner: "real-desk session",
+    claim: "A digital twin of the real desk can test different decisions",
+    rule: "Use the twin only if, on the check months, the desk's own way of working inside it reproduces the real missed rate and pickup times within fixed limits.",
+    show: () => lookup("realdesk.twin.validation.passed") !== undefined,
+    verdict: () => (lookup("realdesk.twin.validation.passed") ? "kept" : "missed"),
+    measured: () => `The desk inside the twin missed ${ev("realdesk.twin.validation.twin_check.missed_pct", "pct")}
+      of deadlines, the real desk ${ev("realdesk.twin.validation.real.check.missed_pct", "pct")}. Not close enough:
+      no twin result is shown anywhere; Shadow mode stays the real-desk benchmark.`,
+  },
 ];
+
+// "A tie." when the 95% interval holds zero, else who is ahead; read from the rule's own numbers.
+function ciWords(path) {
+  const lo = lookup(path + ".ci_low");
+  const hi = lookup(path + ".ci_high");
+  if (typeof lo !== "number" || typeof hi !== "number") return "";
+  if (lo < 0 && hi > 0) return "A tie.";
+  return hi <= 0 ? "OpsLens behind." : "OpsLens ahead.";
+}
 
 // The concurrency setting with the most chats and the largest slowdown, at equal load.
 function hardestConcurrency() {

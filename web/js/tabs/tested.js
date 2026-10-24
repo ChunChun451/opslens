@@ -54,6 +54,7 @@ export function render(section) {
     ${pageHeader("How we tested", "What failed, what we beat, and every test behind the numbers. Open any section.")}
     ${r.stress.length || details().v1_record ? honestPanel() : ""}
     ${r.baseline_c && r.baseline_c.test.means ? baselinesPanel() : ""}
+    ${r.nlp_bench ? aiPanel() : ""}
     ${sections.map(([id, title, html]) => fold(title, html, { id: `fold-${id}` })).join("")}`;
 
   const draw = {
@@ -75,6 +76,58 @@ export function render(section) {
       if (target) target.scrollIntoView({ block: "start", behavior: "smooth" });
     });
   });
+}
+
+// "Does the AI earn its place?" (Plan v4 W6, issue #16): the three LLM tests, each against what we
+// would use without it, on data we did not make (BANKING77) or questions labelled before the run.
+// Where the LLM ties the rules (naming a cause) we say so and keep it only for the sentence.
+const NB = "nlp_bench";
+function pctCi(path) {
+  return `${ev(path + ".pct", "pct")} <span class="ci">[${ev(path + ".ci95[0]", "pct", { bare: true })}, ${ev(path + ".ci95[1]", "pct", { bare: true })}]</span>`;
+}
+function aiPanel() {
+  const nb = state.results.nlp_bench;
+  const b = `${NB}.banking77`;
+  const pub = (setting, model) => (nb.banking77.published && nb.banking77.published[setting] && nb.banking77.published[setting][model] !== undefined
+    ? ev(`${b}.published.${setting}.${model}`, "pct") : "—");
+  const bankRow = (setting, label) => `<tr><td>${label}</td>
+      <td class="num">${pctCi(`${b}.settings.${setting}.local`)}</td>
+      <td class="num"><b>${pctCi(`${b}.settings.${setting}.cascade`)}</b></td>
+      <td class="num">${ev(`${b}.settings.${setting}.escalated_pct`, "pct")}</td>
+      <td class="num">${pub(setting, "BERT-fixed")} / ${pub(setting, "BERT-tuned")}</td></tr>`;
+  const r = `${NB}.routing`;
+  const a = `${NB}.attribution`;
+  const pill = (ok) => `<span class="pill ${ok ? "good" : ""}">${ok ? "earns its place" : "ties the rules"}</span>`;
+  return `<section class="card ai-panel" id="t-ai">
+      <div class="card-head"><div><h2 class="card-title">Does the AI earn its place?</h2>
+        <p class="card-sub">Three tests, each written down before it ran, each against what we would do without an LLM. The LLM never writes a number.</p></div></div>
+      <div class="ai-grid">
+        <div class="ai-test">
+          <h3>Reading real customer messages ${pill(nb.banking77.settings.full.rule_llm_adds_value)}</h3>
+          <p class="small muted">${evText(`${b}.dataset.name`)}: ${ev(`${b}.dataset.test`, "int")} real bank-customer messages,
+            ${ev(`${b}.dataset.intents`, "int")} intents (${evText(`${b}.dataset.licence`)}). Our local model first; the LLM only for the unsure ones.</p>
+          <div class="table-wrap"><table><thead><tr><th>Training data</th><th class="num">Local model</th><th class="num">+ LLM when unsure</th>
+            <th class="num">Sent to the LLM</th><th class="num">Published BERT (fixed / tuned)</th></tr></thead>
+            <tbody>${bankRow("full", "All of it")}${bankRow("10-shot", "10 examples per intent")}</tbody></table></div>
+          <p class="small muted">Published: ${evText(`${b}.published.source`)}.</p>
+        </div>
+        <div class="ai-test">
+          <h3>Understanding a manager's question ${pill(nb.routing.rule_llm_beats_rules)}</h3>
+          <p class="small muted">${ev(`${r}.questions`, "int")} questions labelled before the run, English and Hinglish: does Ask OpsLens pick the right tool with the right settings?</p>
+          <div class="ai-vs"><div><b>${ev(`${r}.all.llm_full.pct`, "pct")}</b><span>LLM</span></div>
+            <div><b>${ev(`${r}.all.rules_full.pct`, "pct")}</b><span>keyword rules</span></div></div>
+          <p class="small">Hinglish: LLM ${ev(`${r}.hinglish.llm_full.correct`, "int")} of ${ev(`${r}.hinglish.llm_full.n`, "int")},
+            rules ${ev(`${r}.hinglish.rules_full.correct`, "int")} of ${ev(`${r}.hinglish.rules_full.n`, "int")}.</p>
+        </div>
+        <div class="ai-test">
+          <h3>Naming a problem's cause ${pill(nb.attribution.rule_llm_beats_rules)}</h3>
+          <p class="small muted">${ev(`${a}.cards`, "int")} evidence cards with the cause hidden.</p>
+          <div class="ai-vs"><div><b>${ev(`${a}.llm.correct`, "int")} of ${ev(`${a}.llm.n`, "int")}</b><span>LLM</span></div>
+            <div><b>${ev(`${a}.rules.correct`, "int")} of ${ev(`${a}.rules.n`, "int")}</b><span>our rules</span></div></div>
+          <p class="small">The rules already do this, so the LLM only writes the readable sentence; replies with digits: ${ev(`${a}.replies_with_digits`, "int")}.</p>
+        </div>
+      </div>
+    </section>`;
 }
 
 // Every baseline we compared against, weakest to strongest, and the sealed second world

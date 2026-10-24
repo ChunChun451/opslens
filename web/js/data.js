@@ -145,6 +145,7 @@ const PLAIN_NAMES = {
   baseline_b: "Urgent first",
   baseline_c: "Due time first",
   baseline_d: "Industry standard",
+  least_slack: "Least slack first", // only in the 30 random worlds (W1)
   opslens: "OpsLens",
 };
 

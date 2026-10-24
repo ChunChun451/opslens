@@ -11,7 +11,7 @@
 import { state, policyKeys } from "../data.js";
 import { ev, evText, labelFor } from "../evidence.js";
 import {
-  pageHeader, card, stat, missing, policyName, shortLabel, deltaPill, comparisonIndex, fold,
+  pageHeader, card, stat, missing, policyName, shortLabel, deltaPill, comparisonIndex, fold, onFirstOpen,
 } from "../ui.js";
 import { escapeHtml, kpiInfo, unitForPath, spreadUnit } from "../format.js";
 import { policyStyle } from "../charts.js";
@@ -32,18 +32,21 @@ export function render(section) {
   const r = state.results;
   // 24 Oct, "less clutter": the answer first (missed promises, three proof tiles), then the
   // replay and the top problems; the brief, the supporting KPIs and the segments fold away.
+  // Issue #16 / review #13 items 6-7: three big numbers against the industry standard lead; the
+  // full four-way comparison and the Saturday replay (the cold open already played it) fold away.
+  const strip = proofStrip();
   section.innerHTML = `
     ${pageHeader("Results on days it never saw", "14 held-out days. Same customers, same agents, same luck for every way of working; only the decisions differ.")}
-    ${r.sim ? heroCard() : missing("The simulator comparison", "M7")}
+    ${strip || (r.sim ? heroCard() : missing("The simulator comparison", "M7"))}
     ${r.sim ? thousandHtml() : ""}
-    ${proofStrip()}
     ${r.risk ? journeyHtml() : ""}
-    ${r.sim && hasMission() ? missionHtml() : ""}
     ${issuesCard()}
+    ${r.sim && strip ? fold("Every way of working, with 95% intervals", heroCard(), { id: "fold-all-ways", hint: "OpsLens against all four" }) : ""}
+    ${r.sim && hasMission() ? fold("Replay one Saturday dinner, side by side", missionHtml(), { id: "fold-mission", hint: "the evening in 30 seconds" }) : ""}
     ${r.sim ? fold("More numbers: time to solve, waits, queues, transfers", `<div class="grid cols-4 stretch">${KEY_KPIS.map(kpiCard).join("")}</div>`, { hint: "against the industry standard" }) : ""}
     ${r.sim ? fold("Who is protected: urgent orders, gold and Hindi-speaking customers", segmentsCard()) : ""}
     ${r.brief ? fold("Today's brief, written by the LLM (numbers filled in by code)", briefCard()) : ""}`;
-  if (r.sim && hasMission()) initMission();
+  if (r.sim && hasMission()) onFirstOpen("fold-mission", initMission); // plays only when asked
   initStoryCards(section); // 24 Oct: the 1,000-customer wall and one ticket's journey
 }
 
@@ -101,8 +104,8 @@ function proofStrip() {
     (() => {
       const best = r.baseline_c.test.means.baseline_d ? ["baseline_d", "d", "industry-standard skills routing with AI triage"]
         : ["baseline_c", "c", "the SLA-due sort"];
-      return `<div class="proof">
-        <div class="proof-q">Beats the industry standard</div>
+      return `<div class="proof is-lead">
+        <div class="proof-q">Missed promises: OpsLens vs the industry standard</div>
         <div class="proof-a">${ev(`${c}.opslens.${BREACH}`, "pct")} <span class="muted">vs</span> ${ev(`${c}.${best[0]}.${BREACH}`, "pct")}</div>
         <div class="proof-s">Missed promises, OpsLens vs ${best[2]}. 95% CI
           ${ev(`baseline_c.test.opslens_minus_${best[1]}.${BREACH}.ci_low`, "pts", { signed: true, bare: true })} to

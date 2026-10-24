@@ -1,8 +1,10 @@
-// story.js — the guided 7-step walkthrough for the demo, on the real numbers.
+// story.js — the guided walkthrough for the demo (about seven minutes), on the real numbers.
 //
-// Why: in a five-minute pitch the order matters. Story mode walks the judges through
-// problem -> Saturday replay -> one pattern with evidence -> one at-risk ticket -> impact with
-// CIs -> their turn. Each step switches tab, outlines the element being discussed in red, and
+// Why: in a short pitch the order matters. Story mode walks the judges through
+// today's floor live -> 1,000 customers in one picture -> one pattern with evidence -> one at-risk
+// ticket -> impact with CIs -> 30 worlds we did not build -> a real day at a real desk (Shadow
+// mode) -> the rules we wrote first, misses included -> their turn. (Issue #16: the Saturday
+// replay step went, the cold open already plays it.) Each step switches tab, outlines the element being discussed in red, and
 // explains it in two or three sentences. Every number in the story text is ev()/evText():
 // read from the results file and clickable. The pattern and the ticket are CHOSEN from the
 // data (rules below), so the story stays correct when the results change.
@@ -16,7 +18,7 @@ import { state } from "./data.js";
 import { shortLabel } from "./ui.js";
 import { ev, evText } from "./evidence.js";
 import { showTab, setWorld } from "./router.js";
-import { startReplay, pauseReplay } from "./replay.js";
+import { pauseReplay } from "./replay.js";
 import { escapeHtml, prettyKey } from "./format.js";
 import { CAUSE_LABELS } from "./tabs/patterns.js";
 import { ledgerSummary } from "./tabs/ledger.js";
@@ -26,14 +28,25 @@ const BREACH = "turnaround.breach_pct";
 // Each step: the tab to open, a function returning the id of the element to outline, a title,
 // a function writing the text, and optionally something to start (the replay).
 const STEPS = [
-  { tab: "overview", view: "overview", target: () => (document.getElementById("ov-mission") ? "ov-mission" : "ov-headline"), title: "The problem", body: problemText },
-  { tab: "compare", target: () => "replay", title: "One busy Saturday, three ways", body: replayText, enter: startReplay },
+  { tab: "overview", view: "live", target: () => firstOf(".lv-hero"), title: "The problem, live", body: problemText },
+  { tab: "overview", view: "overview", target: () => "ov-thousand", title: "1,000 customers, one picture", body: thousandText },
   { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
   { tab: "compare", target: () => "kpi-table-panel", title: "What it is worth, with confidence intervals", body: impactText },
+  { tab: "worlds", target: () => "wd-chart-card", title: "Beyond the world we built", body: worldsText },
+  { tab: "overview", view: "rd-shadow", world: "real", target: () => firstOf(".sh-stage"), title: "A real day at a real desk", body: shadowText },
   { tab: "ledger", target: () => "ledger-tally", title: "What we bet on, and what we lost", body: ledgerText },
   { tab: "whatif", target: () => "whatif-form", title: "Your turn", body: yourTurnText },
 ];
+
+// The id of the first element matching a selector (giving it one if it has none), for targets
+// that are classes rather than ids.
+function firstOf(selector) {
+  const el = document.querySelector(`.tab-panel:not([hidden]) .view:not([hidden]) ${selector}`) || document.querySelector(selector);
+  if (!el) return "";
+  if (!el.id) el.id = "story-" + selector.replace(/[^a-z]/gi, "");
+  return el.id;
+}
 
 let step = -1; // -1 = story mode is off
 let highlighted = null;
@@ -73,6 +86,8 @@ function goTo(i) {
   pauseReplay();
   step = i;
   const s = STEPS[step];
+  const world = s.world || "food"; // one step visits the real desk; the rest are the food floor
+  if (state.world !== world) { setWorld(world); syncSwitch(); }
   showTab(s.tab, s.view);
   const target = document.getElementById(s.target());
   if (target && target.tagName === "DETAILS") target.open = true; // a folded panel opens for its step
@@ -89,6 +104,7 @@ function goTo(i) {
 function stop() {
   clearHighlight();
   pauseReplay();
+  if (step >= 0 && state.world !== "food") { setWorld("food"); syncSwitch(); }
   step = -1;
   document.getElementById("story-card").hidden = true;
 }
@@ -140,21 +156,40 @@ function problemText() {
   if (!state.results.sim) return "The simulator results are not in the results file yet.";
   // Lead with the strongest baseline: industry-standard skills routing if it was run.
   const best = state.results.sim.policies.baseline_d ? "baseline_d" : "baseline_b";
-  return `Helpdesk tools tell you a ticket is already late. Here is a held-out Saturday dinner peak,
-    replayed with the same tickets, agents and luck. On all held-out days the industry standard
+  return `Helpdesk tools tell you a ticket is already late. This is today's floor, simulated live on this
+    laptop: the same customers and agents run two ways at once. On all held-out days the industry standard
     (${escapeHtml(shortLabel(best))}: skills-based routing with AI triage) misses
     ${ev(breachPath(best), "pct")} of SLAs. OpsLens: ${ev(breachPath("opslens"), "pct")}.
     Only the decisions differ. Click any number to see where it comes from.`;
 }
 
-function replayText() {
-  const replay = state.results.sim && state.results.sim.replay;
-  if (!replay) return "No replay in the results file yet.";
-  const last = replay.times.length - 1;
-  const lanes = Object.keys(replay.series).map((k) =>
-    `${escapeHtml(shortLabel(k))} ${ev(`sim.replay.series.${k}.breached_cum[${last}]`, "int")}`).join(", ");
-  return `${evText("sim.replay.title")}: the same tickets and the same luck for every policy;
-    only the decisions differ. Breaches by the end of the evening: ${lanes}.`;
+function thousandText() {
+  if (!state.results.sim) return "The simulator results are not in the results file yet.";
+  const best = state.results.sim.policies.baseline_d ? "baseline_d" : "baseline_b";
+  return `Each dot is one customer on the held-out days; red waited past the promised time. Click
+    <strong>${escapeHtml(shortLabel(best))}</strong> (${ev(breachPath(best), "pct")}), then <strong>OpsLens</strong>
+    (${ev(breachPath("opslens"), "pct")}) and watch the red ripple away. Below it, one real ticket walks through
+    OpsLens step by step.`;
+}
+
+function worldsText() {
+  const w = state.results.worlds;
+  if (!w) return "The random-world test is not in the results file yet.";
+  return `Everything so far ran on the one floor we built. So we drew ${ev("worlds.n_worlds", "int")} random floors.
+    We had promised OpsLens would be the lowest in ${ev("worlds.wins_needed", "int")}; it was lowest in
+    ${ev("worlds.wins", "int")}, so that rule is <strong>missed</strong>. It still beats the industry standard in
+    ${ev("worlds.breakdown.beats_industry_standard", "int")} of ${ev("worlds.breakdown.of", "int")}, wins every world up to
+    ${ev("worlds.breakdown.normal_load.max_load", "ratio")}× today's load, and loses only under heavy overload.`;
+}
+
+function shadowText() {
+  const sh = state.results.realdesk && state.results.realdesk.shadow;
+  if (!sh || !sh.shown_days.length) return "Shadow mode is not in the results file yet.";
+  const s = "realdesk.shadow.shown_days[0].summary";
+  return `A real company's IT desk, a real day, replayed: incidents arrive at their real times and the real outcome
+    appears when it happened. OpsLens only watched. Of the ${ev(s + ".actual_misses_benchmark", "int")} deadlines the desk
+    missed that day, OpsLens had warned about ${ev(s + ".opslens.caught", "int")} one hour after they opened; the
+    desk's own priority field, ${ev(s + ".priority.caught", "int")}.`;
 }
 
 // The pattern the story shows: the strongest skill-gap card (Hindi refunds wait for the few
