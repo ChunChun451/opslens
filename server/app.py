@@ -43,7 +43,10 @@ def results_path() -> Path:
 
 @app.get("/")
 def home() -> RedirectResponse:
-    return RedirectResponse("/web/")
+    # /app/ serves the same files as /web/. It is the address people open now: a browser that
+    # cached /web/ files before the no-cache header existed kept running them (24 Oct); under a
+    # new address it has nothing cached, so it always loads the current dashboard.
+    return RedirectResponse("/app/")
 
 
 @app.get("/api/health")
@@ -298,14 +301,15 @@ async def always_fresh_web_files(request, call_next):
     """The browser must ask for the newest dashboard files on every load (it may reuse its copy
     only when the file did not change). Without this, Chrome kept showing an old app.js."""
     response = await call_next(request)
-    if request.url.path.startswith("/web"):
+    if request.url.path.startswith(("/web", "/app")):
         response.headers["Cache-Control"] = "no-cache"
-    if request.url.path in ("/web", "/web/", "/web/index.html"):
+    if request.url.path in ("/web", "/web/", "/web/index.html", "/app", "/app/", "/app/index.html"):
         # Opening the dashboard also tells the browser to drop every copy it kept from older
         # versions (files cached before this header existed were reused without asking).
         response.headers["Clear-Site-Data"] = '"cache"'
     return response
 
 
+app.mount("/app", StaticFiles(directory=ROOT / "web", html=True), name="app")
 app.mount("/web", StaticFiles(directory=ROOT / "web", html=True), name="web")
 app.mount("/eval", StaticFiles(directory=ROOT / "eval"), name="eval")

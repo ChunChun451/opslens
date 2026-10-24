@@ -124,7 +124,7 @@ async function run(section) {
       // The page is served without the OpsLens API (for example by python -m http.server).
       result.innerHTML = `<div class="callout warn"><strong>What-if needs the OpsLens server.</strong>
         Start it with <code>.venv/Scripts/python.exe -m uvicorn server.app:app --port 8000</code>
-        and open <code>http://localhost:8000/web/</code>.</div>`;
+        and open <code>http://localhost:8000/</code>.</div>`;
     } else {
       result.innerHTML = `<div class="callout warn"><strong>The simulation did not finish.</strong>
         ${escapeHtml(error.message)}. Try again, or check the server window.</div>`;
