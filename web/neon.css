@@ -709,11 +709,6 @@ html[data-theme="neon"] .lv-scene { background: linear-gradient(90deg, rgba(255,
 }
 .sc-cast { position: relative; width: 64px; height: 64px; cursor: pointer; }
 .sc .mascot, .sc .mascot svg { width: 64px; height: 64px; }
-.sc-prop { position: absolute; pointer-events: none; display: block; }
-.sc-prop svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.sc-at-side .sc-prop { right: -14px; bottom: 2px; width: 28px; height: 28px; }
-.sc-at-top .sc-prop { left: 4px; top: -8px; width: 46px; height: 23px; }
-.sc-at-front .sc-prop { left: 8px; top: 14px; width: 40px; height: 26px; }
 .sc-say {
   justify-self: start;
   position: relative;
@@ -744,8 +739,8 @@ html[data-theme="neon"] .lv-scene { background: linear-gradient(90deg, rgba(255,
 .sc-scan { display: flex; align-items: center; gap: 8px; height: 100%; padding: 0 6px; }
 .sc-scan .chip { flex: 1; height: 18px; border-radius: 4px; background: color-mix(in srgb, var(--muted) 30%, transparent); }
 .sc-scan .chip:nth-child(5) { background: #ff4d8d; box-shadow: 0 0 10px rgba(255, 77, 141, 0.7); }
-.sc-scan .beam { position: absolute; top: 0; bottom: 0; left: 0; width: 26px; border-radius: 50%;
-  border: 3px solid #22d3ee; box-shadow: 0 0 12px rgba(34, 211, 238, 0.6); opacity: 0.8; }
+.sc-scan .beam { position: absolute; top: 4px; bottom: 4px; left: 0; width: 6px; border-radius: 3px;
+  background: #22d3ee; box-shadow: 0 0 14px 4px rgba(34, 211, 238, 0.55); opacity: 0.85; }
 
 .sc-countdown { position: absolute; left: 6px; right: 6px; top: 50%; height: 10px; transform: translateY(-50%);
   border-radius: 6px; background: color-mix(in srgb, var(--muted) 25%, transparent); overflow: hidden; }
@@ -796,34 +791,6 @@ html[data-theme="neon"] .lv-scene { background: linear-gradient(90deg, rgba(255,
   .mascot.is-happy svg { animation: happy-bounce 1.8s ease-in-out infinite; }
   @keyframes happy-bounce { 0%, 100% { transform: translateY(0) rotate(0deg); } 30% { transform: translateY(-7px) rotate(-4deg); } 60% { transform: translateY(0) rotate(3deg); } }
 
-  /* Props */
-  .sc-prop-trophy svg { animation: trophy-raise 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
-  @keyframes trophy-raise { 0%, 100% { transform: translateY(0) rotate(6deg); } 30% { transform: translateY(-9px) rotate(-6deg); } 60% { transform: translateY(0) rotate(4deg); } }
-  .sc-prop-hat svg { animation: hat-tip 4s ease-in-out infinite; transform-origin: 20% 100%; }
-  @keyframes hat-tip { 0%, 80%, 100% { transform: rotate(0deg); } 86% { transform: translateY(-5px) rotate(-12deg); } 92% { transform: rotate(0deg); } }
-  .sc-prop-alarm svg { animation: alarm-ring 1.2s ease-in-out infinite; transform-origin: 50% 60%; }
-  @keyframes alarm-ring { 0%, 50%, 100% { transform: rotate(0deg); } 8% { transform: rotate(-16deg); } 16% { transform: rotate(16deg); }
-    24% { transform: rotate(-12deg); } 32% { transform: rotate(12deg); } 40% { transform: rotate(-4deg); } }
-  .sc-prop-binoculars svg { animation: look-around 4s ease-in-out infinite; }
-  @keyframes look-around { 0%, 100% { transform: translateX(0) rotate(0deg); } 30% { transform: translateX(6px) rotate(5deg); } 65% { transform: translateX(-5px) rotate(-5deg); } }
-  .sc-prop-binoculars .glint { animation: glint 2s ease-in-out infinite; }
-  @keyframes glint { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; fill: #fff; } }
-  .sc-prop-clipboard .tick { stroke-dasharray: 12; stroke-dashoffset: 12; animation: tick-draw 3s ease-out infinite; }
-  .sc-prop-clipboard .t2 { animation-delay: 0.8s; }
-  @keyframes tick-draw { 0% { stroke-dashoffset: 12; } 25%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 12; } }
-  .sc-prop-stopwatch .hand { transform-origin: 16px 18px; animation: spin 2s linear infinite; }
-  .sc-prop-dial .knob { transform-origin: 16px 16px; animation: knob-turn 3s ease-in-out infinite; }
-  @keyframes knob-turn { 0%, 100% { transform: rotate(-60deg); } 50% { transform: rotate(70deg); } }
-  .sc-prop-stamp svg { animation: stamp-down 2.4s cubic-bezier(0.5, 0, 0.6, 1.6) infinite; }
-  @keyframes stamp-down { 0%, 100% { transform: translateY(-10px) rotate(-8deg); } 40% { transform: translateY(2px) rotate(0deg); } 55% { transform: translateY(0) scale(1.08, 0.9); } }
-  .sc-prop-flask svg { animation: flask-shake 2.6s ease-in-out infinite; transform-origin: 50% 90%; }
-  @keyframes flask-shake { 0%, 70%, 100% { transform: rotate(0deg); } 76% { transform: rotate(-10deg); } 84% { transform: rotate(9deg); } 92% { transform: rotate(-4deg); } }
-  .sc-prop-flask .bub { animation: bub-rise 1.4s ease-in infinite; }
-  .sc-prop-flask .b2 { animation-delay: 0.7s; }
-  @keyframes bub-rise { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-16px); } }
-  .sc-prop-file svg { animation: file-wave 2.2s ease-in-out infinite; transform-origin: 50% 100%; }
-  @keyframes file-wave { 0%, 100% { transform: rotate(-8deg); } 50% { transform: translateY(-5px) rotate(8deg); } }
-
   /* Stages */
   .sc-confetti i { animation: confetti-fall 3.2s linear infinite; }
   .sc-confetti i:nth-child(2n) { animation-duration: 2.6s; animation-delay: 0.6s; }
@@ -831,7 +798,7 @@ html[data-theme="neon"] .lv-scene { background: linear-gradient(90deg, rgba(255,
   @keyframes confetti-fall { 0% { opacity: 0; transform: translateY(0) rotate(0deg); } 10% { opacity: 1; } 100% { opacity: 0; transform: translateY(58px) rotate(540deg); } }
 
   .sc-scan .beam { animation: beam-sweep 3.6s ease-in-out infinite; }
-  @keyframes beam-sweep { 0%, 100% { left: 0; } 50% { left: calc(100% - 26px); } }
+  @keyframes beam-sweep { 0%, 100% { left: 0; } 50% { left: calc(100% - 6px); } }
   .sc-scan .chip:nth-child(5) { animation: chip-found 3.6s ease-in-out infinite; }
   @keyframes chip-found { 0%, 45% { transform: scale(1); } 52% { transform: scale(1.25, 1.4); } 60%, 100% { transform: scale(1); } }
 
@@ -923,4 +890,88 @@ html[data-theme="neon"] .sc {
 @media (max-width: 900px) {
   .sc.sc-has-customer { grid-template-columns: auto minmax(0, 1fr); }
   .sc-has-customer .sc-customer { grid-column: 1 / -1; }
+}
+
+/* =============================================================================================
+   Characters (Claude 2, 24 Oct, "every page has same type animation") — js/characters.js.
+   One character per screen; each moves in its own way. Asleep → everything pauses but the z's.
+   ============================================================================================= */
+.chr svg { filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4)); }
+.chr .g-big, .chr .g-small, .chr .sun, .chr .wheel, .chr .knob, .chr .sparkle, .chr .tick,
+.chr .flame, .chr .sand-top, .chr .sand-bot, .chr .ribbon, .chr .alert, .chr .p1, .chr .p2 { transform-box: fill-box; }
+.chr.is-sleep svg * { animation-play-state: paused !important; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Trophy: waves both arms, a sparkle twinkles. */
+  .chr-trophy .al { transform-origin: 17px 30px; animation: arm-l 1.2s ease-in-out infinite; }
+  .chr-trophy .ar { transform-origin: 63px 30px; animation: arm-r 1.2s ease-in-out infinite; }
+  @keyframes arm-l { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-22deg); } }
+  @keyframes arm-r { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(22deg); } }
+  .chr-trophy .sparkle { transform-origin: center; animation: twinkle 1.6s ease-in-out infinite; }
+  @keyframes twinkle { 0%, 100% { transform: scale(0.4) rotate(0deg); opacity: 0.3; } 50% { transform: scale(1.2) rotate(45deg); opacity: 1; } }
+
+  /* Gears: the big one turns, the small one turns back, the hammer taps. */
+  .chr-gears .g-big { transform-origin: center; animation: spin 9s linear infinite; }
+  .chr-gears .g-small { transform-origin: center; animation: spin 3.4s linear infinite reverse; }
+  .chr-gears .wrench { transform-origin: 74px 74px; animation: wrench-tap 1.4s ease-in-out infinite; }
+  @keyframes wrench-tap { 0%, 100% { transform: rotate(0deg); } 40% { transform: rotate(-24deg); } 55% { transform: rotate(4deg); } }
+
+  /* Hourglass: the top sand runs out while the bottom fills, the stream trickles. */
+  .chr-hourglass .sand-top { transform-origin: 50% 100%; animation: sand-out 5s linear infinite; }
+  .chr-hourglass .sand-bot { transform-origin: 50% 100%; animation: sand-in 5s linear infinite; }
+  .chr-hourglass .sand-stream { animation: trickle 0.5s linear infinite; }
+  @keyframes sand-out { from { transform: scaleY(1); } to { transform: scaleY(0.12); } }
+  @keyframes sand-in { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+  @keyframes trickle { to { stroke-dashoffset: -6; } }
+
+  /* Cloud: the sun turns behind it, rain falls. */
+  .chr-cloud .sun { transform-origin: center; animation: spin 12s linear infinite; }
+  .chr-cloud .rain path { animation: rain-fall 1s linear infinite; }
+  .chr-cloud .rain .r2 { animation-delay: 0.33s; } .chr-cloud .rain .r3 { animation-delay: 0.66s; }
+  @keyframes rain-fall { 0% { transform: translateY(-4px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(8px); opacity: 0; } }
+
+  /* Rocket: the flame flickers, smoke puffs. */
+  .chr-rocket .flame { transform-origin: 50% 0; animation: flicker 0.18s ease-in-out infinite alternate; }
+  @keyframes flicker { from { transform: scaleY(0.75) scaleX(0.9); } to { transform: scaleY(1.15) scaleX(1.05); } }
+  .chr-rocket .p1, .chr-rocket .p2 { transform-origin: center; animation: puff 1.4s ease-out infinite; }
+  .chr-rocket .p2 { animation-delay: 0.7s; }
+  @keyframes puff { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(2.2) translateY(2px); opacity: 0; } }
+
+  /* Delivery box: wheels spin, it bobs, speed lines streak. */
+  .chr-box .wheel { transform-origin: center; animation: spin 0.7s linear infinite; }
+  .chr-box .cart { animation: cart-bob 0.35s ease-in-out infinite alternate; }
+  @keyframes cart-bob { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+  .chr-box .speed { animation: streak 0.6s linear infinite; }
+  @keyframes streak { 0% { transform: translateX(6px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateX(-6px); opacity: 0; } }
+
+  /* Robot: the antenna blinks, the dial turns. */
+  .chr-robot .bulb { animation: bulb-blink 1s steps(2) infinite; }
+  @keyframes bulb-blink { 50% { fill: #22d3ee; } }
+  .chr-robot .knob { transform-origin: center; animation: knob-turn 2.6s ease-in-out infinite; }
+  @keyframes knob-turn { 0%, 100% { transform: rotate(-60deg); } 50% { transform: rotate(70deg); } }
+
+  /* Ledger book: the ribbon swings, the tick pops. */
+  .chr-book .ribbon { transform-origin: 50% 0; animation: ribbon-swing 1.8s ease-in-out infinite; }
+  @keyframes ribbon-swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+  .chr-book .tick { transform-origin: center; animation: tick-pop 2.4s ease-out infinite; }
+  @keyframes tick-pop { 0%, 20% { transform: scale(0); } 32% { transform: scale(1.3); } 40%, 90% { transform: scale(1); } 100% { transform: scale(0); } }
+
+  /* Flask: bubbles rise. */
+  .chr-flask .bub { animation: bub-rise 1.5s ease-in infinite; }
+  .chr-flask .b2 { animation-delay: 0.5s; } .chr-flask .b3 { animation-delay: 1s; }
+  @keyframes bub-rise { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-22px); } }
+
+  /* Folder: a file slides in, again and again. */
+  .chr-folder .paper { animation: file-in 2.4s ease-in-out infinite; }
+  @keyframes file-in { 0% { transform: translateY(-14px); opacity: 0; } 25% { opacity: 1; } 60%, 80% { transform: translateY(16px); opacity: 1; } 100% { transform: translateY(16px); opacity: 0; } }
+
+  /* Computer: the cursor blinks, the alert pulses. */
+  .chr-monitor .cursor { animation: bulb-blink-op 1s steps(2) infinite; }
+  @keyframes bulb-blink-op { 50% { opacity: 0; } }
+  .chr-monitor .alert { transform-origin: center; animation: alert-pulse 1.2s ease-in-out infinite; }
+  @keyframes alert-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+
+  /* Balance scale: the beam tips towards the measured side and back. */
+  .chr-scale .beam { transform-origin: 40px 20px; animation: scale-tip 3s ease-in-out infinite; }
+  @keyframes scale-tip { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
 }
