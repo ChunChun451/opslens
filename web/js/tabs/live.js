@@ -371,10 +371,30 @@ function bump(id, html) {
   const before = el.textContent;
   el.innerHTML = html;
   if (before !== el.textContent && before !== "…") {
+    countUp(el, before, el.textContent);
     el.classList.remove("bumped");
     void el.offsetWidth;
     el.classList.add("bumped");
   }
+}
+
+// Roll a whole number from its old value to its new one (~0.7 s, easing out). The final text is
+// the formatted value, so the screen always ends on the exact number.
+function countUp(el, beforeText, afterText) {
+  const from = parseInt(beforeText.replace(/[^\d-]/g, ""), 10);
+  const to = parseInt(afterText.replace(/[^\d-]/g, ""), 10);
+  if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const holder = el.querySelector(".ev") || el; // the number's own text, inside its evidence button
+  const finalText = holder.textContent;
+  const started = performance.now();
+  const step = (now) => {
+    const k = Math.min(1, (now - started) / 700);
+    const eased = 1 - Math.pow(1 - k, 3);
+    holder.textContent = k < 1 ? String(Math.round(from + (to - from) * eased)) : finalText;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 function clockOf(minute) {

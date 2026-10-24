@@ -356,3 +356,101 @@ html[data-theme="neon"] .cbar-fill.is-bad { box-shadow: 0 0 10px color-mix(in sr
 html[data-theme="neon"] .fix-card.is-win .fix-number,
 html[data-theme="neon"] .fix-card.is-win .fix-number .ev { text-shadow: 0 0 24px rgba(52, 211, 153, 0.45); }
 html[data-theme="neon"] .risk-cards .ticket:hover { border-color: rgba(255, 77, 141, 0.35); box-shadow: 0 0 28px -12px rgba(255, 77, 141, 0.5); }
+
+/* =============================================================================================
+   Motion pass (Claude 2, 24 Oct, the owner asked for "cool animation"). Everything here sits
+   inside prefers-reduced-motion: no-preference, so a viewer who asked for less motion gets none.
+   Ambient motion is slow (the aurora drifts over ~40 s); everything else answers a change.
+   ============================================================================================= */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* 1. Aurora: the neon background glows drift slowly behind the app. */
+  html[data-theme="neon"] body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 20% 80%, rgba(34, 211, 238, 0.16), transparent 70%),
+      radial-gradient(38% 34% at 80% 20%, rgba(168, 85, 247, 0.2), transparent 70%),
+      radial-gradient(30% 28% at 60% 60%, rgba(236, 72, 153, 0.08), transparent 70%);
+    filter: blur(30px);
+    animation: aurora 42s ease-in-out infinite alternate;
+  }
+  html[data-theme="neon"] .app { position: relative; z-index: 1; }
+  @keyframes aurora {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+    50% { transform: translate3d(4%, -3%, 0) rotate(8deg) scale(1.06); }
+    100% { transform: translate3d(-4%, 3%, 0) rotate(-6deg) scale(1); }
+  }
+
+  /* 2. The live dot sends out a radar ping. */
+  .live-dot { position: relative; }
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: inherit;
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes ping { 0% { transform: scale(1); opacity: 0.7; } 80%, 100% { transform: scale(3); opacity: 0; } }
+
+  /* 3. Customers whose promise is already missed pulse softly. */
+  .floor .dot.late { animation: late-pulse 2.4s ease-in-out infinite; }
+  @keyframes late-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+  .floor .tile { transition: background-color 0.5s ease, box-shadow 0.5s ease; }
+
+  /* 4. A light sweep crosses the OpsLens floor every few seconds, like a scanner. */
+  .lv-lane.is-ours { position: relative; overflow: hidden; }
+  .lv-lane.is-ours::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -40%;
+    width: 30%;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.09), transparent);
+    animation: sweep 6s ease-in-out infinite;
+  }
+  @keyframes sweep { 0% { left: -40%; } 60%, 100% { left: 120%; } }
+
+  /* 5. New decisions slide in with a glow. */
+  .lv-decisions li.fresh { animation: slide-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), lv-fresh 1.8s ease-out; }
+  @keyframes slide-in { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
+
+  /* 6. Screens glide in; cards rise one after another. */
+  .view:not([hidden]) { animation: view-in 0.42s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  @keyframes view-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .view:not([hidden]) :is(.finding-grid, .fix-grid, .risk-cards, .lv-feeds, .lv-floors, .facts) > * {
+    animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  :is(.finding-grid, .fix-grid, .risk-cards, .lv-feeds, .lv-floors, .facts) > *:nth-child(2) { animation-delay: 0.06s; }
+  :is(.finding-grid, .fix-grid, .risk-cards, .lv-feeds, .lv-floors, .facts) > *:nth-child(3) { animation-delay: 0.12s; }
+  :is(.finding-grid, .fix-grid, .risk-cards, .lv-feeds, .lv-floors, .facts) > *:nth-child(4) { animation-delay: 0.18s; }
+  :is(.finding-grid, .fix-grid, .risk-cards, .lv-feeds, .lv-floors, .facts) > *:nth-child(5) { animation-delay: 0.24s; }
+  :is(.finding-grid, .fix-grid, .risk-cards, .lv-feeds, .lv-floors, .facts) > *:nth-child(n+6) { animation-delay: 0.3s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+
+  /* 7. The big live number glows when it changes (the count-up is in js/tabs/live.js). */
+  .lv-big .bumped { animation: big-glow 1.1s ease-out; }
+  @keyframes big-glow {
+    0% { transform: scale(1.12); filter: brightness(1.6); }
+    100% { transform: scale(1); filter: none; }
+  }
+
+  /* 8. A shimmer runs across the main buttons on hover. */
+  html[data-theme="neon"] .btn-primary,
+  html[data-theme="neon"] #story-button {
+    background-size: 200% 100%;
+    background-image: linear-gradient(110deg, #06b6d4 0%, #8b5cf6 45%, #22d3ee 55%, #8b5cf6 100%);
+    transition: background-position 0.8s ease, box-shadow 0.3s;
+  }
+  html[data-theme="neon"] .btn-primary:hover,
+  html[data-theme="neon"] #story-button:hover { background-position: 100% 0; }
+
+  /* The bars of the live hero grow smoothly to their new length. */
+  .lv-bar-track i { transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
