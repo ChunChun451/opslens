@@ -11,7 +11,7 @@
 import { state, policyKeys } from "../data.js";
 import { ev, evText, labelFor } from "../evidence.js";
 import {
-  pageHeader, card, stat, missing, policyName, shortLabel, deltaPill, comparisonIndex,
+  pageHeader, card, stat, missing, policyName, shortLabel, deltaPill, comparisonIndex, fold,
 } from "../ui.js";
 import { escapeHtml, kpiInfo, unitForPath, spreadUnit } from "../format.js";
 import { policyStyle } from "../charts.js";
@@ -29,19 +29,17 @@ const KEY_KPIS = [
 
 export function render(section) {
   const r = state.results;
+  // 24 Oct, "less clutter": the answer first (missed promises, three proof tiles), then the
+  // replay and the top problems; the brief, the supporting KPIs and the segments fold away.
   section.innerHTML = `
-    ${pageHeader("Overview", "Every ticket is a promise to help a customer in time. We replayed 14 days OpsLens had never seen, with the same tickets, agents and luck for every way of working.")}
-    ${r.sim && hasMission() ? missionHtml() : ""}
-    <div class="grid cols-3-2 stretch">
-      ${r.sim ? heroCard() : missing("The simulator comparison", "M7")}
-      ${briefCard()}
-    </div>
+    ${pageHeader("Results on days it never saw", "14 held-out days. Same customers, same agents, same luck for every way of working; only the decisions differ.")}
+    ${r.sim ? heroCard() : missing("The simulator comparison", "M7")}
     ${proofStrip()}
-    ${r.sim ? `<div class="grid cols-4 stretch">${KEY_KPIS.map(kpiCard).join("")}</div>` : ""}
-    <div class="grid cols-3-2 stretch">
-      ${issuesCard()}
-      ${r.sim ? segmentsCard() : ""}
-    </div>`;
+    ${r.sim && hasMission() ? missionHtml() : ""}
+    ${issuesCard()}
+    ${r.sim ? fold("More numbers: time to solve, waits, queues, transfers", `<div class="grid cols-4 stretch">${KEY_KPIS.map(kpiCard).join("")}</div>`, { hint: "against the industry standard" }) : ""}
+    ${r.sim ? fold("Who is protected: urgent orders, gold and Hindi-speaking customers", segmentsCard()) : ""}
+    ${r.brief ? fold("Today's brief, written by the LLM (numbers filled in by code)", briefCard()) : ""}`;
   if (r.sim && hasMission()) initMission();
 }
 
@@ -218,5 +216,5 @@ function segmentsCard() {
     }).join("");
     return `<div class="section-label">${escapeHtml(kpiInfo(kpi).label)}</div><div class="mini-bars">${bars}</div>`;
   }).join("");
-  return card({ id: "ov-segments", title: "Who is protected", sub: "Missed promises for the customers who matter most", body: blocks });
+  return `<div id="ov-segments" class="segments-grid">${blocks}</div>`; // inside a fold, which gives the title
 }

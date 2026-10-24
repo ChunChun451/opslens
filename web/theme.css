@@ -1630,3 +1630,119 @@ body.on-live .live-ticker { display: none; }
 /* The lens logo sits where the old dot was. */
 .brand-logo { flex-shrink: 0; }
 .brand { align-items: center; }
+
+/* =============================================================================================
+   Calm, uncluttered screens (Claude 2, 24 Oct). Each screen shows its main answer; the rest sits
+   in folds. Motion only answers an action: a fold opening, a card opening, a hover.
+   ============================================================================================= */
+
+/* ---- Folds: one line that opens -------------------------------------------------------------- */
+.fold {
+  margin: 14px 0 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+.fold > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary:hover { background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.fold > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.fold-title { font-family: var(--font-display); font-size: 1.02rem; }
+.fold-hint { color: var(--muted); font-weight: 400; font-size: 0.88rem; }
+.fold-arrow {
+  margin-left: auto;
+  width: 9px; height: 9px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg); transition: transform 0.25s var(--ease);
+}
+.fold[open] > summary .fold-arrow { transform: rotate(225deg); }
+.fold-body { padding: 4px 18px 18px; }
+.fold[open] .fold-body { animation: fold-in 0.3s var(--ease); }
+@keyframes fold-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.fold-body > .card { box-shadow: none; }
+
+/* ---- Fact lines: small facts instead of a row of big boxes ------------------------------------ */
+.facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+.fact {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  padding: 8px 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: 0.9rem; color: var(--muted);
+}
+.fact b, .fact b .ev { font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); }
+
+/* ---- Problems: a grid of finding cards, coloured by cause ------------------------------------ */
+.finding-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.finding-card {
+  --cause: var(--blue);
+  position: relative; cursor: pointer;
+  border-top: 3px solid var(--cause);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s, border-color 0.2s;
+}
+.finding-card:hover { transform: translateY(-2px); }
+.finding-card.cause-skill_gap { --cause: #a78bfa; }
+.finding-card.cause-capacity { --cause: #fb923c; }
+.finding-card.cause-volume_spike { --cause: #f472b6; }
+.finding-card.cause-partner_issue { --cause: #34d399; }
+.finding-card.cause-process { --cause: #22d3ee; }
+.finding-card.cause-other { --cause: #94a3b8; }
+.finding-card h3 { font-family: var(--font-display); font-size: 1.15rem; line-height: 1.3; margin: 8px 0 12px; }
+.finding-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.cause-tag {
+  font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+  color: var(--cause); background: color-mix(in srgb, var(--cause) 14%, transparent);
+}
+.finding-bars .mini-bar { grid-template-columns: 82px minmax(0, 1fr) 64px; }
+.cbar-fill.is-bad { background: var(--cause); }
+.cbar-fill.is-normal { background: var(--border-strong); }
+.finding-metric { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.finding-do { display: flex; gap: 10px; align-items: baseline; margin: 12px 0 4px; font-size: 0.93rem; color: var(--ink-2); }
+.finding-do .do-tag {
+  flex-shrink: 0; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+  color: var(--good); background: color-mix(in srgb, var(--good) 14%, transparent);
+}
+.finding-card .disclosure { margin-top: 8px; }
+
+/* ---- Risks: compact cards that open ---------------------------------------------------------- */
+.risk-cards { display: grid; gap: 12px; }
+.risk-cards .ticket { cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
+.risk-cards .ticket .ticket-reasons .reason:not(:first-child) { display: none; }
+.risk-cards .ticket.open .ticket-reasons .reason { display: grid; }
+.risk-cards .ticket:not(.open) .ticket-reasons::after { content: "Click for every reason"; display: block; font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+/* ---- Actions: the top fixes as big cards ----------------------------------------------------- */
+.fix-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.fix-card { display: flex; flex-direction: column; gap: 10px; transition: transform 0.2s var(--ease), box-shadow 0.2s; }
+.fix-card:hover { transform: translateY(-2px); }
+.fix-effect { display: grid; gap: 2px; }
+.fix-number, .fix-number .ev { font-family: var(--font-display); font-size: 2.6rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.fix-card.is-win .fix-number, .fix-card.is-win .fix-number .ev { color: var(--good); }
+.fix-card.is-unclear .fix-number, .fix-card.is-unclear .fix-number .ev { color: var(--muted); }
+.fix-label { font-size: 0.85rem; color: var(--muted); }
+.fix-message { font-size: 0.92rem; color: var(--ink-2); margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.fix-card .plan-decision, .fix-card .btn-row { margin-top: auto; }
+
+/* ---- Results: segments inside their fold ----------------------------------------------------- */
+.segments-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+
+/* ---- Calm hover on every card you can open --------------------------------------------------- */
+.lv-card:focus-visible, .finding-card:focus-visible, .risk-cards .ticket:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+@media (max-width: 1150px) {
+  .finding-grid, .fix-grid, .segments-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fold[open] .fold-body { animation: none; }
+  .finding-card:hover, .fix-card:hover { transform: none; }
+}
+.finding-do .ev-text { min-width: 0; }

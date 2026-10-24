@@ -10,15 +10,15 @@
 import { state, teamNames } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, shadeRanges, INK, POLICY_STYLE } from "../charts.js";
-import { pageHeader, card, stat, missing } from "../ui.js";
+import { pageHeader, card, missing, fold, factLine } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 let selectedTeam = null;
 
 export function render(section) {
   const f = state.results.forecast;
-  const head = pageHeader("Forecast",
-    "Work arriving per hour for each team, with the 80% conformal band, against the agent-hours on the roster.");
+  const head = pageHeader("The next 48 hours",
+    "How much work is coming to each team, hour by hour, against the people on the roster. Shaded hours: a team will be short.");
   if (!f) {
     section.innerHTML = head + missing("The forecast", "M6");
     return;
@@ -32,12 +32,11 @@ export function render(section) {
       ${teams.map((t) => `<button type="button" data-team="${escapeHtml(t)}">Team ${escapeHtml(t)}</button>`).join("")}
     </div>`;
   section.innerHTML = `${head}
-    <div class="grid cols-4 stretch">
-      ${card({ body: stat("Forecast error (WAPE)", ev("forecast.wape_model", "frac_pct"), noiseFloor()) })}
-      ${card({ body: stat("Seasonal-naive error", ev("forecast.wape_naive", "frac_pct"), "same hour last week (the baseline to beat)") })}
-      ${card({ body: stat("80% band coverage", ev("forecast.coverage_80", "frac_pct"), "should be close to 80%") })}
-      ${card({ body: stat("90% band coverage", ev("forecast.coverage_90", "frac_pct"), "should be close to 90%") })}
-    </div>
+    ${factLine([
+      [ev("forecast.wape_model", "frac_pct"), "forecast error"],
+      [ev("forecast.wape_naive", "frac_pct"), "error of “same hour last week”"],
+      [ev("forecast.coverage_80", "frac_pct"), "of hours inside the 80% range"],
+    ])}
     ${card({
       id: "fc-panel",
       title: "Demand vs capacity",
@@ -47,7 +46,11 @@ export function render(section) {
       actions: picker,
       body: `<div class="chart lg"><canvas id="fc-chart" aria-label="Forecast demand and capacity"></canvas></div>`,
     })}
-    ${bottleneckCard(f)}`;
+    ${alertHitRate()}
+    ${fold("Every shortage the engine flagged", bottleneckCard(f), { hint: `${f.bottlenecks.length} windows` })}
+    ${fold("How good is the forecast?", `<p>${noiseFloor()}</p>${factLine([
+      [ev("forecast.coverage_90", "frac_pct"), "of hours inside the 90% range"],
+    ])}`)}`;
 
   section.querySelectorAll("[data-team]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -214,7 +217,7 @@ function bottleneckCard(f) {
     id: "fc-bottlenecks",
     title: "Bottlenecks flagged by the engine",
     sub: "Hours where the forecast's upper band needs more agents than the roster has",
-    body: `${alertHitRate()}<div class="table-wrap"><table>
+    body: `<div class="table-wrap"><table>
         <thead><tr><th>Where and when</th><th>Team</th>
           ${hasGap ? `<th class="num">Peak gap (agents)</th><th class="num">Agent-hours short</th>` : ""}
           ${hasRho ? `<th class="num">Peak ρ</th>` : ""}<th></th></tr></thead>

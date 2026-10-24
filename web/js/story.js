@@ -75,6 +75,7 @@ function goTo(i) {
   const s = STEPS[step];
   showTab(s.tab, s.view);
   const target = document.getElementById(s.target());
+  if (target && target.tagName === "DETAILS") target.open = true; // a folded panel opens for its step
   if (target) {
     target.classList.add("story-target");
     highlighted = target;

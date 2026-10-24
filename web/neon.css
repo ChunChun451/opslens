@@ -341,3 +341,18 @@ html[data-theme="neon"] .chip-btn.is-on { background: rgba(34, 211, 238, 0.14); 
 html[data-theme="neon"] .lv-risk,
 html[data-theme="neon"] .lv-risk .ev { text-shadow: 0 0 14px rgba(255, 77, 141, 0.45); }
 html[data-theme="neon"] .brand-logo { filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.55)); }
+
+/* ---- 15. Calm screens, neon details ---------------------------------------------------------- */
+html[data-theme="neon"] .fold { background: linear-gradient(180deg, rgba(25, 32, 55, 0.7), rgba(15, 20, 36, 0.7)); backdrop-filter: blur(10px); }
+html[data-theme="neon"] .fold[open] { border-color: rgba(167, 139, 250, 0.3); box-shadow: 0 0 30px -14px rgba(124, 58, 237, 0.55); }
+html[data-theme="neon"] .fold > summary:hover { background: rgba(34, 211, 238, 0.06); }
+html[data-theme="neon"] .fact { background: rgba(18, 24, 41, 0.75); border-color: rgba(130, 145, 255, 0.18); }
+html[data-theme="neon"] .fact b,
+html[data-theme="neon"] .fact b .ev { color: #fff; text-shadow: 0 0 14px rgba(34, 211, 238, 0.35); }
+html[data-theme="neon"] .finding-card { border-top-color: var(--cause); }
+html[data-theme="neon"] .finding-card:hover,
+html[data-theme="neon"] .fix-card:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--cause, #a78bfa) 45%, transparent), 0 18px 40px -20px color-mix(in srgb, var(--cause, #a78bfa) 60%, transparent); }
+html[data-theme="neon"] .cbar-fill.is-bad { box-shadow: 0 0 10px color-mix(in srgb, var(--cause) 70%, transparent); }
+html[data-theme="neon"] .fix-card.is-win .fix-number,
+html[data-theme="neon"] .fix-card.is-win .fix-number .ev { text-shadow: 0 0 24px rgba(52, 211, 153, 0.45); }
+html[data-theme="neon"] .risk-cards .ticket:hover { border-color: rgba(255, 77, 141, 0.35); box-shadow: 0 0 28px -12px rgba(255, 77, 141, 0.5); }

@@ -9,29 +9,39 @@
 
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { pageHeader, card, stat, missing } from "../ui.js";
+import { pageHeader, card, missing, fold, factLine } from "../ui.js";
 import { escapeHtml, prettyKey } from "../format.js";
+
+const SHOWN = 5; // tickets shown before the fold (a layout choice)
 
 export function render(section) {
   const risk = state.results.risk;
-  const head = pageHeader("At-risk tickets",
-    "Open tickets ranked by the chance they breach their SLA, with the top reasons and what would reduce the risk.");
+  const head = pageHeader("Customers about to miss their promise",
+    "Ranked by the chance they will be late. Each shows why, and what would help. Click a card for every reason.");
   if (!risk) {
     section.innerHTML = head + missing("The risk model", "M5");
     return;
   }
-  const realData = typeof risk.realdata_auc === "number"
-    ? `real UCI incidents: ${ev("risk.realdata_auc", "ratio")} on ${ev("risk.realdata_n", "int")}`
-    : "held-out days";
+  // 24 Oct, "less clutter": model quality as one line of facts; the judge questions fold away.
+  const quality = factLine([
+    [ev("risk.top10_precision", "frac_pct"), "of the 10% flagged riskiest really were late"],
+    [ev("risk.auc", "ratio"), "ranking score (AUC, 1 = perfect)"],
+    typeof risk.realdata_auc === "number" && [ev("risk.realdata_auc", "ratio"), "on a real company's incidents"],
+  ]);
+  const judge = challengeStrip();
   section.innerHTML = `${head}
-    <div class="grid cols-4 stretch">
-      ${card({ body: stat("AUC", ev("risk.auc", "ratio"), realData) })}
-      ${card({ body: stat("PR-AUC", ev("risk.pr_auc", "ratio"), `base rate ${ev("risk.base_rate", "frac_pct")}`) })}
-      ${card({ body: stat("Top-10% precision", ev("risk.top10_precision", "frac_pct"), "of the riskiest tenth, share that breached") })}
-      ${card({ body: stat("Brier score", ev("risk.brier", "ratio"), "lower = better calibrated") })}
-    </div>
-    ${challengeStrip()}
-    <div id="ticket-list" class="grid">${ticketsHtml(risk)}</div>`;
+    ${quality}
+    <div id="ticket-list" class="risk-cards">${ticketsHtml(risk)}</div>
+    ${judge ? fold("Would a simpler model do? Are the reasons real?", judge, { hint: "tested, with numbers" }) : ""}
+    ${fold("Model quality in detail", factLine([
+      [ev("risk.pr_auc", "ratio"), "PR-AUC"],
+      [ev("risk.brier", "ratio"), "Brier score (lower = better calibrated)"],
+      [ev("risk.base_rate", "frac_pct"), "of snapshots were late (base rate)"],
+    ]))}`;
+  section.querySelector("#ticket-list").addEventListener("click", (event) => {
+    const cardEl = event.target.closest(".ticket");
+    if (cardEl && !event.target.closest(".ev, .ev-text")) cardEl.classList.toggle("open");
+  });
 }
 
 // The two questions a sharp judge asks about this screen, answered from Plan v4 W7 and W8
@@ -78,7 +88,9 @@ function ticketsHtml(risk) {
   // Reason bars are scaled to the biggest contribution on screen (a picture, not a number).
   let biggest = 0;
   risk.at_risk.forEach((t) => t.reasons.forEach((r) => { biggest = Math.max(biggest, Math.abs(r.contribution)); }));
-  return order.map(({ ticket, index }) => ticketHtml(ticket, index, biggest)).join("");
+  const html = order.map(({ ticket, index }) => ticketHtml(ticket, index, biggest));
+  return html.slice(0, SHOWN).join("")
+    + (html.length > SHOWN ? fold(`${html.length - SHOWN} more customers at risk`, html.slice(SHOWN).join("")) : "");
 }
 
 function ticketHtml(t, i, biggest) {
@@ -118,8 +130,8 @@ function ticketHtml(t, i, biggest) {
         <div class="small muted">${evText(base + ".ticket_id")} · created ${evText(base + ".created_at")}</div>
       </div>
       <div>
-        <div class="stat-label">Why (TreeSHAP reasons)</div>
-        ${reasons}
+        <div class="stat-label">Why</div>
+        <div class="ticket-reasons">${reasons}</div>
         ${action}
       </div>
     </article>`;

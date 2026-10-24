@@ -12,7 +12,7 @@
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, SLOTS } from "../charts.js";
-import { pageHeader, card, stat, missing, backendMissing, postJson, showWaiting } from "../ui.js";
+import { pageHeader, card, missing, backendMissing, postJson, showWaiting, fold, onFirstOpen, factLine } from "../ui.js";
 import { escapeHtml, prettyKey, CATEGORIES } from "../format.js";
 
 // Plain-language names for the cause types in the schema.
@@ -26,54 +26,42 @@ export const CAUSE_LABELS = {
 };
 
 // How many clusters to show before "Show all" (a layout choice, not a result).
-const CLUSTERS_SHOWN = 6;
+const CLUSTERS_SHOWN = 6; // shown first inside the clusters fold
 const PLANT_TIMEOUT_MS = 120000; // fresh data + detection takes 20-40 s; give up after 2 minutes
 
 export function render(section) {
   const p = state.results.patterns;
   const plantButton = `<button type="button" class="btn btn-primary" id="plant-open">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Plant a problem</button>`;
+  const hasDelay = p && Object.keys(p.delay_decomposition).length;
   section.innerHTML = `
     ${pageHeader("Recurring problems",
-      `Recurring problems found in the history (days ${ev("meta.train_days[0]", "int")}–${ev("meta.validation_days[1]", "int")}), strongest first. Each finding carries its own evidence.`,
-      plantButton)}
+      "What keeps going wrong, and why. Strongest first; open a card for its proof.", plantButton)}
     ${p ? summaryStats(p) : ""}
-    ${p ? findings(p) : missing("Patterns", "M4")}
-    <div class="grid cols-2 stretch">
-      ${p && Object.keys(p.delay_decomposition).length ? decompositionCard() : ""}
-      ${clustersCard()}
-    </div>
+    ${p ? `<div class="finding-grid">${findings(p)}</div>` : missing("Patterns", "M4")}
+    ${hasDelay ? fold("Where the time goes, per team", decompositionCard(), { id: "fold-delay", hint: "waiting vs working vs transfers" }) : ""}
+    ${clustersCard()}
     ${plantDialog()}`;
 
-  if (p && Object.keys(p.delay_decomposition).length) {
-    drawDecomposition(p.delay_decomposition);
-  }
+  if (hasDelay) onFirstOpen("fold-delay", () => drawDecomposition(p.delay_decomposition));
   wirePlantDialog(section);
+  // A card opens its evidence when clicked anywhere (except on a number, which opens its source).
+  section.querySelectorAll(".finding-card").forEach((cardEl) => cardEl.addEventListener("click", (event) => {
+    if (event.target.closest(".ev, .ev-text, summary, a, button, table")) return;
+    const details = cardEl.querySelector("details");
+    if (details) details.open = !details.open;
+  }));
 }
 
-// Four headline numbers about how well pattern finding works.
+// How well pattern finding works, as one line of facts (details are on the Proof screen).
 function summaryStats(p) {
-  const tiles = [];
-  if (p.recall) {
-    tiles.push(stat("Planted problems found",
-      `${ev("patterns.recall.found", "int")} <span class="muted">of</span> ${ev("patterns.recall.planted", "int")}`,
-      `false alarms ${ev("patterns.recall.false_alarms", "int")}`));
-  }
   const b = p.blind_recall;
-  if (b) {
-    const counts = typeof b.planted === "number"
-      ? `${ev("patterns.blind_recall.found", "int")} of ${ev("patterns.blind_recall.planted", "int")} random plants, `
-      : "";
-    tiles.push(stat("Blind recall", ev("patterns.blind_recall.found_pct", "pct"),
-      `${counts}${ev("patterns.blind_recall.sets", "int")} sets we never looked at`));
-    if (typeof b.diagnosed_pct === "number") {
-      tiles.push(stat("Right cause (blind)", ev("patterns.blind_recall.diagnosed_pct", "pct"), "found and given the right cause type"));
-    }
-  }
-  if (typeof p.live_detection_latency_min === "number") {
-    tiles.push(stat("Live spike detected after", ev("patterns.live_detection_latency_min", "min"), "an unseen surge on a test day"));
-  }
-  return `<div class="grid cols-4 stretch">${tiles.map((t) => card({ body: t })).join("")}</div>`;
+  return factLine([
+    p.recall && [`${ev("patterns.recall.found", "int")} of ${ev("patterns.recall.planted", "int")}`, "hidden problems found"],
+    b && [ev("patterns.blind_recall.found_pct", "pct"), "of random problems found in data it never saw"],
+    b && typeof b.diagnosed_pct === "number" && [ev("patterns.blind_recall.diagnosed_pct", "pct"), "given the right cause"],
+    typeof p.live_detection_latency_min === "number" && [ev("patterns.live_detection_latency_min", "min"), "to catch a sudden surge"],
+  ]);
 }
 
 function findings(p) {
@@ -84,6 +72,7 @@ function findings(p) {
     .join("");
 }
 
+// One finding as a compact card: what, how much worse than normal, what to do; proof on click.
 function findingCard(c, i) {
   const base = `patterns.cards[${i}]`;
   // The two bars are a picture of value vs comparison (scaled to the larger), not new numbers.
@@ -92,37 +81,29 @@ function findingCard(c, i) {
   const chips = Object.keys(c.segment).map((key) =>
     `<span class="chip"><b>${escapeHtml(prettyKey(key))}</b>${evText(`${base}.segment.${key}`)}</span>`).join("");
   const examples = c.examples.length ? examplesTable(c, base) : "";
-  return `<article class="card evidence-card" id="card-${escapeHtml(c.id)}">
-      <div class="finding">
-        <div>
-          <div class="finding-meta">
-            <span class="pill">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
-            <span class="small muted">${ev(base + ".affected_tickets", "int")} tickets ·
-              ${ev(base + ".affected_share_pct", "pct")} of all</span>
-          </div>
-          <h3>${evText(base + ".title")}</h3>
-          <p class="finding-compare">${evText(base + ".comparison_text")}</p>
-          ${c.recommendation ? `<div class="callout info finding-action"><strong>Suggested action:</strong> ${evText(base + ".recommendation")}</div>` : ""}
-          <details class="disclosure">
-            <summary>Show evidence</summary>
-            <div class="chips">${chips}</div>
-            ${c.not_explained_by ? `<p class="small"><strong>Why it is not a known event:</strong> ${evText(base + ".not_explained_by")}</p>` : ""}
-            ${examples}
-          </details>
-        </div>
-        <div class="finding-side">
-          <div class="stat-label">${escapeHtml(c.metric)}</div>
-          <div class="mini-bars">
-            <div class="mini-bar"><span>This segment</span>
-              <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.value)}%; background: linear-gradient(90deg, var(--brand), #f59e0b)"></div></div>
-              <span class="cbar-value">${ev(base + ".value")}</span></div>
-            <div class="mini-bar"><span>Comparison</span>
-              <div class="cbar-track"><div class="cbar-fill" style="width: ${width(c.comparison_value)}%; background: var(--border-strong)"></div></div>
-              <span class="cbar-value">${ev(base + ".comparison_value")}</span></div>
-          </div>
-          <div class="stat-sub">Strength ${ev(base + ".strength")} (robust z or ratio; higher = more unusual)</div>
-        </div>
+  return `<article class="card finding-card cause-${escapeHtml(c.cause_type)}" id="card-${escapeHtml(c.id)}" tabindex="0">
+      <div class="finding-meta">
+        <span class="cause-tag">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
+        <span class="small muted">${ev(base + ".affected_tickets", "int")} tickets</span>
       </div>
+      <h3>${evText(base + ".title")}</h3>
+      <div class="finding-bars">
+        <div class="mini-bar"><span>This group</span>
+          <div class="cbar-track"><div class="cbar-fill is-bad" style="width: ${width(c.value)}%"></div></div>
+          <span class="cbar-value">${ev(base + ".value")}</span></div>
+        <div class="mini-bar"><span>Normal</span>
+          <div class="cbar-track"><div class="cbar-fill is-normal" style="width: ${width(c.comparison_value)}%"></div></div>
+          <span class="cbar-value">${ev(base + ".comparison_value")}</span></div>
+        <div class="finding-metric">${escapeHtml(c.metric)}</div>
+      </div>
+      ${c.recommendation ? `<p class="finding-do"><span class="do-tag">Do</span>${evText(base + ".recommendation")}</p>` : ""}
+      <details class="disclosure">
+        <summary>Proof: example tickets</summary>
+        <p class="small">${evText(base + ".comparison_text")}</p>
+        <div class="chips">${chips}</div>
+        ${c.not_explained_by ? `<p class="small"><strong>Why it is not a known event:</strong> ${evText(base + ".not_explained_by")}</p>` : ""}
+        ${examples}
+      </details>
     </article>`;
 }
 
@@ -148,12 +129,8 @@ function examplesTable(c, base) {
 }
 
 function decompositionCard() {
-  return card({
-    id: "delay-panel",
-    title: "Where the time goes, per team",
-    sub: "Average minutes per ticket in each stage",
-    body: `<div class="chart sm"><canvas id="delay-chart" aria-label="Delay decomposition per team"></canvas></div>`,
-  });
+  return `<p class="small muted">Average minutes per ticket in each stage.</p>
+    <div class="chart sm"><canvas id="delay-chart" aria-label="Delay decomposition per team"></canvas></div>`;
 }
 
 // Horizontal stacked bars: one bar per team, one segment per stage.
@@ -205,13 +182,9 @@ function clustersCard() {
   };
   const first = order.slice(0, CLUSTERS_SHOWN).map(item).join("");
   const rest = order.slice(CLUSTERS_SHOWN).map(item).join("");
-  return card({
-    id: "clusters-panel",
-    title: "Ticket clusters",
-    sub: "TF-IDF + KMeans; each cluster named by the LLM from masked sample tickets",
-    body: `<ul class="list">${first}</ul>
-      ${rest ? `<details class="disclosure"><summary>Show all clusters</summary><ul class="list">${rest}</ul></details>` : ""}`,
-  });
+  return fold("What customers write about: ticket clusters", `<p class="small muted">Similar tickets grouped by their words;
+      each group named by the LLM from masked samples.</p>
+      <ul class="list">${first}${rest}</ul>`, { id: "clusters-panel", hint: `${order.length} groups` });
 }
 
 // ---- Plant a problem (backend arrives in M11) ----------------------------------------------

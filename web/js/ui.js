@@ -41,6 +41,37 @@ export function card({ title = "", sub = "", actions = "", body = "", id = "", c
   return `<section class="card ${cls}" ${id ? `id="${id}"` : ""}>${head}${body}</section>`;
 }
 
+// A fold: one line that opens to show the details (24 Oct, "less clutter": each screen shows its
+// main answer; tables and extra numbers wait behind a fold). `hint` is a short preview.
+export function fold(title, body, { id = "", hint = "", open = false } = {}) {
+  return `<details class="fold"${id ? ` id="${id}"` : ""}${open ? " open" : ""}>
+      <summary><span class="fold-title">${escapeHtml(title)}</span>${hint ? `<span class="fold-hint">${hint}</span>` : ""}
+        <span class="fold-arrow" aria-hidden="true"></span></summary>
+      <div class="fold-body">${body}</div>
+    </details>`;
+}
+
+// Run `draw` the first time the fold opens: a chart needs a visible canvas to measure itself.
+export function onFirstOpen(id, draw) {
+  const box = document.getElementById(id);
+  if (!box) return;
+  const once = () => {
+    if (box.open && !box.dataset.drawn) {
+      box.dataset.drawn = "1";
+      draw();
+    }
+  };
+  box.addEventListener("toggle", once);
+  once();
+}
+
+// A row of small facts ("5 of 5 planted problems found") instead of a row of big cards.
+// items: [[valueHtml, labelText], ...]
+export function factLine(items) {
+  return `<div class="facts">${items.filter(Boolean).map(([value, label]) =>
+    `<span class="fact"><b>${value}</b><span>${escapeHtml(label)}</span></span>`).join("")}</div>`;
+}
+
 // One headline number with a label above and a short line below.
 // size: "" (normal), "md" (smaller) or "xl" (hero).
 export function stat(label, valueHtml, subHtml = "", size = "") {

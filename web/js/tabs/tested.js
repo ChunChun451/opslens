@@ -13,7 +13,7 @@
 import { state, policyLabel, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS } from "../charts.js";
-import { pageHeader, missing } from "../ui.js";
+import { pageHeader, missing, fold, onFirstOpen } from "../ui.js";
 import { escapeHtml, prettyKey, unitForKey } from "../format.js";
 
 // The sections of this tab, for the jump bar at the top (id, label).
@@ -34,43 +34,47 @@ const SECTIONS = [
 
 export function render(section) {
   const r = state.results;
+  // 24 Oct, "less clutter": what failed and the baselines stay open (they answer "can we trust
+  // this?"); every other section is a fold, and its charts are drawn the first time it opens.
+  const sections = [
+    ["t-setup", "How the test is set up", setupPanel()],
+    ["t-recall", "Finding hidden problems", r.patterns ? recallPanel() : missing("Pattern recall", "M4")],
+    ["t-class", "Reading the tickets", r.classification ? classificationPanel() : missing("Classification", "M3")],
+    ["t-forecast", "Forecasting the next 48 hours", r.forecast ? forecastPanel() : missing("Forecast evaluation", "M6")],
+    ["t-risk", "Predicting who will be late", r.risk ? riskPanel() : missing("Risk model evaluation", "M5")],
+    ["t-ablate", "Which part does the work (one part removed at a time)", ablationRows().length ? ablationsPanel() : missing("Ablations", "M8")],
+    ["t-stress", "Conditions it never saw (stress tests)", r.stress.length ? stressPanel() : missing("Stress tests", "M8")],
+    ["t-sens", "Sensitivity, speed and scale", `<div class="grid cols-2">
+      ${r.sensitivity.length ? genericPanel("Sensitivity", "How results move when one setting changes.", "sensitivity") : missing("Sensitivity", "M8")}
+      ${r.speed ? speedPanel() : missing("Speed and scale", "M8")}</div>`],
+    details().tuning && details().tuning.history ? ["t-tuning", "How the weights were chosen (validation days only)", tuningPanel()] : null,
+    ["t-limits", "Our limits", limitationsPanel()],
+  ].filter(Boolean);
   section.innerHTML = `
-    ${pageHeader("How we tested", "Every claim on this dashboard, how it was measured, what failed, and our limits.")}
-    <div class="subnav"><div class="segmented" role="navigation" aria-label="Sections">
-      ${SECTIONS.map(([id, label]) => `<button type="button" data-jump="${id}" aria-pressed="false">${label}</button>`).join("")}
-    </div></div>
+    ${pageHeader("How we tested", "What failed, what we beat, and every test behind the numbers. Open any section.")}
     ${r.stress.length || details().v1_record ? honestPanel() : ""}
     ${r.baseline_c && r.baseline_c.test.means ? baselinesPanel() : ""}
-    <div class="grid cols-2">
-      ${setupPanel()}
-      ${r.patterns ? recallPanel() : missing("Pattern recall", "M4")}
-    </div>
-    <div class="grid cols-2">
-      ${r.classification ? classificationPanel() : missing("Classification", "M3")}
-      ${r.forecast ? forecastPanel() : missing("Forecast evaluation", "M6")}
-    </div>
-    ${r.risk ? riskPanel() : missing("Risk model evaluation", "M5")}
-    ${ablationRows().length ? ablationsPanel() : missing("Ablations", "M8")}
-    ${r.stress.length ? stressPanel() : missing("Stress tests", "M8")}
-    <div class="grid cols-2" id="t-sens">
-      ${r.sensitivity.length ? genericPanel("Sensitivity", "How results move when one setting changes.", "sensitivity") : missing("Sensitivity", "M8")}
-      ${r.speed ? speedPanel() : missing("Speed and scale", "M8")}
-    </div>
-    ${details().tuning && details().tuning.history ? tuningPanel() : ""}
-    ${limitationsPanel()}`;
+    ${sections.map(([id, title, html]) => fold(title, html, { id: `fold-${id}` })).join("")}`;
 
-  // The jump bar scrolls to a section (buttons, not links: the address bar holds the tab).
+  const draw = {
+    "t-risk": () => {
+      if (r.risk && r.risk.calibration.length) drawCalibration();
+      if (details().risk && details().risk.feature_gain) drawFeatureGain();
+    },
+    "t-ablate": () => { if (ablationRows().length) drawAblations(); },
+    "t-stress": () => { if (r.stress.length) drawStress(); },
+  };
+  Object.entries(draw).forEach(([id, fn]) => onFirstOpen(`fold-${id}`, fn));
+
+  // The jump bar (kept for SECTIONS) opens the matching fold and scrolls to it.
   section.querySelectorAll("[data-jump]").forEach((button) => {
     button.addEventListener("click", () => {
       const target = document.getElementById(button.dataset.jump);
+      const box = target && (target.closest("details") || document.getElementById(`fold-${button.dataset.jump}`));
+      if (box) box.open = true;
       if (target) target.scrollIntoView({ block: "start", behavior: "smooth" });
     });
   });
-
-  if (r.risk && r.risk.calibration.length) drawCalibration();
-  if (details().risk && details().risk.feature_gain) drawFeatureGain();
-  if (ablationRows().length) drawAblations();
-  if (r.stress.length) drawStress();
 }
 
 // Every baseline we compared against, weakest to strongest, and the sealed second world

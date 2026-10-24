@@ -11,15 +11,14 @@
 import { state, policyKeys } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle } from "../charts.js";
-import { pageHeader, card, missing, policyName, shortLabel, deltaPill } from "../ui.js";
+import { pageHeader, card, missing, fold, policyName, shortLabel, deltaPill } from "../ui.js";
 import { replayHtml, initReplay } from "../replay.js";
 import { escapeHtml, kpiInfo, spreadUnit, unitSuffix, KPI_GROUPS } from "../format.js";
 
 export function render(section) {
   const sim = state.results.sim;
-  const head = pageHeader("Baseline vs OpsLens",
-    `Held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}, simulator seeds ${evText("sim.seeds")}.
-     Same tickets, same luck (common random numbers), same decision cadence, same agents and agent-hours.`);
+  const head = pageHeader("Side by side",
+    "The same Saturday evening under each way of working: same customers, same agents, same luck. Press Play.");
   if (!sim) {
     section.innerHTML = head + missing("The simulator comparison", "M7");
     return;
@@ -32,12 +31,10 @@ export function render(section) {
       ${card({ title: "SLA breach rate", sub: "Mean over seeds, whiskers = ± one standard deviation", body: `<div class="chart sm"><canvas id="cmp-breach"></canvas></div>` })}
       ${card({ title: "P90 resolution time", sub: "Minutes; 90% of tickets are resolved faster", body: `<div class="chart sm"><canvas id="cmp-p90"></canvas></div>` })}
     </div>
-    ${card({
-      id: "kpi-table-panel",
-      title: "Every KPI, under the problem statement's three headings",
-      sub: "Mean ± standard deviation over seeds. Differences are paired over seeds with their 95% CI: green = clearly better, red = clearly worse, grey = the CI includes zero.",
-      body: kpiTable(sim),
-    })}`;
+    ${fold("Every number, under turnaround, productivity and service quality", `<p class="small muted">Held-out days
+      ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}, simulator seeds ${evText("sim.seeds")}. Mean ± standard
+      deviation over seeds; differences paired over seeds with their 95% interval: green = clearly better, red = clearly
+      worse, grey = we cannot tell.</p>${kpiTable(sim)}`, { id: "kpi-table-panel", hint: "with 95% intervals" })}`;
 
   kpiBarChart("cmp-breach", "turnaround.breach_pct");
   kpiBarChart("cmp-p90", "turnaround.p90_resolution_min");
