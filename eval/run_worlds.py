@@ -287,9 +287,51 @@ def run_world_safe_mode(seed: int, mode: str) -> dict | None:
         return None
 
 
+def summarize_v6() -> int:
+    """W13 verdict, from runs already made (no simulation here): the round-1 choice, both main-validation
+    gates, the 20-fresh-seed confirmation and the 30 new worlds 7101-7130. Rule (docs/PLAN_V4.md W13):
+    adopt only if the confirmation CI upper bound < +0.05 AND v6 is lowest (within 0.05 points of the
+    best of the five other policies) in at least 27 of the 30 new worlds."""
+    parts = ROOT / "eval" / "parts"
+    confirm_main = json.loads((parts / "confirm_v6_main.json").read_text(encoding="utf-8"))
+    done = [json.loads(p.read_text(encoding="utf-8")) for p in sorted((parts / "worlds_v6confirm").glob("*.json"))
+            if p.stem.isdigit() and int(p.stem) in CONFIRM_SEEDS]
+    rows = []
+    for r in sorted(done, key=lambda r: r["seed"]):
+        mean = {p: v["turnaround.breach_pct"] for p, v in r["compare"]["mean"].items()}
+        best_other = min(OTHERS, key=lambda p: mean[p])  # the five policies that are not OpsLens
+        rows.append({"seed": r["seed"], "volume_factor": r["volume_factor"], "breach_pct": mean, "best_other": best_other,
+                     "v6_lowest": mean["opslens_v6"] <= mean[best_other] + TIE_POINTS,
+                     "v5_lowest": mean["opslens"] <= mean[best_other] + TIE_POINTS,
+                     "v6_minus_v5": mean["opslens_v6"] - mean["opslens"]})
+    need = 27
+    v6_wins = sum(row["v6_lowest"] for row in rows)
+    diffs = [row["v6_minus_v5"] for row in rows]
+    summary = {
+        "candidate": confirm_main["candidate"], "config": confirm_main["config"],
+        "design_choice": json.loads((parts / "design_v6.json").read_text(encoding="utf-8"))["chosen"],
+        "round2_main_gate": json.loads((parts / "design_v6_main2.json").read_text(encoding="utf-8"))["candidates"],
+        "confirm_main": confirm_main,
+        "worlds": rows, "n_worlds": len(rows), "tie_points": TIE_POINTS, "wins_needed": need,
+        "v6_lowest_in": v6_wins, "v5_lowest_in": sum(row["v5_lowest"] for row in rows),
+        "v6_beats_industry_standard_in": sum(row["breach_pct"]["opslens_v6"] < row["breach_pct"]["baseline_d"] for row in rows),
+        "v5_beats_industry_standard_in": sum(row["breach_pct"]["opslens"] < row["breach_pct"]["baseline_d"] for row in rows),
+        "v6_minus_v5_mean": float(np.mean(diffs)) if diffs else None,
+        "v6_better_than_v5_in": sum(d < -TIE_POINTS for d in diffs),
+        "v6_worse_than_v5_in": sum(d > TIE_POINTS for d in diffs),
+        "adopted": bool(confirm_main["passed"] and len(rows) == len(CONFIRM_SEEDS) and v6_wins >= need),
+    }
+    (parts / "v6_adoption.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    print(f"v6 {summary['candidate']}: main confirm passed {confirm_main['passed']}; lowest in {v6_wins} of {len(rows)} new worlds "
+          f"(v5 {summary['v5_lowest_in']}; needs {need}); adopted {summary['adopted']}")
+    return 0
+
+
 def main() -> int:
     if "--diagnose" in sys.argv:
         return diagnose_losses()
+    if "--v6-summary" in sys.argv:
+        return summarize_v6()
     if "--v6-design" in sys.argv:  # W13 design: the 20 design worlds, candidates only
         from eval.run_design_v6 import DESIGN_WORLDS
         mode = "v6design2" if "--round2" in sys.argv else "v6design"

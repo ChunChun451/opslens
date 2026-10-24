@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-24T21:52:18 (commit 1c59044). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-25T01:33:31 (commit 94aa978). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -328,6 +328,10 @@ Diagnosis of the 11 losses (same worlds rebuilt, reproduced exactly: True; analy
 | 7029 | x1.14 | 2 | x1.54 | 17.36% | 7.25% | 5.64% | least_slack |
 | 7030 | x1.54 | 2 | x1.27 | 4.46% | 3.69% | 2.86% | least_slack |
 
+## v6 overload mode: adoption test (candidate C, run once)
+
+Main validation days, 20 fresh seeds: v6 - v5 -0.006 [-0.028, +0.017] points (gate: upper bound below +0.05) - passed. 30 NEW worlds: v6 lowest (within 0.05 points) in 18 (rule needs 27; v5 in the same worlds: 16); v6 better than v5 in 15, worse in 6, mean -0.26 points. Beats the industry standard: v6 30 of 30, v5 30 of 30. Adopted: no - v5 stays.
+
 ## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
 
 - Forecast: Chronos-2 (zero-shot) WAPE 0.304 vs LightGBM 0.305 (+0.4%), 80% coverage 76.2% vs 79.2%; one 48 h refresh 1.7 s → **keep LightGBM**.
@@ -336,5 +340,5 @@ Diagnosis of the 11 losses (same worlds rebuilt, reproduced exactly: True; analy
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.066 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.047 s.
 - Full evaluation pipeline: 48.5 min.

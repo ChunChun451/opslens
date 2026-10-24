@@ -249,6 +249,8 @@ def assemble(timings: dict[str, float]) -> dict:
                 name: sum(r["mean"]["opslens"][key] < r["mean"]["least_slack"][key] for r in diag["worlds"])
                 for name, key in seg.items()}
             results["worlds"]["diagnosis"] = diag
+    if (PARTS / "v6_adoption.json").exists():  # Plan v4 W13: v6 overload mode, adoption test run once (not adopted)
+        results["v6"] = part("v6_adoption")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
         sealed = part("sealed_world_new")
         for key in ("test", "best_baselines_test", "rescue_test"):
@@ -393,7 +395,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + tracking_md(r) + concurrency_md(r) + worlds_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + tracking_md(r) + concurrency_md(r) + worlds_md(r) + v6_md(r) + challengers_md(r) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "
@@ -497,6 +499,23 @@ def worlds_md(r: dict) -> list[str]:
         lines.append(f"| {row['seed']} | x{row['volume_factor']:.2f} | {prm['chats_per_agent']} | x{prm['mismatch_factor']:.2f} | "
                      f"{b['baseline_d']:.2f}% | {b['least_slack']:.2f}% | {b['opslens']:.2f}% | {row['best_other']} |")
     return lines
+
+
+def v6_md(r: dict) -> list[str]:
+    """Plan v4 W13: the v6 overload mode's pre-registered adoption test (run once, not adopted)."""
+    v = r.get("v6")
+    if not v:
+        return []
+    c = v["confirm_main"]["v6_minus_v5"]
+    return ["", f"## v6 overload mode: adoption test (candidate {v['candidate']}, run once)", "",
+            f"Main validation days, 20 fresh seeds: v6 - v5 {c['mean_diff']:+.3f} [{c['ci_low']:+.3f}, {c['ci_high']:+.3f}] points "
+            f"(gate: upper bound below +0.05) - {'passed' if v['confirm_main']['passed'] else 'failed'}. "
+            f"{v['n_worlds']} NEW worlds: v6 lowest (within {v['tie_points']} points) in {v['v6_lowest_in']} "
+            f"(rule needs {v['wins_needed']}; v5 in the same worlds: {v['v5_lowest_in']}); v6 better than v5 in "
+            f"{v['v6_better_than_v5_in']}, worse in {v['v6_worse_than_v5_in']}, mean {v['v6_minus_v5_mean']:+.2f} points. "
+            f"Beats the industry standard: v6 {v['v6_beats_industry_standard_in']} of {v['n_worlds']}, "
+            f"v5 {v['v5_beats_industry_standard_in']} of {v['n_worlds']}. "
+            f"Adopted: {'yes' if v['adopted'] else 'no - v5 stays'}."]
 
 
 def plan_md(r: dict) -> list[str]:

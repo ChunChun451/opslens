@@ -329,3 +329,11 @@ seeds 26–45 on main validation days) are unchanged and still unseen; only the 
 [+0.63, +0.89] and +0.37 [+0.19, +0.55]; the overload trigger fired for a third to a half of a normal
 week), so their design-world runs were stopped. The pre-registered choice stays **C**. It goes to the
 unchanged adoption test, run once: main validation days with 20 fresh seeds, and 30 new worlds 7101–7130.
+
+**W13 adoption result (25 Oct): NOT adopted — v5 stays.** (1) Main validation days, 20 fresh seeds 26–45:
+v6 − v5 −0.006 [−0.028, +0.017] points — gate passed (v6 is no worse on a normal floor). (2) 30 new worlds
+7101–7130: v6 lowest (within 0.05 points) in 18 of 30 — the rule needs 27, so it failed. In the same worlds
+v5 is lowest in 16; v6 is better than v5 in 15 worlds, worse in 6 (mean −0.26 points). Both beat the industry
+standard in 30 of 30 new worlds. All 12 worlds v6 did not win are heavy-overload worlds lost to least slack.
+Reading: value per minute of work narrows the overload gap a little but does not close it; switching to least
+slack (round 2) fired too often on normal weeks. The ledger shows v6 as missed. `results.v6`.

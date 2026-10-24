@@ -301,7 +301,8 @@ one-line summary.
   - v4 (pricing cross-team work differently) was **not adopted** — its gain was not clearly above zero.
   - **v5 (shipped):** if no trained agent who speaks the customer's language will be on shift before the
     deadline, a rescue by another team pays no penalty. Confirmed on 20 fresh seeds; test days 2.21% → 2.05%.
-  - v6 (an "overload mode") is being tested now (section 17).
+  - v6 (an "overload mode" that changes strategy when the next hour looks overloaded) was **not adopted**:
+    no worse on a normal week, but best in only 18 of 30 new worlds where the rule needed 27 (section 10).
 
 ### Decision 7 — Use an exact optimiser, and be honest about what it adds
 *In one line: the matching is textbook; the win comes from the values we feed it.*
@@ -656,6 +657,7 @@ Every row was a rule written before the run. They stay on screen.
 | Exact roster solver (CP-SAT) | Beats the simple staffing moves | Worse on the test days → not adopted | The planning score was the limit, not the search |
 | Real-desk digital twin | Replay the real desk with our decisions | Failed its validation gate | A log without work times cannot be replayed honestly |
 | Min-cost flow vs greedy | The optimiser adds a lot | Ties greedy | The prediction is the win |
+| v6 overload mode | Changing strategy under predicted overload makes OpsLens best in 27 of 30 new worlds | 18 of 30 (v5: 16); no worse on a normal week → not adopted | Value per minute of work narrows the overload gap but does not close it |
 
 **What under "sustained overload" means.** In the 30 random worlds, some floors had far more work than people
 for weeks (10–50% of deadlines missed). There, the published "least slack first" rule missed fewer deadlines
@@ -665,8 +667,8 @@ never abandons the late, while least slack wins the raw count by letting the alr
 
 **The big lessons:**
 1. The value of OpsLens is in **predicting rescue**, not in clever matching.
-2. Under **sustained overload**, a different rule wins on raw counts; switching strategy needs a trigger that
-   does not fire on normal days.
+2. Under **sustained overload**, a different rule wins on raw counts; our attempt to switch strategy (v6)
+   helped a little but missed its bar, so we kept v5.
 3. On **real data**, OpsLens is strongest at **early warning**, not routing.
 4. Writing the rule first protected us from fooling ourselves many times.
 
@@ -922,6 +924,7 @@ Useful single commands:
 | 22 Oct | BANKING77, strong baselines, faithfulness, CP-SAT (not adopted), the ledger screen |
 | 23 Oct | Real-desk second looks (both missed); diagnosis of overload losses (gold and late protected) |
 | 24 Oct | Live now and the neon look; every proof on screen; shadow mode; the twin (failed its gate); v6 rounds; a fresh-judge review: day-by-day tracking, Ask forecasts, decision brief, new README, demo script, cheat sheet, this guide |
+| 25 Oct | v6 adoption test: not adopted (18 of 30 new worlds; v5 stays); this guide rewritten |
 | 26 Oct (evening) | Freeze |
 | 27 Oct | Rehearsal, backup video |
 | 29–31 Oct | Finale |
@@ -971,10 +974,11 @@ challengers did not beat it by the margin we fixed in advance.
 ---
 
 ## 17. What is still open
-- **v6 overload mode:** round 1 chose "value per minute of work in overload" (no worse than v5 on fresh seeds);
-  round 2 (switching to least slack) failed its first gate; the final test of round 1's choice on 30 new
-  worlds is finishing. Expected: it will not reach the 27-of-30 bar, and goes on the ledger as missed, with
-  its numbers.
+- **v6 overload mode — decided 25 Oct: not adopted.** Round 1 chose "value per minute of work in overload";
+  it was no worse than v5 on 20 fresh seeds (−0.006 points), but on 30 new worlds it was best in only 18
+  (the rule needed 27). Round 2 (switching to least slack) fired too often on normal weeks. v5 stays; the
+  ledger shows v6 as missed. One good side result: on those 30 new worlds, v5 beat the industry standard in
+  **30 of 30**.
 - **Screen fixes (issue #19):** a one-line headline on the first screen; the day-by-day chart; the decision
   brief on Overview; Ask suggestions; deep links; fewer numbers per screen; and the ledger grouped into
   **core claims (all kept)** and **stretch bets**.
