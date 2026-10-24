@@ -16,6 +16,7 @@ import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey } from "../format.js";
+import { comparisonIndex } from "../ui.js";
 
 const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
 const WAIT_MS = 2500; // while a day is being simulated
@@ -51,13 +52,16 @@ export function render(section) {
           <div class="lv-fine" id="lv-status">Starting…</div>
         </div>
         <div class="lv-impact">
+          <div class="lv-col-title"><span class="live-dot"></span>Today so far, live</div>
           <div class="lv-big"><span id="lv-saved">…</span></div>
           <div class="lv-big-label" id="lv-saved-label">more customers helped in time today, with the same agents</div>
           <div class="lv-bars">
             <div class="lv-bar theirs"><span class="lv-bar-name">Industry standard</span><span class="lv-bar-track"><i id="lv-bar-theirs"></i></span><b id="lv-m-theirs">…</b><small>missed</small></div>
             <div class="lv-bar ours"><span class="lv-bar-name">OpsLens</span><span class="lv-bar-track"><i id="lv-bar-ours"></i></span><b id="lv-m-ours">…</b><small>missed</small></div>
           </div>
+          <div class="lv-midnight" id="lv-midnight"></div>
         </div>
+        <div class="lv-overall">${overallHtml()}</div>
         <div class="lv-actions">
           <button type="button" class="btn btn-primary" id="lv-speed">▶ Play the evening</button>
           <button type="button" class="btn" id="lv-luck">↻ New luck</button>
@@ -268,6 +272,7 @@ async function refresh() {
   waitingSince = null;
   showProgress();
   state.live = data;
+  loadMidnight();
   status.textContent = `Running on this laptop · ${describe(applied)} · practice customers, test day ${data.day} · luck ${data.seed}`;
   draw(data);
   poll = setTimeout(refresh, speed > 1 ? 1000 : POLL_MS);
@@ -293,6 +298,47 @@ function draw(d) {
   drawFrameInto(document.getElementById("lv-f-ours"), d.agents, ours.status, ours.queues);
   drawDanger(d);
   drawDecisions(d);
+}
+
+// The big result from the exam: missed promises over the 14 held-out days, from results.json
+// (the same numbers as the Results screen), so a quiet morning never hides what OpsLens does.
+function overallHtml() {
+  const sim = state.results && state.results.sim;
+  if (!sim || !sim.policies.baseline_d) return "";
+  const path = (k) => `sim.policies.${k}.kpis.turnaround.breach_pct.mean`;
+  const i = comparisonIndex("opslens", "baseline_d", "turnaround.breach_pct");
+  const c = `sim.comparisons[${i}]`;
+  return `<div class="lv-col-title">Over 14 days it never saw</div>
+    <div class="lv-overall-nums">
+      <span class="lv-o theirs">${ev(path("baseline_d"), "pct")}</span>
+      <span class="lv-o-arrow" aria-hidden="true">→</span>
+      <span class="lv-o ours">${ev(path("opslens"), "pct")}</span>
+    </div>
+    <div class="lv-big-label">of customers missed their promise: industry standard → OpsLens</div>
+    ${i >= 0 ? `<div class="lv-o-diff">${ev(c + ".mean_diff", "pts", { signed: true })} <span>95% CI
+      ${ev(c + ".ci_low", "pts", { signed: true, bare: true })} to ${ev(c + ".ci_high", "pts", { signed: true, bare: true })}</span></div>` : ""}
+    <a class="lv-o-link" href="#overview/overview">See the full results</a>`;
+}
+
+// "By midnight": the end of today's simulated day for the scenario that is running.
+let midnightKey = "";
+async function loadMidnight() {
+  const key = query();
+  const box = document.getElementById("lv-midnight");
+  if (!box || key === midnightKey) return;
+  midnightKey = key;
+  const weekday = (new Date().getDay() + 6) % 7;
+  try {
+    const response = await fetch(`/api/live?weekday=${weekday}&minute=1439.9&${key}`, { cache: "no-store" });
+    const d = await response.json();
+    if (!d.ready) { midnightKey = ""; return; }
+    const theirs = d.policies.baseline_d.missed;
+    const ours = d.policies.opslens.missed;
+    box.innerHTML = `By midnight (the whole day, already simulated): <b class="t">${theirs}</b> vs <b class="o">${ours}</b>
+      missed, <b class="o">${theirs - ours}</b> more customers helped.`;
+  } catch (error) {
+    midnightKey = "";
+  }
 }
 
 // Three cards: risk, who, one reason; click a card to see every reason.
