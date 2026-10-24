@@ -1282,94 +1282,42 @@ html[data-theme="light"] .jr-road { background: linear-gradient(180deg, #7dd3fc 
   .doodle-newyear .b2 { animation-delay: 0.6s; }
 }
 
-/* ---- Splash (24 Oct, third take): a bright 3D product reveal. Glass ticket cards stream into the
-   OpsLens lens; the name rises; four plain lines; on exit the screen zooms into the lens. ---------- */
-.splash { position: fixed; inset: 0; z-index: 900; display: grid; justify-items: center; align-content: center; gap: 1.4vh;
-  padding: 3vh 20px; overflow: hidden; cursor: pointer; color: #15122b; text-align: center;
-  background: linear-gradient(160deg, #fbfbfe 0%, #f1eff8 55%, #e9e7f4 100%); transition: opacity 0.7s ease 0.15s; }
+/* ---- Splash (24 Oct, fourth take): "chaos in, order out". Particles drawn on a canvas form the
+   word OpsLens in deep space; the logo, the team and the line fade in around it. ------------------ */
+.splash { position: fixed; inset: 0; z-index: 900; overflow: hidden; cursor: pointer; color: #eef0ff;
+  background: radial-gradient(ellipse at 50% 46%, #14122b 0%, #08070f 55%, #040309 100%); transition: opacity 0.6s ease 0.2s; }
 .splash.is-leaving { opacity: 0; pointer-events: none; }
-.sp-bg { position: absolute; inset: 0; pointer-events: none; }
-.sp-bg .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.45; }
-.sp-bg .b1 { width: 46vw; height: 46vw; left: -12vw; top: -14vw; background: #ff0a6c; opacity: 0.22; }
-.sp-bg .b2 { width: 50vw; height: 50vw; right: -16vw; bottom: -20vw; background: #2d27ff; opacity: 0.2; }
-.sp-bg .b3 { width: 30vw; height: 30vw; left: 35vw; top: 30vh; background: #b32bd8; opacity: 0.12; }
-.sp-grid { position: absolute; inset: 0;
-  background-image: linear-gradient(rgba(45, 39, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 39, 255, 0.06) 1px, transparent 1px);
-  background-size: 44px 44px; mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 70%); }
-.sp-pill { position: relative; z-index: 3; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(45, 39, 255, 0.15); box-shadow: 0 8px 24px rgba(45, 39, 255, 0.1);
-  backdrop-filter: blur(8px); font-size: 0.85rem; font-weight: 650; color: #3b3655; }
-.sp-pill b { margin-left: 6px; font-size: 1rem; font-weight: 800; color: #15122b; font-variant-numeric: tabular-nums; }
-.sp-pill small { color: #8a84a6; font-weight: 700; }
+.sp-canvas { position: absolute; inset: 0; display: block; }
+.sp-pill { position: absolute; left: 50%; top: 4.5vh; transform: translateX(-50%); z-index: 2; display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 999px; white-space: nowrap; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(160, 150, 255, 0.22);
+  backdrop-filter: blur(6px); font-size: 0.82rem; font-weight: 650; color: #c9c6e8; }
+.sp-pill b { margin-left: 6px; font-size: 1rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+.sp-pill small { color: #8580b3; font-weight: 700; }
 .sp-live { width: 8px; height: 8px; border-radius: 50%; background: #ff0a6c; box-shadow: 0 0 0 0 rgba(255, 10, 108, 0.6); }
-.sp-stage { position: relative; z-index: 2; width: 100vw; height: min(40vh, 330px); display: grid; place-items: center; perspective: 1100px; }
-.sp-cards { position: absolute; inset: 0; transform-style: preserve-3d; }
-.tk-card { position: absolute; left: 50%; top: 50%; width: 168px; margin: -26px 0 0 -84px; padding: 9px 12px 9px 16px; border-radius: 12px;
-  display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 8px; text-align: left; opacity: 0;
-  background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(255, 255, 255, 0.9); backdrop-filter: blur(6px);
-  box-shadow: 0 14px 30px rgba(32, 20, 80, 0.14), 0 2px 6px rgba(32, 20, 80, 0.08);
-  transform: translate3d(var(--x), var(--y), var(--z)) rotateY(var(--r)) rotateX(14deg); }
-.tk-stripe { position: absolute; left: 0; top: 8px; bottom: 8px; width: 4px; border-radius: 0 4px 4px 0;
-  background: color-mix(in srgb, #ff0a6c calc((1 - var(--t)) * 100%), #2d27ff); }
-.tk-card b { font-size: 0.82rem; color: #15122b; white-space: nowrap; }
-.tk-card span { grid-column: 1; font-size: 0.7rem; color: #7a7495; }
-.tk-card em { grid-row: 1 / span 2; grid-column: 2; width: 10px; height: 10px; border-radius: 50%;
-  background: color-mix(in srgb, #ff0a6c calc((1 - var(--t)) * 100%), #2d27ff); box-shadow: 0 0 8px color-mix(in srgb, #ff0a6c calc((1 - var(--t)) * 100%), #2d27ff); }
-.sp-core { position: relative; z-index: 3; display: grid; place-items: center; width: 190px; height: 190px;
-  transition: transform 0.7s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.6s ease 0.1s; }
-.sp-halo { position: absolute; inset: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 38%, rgba(179, 43, 216, 0.18) 55%, transparent 70%); }
-.sp-scan { position: absolute; inset: 4px; border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0 70%, rgba(255, 10, 108, 0.65) 85%, rgba(45, 39, 255, 0.9) 100%);
-  mask: radial-gradient(circle, transparent 60%, #000 61% 70%, transparent 71%); -webkit-mask: radial-gradient(circle, transparent 60%, #000 61% 70%, transparent 71%); }
-.sp-lens { position: relative; width: 150px; height: 150px; filter: drop-shadow(0 18px 30px rgba(45, 39, 255, 0.35)); }
-.sp-word { position: relative; z-index: 3; display: flex; justify-content: center; font-size: clamp(2.4rem, min(6vw, 8vh), 4rem); font-weight: 850;
-  letter-spacing: -0.02em; line-height: 1; }
-.sp-word span { display: inline-block; background: linear-gradient(135deg, #ff0a6c, #8a24e0 50%, #2d27ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.sp-by-line { position: relative; z-index: 3; }
-.sp-tag { position: relative; z-index: 3; font-size: 1.15rem; font-weight: 600; color: #3b3655; }
-.sp-features { position: relative; z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 760px; }
-.sp-features span { padding: 7px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(45, 39, 255, 0.14);
-  box-shadow: 0 6px 18px rgba(32, 20, 80, 0.08); font-size: 0.85rem; font-weight: 650; color: #2b2747; }
-.sp-bar { position: relative; z-index: 3; width: min(280px, 70vw); height: 3px; border-radius: 3px; background: rgba(45, 39, 255, 0.12); overflow: hidden; margin-top: 0.6vh; }
-.sp-bar i { position: absolute; inset: 0; width: 100%; background: linear-gradient(90deg, #ff0a6c, #2d27ff); transform-origin: left; }
-.sp-skip { position: relative; z-index: 3; font-size: 0.75rem; color: #8a84a6; }
-/* Exit: everything fades while the lens grows until we are through it. */
-.splash.is-leaving .sp-core { transform: scale(9); opacity: 0; }
-.splash.is-leaving > :not(.sp-stage):not(.sp-bg) { opacity: 0; transition: opacity 0.25s; }
-.splash.is-leaving .sp-cards { opacity: 0; transition: opacity 0.25s; }
-
+.sp-mark { position: absolute; left: 50%; z-index: 2; width: 64px; height: 64px; transform: translateX(-50%) scale(0.6); opacity: 0;
+  filter: drop-shadow(0 0 18px rgba(138, 36, 224, 0.7)); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.sp-mark .lg { width: 64px; height: 64px; }
+.sp-under { position: absolute; left: 0; right: 0; z-index: 2; display: grid; justify-items: center; gap: 10px; opacity: 0;
+  transform: translateY(12px); transition: opacity 0.8s ease 0.25s, transform 0.8s ease 0.25s; }
+.splash .sp-by { color: #fff !important; background: linear-gradient(90deg, #ff0a6c, #2d27ff); box-shadow: 0 0 22px rgba(138, 36, 224, 0.5); }
+.sp-tag { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.04em; color: #d6d3f5; }
+.splash.is-formed .sp-mark { opacity: 1; transform: translateX(-50%) scale(1); }
+.splash.is-formed .sp-under { opacity: 1; transform: none; }
+.sp-foot { position: absolute; left: 0; right: 0; bottom: 4vh; z-index: 2; display: grid; justify-items: center; gap: 8px; }
+.sp-bar { width: min(260px, 60vw); height: 2px; border-radius: 2px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.sp-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff0a6c, #2d27ff); transform-origin: left; }
+.sp-skip { font-size: 0.72rem; letter-spacing: 0.14em; color: rgba(220, 220, 255, 0.45); }
+.splash.is-leaving .sp-pill, .splash.is-leaving .sp-mark, .splash.is-leaving .sp-under, .splash.is-leaving .sp-foot { opacity: 0; transition: opacity 0.2s; }
 @media (prefers-reduced-motion: no-preference) {
-  .sp-bg .b1 { animation: blob-a 9s ease-in-out infinite alternate; }
-  .sp-bg .b2 { animation: blob-a 11s ease-in-out infinite alternate-reverse; }
-  @keyframes blob-a { to { transform: translate(6vw, 4vh) scale(1.12); } }
   .sp-live { animation: dot-ping 1.4s ease-out infinite; }
-  .tk-card { animation: tk-in 3.1s cubic-bezier(0.45, 0, 0.7, 1) infinite; animation-delay: calc(var(--d) * -1); }
-  @keyframes tk-in {
-    0% { opacity: 0; transform: translate3d(var(--x), var(--y), var(--z)) rotateY(var(--r)) rotateX(14deg) scale(1); }
-    12% { opacity: 1; }
-    70% { opacity: 1; transform: translate3d(calc(var(--x) * 0.28), calc(var(--y) * 0.28), 0) rotateY(calc(var(--r) * 0.4)) rotateX(6deg) scale(0.75); }
-    100% { opacity: 0; transform: translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg) scale(0.12); }
-  }
-  .sp-scan { animation: spin 2.2s linear infinite; }
-  .sp-halo { animation: halo 1.55s ease-in-out infinite; }
-  @keyframes halo { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-  .sp-lens { animation: lens-float 3.2s ease-in-out infinite; }
-  @keyframes lens-float { 0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(-8deg); } 50% { transform: translateY(-8px) rotateX(8deg) rotateY(8deg); } }
-  .sp-core { animation: core-in 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) backwards; }
-  @keyframes core-in { from { opacity: 0; transform: scale(0.5); } }
-  .sp-word span { animation: letter-up 0.7s cubic-bezier(0.2, 1.3, 0.4, 1) backwards; animation-delay: calc(0.35s + var(--i) * 0.06s); }
-  @keyframes letter-up { from { opacity: 0; transform: translateY(26px) rotateX(70deg); } }
-  .sp-by-line, .sp-tag, .sp-pill { animation: soft-up 0.7s ease backwards; }
-  .sp-pill { animation-delay: 0.1s; } .sp-by-line { animation-delay: 0.85s; } .sp-tag { animation-delay: 1s; }
-  @keyframes soft-up { from { opacity: 0; transform: translateY(14px); } }
-  .sp-features span { animation: pill-pop 0.6s cubic-bezier(0.2, 1.5, 0.4, 1) backwards; animation-delay: calc(1.25s + var(--i) * 0.14s); }
-  @keyframes pill-pop { from { opacity: 0; transform: translateY(10px) scale(0.85); } }
-  .sp-bar i { animation: sp-load 4.2s linear; }
+  .sp-bar i { animation: sp-load 5s linear; }
   @keyframes sp-load { from { transform: scaleX(0); } }
+  .splash.is-formed .sp-mark .lg { animation: mark-float 3s ease-in-out infinite; }
+  @keyframes mark-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 }
-@media (max-width: 700px) {
-  .tk-card { width: 132px; margin-left: -66px; }
-  .sp-features span { font-size: 0.75rem; }
+@media (prefers-reduced-motion: reduce) {
+  .splash .sp-mark { opacity: 1; transform: translateX(-50%); }
+  .splash .sp-under { opacity: 1; transform: none; }
 }
 
 /* =============================================================================================
@@ -1654,8 +1602,3 @@ html[data-theme="light"] .bot-launch { background: linear-gradient(115deg, #ff0a
   @keyframes ai-glow { 0% { box-shadow: 0 6px 22px rgba(255, 10, 108, 0.5); } 50% { box-shadow: 0 6px 24px rgba(140, 30, 200, 0.5); } 100% { box-shadow: 0 6px 26px rgba(45, 39, 255, 0.55); } }
   .bp-head { background-size: 200% 100%; animation: ai-flow 9s ease-in-out infinite alternate; }
 }
-/* Cards pass behind the lens (they go into it); "by SoyaChaap" in the splash palette. */
-.sp-stage { isolation: isolate; }
-.sp-cards { z-index: 1; }
-.sp-core { z-index: 5; }
-.splash .sp-by { color: #fff !important; background: linear-gradient(90deg, #ff0a6c, #2d27ff); box-shadow: 0 6px 16px rgba(45, 39, 255, 0.25); }
