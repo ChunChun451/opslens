@@ -10,7 +10,7 @@
     results JSON and fills each tab. Every number on screen comes from that JSON
     (CLAUDE.md rule 1.5).
 -->
-<html lang="en">
+<html lang="en" data-theme="neon">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,6 +18,13 @@
   <link rel="stylesheet" href="styles.css">
   <!-- Design v2 skin (Claude 2): Inter, refined palette, motion, the Overview's live floor. -->
   <link rel="stylesheet" href="theme.css">
+  <!-- Neon skin (24 Oct): dark glass, cyan and violet. Applies only while <html data-theme="neon">;
+       the Neon/Light switch in the top bar flips it and remembers the choice in this browser. -->
+  <link rel="stylesheet" href="neon.css">
+  <script>
+    try { if (JSON.parse(localStorage.getItem("opslens-theme")) === "light") document.documentElement.removeAttribute("data-theme"); }
+    catch (error) { /* storage blocked: stay on the default */ }
+  </script>
   <!-- Chart.js 4.5.0, downloaded once and kept in the repo (works offline). -->
   <script src="vendor/chart.umd.js"></script>
   <script type="module" src="app.js"></script>
@@ -62,6 +69,9 @@
           <kbd>/</kbd>
         </form>
         <div class="topbar-actions">
+          <button id="theme-button" class="btn theme-switch" type="button" aria-label="Switch between neon and light colours">
+            <span class="swatch" aria-hidden="true"></span><span id="theme-label">Light</span>
+          </button>
           <button id="plan-button" class="btn" type="button" aria-label="Your plan">
             Your plan <span id="plan-count" class="count">0</span>
           </button>
