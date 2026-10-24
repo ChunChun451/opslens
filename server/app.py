@@ -300,6 +300,10 @@ async def always_fresh_web_files(request, call_next):
     response = await call_next(request)
     if request.url.path.startswith("/web"):
         response.headers["Cache-Control"] = "no-cache"
+    if request.url.path in ("/web", "/web/", "/web/index.html"):
+        # Opening the dashboard also tells the browser to drop every copy it kept from older
+        # versions (files cached before this header existed were reused without asking).
+        response.headers["Clear-Site-Data"] = '"cache"'
     return response
 
 
