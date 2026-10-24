@@ -1345,15 +1345,15 @@ html[data-theme="light"] .jr-road { background: linear-gradient(180deg, #7dd3fc 
 }
 
 /* ---- The celebrity banner --------------------------------------------------------------------- */
-.fest-banner { position: relative; height: 128px; margin: 0 0 16px; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
+.fest-banner { position: relative; height: 108px; margin: 0 0 16px; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
 .fb-slide { position: absolute; inset: 0; display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 0 28px 0 18px;
   color: #fff; opacity: 0; transform: translateX(40px); transition: opacity 0.6s, transform 0.6s cubic-bezier(0.2, 1, 0.3, 1); pointer-events: none; }
 .fb-slide.is-on { opacity: 1; transform: none; pointer-events: auto; }
 .fb-star { position: relative; display: grid; place-items: center; height: 100%; }
 .fb-spot { position: absolute; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.45), transparent 70%); }
-.fb-star .mascot, .fb-star .mascot svg { width: 86px; height: 86px; }
+.fb-star .mascot, .fb-star .mascot svg { width: 76px; height: 76px; }
 .fb-sticker { display: inline-block; padding: 3px 10px; border-radius: 6px; background: #fde047; color: #1f1235; font-size: 0.75rem; font-weight: 850; transform: rotate(-2deg); }
-.fb-say { margin: 6px 0 2px; font-size: 1.3rem; font-weight: 800; line-height: 1.2; }
+.fb-say { margin: 4px 0 2px; font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
 .fb-by { font-size: 0.85rem; opacity: 0.85; }
 .fb-cta { padding: 11px 20px; border-radius: 999px; border: 0; background: #fff; color: #1f1235; font: inherit; font-weight: 800; cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }

@@ -6,7 +6,7 @@
 // first three seconds set the mood. The splash follows the season of js/season.js (Diwali:
 // fireworks over India Gate while a row of diyas lights up one by one) and counts down to the
 // Deviathon finale (29 Oct 2026, GLA University) from this laptop's clock. It carries no result
-// numbers. Any click or key skips it; reduced-motion users see it still, briefly. The cold open
+// numbers. It shows once per browser session; any click or key skips it; reduced-motion users see it still, briefly. The cold open
 // (js/intro.js) plays after it.
 //
 // Example on 24 Oct 2026: "Festive Ops Fest · The festive rush is here · Grand finale in 5 days".
@@ -15,6 +15,7 @@ import { currentSeason, doodleSvg } from "./season.js";
 import { escapeHtml } from "./format.js";
 
 const SHOW_MS = 3600;
+const SEEN_KEY = "opslens.splashSeen";
 const FINALE = new Date(2026, 9, 29, 9, 0); // 29 Oct 2026, 09:00 (local time)
 const FINALE_END = new Date(2026, 9, 31, 23, 59);
 
@@ -63,6 +64,11 @@ function skyHtml(kind) {
 }
 
 export function initSplash(done) {
+  // Once per browser session (a reload in the middle of a demo should not wait again);
+  // ?splash=1 in the address shows it anyway.
+  let seen = false;
+  try { seen = sessionStorage.getItem(SEEN_KEY) === "1"; sessionStorage.setItem(SEEN_KEY, "1"); } catch { /* show it */ }
+  if (seen && !new URLSearchParams(location.search).has("splash")) { if (done) done(); return; }
   const season = currentSeason();
   const copy = COPY[season.id] || COPY.classic;
   const el = document.createElement("div");
