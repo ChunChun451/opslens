@@ -30,9 +30,9 @@ import numpy as np
 import pandas as pd
 
 from opslens import policies
-from opslens.risk import top_reasons
+from opslens.risk import risk_if_assigned_now, top_reasons
 from opslens.simulate import FLOOR_EVERY_MIN, MINUTES_PER_DAY, simulate
-from opslens.whatif import make_policy
+from opslens.whatif import change_agents, change_volume, make_policy
 from opslens.world import build_world, day_bounds
 
 POLICIES = ("baseline_d", "opslens")  # the lead comparison, as on the Overview
@@ -81,11 +81,19 @@ class _CaptureFeatures:
         return getattr(self._mine, "last", None)
 
 
-def simulate_live_day(inputs: dict, day: int, seed: int = 1) -> LiveDay:
-    """Simulate `day` (with the day before as warm-up) for every policy and record the floor."""
+def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[str, int] | None = None,
+                      volume_factor: float = 1.0) -> LiveDay:
+    """Simulate `day` (with the day before as warm-up) for every policy and record the floor.
+    `agents_delta` ({"C": -2}) and `volume_factor` (1.3 = 30% more customers) change the day the
+    same way the What-if panel does (opslens/whatif.py), so a viewer can stress today live."""
     warm, _ = day_bounds(day - 1, day - 1)
     start, end = day_bounds(day, day)
-    tickets_info = inputs["tickets"].set_index("ticket_id")
+    tickets, preds = inputs["tickets"], inputs["preds"]
+    if abs(volume_factor - 1.0) > 1e-9:
+        tickets, preds = change_volume(tickets, preds, day, volume_factor)
+    agents = change_agents(inputs["agents"], agents_delta) if agents_delta else inputs["agents"]
+    inputs = {**inputs, "tickets": tickets, "preds": preds, "agents": agents}
+    tickets_info = tickets.set_index("ticket_id")
     live = None
     for key in POLICIES:
         world = build_world(inputs["tickets"], seed=seed, agents=inputs["agents"])
@@ -141,10 +149,13 @@ def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dic
         order = np.argsort(-p)[:RISK_SHOWN]
         top = live_rows.iloc[order]
         reasons = top_reasons(inputs["model"], top)
+        served_now = risk_if_assigned_now(inputs["model"], top)  # the same what-if as the Risks screen
         rows = []
-        for (_, row), prob, why in zip(top.iterrows(), p[order], reasons):
+        for (_, row), prob, now_p, why in zip(top.iterrows(), p[order], served_now, reasons):
             info = tickets_info.loc[row["ticket_id"]]
             rows.append({"ticket_id": row["ticket_id"], "probability": round(float(prob), 3),
+                         "if_served_now": round(float(now_p), 3),
+                         "nobody_capable": bool(row["capable_on_shift"] < 0.5),
                          "minutes_left": round(float(row["time_left_min"]), 1),
                          "priority": str(row["priority"]), "language": str(row["language"]),
                          "category": str(row["category_pred"]), "text": str(info["text"])[:140],

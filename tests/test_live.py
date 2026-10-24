@@ -33,3 +33,15 @@ def test_state_at_counts_waiting_and_missed_at_that_minute() -> None:
     assert state_at(live, 260)["policies"]["opslens"]["missed"] == 2
     assert state_at(live, 20)["decisions"][0]["ticket_id"] == "T1"
     assert clock(1274) == "21:14"
+
+
+def test_live_change_text_is_parsed_and_bounded() -> None:
+    import pytest
+
+    from server.app import _parse_agents
+
+    assert _parse_agents("") == ()
+    assert _parse_agents("C:-2,b:1,A:0") == (("B", 1), ("C", -2))
+    assert _parse_agents("D:9") == (("D", 5),)  # at most 5 agents either way, as in What-if
+    with pytest.raises(ValueError):
+        _parse_agents("E:1")

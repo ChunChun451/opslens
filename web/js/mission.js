@@ -31,7 +31,7 @@ export function missionHtml() {
   const theirsLabel = policyLabel(theirs);
   return `<section class="mission" id="ov-mission" aria-label="Live replay of a Saturday evening">
       <div>
-        <div class="mission-eyebrow"><span class="live-dot"></span>Replay · ${evText("sim.replay.title")}</div>
+        <div class="mission-eyebrow"><span class="live-dot"></span>Replay · ${evText("sim.replay.title", "a Saturday OpsLens never saw, 18:00–24:00")}</div>
         <h2>Same agents. Same tickets.<br>Only the decisions differ.</h2>
         <p class="mission-sub">The dinner rush on a Saturday OpsLens had never seen, replayed with identical luck.
           Tiles are agents at work; red dots are customers whose promise is already missed.</p>

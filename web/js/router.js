@@ -36,8 +36,8 @@ const ICONS = {
 
 export const TABS = [
   { id: "overview", label: "Overview", views: {
-    food: [{ id: "overview", label: "Overview", module: overview },
-           { id: "live", label: "Live now", module: live }],
+    food: [{ id: "live", label: "Live now", module: live },
+           { id: "overview", label: "Results on the test days", module: overview }],
     real: [{ id: "rd-overview", label: "Overview", module: realdesk.overview }] } },
   { id: "problems", label: "Problems", views: {
     food: [{ id: "patterns", label: "Why it goes wrong", module: patterns }],
