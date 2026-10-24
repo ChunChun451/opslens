@@ -324,3 +324,8 @@ published rule that won every overloaded world. D1: threshold 1.5; D2: threshold
 rule over A, B, C, D1, D2 (main validation days 36–42 seeds 1–5, the same 20 design worlds rebuilt
 from the same seeds). The adoption rule and the confirmation set (30 NEW worlds 7101–7130, 20 fresh
 seeds 26–45 on main validation days) are unchanged and still unseen; only the final choice goes there.
+
+**W13 round 2 result (24 Oct):** D1 and D2 failed the main-validation gate (worse than v5: +0.76
+[+0.63, +0.89] and +0.37 [+0.19, +0.55]; the overload trigger fired for a third to a half of a normal
+week), so their design-world runs were stopped. The pre-registered choice stays **C**. It goes to the
+unchanged adoption test, run once: main validation days with 20 fresh seeds, and 30 new worlds 7101–7130.

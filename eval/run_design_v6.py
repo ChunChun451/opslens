@@ -115,7 +115,28 @@ def choose() -> int:
     return 0
 
 
+def confirm_main(name: str) -> int:
+    """Adoption test (1): main world validation days 36-42, 20 FRESH seeds 26-45, the chosen candidate
+    vs v5. Rule: 95% CI upper bound of (v6 - v5) missed SLA below +0.05 points."""
+    from eval.run_opslens import PARTS, run_jobs
+    from opslens.impact import paired_ci
+    seeds = list(range(26, 46))
+    jobs = candidate_jobs(36, 42, seeds, with_v5=True, names=[name])
+    results = run_jobs(jobs, workers=10)
+    by: dict[str, list] = {}
+    for r in sorted(results, key=lambda r: r["job"]["seed"]):
+        by.setdefault(r["job"]["tag"], []).append(r["kpis"]["turnaround.breach_pct"])
+    ci = paired_ci(by[f"v6_{name}"], by["v5"])
+    out = {"candidate": name, "config": CANDIDATES[name], "seeds": seeds, "v5_breach_pct": float(np.mean(by["v5"])),
+           "v6_breach_pct": float(np.mean(by[f"v6_{name}"])), "v6_minus_v5": ci, "passed": bool(ci["ci_high"] < 0.05)}
+    (PARTS / "confirm_v6_main.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    print(f"v6 {name} - v5: {ci['mean_diff']:+.3f} [{ci['ci_low']:+.3f}, {ci['ci_high']:+.3f}]  passed: {out['passed']}")
+    return 0
+
+
 if __name__ == "__main__":
+    if "--confirm-main" in sys.argv:
+        raise SystemExit(confirm_main(sys.argv[sys.argv.index("--confirm-main") + 1]))
     if "--main" in sys.argv:
         raise SystemExit(main_world(round2="--round2" in sys.argv))
     raise SystemExit(choose())
