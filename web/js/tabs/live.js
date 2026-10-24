@@ -16,7 +16,6 @@ import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey } from "../format.js";
-import { comparisonIndex } from "../ui.js";
 
 const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
 const WAIT_MS = 2500; // while a day is being simulated
@@ -61,7 +60,6 @@ export function render(section) {
           </div>
           <div class="lv-midnight" id="lv-midnight"></div>
         </div>
-        <div class="lv-overall">${overallHtml()}</div>
         <div class="lv-actions">
           <button type="button" class="btn btn-primary" id="lv-speed">▶ Play the evening</button>
           <button type="button" class="btn" id="lv-luck">↻ New luck</button>
@@ -298,26 +296,6 @@ function draw(d) {
   drawFrameInto(document.getElementById("lv-f-ours"), d.agents, ours.status, ours.queues);
   drawDanger(d);
   drawDecisions(d);
-}
-
-// The big result from the exam: missed promises over the 14 held-out days, from results.json
-// (the same numbers as the Results screen), so a quiet morning never hides what OpsLens does.
-function overallHtml() {
-  const sim = state.results && state.results.sim;
-  if (!sim || !sim.policies.baseline_d) return "";
-  const path = (k) => `sim.policies.${k}.kpis.turnaround.breach_pct.mean`;
-  const i = comparisonIndex("opslens", "baseline_d", "turnaround.breach_pct");
-  const c = `sim.comparisons[${i}]`;
-  return `<div class="lv-col-title">Over 14 days it never saw</div>
-    <div class="lv-overall-nums">
-      <span class="lv-o theirs">${ev(path("baseline_d"), "pct")}</span>
-      <span class="lv-o-arrow" aria-hidden="true">→</span>
-      <span class="lv-o ours">${ev(path("opslens"), "pct")}</span>
-    </div>
-    <div class="lv-big-label">of customers missed their promise: industry standard → OpsLens</div>
-    ${i >= 0 ? `<div class="lv-o-diff">${ev(c + ".mean_diff", "pts", { signed: true })} <span>95% CI
-      ${ev(c + ".ci_low", "pts", { signed: true, bare: true })} to ${ev(c + ".ci_high", "pts", { signed: true, bare: true })}</span></div>` : ""}
-    <a class="lv-o-link" href="#overview/overview">See the full results</a>`;
 }
 
 // "By midnight": the end of today's simulated day for the scenario that is running.

@@ -1797,3 +1797,7 @@ html[data-theme="neon"] .lv-o.ours, html[data-theme="neon"] .lv-o.ours .ev { tex
 @media (max-width: 760px) {
   .lv-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "when" "acts" "today" "overall"; }
 }
+
+/* Live now without the 14-day column (owner, 24 Oct): clock + buttons | today so far. */
+.lv-hero { grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.6fr); grid-template-areas: "when today" "acts today"; }
+@media (max-width: 760px) { .lv-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "when" "acts" "today"; } }
