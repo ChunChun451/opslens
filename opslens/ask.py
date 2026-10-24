@@ -30,12 +30,26 @@ from typing import Any, Callable
 
 from opslens.llm.base import LLMUnavailable
 
-TOOLS = ("whatif", "plant", "explain_ticket", "fix_first", "top_problems", "headline")
+TOOLS = ("whatif", "plant", "explain_ticket", "fix_first", "top_problems", "headline", "forecast", "at_risk")
 TEAMS = {"A": "Live orders (late delivery)", "B": "Payments & refunds", "C": "Order accuracy (missing / wrong item)",
          "D": "Account, app bugs & restaurant partners"}
 CATEGORIES = ("late_delivery", "refund", "payment_failure", "missing_item", "wrong_item", "account", "app_bug",
               "restaurant_partner")
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+# Which team handles which category (as in opslens/classify.py), so "refund" questions find Team B.
+TEAM_OF_CATEGORY = {"late_delivery": "A", "refund": "B", "payment_failure": "B", "missing_item": "C",
+                    "wrong_item": "C", "account": "D", "app_bug": "D", "restaurant_partner": "D"}
+# Plain and Hinglish words for a category, for the keyword rules (the LLM understands far more).
+CATEGORY_WORDS = {"refund": ("refund", "paisa", "paise", "money back"), "payment_failure": ("payment", "upi", "debit"),
+                  "late_delivery": ("late delivery", "delivery late", "khana late", "order late", "rider"),
+                  "missing_item": ("missing", "nahi aaya"), "wrong_item": ("wrong item", "galat"),
+                  "app_bug": ("app bug", "app crash", "app"), "account": ("account", "login"),
+                  "restaurant_partner": ("restaurant", "partner")}
+FUTURE_WORDS = ("forecast", "next 48", "next two days", "tomorrow", "tonight", "kal", "aaj raat", "raat", "busy",
+                "rush", "bheed", "peak", "surge", "bottleneck", "short of", "understaffed", "how many agents",
+                "capacity", "load")
+RISK_WORDS = ("at risk", "risk", "miss", "late honge", "late hoga", "will be late", "breach next", "danger",
+              "khatre", "kaun", "who will", "which tickets", "which customers")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 # Numbers written as words count as typed: "Two agents" grounds a 2 (found 22 Oct: the LLM answered
 # {"D": -2} correctly, the check rejected it, and the keyword rules then simulated the day WITHOUT
@@ -73,6 +87,10 @@ SYSTEM = (
     "- fix_first: which upstream fix to do first. args: {}.\n"
     "- top_problems: the recurring problems found. args: {}.\n"
     "- headline: how much better the engine is than the usual ways of working. args: {}.\n"
+    "- forecast: how busy the next 48 hours will be and which team will be short of people. args: team "
+    "(A, B, C or D, optional), category (optional, as above).\n"
+    "- at_risk: which waiting customers are most likely to miss their deadline now, and why. args: category "
+    "(optional), language (hi, en or other, optional).\n"
     "Copy numbers only from the question; never add a number the user did not write. "
     "If nothing fits, use {\"tool\": \"none\", \"args\": {}}."
 )
@@ -116,6 +134,13 @@ def check_route(route: Any, question: str) -> dict | None:
         return None
     if tool == "explain_ticket" and not re.fullmatch(r"T\d{6}", str(args.get("ticket_id", ""))):
         return None
+    if tool in ("forecast", "at_risk"):
+        if args.get("category") and args["category"] not in CATEGORIES:
+            return None
+        if args.get("team") and str(args["team"]).upper() not in TEAMS:
+            return None
+        if args.get("language") and args["language"] not in ("hi", "en", "other"):
+            return None
     return {"tool": tool, "args": args}
 
 
@@ -147,6 +172,14 @@ def rules_route(question: str) -> dict | None:
         if delta:
             args["agents_delta"] = delta
         return {"tool": "whatif", "args": args}
+    category = next((c for c, words in CATEGORY_WORDS.items() if any(w in q for w in words)), None)
+    if any(w in q for w in FUTURE_WORDS):  # about what is coming: the forecast answers it
+        return {"tool": "forecast", "args": {"category": category} if category else {}}
+    if any(w in q for w in RISK_WORDS):  # about who is in danger now
+        args = {"category": category} if category else {}
+        if "hindi" in q:
+            args["language"] = "hi"
+        return {"tool": "at_risk", "args": args}
     if any(w in q for w in ("fix first", "fix", "upstream", "root cause", "playbook")):
         return {"tool": "fix_first", "args": {}}
     if any(w in q for w in ("problem", "pattern", "issue", "recurring", "why are")):
@@ -213,8 +246,15 @@ def answer(question: str, client, tools: dict[str, Callable[..., dict]], results
         return {"route": route, "trace": trace + ["Read the evidence cards in results.json."], **problems_text(results)}
     if tool == "headline":
         return {"route": route, "trace": trace + ["Read the held-out comparison in results.json."], **headline_text(results)}
+    if tool == "forecast":
+        return {"route": route, "trace": trace + ["Read the 48-hour forecast (80% band) and the bottlenecks in results.json."],
+                **forecast_text(results, args)}
+    if tool == "at_risk":
+        return {"route": route, "trace": trace + ["Read the risk model's at-risk list in results.json."],
+                **at_risk_text(results, args)}
     return {"route": route, "trace": trace, "title": "I did not understand that",
-            "lines": ["Try: “What if Team C loses 2 agents on Saturday?”, “Why is T060582 at risk?”, "
+            "lines": ["Try: “What if Team C loses 2 agents on Saturday?”, “How busy is tomorrow night?”, "
+                      "“Which customers will miss their deadline?”, “Why is T060582 at risk?”, "
                       "“Plant a refund spike”, “What should we fix first?”"], "facts": []}
 
 
@@ -299,13 +339,84 @@ def problems_text(results: dict) -> dict:
 
 
 def headline_text(results: dict) -> dict:
+    """The held-out result against the industry standard first (the lead comparison), then the 30 worlds."""
     pol = results["sim"]["policies"]
     b = {k: pol[k]["kpis"]["turnaround.breach_pct"]["mean"] for k in pol}
-    lines = [f"On {results['meta']['test_days'][1] - results['meta']['test_days'][0] + 1} held-out days: "
-             f"OpsLens {b['opslens']:.1f}% SLA breaches, urgent-first {b['baseline_b']:.1f}%, "
-             f"first-come-first-served {b['baseline_a']:.1f}%."]
-    c = results.get("baseline_c")
-    if c:
-        per = c["test"]["per_seed"]["baseline_c"]
-        lines.append(f"The “SLA due” sort a helpdesk already has: {sum(s['turnaround.breach_pct'] for s in per) / len(per):.1f}%.")
+    days = results["meta"]["test_days"][1] - results["meta"]["test_days"][0] + 1
+    lead = "baseline_d" if "baseline_d" in b else "baseline_b"
+    lines = [f"On {days} held-out days, the same customers and the same agents: OpsLens {b['opslens']:.1f}% "
+             f"missed their deadline, {POLICY_NAMES[lead].lower()} {b[lead]:.1f}%."]
+    comp = next((c for c in results["sim"].get("comparisons", []) if c["policy"] == "opslens"
+                 and c["baseline"] == lead and c["kpi"] == "turnaround.breach_pct"), None)
+    if comp:
+        lines.append(f"Difference {comp['mean_diff']:+.2f} points, 95% interval {comp['ci_low']:+.2f} to {comp['ci_high']:+.2f}.")
+    others = [f"{POLICY_NAMES[k].lower()} {b[k]:.1f}%" for k in ("baseline_b", "baseline_a") if k in b and k != lead]
+    if others:
+        lines.append("The simpler ways of working: " + ", ".join(others) + ".")
+    w = results.get("worlds")
+    if w and w.get("breakdown"):
+        bd = w["breakdown"]
+        lines.append(f"On {bd['of']} random floors we did not design, OpsLens beat the industry standard on "
+                     f"{bd['beats_industry_standard']}.")
     return {"title": "How much better than today", "lines": lines, "facts": []}
+
+
+def forecast_text(results: dict, args: dict) -> dict:
+    """The next 48 hours from the forecast: the busiest hours against capacity, and named bottlenecks."""
+    f = results.get("forecast") or {}
+    team = str(args.get("team") or TEAM_OF_CATEGORY.get(args.get("category") or "", "")).upper() or None
+    hours = [h for h in f.get("horizon", []) if team is None or h["team"] == team]
+    window = (min(h["time"] for h in hours), max(h["time"] for h in hours)) if hours else ("", "")
+    # The bottleneck list covers the whole test fortnight; keep the ones inside these 48 hours.
+    # Night hours (before 07:00) are covered by the cross-trained night pool (opslens/staffing.py), so a
+    # night "shortage" is not a bottleneck by our own staffing rule.
+    blocks = [b for b in f.get("bottlenecks", []) if (team is None or b["team"] == team)
+              and b["end"] >= window[0] and b["start"] <= window[1] and int(b["start"][11:13]) >= 7]
+    if not hours:
+        return {"title": "No forecast in the results yet", "lines": [], "facts": []}
+    who = f"Team {team} ({TEAMS[team]})" if team else "the whole floor"
+    peak = max(hours, key=lambda h: h["hi80"] - h["capacity_hours"])
+    gap = peak["hi80"] - peak["capacity_hours"]
+    lines = [f"Next 48 hours for {who}: the tightest hour is {nice_time(peak['time'])} (Team {peak['team']}), "
+             f"work up to {peak['hi80']:.1f} agent-hours (80% band) against {peak['capacity_hours']:.1f} on shift."]
+    if blocks:
+        lines += [f"Bottleneck: {b['text']} ({b['agent_hours_short']:.1f} agent-hours short)." for b in blocks[:3]]
+    elif gap <= 0:
+        lines.append("No hour is predicted above capacity even at the top of the 80% band.")
+    if blocks:
+        lines.append("Open Actions → staffing changes or Your plan to cover it with the same people.")
+    return {"title": f"What the next 48 hours look like for {who}", "lines": lines, "facts": []}
+
+
+def at_risk_text(results: dict, args: dict) -> dict:
+    """The waiting customers most likely to miss their deadline, from the risk model's list."""
+    rows = (results.get("risk") or {}).get("at_risk") or []
+    if args.get("category"):
+        rows = [r for r in rows if r["category"] == args["category"]]
+    if args.get("language"):
+        rows = [r for r in rows if r["language"] == args["language"]]
+    if not rows:
+        return {"title": "Nobody matching that is in the at-risk list", "lines": [], "facts": []}
+    lines = [f"{len(rows)} waiting customer{'s' if len(rows) != 1 else ''} at high risk right now. The riskiest:"]
+    for r in rows[:3]:
+        risk = "≥99%" if r["probability"] >= 0.995 else f"{100 * r['probability']:.0f}%"
+        lines.append(f"• {r['ticket_id']} ({r['priority']} {r['category'].replace('_', ' ')}, {r['language']}): "
+                     f"{risk} chance to miss, {r['minutes_to_sla']:.0f} min left. Main reason: {r['reasons'][0]['text']}.")
+    # Where an action changes the most (not always the riskiest: with 7 minutes left nothing helps).
+    best = max(rows, key=lambda r: r["probability"] - r["probability_after_action"])
+    drop = best["probability"] - best["probability_after_action"]
+    if drop >= 0.05:
+        lines.append(f"Where acting changes the most: {best['ticket_id']}. If {best['action'].replace('assign now to', 'it went now to')}, "
+                     f"its risk would fall from {100 * best['probability']:.0f}% to {100 * best['probability_after_action']:.0f}%. "
+                     f"When no such agent is on shift, OpsLens weighs a cross-skill rescue instead.")
+    else:
+        lines.append("For these, time has nearly run out: no single action brings the risk down much, "
+                     "so OpsLens gives them its strongest rescue and protects the ones that can still be saved.")
+    return {"title": "Who will miss their deadline next", "lines": lines, "facts": []}
+
+
+def nice_time(stamp: str) -> str:
+    """'2026-10-24T20:00' -> 'Sat 24 Oct 20:00'."""
+    from datetime import datetime
+    t = datetime.fromisoformat(stamp)
+    return f"{t.strftime('%a')} {t.day} {t.strftime('%b')} {t.strftime('%H:%M')}"

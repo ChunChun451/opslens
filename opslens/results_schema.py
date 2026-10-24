@@ -334,6 +334,9 @@ class Results(Strict):
     # Plan v4 W2 (eval/run_concurrency.py): every policy when agents hold 2-3 chats at once, at equal
     # load and at today's volume, with paired CIs and the optimiser ablation at 3 chats.
     concurrency: dict[str, Any] | None = None
+    # Performance tracking (eval/run_tracking.py, 24 Oct): the test fortnight day by day and team by
+    # team, per policy; the daily rows are checked to add up exactly to the totals above.
+    tracking: dict[str, Any] | None = None
     # Plan v4 W1 (eval/run_worlds.py): 30 random worlds drawn from pre-registered ranges, every policy
     # on each world's test days, and the pre-registered rule. Run once; not a make-eval step.
     worlds: dict[str, Any] | None = None

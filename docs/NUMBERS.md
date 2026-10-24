@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-24T17:42:43 (commit e494df4). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-24T21:52:18 (commit 1c59044). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -250,6 +250,27 @@ Without the plan: breach 2.11%. Change with 95% CI over the seeds.
 | Self-serve instant refund on weekday night (Team B) (days 43-56) | -8.0 [-16.2, +0.2] | -1.3 [-2.3, -0.3] | -6.4 [-8.3, -4.5] | -16 [-42, +10] |
 | **All items together** | -48.8 [-63.1, -34.5] | -12.5 [-14.9, -10.2] | -66.3 [-71.5, -61.1] | -162 [-255, -68] |
 
+## Day by day (test days, 5 seeds)
+
+OpsLens missed fewer deadlines than the industry standard on 14 of 14 days. Daily rows add up exactly to the totals: True.
+
+| Day | Tickets | Industry standard | OpsLens |
+|---|---|---|---|
+| Mon 12 Oct | 1,073 | 2.89% | 1.85% |
+| Tue 13 Oct | 1,159 | 6.33% | 1.76% |
+| Wed 14 Oct | 1,216 | 4.39% | 1.81% |
+| Thu 15 Oct | 1,259 | 5.07% | 1.76% |
+| Fri 16 Oct | 1,314 | 7.70% | 2.12% |
+| Sat 17 Oct | 1,456 | 4.57% | 1.85% |
+| Sun 18 Oct | 1,297 | 2.45% | 1.57% |
+| Mon 19 Oct | 1,694 | 10.60% | 3.98% |
+| Tue 20 Oct | 1,246 | 7.45% | 2.36% |
+| Wed 21 Oct | 1,203 | 3.64% | 1.70% |
+| Thu 22 Oct | 1,212 | 6.44% | 2.10% |
+| Fri 23 Oct | 1,173 | 5.88% | 1.45% |
+| Sat 24 Oct | 1,314 | 5.62% | 2.01% |
+| Sun 25 Oct | 1,416 | 2.46% | 1.65% |
+
 ## Agents with several chats at once (test days, 5 seeds)
 
 A chat started while k-1 others are open takes x(1 + s(k-1)); s is an assumption. 'Equal load' raises
@@ -315,5 +336,5 @@ Diagnosis of the 11 losses (same worlds rebuilt, reproduced exactly: True; analy
 ## Speed
 
 - Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.04 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.066 s.
 - Full evaluation pipeline: 48.5 min.

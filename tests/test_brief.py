@@ -37,7 +37,9 @@ def test_llm_brief_or_template_fallback() -> None:
     assert out["source"] == "llm" and out["text"] == "OpsLens kept breaches at 5.1%."
     bad = MockProvider(replies=[json.dumps({"brief": "Breaches were 4% lower."})])
     out = write_brief(results_stub(), LLMClient([bad]))
-    assert out["source"] == "template" and "13.1%" in out["text"]
+    # The decision brief (24 Oct) compares with the lead baseline only: the industry standard when the
+    # results have it, else urgent-first (6.8% in this stub), not first-come.
+    assert out["source"] == "template" and "5.1%" in out["text"] and "6.8%" in out["text"]
 
 
 def test_numbers_in_words_are_rejected() -> None:

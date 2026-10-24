@@ -296,6 +296,26 @@ def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: f
                         headers={"Cache-Control": "no-store"})
 
 
+@app.on_event("startup")
+def warm_live_now() -> None:
+    """Start simulating today's weekday the moment the server starts (24 Oct review): the first
+    visitor then sees Live now ready instead of ~25 s of "Starting...". Same key as the endpoint's
+    first request (seed 1, no change), so nothing is simulated twice. Skipped quietly if the data
+    is missing (a fresh clone): the endpoint still builds on the first request."""
+    import datetime
+
+    try:
+        day, seed = _live_key(datetime.datetime.now().weekday(), 1)
+    except Exception:  # noqa: BLE001 — no generated data yet: nothing to warm
+        return
+    key = (day, seed, (), 1.0)
+    with _LIVE_LOCK:
+        if key not in _LIVE and key not in _LIVE_BUILDING:
+            thread = threading.Thread(target=_build_live, args=(key,), daemon=True)
+            _LIVE_BUILDING[key] = thread
+            thread.start()
+
+
 @app.middleware("http")
 async def always_fresh_web_files(request, call_next):
     """The browser must ask for the newest dashboard files on every load (it may reuse its copy
