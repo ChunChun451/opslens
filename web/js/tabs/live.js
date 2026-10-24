@@ -16,8 +16,9 @@ import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey } from "../format.js";
-import { mascotHtml, cheer } from "../mascot.js";
+import { mascotHtml, customerHtml, cheer, setMood } from "../mascot.js";
 
+const BUSY_WAITING = 60; // customers waiting on the OpsLens floor above which Lenny sweats (a look, not a result)
 const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
 const WAIT_MS = 2500; // while a day is being simulated
 const LANGUAGE = { hi: "Hindi", en: "English", other: "Regional" };
@@ -42,6 +43,10 @@ let draft = clone(NORMAL);
 let waitingSince = null;
 let seenDecisions = new Set();
 let lastGap = null; // the live gap last drawn (for the mascot's cheer)
+const JOKE = "Dosa ke jagah biryani de diya!"; // the owner's line; the others are real masked tickets
+let lines = [JOKE];
+let lineIndex = 0;
+let talk = null;
 let lastRun = ""; // decisions already shown, so new ones can light up
 
 export function render(section) {
@@ -55,7 +60,7 @@ export function render(section) {
         </div>
         <div class="lv-impact">
           <div class="lv-col-title"><span class="live-dot"></span>Today so far, live</div>
-          <div class="lv-big-row"><div class="lv-big"><span id="lv-saved">…</span></div>${mascotHtml("lv-mascot")}</div>
+          <div class="lv-big"><span id="lv-saved">…</span></div>
           <div class="lv-big-label" id="lv-saved-label">more customers helped in time today, with the same agents</div>
           <div class="lv-bars">
             <div class="lv-bar theirs"><span class="lv-bar-name">Industry standard</span><span class="lv-bar-track"><i id="lv-bar-theirs"></i></span><b id="lv-m-theirs">…</b><small>missed</small></div>
@@ -68,6 +73,12 @@ export function render(section) {
           <button type="button" class="btn" id="lv-luck">↻ New luck</button>
         </div>
       </header>
+
+      <div class="lv-scene" aria-hidden="true">
+        <div class="lv-scene-customer">${customerHtml("lv-customer")}<div class="lv-say" id="lv-say">${escapeHtml(JOKE)}</div></div>
+        <div class="lv-scene-track"><i class="tk"></i><i class="tk"></i><i class="tk"></i><i class="tk"></i></div>
+        <div class="lv-scene-lenny"><div class="lv-scene-status" id="lv-scene-status">Lenny is on shift</div>${mascotHtml("lv-mascot", "tired")}</div>
+      </div>
 
       <div class="lv-floors">
         <div class="lv-lane"><div class="lv-lane-head"><b>Industry standard</b><span id="lv-w-theirs"></span></div><div class="floor" id="lv-f-theirs"></div></div>
@@ -187,6 +198,7 @@ function minuteNow() {
 
 function start() {
   stop();
+  talk = setInterval(nextLine, 3600);
   showClock();
   tick = setInterval(() => {
     if (speed > 1 && fastMinute !== null) fastMinute = Math.min(1439, fastMinute + speed / 60);
@@ -197,6 +209,7 @@ function start() {
 }
 
 function stop() {
+  clearInterval(talk);
   clearInterval(tick);
   clearTimeout(poll);
   tick = null;
@@ -294,6 +307,12 @@ function draw(d) {
   if (lastGap !== null && lastRun === runKey && diff > lastGap) cheer("lv-mascot", `+${diff - lastGap} helped!`);
   lastGap = diff;
   lastRun = runKey;
+  // Lenny's mood follows the floor: tired (sweating, wiping) when many customers wait.
+  const waiting = ours.waiting;
+  setMood("lv-mascot", waiting >= BUSY_WAITING ? "tired" : "idle");
+  const status = document.getElementById("lv-scene-status");
+  if (status) status.textContent = waiting >= BUSY_WAITING ? `${waiting} customers waiting… phew!` : `${waiting} waiting, all calm`;
+  lines = [JOKE, ...d.danger.slice(0, 4).map((t) => t.text).filter(Boolean)];
   bump("lv-saved", String(Math.abs(diff)));
   document.getElementById("lv-saved-label").textContent = diff >= 0
     ? `more customer${diff === 1 ? "" : "s"} helped in time today, with the same agents`
@@ -389,6 +408,18 @@ function bump(id, html) {
     void el.offsetWidth;
     el.classList.add("bumped");
   }
+}
+
+// The customer's next line, with a little pop.
+function nextLine() {
+  const say = document.getElementById("lv-say");
+  if (!say || !lines.length) return;
+  lineIndex = (lineIndex + 1) % lines.length;
+  const text = lines[lineIndex];
+  say.textContent = text.length > 60 ? text.slice(0, 58) + "…" : text;
+  say.classList.remove("pop");
+  void say.offsetWidth;
+  say.classList.add("pop");
 }
 
 // Roll a whole number from its old value to its new one (~0.7 s, easing out). The final text is

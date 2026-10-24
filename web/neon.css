@@ -572,3 +572,115 @@ html[data-theme="neon"] .risk-cards .ticket:hover { border-color: rgba(255, 77, 
   30% { opacity: 1; }
   100% { opacity: 0; transform: translate(14px, -26px) scale(1.2); }
 }
+
+/* =============================================================================================
+   The scene (Claude 2, 24 Oct): an angry customer sends complaint tickets flying at Lenny, who
+   sweats and wipes his face when the live floor is busy. Decoration only; js/mascot.js.
+   ============================================================================================= */
+.lv-scene {
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 22px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: visible;
+}
+.lv-scene-customer, .lv-scene-lenny { display: flex; align-items: center; gap: 12px; }
+.lv-scene-lenny { flex-direction: row-reverse; }
+.lv-say {
+  position: relative;
+  max-width: 300px;
+  padding: 8px 14px;
+  border-radius: 16px;
+  background: #fff;
+  color: #1f1235;
+  font-weight: 650;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+.lv-say::before {
+  content: ""; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+  border: 6px solid transparent; border-right-color: #fff;
+}
+.lv-scene-status { font-size: 0.85rem; color: var(--muted); text-align: right; max-width: 170px; }
+.lv-scene-track { position: relative; height: 26px; overflow: hidden; }
+.lv-scene-track::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%;
+  border-top: 2px dashed color-mix(in srgb, var(--muted) 40%, transparent);
+}
+.lv-scene-track .tk {
+  position: absolute; top: 3px; left: -24px; width: 20px; height: 16px; border-radius: 3px;
+  background: #fff; box-shadow: 0 0 10px rgba(255, 77, 141, 0.6);
+  opacity: 0;
+}
+.lv-scene-track .tk::after {
+  content: ""; position: absolute; left: 4px; right: 4px; top: 4px; height: 2px; background: #ff4d8d;
+  box-shadow: 0 4px 0 #ff4d8d;
+}
+
+/* Lenny's moods: tired shows the lids, the sweat, the towel and a frown; idle shows the smile. */
+.mascot .mascot-lids, .mascot .mascot-sweat, .mascot .mascot-towel, .mascot .mascot-frown { display: none; }
+.mascot.is-tired .mascot-lids, .mascot.is-tired .mascot-sweat, .mascot.is-tired .mascot-towel,
+.mascot.is-tired .mascot-frown { display: inline; }
+.mascot.is-tired .mascot-smile { display: none; }
+.mascot.cheer .mascot-lids, .mascot.cheer .mascot-sweat, .mascot.cheer .mascot-towel, .mascot.cheer .mascot-frown { display: none; }
+.mascot.cheer .mascot-smile { display: inline; }
+.lv-scene .mascot { width: 76px; height: 76px; }
+.lv-scene .mascot svg { width: 76px; height: 76px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Tickets fly from the customer to Lenny, one after another. */
+  .lv-scene-track .tk { animation: ticket-fly 2.8s ease-in infinite; }
+  .lv-scene-track .tk:nth-child(2) { animation-delay: 0.7s; }
+  .lv-scene-track .tk:nth-child(3) { animation-delay: 1.4s; }
+  .lv-scene-track .tk:nth-child(4) { animation-delay: 2.1s; }
+  @keyframes ticket-fly {
+    0% { left: -24px; opacity: 0; transform: translateY(0) rotate(-12deg); }
+    10% { opacity: 1; }
+    50% { transform: translateY(-6px) rotate(10deg); }
+    90% { opacity: 1; }
+    100% { left: calc(100% + 4px); opacity: 0; transform: translateY(0) rotate(-8deg); }
+  }
+
+  /* The customer shakes, the eyebrows jump, steam puffs, the phone bobs. */
+  .customer svg { animation: angry-shake 2.6s ease-in-out infinite; transform-origin: 50% 80%; }
+  @keyframes angry-shake {
+    0%, 60%, 100% { transform: rotate(0deg); }
+    64% { transform: rotate(-5deg); } 68% { transform: rotate(5deg); }
+    72% { transform: rotate(-4deg); } 76% { transform: rotate(3deg); } 80% { transform: rotate(0deg); }
+  }
+  .customer .brow { animation: brow-jump 2.6s ease-in-out infinite; }
+  @keyframes brow-jump { 0%, 60%, 100% { transform: translateY(0); } 66%, 78% { transform: translateY(-2px); } }
+  .customer .mouth { transform-box: fill-box; transform-origin: center; animation: shout 0.6s ease-in-out infinite alternate; }
+  @keyframes shout { from { transform: scale(1, 0.6); } to { transform: scale(1.05, 1.15); } }
+  .customer .steam { animation: steam 1.8s ease-out infinite; opacity: 0; }
+  .customer .steam.s2 { animation-delay: 0.9s; }
+  @keyframes steam { 0% { opacity: 0; transform: translateY(6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px); } }
+  .customer .phone { animation: phone-bob 1.3s ease-in-out infinite; }
+  @keyframes phone-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px) rotate(-4deg); } }
+  .lv-say.pop { animation: say-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1); }
+  @keyframes say-pop { from { transform: scale(0.7); opacity: 0.2; } to { transform: scale(1); opacity: 1; } }
+
+  /* Tired Lenny: slow sway, sweat drops fall, the towel wipes the forehead. */
+  .mascot.is-tired svg { animation: tired-sway 3.6s ease-in-out infinite; }
+  @keyframes tired-sway { 0%, 100% { transform: translateY(2px) rotate(-3deg); } 50% { transform: translateY(5px) rotate(3deg); } }
+  .mascot.is-tired .drop { animation: drop-fall 1.6s ease-in infinite; }
+  .mascot.is-tired .drop.d2 { animation-delay: 0.8s; }
+  @keyframes drop-fall { 0% { opacity: 0; transform: translateY(-2px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(16px); } }
+  .mascot.is-tired .mascot-towel { animation: towel-wipe 2.4s ease-in-out infinite; }
+  @keyframes towel-wipe {
+    0%, 35%, 100% { transform: translate(-4px, 2px) rotate(-8deg); }
+    50% { transform: translate(30px, 0) rotate(6deg); }
+    65% { transform: translate(6px, 2px) rotate(-4deg); }
+    80% { transform: translate(28px, 0) rotate(5deg); }
+  }
+}
+
+@media (max-width: 900px) {
+  .lv-scene { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .lv-scene-track { width: 100%; }
+}
+html[data-theme="neon"] .lv-scene { background: linear-gradient(90deg, rgba(255, 77, 141, 0.06), rgba(18, 24, 41, 0.75) 35%, rgba(18, 24, 41, 0.75) 65%, rgba(34, 211, 238, 0.07)); }
