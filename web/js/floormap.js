@@ -49,6 +49,14 @@ export function drawFloorInto(box, key, time) {
   box.innerHTML = Object.keys(TEAM_NAMES).map((team) => teamRow(team, f, frame)).join("");
 }
 
+// Draw one frame given directly (Live now, js/tabs/live.js): the same picture as the replay,
+// for a floor that is not in results.json. `status` has one letter per agent, in `agents` order.
+export function drawFrameInto(box, agents, status, queues) {
+  if (!box) return;
+  const f = { agents, status: [status], queues: [queues] };
+  box.innerHTML = Object.keys(TEAM_NAMES).map((team) => teamRow(team, f, 0)).join("");
+}
+
 function teamRow(team, f, frame) {
   const status = f.status[frame];
   const tiles = f.agents

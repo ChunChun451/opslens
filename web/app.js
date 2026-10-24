@@ -16,6 +16,8 @@ import { initStory } from "./js/story.js";
 import { initAsk } from "./js/ask.js";
 import { initMotion, initSliderFill } from "./js/motion.js";
 import { initIntro } from "./js/intro.js";
+import { initLiveTicker } from "./js/liveticker.js";
+import { initThemeSwitch } from "./js/themeswitch.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -49,6 +51,8 @@ async function start() {
   initPlan(realPlanItems());
   initStory();
   initAsk();
+  initLiveTicker(); // today's live run in the side menu, on every screen
+  initThemeSwitch(); // Neon / Light
   initIntro(); // the cold open plays last, over the ready dashboard
 }
 

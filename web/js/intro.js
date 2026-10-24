@@ -50,12 +50,13 @@ function play(fromButton) {
   const lastIdx = replay.series.opslens.breached_cum.length - 1;
   const theirsEnd = replay.series[theirs].breached_cum[lastIdx];
   const oursEnd = replay.series.opslens.breached_cum[lastIdx];
-  const day = escapeHtml(replay.title.split(",")[0]); // "Saturday 17 Oct"
+  // Only the weekday: this is a recorded test day, not today (Live now shows today's date).
+  const day = escapeHtml(replay.title.split(",")[0].split(" ")[0]); // "Saturday"
 
   overlay.innerHTML = `
     <button type="button" class="intro-skip" id="intro-skip">Skip</button>
     <div class="intro-stage">
-      <p class="intro-line" id="il-1">${day}. Dinner rush.</p>
+      <p class="intro-line" id="il-1">${day} night. Dinner rush.</p>
       <p class="intro-line" id="il-2">Every ticket is a promise to help a customer in time.</p>
       <div class="intro-skies" id="intro-skies">
         <figure class="sky theirs"><figcaption>${escapeHtml(theirsName)}</figcaption>

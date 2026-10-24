@@ -9,6 +9,8 @@ Why this design:
 - Everything runs locally: no network calls at serve time (LLM answers are already cached),
   so the demo works with Wi-Fi off.
 - Live endpoints (What-if M10, Plant-a-problem M11, Upload M10) are added as their milestones land.
+- "Live now" (GET /api/live, 24 Oct): today's weekday simulated once on this laptop (both the industry
+  standard and OpsLens), then shown minute by minute at the viewer's real clock (opslens/live.py).
 - "Your plan" (POST /api/plan/impact, 19 Oct): the accepted recommendations are replayed on one
   test day with and without them. Each run takes ~20 s, so the runs go to a few worker processes
   in parallel and every finished run is kept in memory (the same run is never simulated twice).
@@ -41,7 +43,10 @@ def results_path() -> Path:
 
 @app.get("/")
 def home() -> RedirectResponse:
-    return RedirectResponse("/web/")
+    # /app/ serves the same files as /web/. It is the address people open now: a browser that
+    # cached /web/ files before the no-cache header existed kept running them (24 Oct); under a
+    # new address it has nothing cached, so it always loads the current dashboard.
+    return RedirectResponse("/app/")
 
 
 @app.get("/api/health")
@@ -219,5 +224,92 @@ def ask(request: dict) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
+# ---- Live now (opslens/live.py, 24 Oct): today's day, simulated here, shown at the real clock ----------
+
+_LIVE: dict = {}  # (day, seed) -> LiveDay, simulated once and kept
+_LIVE_BUILDING: dict = {}  # (day, seed) -> the thread simulating it
+_LIVE_LOCK = threading.Lock()
+
+
+def _live_key(weekday: int, seed: int) -> tuple[int, int]:
+    import pandas as pd
+
+    from opslens.config import load_config
+    from opslens.live import matching_test_day
+
+    first_weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
+    return matching_test_day(weekday, first_weekday, engine_inputs()["test_days"]), seed
+
+
+_LIVE_BUILD_ONE_AT_A_TIME = threading.Lock()
+
+
+def _build_live(key: tuple) -> None:
+    from opslens.live import simulate_live_day
+
+    day, seed, agents_delta, volume = key
+    try:
+        with _LIVE_BUILD_ONE_AT_A_TIME:  # it briefly wraps one engine function: one build at a time
+            _LIVE[key] = simulate_live_day(engine_inputs(), day, seed, dict(agents_delta), volume)
+    finally:
+        _LIVE_BUILDING.pop(key, None)
+
+
+def _parse_agents(text: str) -> tuple:
+    """"C:-2,B:1" -> (("B", 1), ("C", -2)); teams A-D, each change -5..+5, zeros dropped."""
+    out = {}
+    for part in filter(None, text.split(",")):
+        team, _, k = part.partition(":")
+        team = team.strip().upper()
+        if len(team) != 1 or team not in "ABCD":
+            raise ValueError("teams are A, B, C, D")
+        if int(k):
+            out[team] = max(-5, min(5, int(k)))
+    return tuple(sorted(out.items()))
+
+
+@app.get("/api/live")
+def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: float = 1.0) -> JSONResponse:
+    """The floor at the viewer's real clock: `weekday` (0 = Monday) and `minute` of the day come
+    from the browser. The first request for a weekday starts the simulation (about 20-40 s) and
+    answers {"ready": false}; the page asks again until it is ready."""
+    from opslens.live import state_at
+
+    # `agents` ("C:-2,B:1") and `volume` (1.3 = 30% more customers) change the day, as in What-if.
+    try:
+        delta = _parse_agents(agents)
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+    if not (0 <= weekday <= 6 and 0 <= minute < 1440 and 1 <= seed <= 99 and 0.5 <= volume <= 2.0):
+        return JSONResponse({"error": "weekday 0-6, minute 0-1439, seed 1-99, volume 0.5-2.0"}, status_code=400)
+    day, seed = _live_key(weekday, seed)
+    key = (day, seed, delta, round(volume, 2))
+    with _LIVE_LOCK:
+        if key not in _LIVE and key not in _LIVE_BUILDING:
+            thread = threading.Thread(target=_build_live, args=(key,), daemon=True)
+            _LIVE_BUILDING[key] = thread
+            thread.start()
+    scenario = {"agents_delta": dict(delta), "volume": round(volume, 2)}
+    if key not in _LIVE:
+        return JSONResponse({"ready": False, "day": day, "seed": seed, "scenario": scenario})
+    return JSONResponse({"ready": True, "scenario": scenario, **state_at(_LIVE[key], minute)},
+                        headers={"Cache-Control": "no-store"})
+
+
+@app.middleware("http")
+async def always_fresh_web_files(request, call_next):
+    """The browser must ask for the newest dashboard files on every load (it may reuse its copy
+    only when the file did not change). Without this, Chrome kept showing an old app.js."""
+    response = await call_next(request)
+    if request.url.path.startswith(("/web", "/app")):
+        response.headers["Cache-Control"] = "no-cache"
+    if request.url.path in ("/web", "/web/", "/web/index.html", "/app", "/app/", "/app/index.html"):
+        # Opening the dashboard also tells the browser to drop every copy it kept from older
+        # versions (files cached before this header existed were reused without asking).
+        response.headers["Clear-Site-Data"] = '"cache"'
+    return response
+
+
+app.mount("/app", StaticFiles(directory=ROOT / "web", html=True), name="app")
 app.mount("/web", StaticFiles(directory=ROOT / "web", html=True), name="web")
 app.mount("/eval", StaticFiles(directory=ROOT / "eval"), name="eval")

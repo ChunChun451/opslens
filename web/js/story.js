@@ -26,7 +26,7 @@ const BREACH = "turnaround.breach_pct";
 // Each step: the tab to open, a function returning the id of the element to outline, a title,
 // a function writing the text, and optionally something to start (the replay).
 const STEPS = [
-  { tab: "overview", target: () => (document.getElementById("ov-mission") ? "ov-mission" : "ov-headline"), title: "The problem", body: problemText },
+  { tab: "overview", view: "overview", target: () => (document.getElementById("ov-mission") ? "ov-mission" : "ov-headline"), title: "The problem", body: problemText },
   { tab: "compare", target: () => "replay", title: "One busy Saturday, three ways", body: replayText, enter: startReplay },
   { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
@@ -73,7 +73,7 @@ function goTo(i) {
   pauseReplay();
   step = i;
   const s = STEPS[step];
-  showTab(s.tab);
+  showTab(s.tab, s.view);
   const target = document.getElementById(s.target());
   if (target) {
     target.classList.add("story-target");

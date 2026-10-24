@@ -1,0 +1,343 @@
+/*
+  OpsLens "Neon" skin (Claude 2, 24 Oct) — the owner's reference: a deep navy-black stage, glass
+  panels with thin glowing edges, neon cyan and violet/magenta accents, soft colour glows behind.
+
+  How it works: every rule here starts with html[data-theme="neon"], so it only applies when the
+  Neon theme is on (the default). The "Light" switch in the top bar removes the attribute and the
+  app is exactly as before (styles.css + theme.css), e.g. for a washed-out projector.
+  Meaning of colours (kept from design v3): cyan = OpsLens / promise kept, pink = promise missed,
+  violet = structure and focus. Numbers are unchanged; this file only changes how things look.
+*/
+
+/* ---- 1. Colour tokens: most of the app reads these, so this block recolours it ------------- */
+html[data-theme="neon"] {
+  color-scheme: dark;
+  --bg: #070b16;
+  --surface: rgba(18, 24, 41, 0.78);
+  --surface-2: rgba(23, 31, 52, 0.72);
+  --surface-3: rgba(32, 41, 68, 0.7);
+  --border: rgba(130, 145, 255, 0.14);
+  --border-strong: rgba(130, 145, 255, 0.28);
+  --ink: #e9ecf7;
+  --ink-2: #c5cbe0;
+  --muted: #8a93ad;
+  --blue: #22d3ee;            /* OpsLens, focus */
+  --blue-soft: rgba(34, 211, 238, 0.12);
+  --violet: #a78bfa;
+  --magenta: #e879f9;
+  --good: #34d399;
+  --good-soft: rgba(52, 211, 153, 0.12);
+  --bad: #ff4d8d;
+  --bad-soft: rgba(255, 77, 141, 0.12);
+  --warn: #fbbf24;
+  --warn-soft: rgba(251, 191, 36, 0.12);
+  --brand: #ff4d8d;
+  --nav-bg: rgba(10, 14, 26, 0.82);
+  --nav-ink: #aab2cc;
+  --nav-active: rgba(167, 139, 250, 0.14);
+  --night: #0b1122;
+  --night-2: #121a33;
+  --saffron: #22d3ee;         /* design v3's "promise kept" accent becomes neon cyan */
+  --saffron-soft: rgba(34, 211, 238, 0.14);
+  --chilli: #ff4d8d;          /* "promise missed" becomes neon pink */
+  --kept: #22d3ee;
+  --missed: #ff4d8d;
+  --reported: #8a93ad;
+  --shadow: 0 0 0 1px rgba(130, 145, 255, 0.06), 0 18px 40px -24px rgba(0, 0, 0, 0.8);
+  --shadow-hover: 0 0 0 1px rgba(167, 139, 250, 0.3), 0 18px 46px -22px rgba(124, 58, 237, 0.45);
+  --shadow-lg: 0 30px 80px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(130, 145, 255, 0.16);
+  --glow-cyan: 0 0 18px rgba(34, 211, 238, 0.45);
+  --glow-violet: 0 0 18px rgba(167, 139, 250, 0.45);
+}
+
+/* ---- 2. The stage: deep background with two soft colour glows (cyan low-left, violet up-right) */
+html[data-theme="neon"] body {
+  background:
+    radial-gradient(900px 600px at -5% 105%, rgba(34, 211, 238, 0.16), transparent 60%),
+    radial-gradient(900px 600px at 105% -5%, rgba(168, 85, 247, 0.2), transparent 60%),
+    radial-gradient(700px 500px at 60% 40%, rgba(59, 130, 246, 0.06), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+}
+html[data-theme="neon"] ::selection { background: rgba(167, 139, 250, 0.45); }
+
+/* ---- 3. Frame: side menu and top bar as dark glass ------------------------------------------ */
+html[data-theme="neon"] .sidebar {
+  background: var(--nav-bg);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+}
+html[data-theme="neon"] .brand-name { color: #fff; }
+html[data-theme="neon"] .brand-mark { border-color: var(--blue); box-shadow: var(--glow-cyan); }
+html[data-theme="neon"] .nav a { color: var(--nav-ink); }
+html[data-theme="neon"] .nav a:hover { background: rgba(130, 145, 255, 0.08); color: #fff; }
+html[data-theme="neon"] .nav a[aria-current="page"] {
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.22), rgba(34, 211, 238, 0.06));
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.3);
+}
+html[data-theme="neon"] .nav a[aria-current="page"]::before { background: var(--violet); box-shadow: var(--glow-violet); }
+html[data-theme="neon"] .nav a[aria-current="page"] .nav-icon { color: var(--violet); stroke: var(--violet); }
+html[data-theme="neon"] .sidebar-foot { color: var(--muted); border-color: var(--border); }
+html[data-theme="neon"] .intro-replay { background: var(--surface-2); color: var(--ink); border-color: var(--border); }
+
+html[data-theme="neon"] .topbar {
+  background: rgba(9, 13, 25, 0.72);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: saturate(160%) blur(16px);
+}
+html[data-theme="neon"] .ask-form {
+  background: rgba(15, 21, 38, 0.9);
+  border-color: var(--border-strong);
+}
+html[data-theme="neon"] .ask-form:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18); }
+html[data-theme="neon"] .ask-form input { color: var(--ink); background: transparent; }
+html[data-theme="neon"] .ask-form input::placeholder { color: var(--muted); }
+html[data-theme="neon"] kbd { background: var(--surface-3); color: var(--ink-2); border-color: var(--border-strong); }
+html[data-theme="neon"] .world-switch { background: rgba(15, 21, 38, 0.9); border-color: var(--border); }
+html[data-theme="neon"] .world-switch button { color: var(--muted); }
+html[data-theme="neon"] .world-switch button[aria-pressed="true"] {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(167, 139, 250, 0.22));
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+html[data-theme="neon"] .status { color: var(--muted); }
+
+/* ---- 4. Panels: glass with a thin edge that glows violet when you point at it ---------------- */
+html[data-theme="neon"] .card,
+html[data-theme="neon"] .stat-card,
+html[data-theme="neon"] .proof,
+html[data-theme="neon"] .challenge,
+html[data-theme="neon"] .playbook,
+html[data-theme="neon"] .week,
+html[data-theme="neon"] .stepper,
+html[data-theme="neon"] .live-volume {
+  background: linear-gradient(180deg, rgba(25, 32, 55, 0.78), rgba(15, 20, 36, 0.78));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+html[data-theme="neon"] .card { transition: border-color 0.25s ease, box-shadow 0.25s ease; }
+html[data-theme="neon"] .card:hover { border-color: rgba(167, 139, 250, 0.32); box-shadow: var(--shadow-hover); }
+html[data-theme="neon"] .page-title,
+html[data-theme="neon"] .card-title,
+html[data-theme="neon"] .ledger-claim,
+html[data-theme="neon"] .challenge-q { color: #fff; }
+html[data-theme="neon"] .page-title {
+  background: linear-gradient(90deg, #ffffff 0%, #c9d4ff 55%, #9ee9f6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-theme="neon"] .page-sub,
+html[data-theme="neon"] .card-sub,
+html[data-theme="neon"] .stat-label,
+html[data-theme="neon"] .stat-sub { color: var(--muted); }
+html[data-theme="neon"] .stat-value { color: #fff; }
+html[data-theme="neon"] .section-label { color: var(--muted); }
+html[data-theme="neon"] .divider,
+html[data-theme="neon"] hr { border-color: var(--border); }
+
+/* ---- 5. Clickable numbers: cyan, like a live readout ----------------------------------------- */
+html[data-theme="neon"] .ev { color: #8ff0ff; }
+html[data-theme="neon"] .ev:hover,
+html[data-theme="neon"] .ev:focus-visible { background: rgba(34, 211, 238, 0.14); color: #fff; }
+html[data-theme="neon"] .ev-text:hover,
+html[data-theme="neon"] .ev-text:focus-visible { background: rgba(167, 139, 250, 0.16); }
+html[data-theme="neon"] .stat-value .ev,
+html[data-theme="neon"] .proof-a .ev { color: #fff; text-shadow: 0 0 22px rgba(34, 211, 238, 0.35); }
+
+/* ---- 6. Buttons, pills, tabs, inputs --------------------------------------------------------- */
+html[data-theme="neon"] .btn {
+  background: rgba(23, 31, 52, 0.9);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+}
+html[data-theme="neon"] .btn:hover { border-color: var(--violet); box-shadow: var(--glow-violet); color: #fff; }
+html[data-theme="neon"] .btn-primary,
+html[data-theme="neon"] #story-button {
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.35);
+}
+html[data-theme="neon"] .btn-primary:hover,
+html[data-theme="neon"] #story-button:hover { box-shadow: 0 0 30px rgba(139, 92, 246, 0.6); }
+html[data-theme="neon"] .btn.ghost { background: transparent; }
+html[data-theme="neon"] .pill { background: rgba(130, 145, 255, 0.1); color: var(--ink-2); border-color: var(--border); }
+html[data-theme="neon"] .pill.p1 { background: rgba(255, 77, 141, 0.16); color: #ff9ec0; border-color: transparent; }
+html[data-theme="neon"] .pill.good { background: var(--good-soft); color: var(--good); }
+html[data-theme="neon"] .subnav button { background: rgba(18, 24, 41, 0.7); color: var(--muted); border-color: var(--border); }
+html[data-theme="neon"] .subnav button:hover { color: #fff; border-color: var(--border-strong); }
+html[data-theme="neon"] .subnav button[aria-current="true"] {
+  color: #fff;
+  border-color: var(--blue);
+  background: rgba(34, 211, 238, 0.1);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.25);
+}
+html[data-theme="neon"] input[type="text"],
+html[data-theme="neon"] input[type="number"],
+html[data-theme="neon"] select,
+html[data-theme="neon"] textarea,
+html[data-theme="neon"] .plan-sim select {
+  background: rgba(12, 17, 31, 0.9);
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+html[data-theme="neon"] input[type="range"] { accent-color: var(--blue); }
+html[data-theme="neon"] input[type="range"]::-webkit-slider-thumb { background: #0b1122; border-color: var(--blue); box-shadow: var(--glow-cyan); }
+html[data-theme="neon"] input[type="range"]::-moz-range-thumb { background: #0b1122; border-color: var(--blue); box-shadow: var(--glow-cyan); }
+html[data-theme="neon"] .segmented,
+html[data-theme="neon"] .dropzone { background: rgba(12, 17, 31, 0.7); border-color: var(--border-strong); }
+
+/* ---- 7. Tables ------------------------------------------------------------------------------ */
+html[data-theme="neon"] table th { color: var(--muted); border-color: var(--border); background: transparent; }
+html[data-theme="neon"] table td { border-color: var(--border); color: var(--ink-2); }
+html[data-theme="neon"] tbody tr:hover td { background: rgba(130, 145, 255, 0.05); }
+html[data-theme="neon"] .kpi-table td.better .ev,
+html[data-theme="neon"] .delta.good,
+html[data-theme="neon"] .better { color: var(--good); }
+
+/* ---- 8. Bars, rings, tracks ------------------------------------------------------------------ */
+html[data-theme="neon"] .cbar-track,
+html[data-theme="neon"] .queue-track,
+html[data-theme="neon"] .share-bar { background: rgba(130, 145, 255, 0.1); }
+html[data-theme="neon"] .reason-bar { background: linear-gradient(90deg, #22d3ee, #a78bfa); box-shadow: 0 0 10px rgba(34, 211, 238, 0.4); }
+html[data-theme="neon"] .cbar.is-ours .cbar-fill { box-shadow: 0 0 14px rgba(34, 211, 238, 0.55); }
+html[data-theme="neon"] .ring { background: conic-gradient(var(--c) calc(var(--p) * 1%), rgba(130, 145, 255, 0.12) 0); }
+html[data-theme="neon"] .ring-value { color: #fff; }
+
+/* ---- 9. Messages and panels that float above the page ---------------------------------------- */
+html[data-theme="neon"] .callout { background: rgba(23, 31, 52, 0.8); border-color: var(--border-strong); color: var(--ink-2); }
+html[data-theme="neon"] .callout.warn,
+html[data-theme="neon"] .ticket .action.warn { background: rgba(251, 191, 36, 0.1); color: #fde68a; }
+html[data-theme="neon"] .action { background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.25); color: var(--ink-2); }
+html[data-theme="neon"] .alert-score { background: rgba(34, 211, 238, 0.08); color: var(--ink-2); border: 1px solid rgba(34, 211, 238, 0.2); }
+html[data-theme="neon"] .challenge { border-left: 3px solid var(--blue); }
+html[data-theme="neon"] .evidence-popover,
+html[data-theme="neon"] .ask-panel,
+html[data-theme="neon"] .plan-panel {
+  background: rgba(12, 17, 32, 0.96);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(124, 58, 237, 0.18);
+  backdrop-filter: blur(18px);
+}
+html[data-theme="neon"] .story-card { background: rgba(12, 17, 32, 0.96); border: 1px solid rgba(167, 139, 250, 0.4); box-shadow: var(--shadow-lg), var(--glow-violet); }
+html[data-theme="neon"] .story-card .btn-primary { background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: #fff; }
+html[data-theme="neon"] .story-target { outline-color: var(--violet) !important; box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.25), var(--glow-violet) !important; }
+html[data-theme="neon"] .disclosure summary { color: var(--ink-2); }
+html[data-theme="neon"] .fixture-banner { background: #ff4d8d; }
+
+/* ---- 10. The dark bands (Overview replay, Live now, ledger tally) get a neon frame ----------- */
+html[data-theme="neon"] .mission,
+html[data-theme="neon"] .ledger-tally {
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(34, 211, 238, 0.14), transparent 55%),
+    radial-gradient(120% 140% at 100% 100%, rgba(168, 85, 247, 0.18), transparent 55%),
+    rgba(9, 13, 27, 0.92);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 0 1px rgba(130, 145, 255, 0.22), 0 0 40px -10px rgba(124, 58, 237, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+html[data-theme="neon"] .mission .btn { background: rgba(255, 255, 255, 0.08); color: #fff; border-color: rgba(255, 255, 255, 0.18); }
+html[data-theme="neon"] .mission .btn:hover { border-color: var(--blue); box-shadow: var(--glow-cyan); }
+html[data-theme="neon"] .mission-score .ours .v,
+html[data-theme="neon"] .live-saved b,
+html[data-theme="neon"] .ledger-tally .t-kept { color: var(--blue); text-shadow: 0 0 24px rgba(34, 211, 238, 0.55); }
+html[data-theme="neon"] .mission-score .theirs .v,
+html[data-theme="neon"] .ledger-tally .t-missed { color: var(--bad); text-shadow: 0 0 24px rgba(255, 77, 141, 0.5); }
+html[data-theme="neon"] .live-clock { text-shadow: 0 0 30px rgba(34, 211, 238, 0.35); }
+html[data-theme="neon"] .live-dot { background: var(--bad); box-shadow: 0 0 10px var(--bad); }
+html[data-theme="neon"] .live-progress i { background: linear-gradient(90deg, #22d3ee, #a78bfa); box-shadow: var(--glow-cyan); }
+
+/* The floor, everywhere: agents glow cyan, rescues violet, wrong-queue pink; late customers pink. */
+html[data-theme="neon"] .tile.busy { background: #22d3ee; box-shadow: 0 0 8px rgba(34, 211, 238, 0.55); }
+html[data-theme="neon"] .tile.cross { background: #a78bfa; box-shadow: 0 0 10px rgba(167, 139, 250, 0.7); }
+html[data-theme="neon"] .tile.wrong { background: #ff4d8d; box-shadow: 0 0 10px rgba(255, 77, 141, 0.7); }
+html[data-theme="neon"] .tile.idle { background: transparent; box-shadow: inset 0 0 0 1.5px rgba(34, 211, 238, 0.55); }
+html[data-theme="neon"] .dot { background: rgba(170, 178, 204, 0.45); }
+html[data-theme="neon"] .dot.late,
+html[data-theme="neon"] .mission .dot.late { background: #ff4d8d; box-shadow: 0 0 6px rgba(255, 77, 141, 0.8); }
+html[data-theme="neon"] .floor-team { background: rgba(255, 255, 255, 0.03); border-color: rgba(130, 145, 255, 0.14); }
+html[data-theme="neon"] .floor-name,
+html[data-theme="neon"] .floor-legend { color: var(--muted); }
+html[data-theme="neon"] .floor-name b { color: #fff; }
+
+/* ---- 11. Ledger, live panels, side-menu live panel ------------------------------------------ */
+html[data-theme="neon"] .ledger::before { background: linear-gradient(180deg, rgba(34, 211, 238, 0.5), rgba(167, 139, 250, 0.5)); }
+html[data-theme="neon"] .ledger-entry { border-color: var(--border); }
+html[data-theme="neon"] .ledger-entry::before { background: var(--bg); }
+html[data-theme="neon"] .ledger-entry.is-kept::before { background: var(--blue); box-shadow: var(--glow-cyan); }
+html[data-theme="neon"] .ledger-entry.is-missed::before { box-shadow: 0 0 10px rgba(255, 77, 141, 0.6); }
+html[data-theme="neon"] .ledger-when time { color: #fff; }
+html[data-theme="neon"] .ledger-when a { color: var(--violet); }
+html[data-theme="neon"] .is-kept .ledger-stamp { background: rgba(34, 211, 238, 0.06); box-shadow: 0 0 18px rgba(34, 211, 238, 0.3); }
+html[data-theme="neon"] .is-missed .ledger-stamp { background: rgba(255, 77, 141, 0.06); box-shadow: 0 0 18px rgba(255, 77, 141, 0.28); }
+html[data-theme="neon"] .live-ticket,
+html[data-theme="neon"] .live-decisions li { border-color: var(--border); }
+html[data-theme="neon"] .live-risk { color: var(--bad); text-shadow: 0 0 16px rgba(255, 77, 141, 0.45); }
+html[data-theme="neon"] .live-ticker {
+  background: linear-gradient(160deg, rgba(34, 211, 238, 0.12), rgba(168, 85, 247, 0.16)), rgba(9, 13, 27, 0.9);
+  border: 1px solid rgba(130, 145, 255, 0.25);
+  box-shadow: 0 0 24px -6px rgba(124, 58, 237, 0.55);
+}
+html[data-theme="neon"] .lt-ours { color: var(--blue); }
+html[data-theme="neon"] .lt-theirs { color: var(--bad); }
+html[data-theme="neon"] #lv-apply.is-ready { box-shadow: 0 0 0 2px var(--blue), 0 0 26px rgba(34, 211, 238, 0.55); }
+
+/* ---- 12. The theme switch in the top bar ----------------------------------------------------- */
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.theme-switch .swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22d3ee, #a78bfa);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+}
+html:not([data-theme="neon"]) .theme-switch .swatch { background: linear-gradient(135deg, #f2a007, #4b4bf5); box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="neon"] .card { transition: none; }
+}
+
+/* ---- 13. Small fixes found on screen -------------------------------------------------------- */
+/* Counters inside the dark bands keep their own colour (pink for theirs, cyan for ours), not the
+   generic cyan of clickable numbers. */
+html[data-theme="neon"] .mission-score .v .ev,
+html[data-theme="neon"] .ledger-tally .ev,
+html[data-theme="neon"] .live-risk .ev { color: inherit; text-shadow: inherit; }
+/* The "Your plan" count. */
+html[data-theme="neon"] #plan-button .count {
+  background: linear-gradient(135deg, #22d3ee, #a78bfa);
+  color: #06101f;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+/* ---- 14. Live now command centre, neon details ---------------------------------------------- */
+html[data-theme="neon"] .lv-hero {
+  background:
+    radial-gradient(90% 140% at 0% 0%, rgba(34, 211, 238, 0.16), transparent 55%),
+    radial-gradient(90% 140% at 100% 100%, rgba(168, 85, 247, 0.22), transparent 55%),
+    rgba(9, 13, 27, 0.92);
+  box-shadow: 0 0 0 1px rgba(130, 145, 255, 0.22), 0 0 50px -12px rgba(124, 58, 237, 0.55);
+}
+html[data-theme="neon"] .lv-big { text-shadow: 0 0 40px rgba(34, 211, 238, 0.5); }
+html[data-theme="neon"] .lv-clock { text-shadow: 0 0 26px rgba(34, 211, 238, 0.3); }
+html[data-theme="neon"] .lv-bar.ours i { box-shadow: 0 0 12px rgba(34, 211, 238, 0.7); }
+html[data-theme="neon"] .lv-bar.theirs i { box-shadow: 0 0 12px rgba(255, 77, 141, 0.6); }
+html[data-theme="neon"] .lv-lane,
+html[data-theme="neon"] .lv-feed { background: linear-gradient(180deg, rgba(25, 32, 55, 0.78), rgba(15, 20, 36, 0.78)); backdrop-filter: blur(10px); }
+html[data-theme="neon"] .lv-lane.is-ours { border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 0 30px -12px rgba(34, 211, 238, 0.6); }
+html[data-theme="neon"] .chip-btn { background: rgba(18, 24, 41, 0.8); }
+html[data-theme="neon"] .chip-btn[aria-pressed="true"],
+html[data-theme="neon"] .chip-btn.is-on { background: rgba(34, 211, 238, 0.14); box-shadow: 0 0 18px rgba(34, 211, 238, 0.35); color: #fff; }
+html[data-theme="neon"] .lv-risk,
+html[data-theme="neon"] .lv-risk .ev { text-shadow: 0 0 14px rgba(255, 77, 141, 0.45); }
+html[data-theme="neon"] .brand-logo { filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.55)); }
