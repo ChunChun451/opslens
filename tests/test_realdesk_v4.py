@@ -147,3 +147,74 @@ def test_card_groups_split_waits_pickups_and_bounces() -> None:
     assert g["R1"][0].tolist() == [False, True, False]
     assert g["R2"][0].tolist() == [True, False, False]
     assert g["R3"][0].tolist() == [True, False, False] and g["R3"][1].tolist() == [False, True, False]
+
+
+# ---- second looks (23 Oct) -------------------------------------------------------------------
+
+def test_pool_of_one_is_exactly_the_v1_comparison() -> None:
+    dates = pd.date_range("2016-04-01", "2016-05-10")
+    opened = pd.Timestamp("2016-05-09")
+    today, windows = W.pooled_windows(dates, opened, 1)
+    assert today.tolist() == [dates.get_loc(opened)]
+    assert windows[:, 0].tolist() == W.comparable_days(dates, opened).tolist()
+
+
+def test_pooled_windows_skip_weekends_and_never_overlap_today() -> None:
+    dates = pd.date_range("2016-04-01", "2016-05-10")
+    today, windows = W.pooled_windows(dates, pd.Timestamp("2016-05-09"), 3)   # a Monday
+    assert [str(dates[i].date()) for i in today] == ["2016-05-05", "2016-05-06", "2016-05-09"]
+    assert windows.max() < today.min()
+
+
+def test_pooling_finds_a_steady_rise_that_one_day_misses() -> None:
+    days = pd.date_range("2016-03-20", "2016-05-12")
+    days = days[days.weekday < 5]
+    table = weekday_table(days, 10)                       # 3 of 10 open after 24 h on a usual day
+    slow = table["date"].isin(pd.to_datetime(["2016-05-09", "2016-05-10", "2016-05-11"])).to_numpy()
+    for d in ("2016-05-09", "2016-05-10", "2016-05-11"):  # 6 of 10 for three days in a row
+        rows = (table["date"] == pd.Timestamp(d)).to_numpy()
+        table.loc[rows, "open_24h"] = [True] * 6 + [False] * 4
+    assert slow.sum() == 30
+    one = W.share_alerts(table, pd.DatetimeIndex(["2016-05-12"]), "team", "open_24h", "slowdown", 3.5, 1)
+    three = W.share_alerts(table, pd.DatetimeIndex(["2016-05-12"]), "team", "open_24h", "slowdown", 3.5, 3)
+    assert one == [] and len(three) == 1                  # 6/10 alone: z 2.1; 18/30 pooled: z 3.6
+
+
+def test_slowdown_plant_also_updates_the_two_hour_signal() -> None:
+    days = pd.date_range("2016-05-09", "2016-05-13")
+    table = weekday_table(days, 10)
+    table["open_2h"] = ~(table["resolution_h"] <= 2.0)
+    plant = {"type": "slowdown", "segment": "G1", "first_day": days[0], "last_day": days[-1], "size": 1.5}
+    out = P.plant_slowdown(table, plant)
+    assert out["open_2h"].all() and out["open_24h"].sum() == 15   # 2 h × 1.5 = 3 h: not within 2 h, still within 24 h
+
+
+# ---- shadow mode (24 Oct) --------------------------------------------------------------------
+
+def test_minute_of_day_runs_past_midnight_and_keeps_unknowns() -> None:
+    from opslens.realdesk_shadow import minute_of_day
+    day = pd.Timestamp("2016-05-02")
+    times = pd.Series(pd.to_datetime(["2016-05-02 13:24", "2016-05-06 14:18", None]))
+    assert minute_of_day(times, day) == [804, 6618, None]
+
+
+def test_choose_days_takes_the_busiest_weekday_then_one_per_other_busy_week() -> None:
+    from opslens.realdesk_shadow import choose_days
+    dates = pd.date_range("2016-05-02", "2016-05-22")
+    daily = pd.DataFrame({"opened": [300, 350, 320, 310, 290, 40, 30, 280, 400, 260, 250, 240, 35, 25,
+                                     200, 210, 330, 220, 230, 20, 10]}, index=dates)
+    daily["weekday"] = daily.index.weekday
+    daily["week"] = daily.index.to_period("W").astype(str)
+    assert [str(d.date()) for d in choose_days(daily)] == ["2016-05-10", "2016-05-03", "2016-05-18"]
+
+
+def test_day_summary_counts_caught_misses_and_flag_precision() -> None:
+    from opslens.realdesk_shadow import day_summary
+    rows = pd.DataFrame({"in_benchmark": [True] * 5 + [False], "missed_flag": [True, True, False, False, True, True],
+                         "top20_opslens": [True, False, True, False, False, False],
+                         "top20_priority": [False, False, False, True, False, False],
+                         "saved_opslens": [True] + [False] * 5, "saved_priority": [False] * 6, "saved_unassigned": [False] * 6})
+    s = day_summary(rows)
+    assert s["actual_misses"] == 4 and s["actual_misses_benchmark"] == 3
+    assert (s["opslens"]["caught"], s["opslens"]["recall_pct"], s["opslens"]["precision_pct"]) == (1, 100 / 3, 50.0)
+    assert s["priority"]["caught"] == 0 and s["fast_track_saved"]["opslens"] == 1

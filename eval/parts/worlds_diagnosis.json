@@ -1,0 +1,468 @@
+{
+ "note": "Added 23 Oct after the 30-world result: the worlds OpsLens did not win, rebuilt from the same seeds, with misses by priority, tier and language. Analysis, not a pre-registered test.",
+ "worlds": [
+  {
+   "seed": 7001,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 23.847922913452305,
+     "turnaround.p90_resolution_min": 1299.5807475603303,
+     "quality.late_minutes_per_100": 47884.01787937645,
+     "quality.mean_utilisation": 3.05683970065462,
+     "quality.p99_wait_min": 8571.206002743398,
+     "productivity.transfers_per_100": 0.9393224845467868,
+     "segment.p1_breach_pct": 13.189429410364257,
+     "segment.gold_breach_pct": 24.715320910973087,
+     "segment.hindi_breach_pct": 30.60359443879281,
+     "quality.mean_minutes_late": 1999.8484838981014
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 11.097202410410176,
+     "turnaround.p90_resolution_min": 1150.060811536454,
+     "quality.late_minutes_per_100": 49599.81594037774,
+     "quality.mean_utilisation": 3.107708463251335,
+     "quality.p99_wait_min": 10700.910126109635,
+     "productivity.transfers_per_100": 0.9626114717669548,
+     "segment.p1_breach_pct": 12.864058408062851,
+     "segment.gold_breach_pct": 11.743012422360247,
+     "segment.hindi_breach_pct": 16.85317056629366,
+     "quality.mean_minutes_late": 4451.150747115326
+    },
+    "opslens": {
+     "turnaround.breach_pct": 14.503216791359785,
+     "turnaround.p90_resolution_min": 1093.9312026655555,
+     "quality.late_minutes_per_100": 41184.558310318185,
+     "quality.mean_utilisation": 3.3008926001411356,
+     "quality.p99_wait_min": 10402.897716508429,
+     "productivity.transfers_per_100": 0.9034186292490273,
+     "segment.p1_breach_pct": 11.73980900986694,
+     "segment.gold_breach_pct": 6.9358178053830235,
+     "segment.hindi_breach_pct": 18.661693229343282,
+     "quality.mean_minutes_late": 2820.7728198889886
+    }
+   }
+  },
+  {
+   "seed": 7005,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 41.16454841025208,
+     "turnaround.p90_resolution_min": 4672.031523858149,
+     "quality.late_minutes_per_100": 104573.37207962536,
+     "quality.mean_utilisation": 1.1278280952263626,
+     "quality.p99_wait_min": 9908.839619136617,
+     "productivity.transfers_per_100": 0.9134540950611548,
+     "segment.p1_breach_pct": 28.210072595281307,
+     "segment.gold_breach_pct": 40.81671415004748,
+     "segment.hindi_breach_pct": 49.32620817843866,
+     "quality.mean_minutes_late": 2537.6038765899225
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 15.12477304395558,
+     "turnaround.p90_resolution_min": 1407.142365625865,
+     "quality.late_minutes_per_100": 124459.96535074653,
+     "quality.mean_utilisation": 1.1149168285195479,
+     "quality.p99_wait_min": 18982.683620428943,
+     "productivity.transfers_per_100": 0.9162690537516361,
+     "segment.p1_breach_pct": 20.576225045372052,
+     "segment.gold_breach_pct": 14.900284900284902,
+     "segment.hindi_breach_pct": 23.892503097893428,
+     "quality.mean_minutes_late": 8212.611559964535
+    },
+    "opslens": {
+     "turnaround.breach_pct": 16.85878759729201,
+     "turnaround.p90_resolution_min": 1398.2098479601484,
+     "quality.late_minutes_per_100": 91391.71059892136,
+     "quality.mean_utilisation": 1.1480269782025478,
+     "quality.p99_wait_min": 12946.449184683137,
+     "productivity.transfers_per_100": 0.8416726484538839,
+     "segment.p1_breach_pct": 20.141409558378708,
+     "segment.gold_breach_pct": 7.321937321937322,
+     "segment.hindi_breach_pct": 20.144052044609666,
+     "quality.mean_minutes_late": 5364.351119965687
+    }
+   }
+  },
+  {
+   "seed": 7006,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 48.102056291538425,
+     "turnaround.p90_resolution_min": 6658.522518235012,
+     "quality.late_minutes_per_100": 150225.31072434972,
+     "quality.mean_utilisation": 2.135699201389816,
+     "quality.p99_wait_min": 9216.187755951483,
+     "productivity.transfers_per_100": 1.0036130068245683,
+     "segment.p1_breach_pct": 39.197937721533826,
+     "segment.gold_breach_pct": 47.8145795523291,
+     "segment.hindi_breach_pct": 55.54104782111963,
+     "quality.mean_minutes_late": 3116.974937999141
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 20.488201971541994,
+     "turnaround.p90_resolution_min": 944.5482340272084,
+     "quality.late_minutes_per_100": 159717.28200827478,
+     "quality.mean_utilisation": 2.1231416950697812,
+     "quality.p99_wait_min": 18865.977343491988,
+     "productivity.transfers_per_100": 0.9980373790088763,
+     "segment.p1_breach_pct": 28.379763892550603,
+     "segment.gold_breach_pct": 20.553539019963704,
+     "segment.hindi_breach_pct": 29.057178608345577,
+     "quality.mean_minutes_late": 7774.7614813026785
+    },
+    "opslens": {
+     "turnaround.breach_pct": 25.40702083054552,
+     "turnaround.p90_resolution_min": 1117.9279140436386,
+     "quality.late_minutes_per_100": 103396.21785186022,
+     "quality.mean_utilisation": 2.221232250274102,
+     "quality.p99_wait_min": 12620.512347923184,
+     "productivity.transfers_per_100": 0.9735046166198313,
+     "segment.p1_breach_pct": 33.71708117292088,
+     "segment.gold_breach_pct": 17.120387174833635,
+     "segment.hindi_breach_pct": 25.25977911974321,
+     "quality.mean_minutes_late": 4038.2232215795466
+    }
+   }
+  },
+  {
+   "seed": 7007,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 21.205524941331817,
+     "turnaround.p90_resolution_min": 752.1891078816683,
+     "quality.late_minutes_per_100": 67907.51714575381,
+     "quality.mean_utilisation": 2.0171389508026203,
+     "quality.p99_wait_min": 13978.231818395509,
+     "productivity.transfers_per_100": 0.7988024500094785,
+     "segment.p1_breach_pct": 6.290304951360805,
+     "segment.gold_breach_pct": 20.855194123819516,
+     "segment.hindi_breach_pct": 27.872744539411205,
+     "quality.mean_minutes_late": 3198.554813930418
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 11.567600781806652,
+     "turnaround.p90_resolution_min": 1992.6730067012256,
+     "quality.late_minutes_per_100": 59472.0564526875,
+     "quality.mean_utilisation": 2.065576321601858,
+     "quality.p99_wait_min": 11722.643761942396,
+     "productivity.transfers_per_100": 0.8144908778329052,
+     "segment.p1_breach_pct": 8.7896673589099,
+     "segment.gold_breach_pct": 11.20146904512067,
+     "segment.hindi_breach_pct": 16.23931623931624,
+     "quality.mean_minutes_late": 5140.018524756335
+    },
+    "opslens": {
+     "turnaround.breach_pct": 12.79195183652658,
+     "turnaround.p90_resolution_min": 1434.273397519939,
+     "quality.late_minutes_per_100": 33662.614777407194,
+     "quality.mean_utilisation": 2.20254391610351,
+     "quality.p99_wait_min": 9573.972699530948,
+     "productivity.transfers_per_100": 0.7504297975539126,
+     "segment.p1_breach_pct": 7.385142274201187,
+     "segment.gold_breach_pct": 6.720006995452955,
+     "segment.hindi_breach_pct": 17.44595274007039,
+     "quality.mean_minutes_late": 2621.8758842923503
+    }
+   }
+  },
+  {
+   "seed": 7008,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 30.441934318367657,
+     "turnaround.p90_resolution_min": 1962.3207033548815,
+     "quality.late_minutes_per_100": 89321.04764916694,
+     "quality.mean_utilisation": 3.278552980316927,
+     "quality.p99_wait_min": 16368.228696312364,
+     "productivity.transfers_per_100": 0.789168425656531,
+     "segment.p1_breach_pct": 6.179668646112964,
+     "segment.gold_breach_pct": 30.590879897238278,
+     "segment.hindi_breach_pct": 35.14290770728254,
+     "quality.mean_minutes_late": 2922.2737833102183
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 11.677791089052427,
+     "turnaround.p90_resolution_min": 1329.4826960749758,
+     "quality.late_minutes_per_100": 83898.67539993544,
+     "quality.mean_utilisation": 3.3192771155642546,
+     "quality.p99_wait_min": 16062.051040441222,
+     "productivity.transfers_per_100": 0.7663490976857399,
+     "segment.p1_breach_pct": 9.227473629979121,
+     "segment.gold_breach_pct": 11.811175337186897,
+     "segment.hindi_breach_pct": 17.914343863374924,
+     "quality.mean_minutes_late": 7147.276224055677
+    },
+    "opslens": {
+     "turnaround.breach_pct": 17.097381482115352,
+     "turnaround.p90_resolution_min": 1685.1889147855727,
+     "quality.late_minutes_per_100": 76972.68440679352,
+     "quality.mean_utilisation": 3.467982780190509,
+     "quality.p99_wait_min": 9872.417938994593,
+     "productivity.transfers_per_100": 0.738775743054367,
+     "segment.p1_breach_pct": 10.610374467854335,
+     "segment.gold_breach_pct": 9.511881824020554,
+     "segment.hindi_breach_pct": 27.44004955313689,
+     "quality.mean_minutes_late": 4459.88618029828
+    }
+   }
+  },
+  {
+   "seed": 7011,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 4.359430604982207,
+     "turnaround.p90_resolution_min": 157.17620748466092,
+     "quality.late_minutes_per_100": 637.2470860850658,
+     "quality.mean_utilisation": 2.4702709344162135,
+     "quality.p99_wait_min": 723.5959699927079,
+     "productivity.transfers_per_100": 0.841151730831446,
+     "segment.p1_breach_pct": 8.61813407868547,
+     "segment.gold_breach_pct": 4.556671954873964,
+     "segment.hindi_breach_pct": 9.352242238405518,
+     "quality.mean_minutes_late": 144.92161135598394
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 3.742046802545023,
+     "turnaround.p90_resolution_min": 149.59521790138723,
+     "quality.late_minutes_per_100": 1356.2152416276012,
+     "quality.mean_utilisation": 2.4705627981527973,
+     "quality.p99_wait_min": 767.1274097431468,
+     "productivity.transfers_per_100": 0.8546317265178475,
+     "segment.p1_breach_pct": 8.321687206199973,
+     "segment.gold_breach_pct": 3.8515776485104882,
+     "segment.hindi_breach_pct": 8.87951961160087,
+     "quality.mean_minutes_late": 357.3279271721021
+    },
+    "opslens": {
+     "turnaround.breach_pct": 4.747654480750566,
+     "turnaround.p90_resolution_min": 200.91094269361778,
+     "quality.late_minutes_per_100": 989.6114418731637,
+     "quality.mean_utilisation": 2.511681329878142,
+     "quality.p99_wait_min": 708.249424281511,
+     "productivity.transfers_per_100": 0.8155397390272835,
+     "segment.p1_breach_pct": 9.346546393935544,
+     "segment.gold_breach_pct": 3.6488630354309888,
+     "segment.hindi_breach_pct": 6.119841574038585,
+     "quality.mean_minutes_late": 205.49186722313752
+    }
+   }
+  },
+  {
+   "seed": 7014,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 23.311937998414052,
+     "turnaround.p90_resolution_min": 3041.4552911680935,
+     "quality.late_minutes_per_100": 64384.10245828574,
+     "quality.mean_utilisation": 1.060232731318184,
+     "quality.p99_wait_min": 9724.554394023473,
+     "productivity.transfers_per_100": 1.1056750003740443,
+     "segment.p1_breach_pct": 10.206549605765977,
+     "segment.gold_breach_pct": 23.026632054610133,
+     "segment.hindi_breach_pct": 28.345116522649906,
+     "quality.mean_minutes_late": 2742.215496276421
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 9.91067821715517,
+     "turnaround.p90_resolution_min": 1526.7968880010474,
+     "quality.late_minutes_per_100": 52087.52891662225,
+     "quality.mean_utilisation": 1.0792807061587926,
+     "quality.p99_wait_min": 13570.342409004354,
+     "productivity.transfers_per_100": 1.1071711776411268,
+     "segment.p1_breach_pct": 10.051758332124026,
+     "segment.gold_breach_pct": 10.335544659167388,
+     "segment.hindi_breach_pct": 16.69285153181461,
+     "quality.mean_minutes_late": 5189.319495313391
+    },
+    "opslens": {
+     "turnaround.breach_pct": 11.68664063318222,
+     "turnaround.p90_resolution_min": 1455.2172499134579,
+     "quality.late_minutes_per_100": 40443.34751449105,
+     "quality.mean_utilisation": 1.133686667060615,
+     "quality.p99_wait_min": 9404.000529142728,
+     "productivity.transfers_per_100": 1.0413393778894926,
+     "segment.p1_breach_pct": 10.29845692449088,
+     "segment.gold_breach_pct": 5.874435150466302,
+     "segment.hindi_breach_pct": 14.768263943440692,
+     "quality.mean_minutes_late": 3372.3748870509003
+    }
+   }
+  },
+  {
+   "seed": 7019,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 34.62199068143214,
+     "turnaround.p90_resolution_min": 2468.8527662645447,
+     "quality.late_minutes_per_100": 54387.93896363524,
+     "quality.mean_utilisation": 1.8570937650036943,
+     "quality.p99_wait_min": 10806.094037899937,
+     "productivity.transfers_per_100": 0.8663800874920526,
+     "segment.p1_breach_pct": 24.535073409461663,
+     "segment.gold_breach_pct": 34.36619718309859,
+     "segment.hindi_breach_pct": 43.18567295220992,
+     "quality.mean_minutes_late": 1569.981094314384
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 10.893804385989883,
+     "turnaround.p90_resolution_min": 994.7130728198463,
+     "quality.late_minutes_per_100": 84599.84027578759,
+     "quality.mean_utilisation": 1.8309772626992522,
+     "quality.p99_wait_min": 17982.844883377507,
+     "productivity.transfers_per_100": 0.8730226511420466,
+     "segment.p1_breach_pct": 18.08863512778684,
+     "segment.gold_breach_pct": 10.97965571205008,
+     "segment.hindi_breach_pct": 19.75955302803552,
+     "quality.mean_minutes_late": 7759.416061674674
+    },
+    "opslens": {
+     "turnaround.breach_pct": 13.500536149780322,
+     "turnaround.p90_resolution_min": 805.4928232647908,
+     "quality.late_minutes_per_100": 46539.992807404895,
+     "quality.mean_utilisation": 1.9514022624658034,
+     "quality.p99_wait_min": 11822.514932245957,
+     "productivity.transfers_per_100": 0.8094438276349627,
+     "segment.p1_breach_pct": 21.506253398586185,
+     "segment.gold_breach_pct": 7.768388106416276,
+     "segment.hindi_breach_pct": 14.042701785892447,
+     "quality.mean_minutes_late": 3400.784804991295
+    }
+   }
+  },
+  {
+   "seed": 7023,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 46.96436583465181,
+     "turnaround.p90_resolution_min": 2381.6860388297428,
+     "quality.late_minutes_per_100": 126193.2160560981,
+     "quality.mean_utilisation": 3.4331253957834114,
+     "quality.p99_wait_min": 14391.476346685284,
+     "productivity.transfers_per_100": 0.924111113734936,
+     "segment.p1_breach_pct": 30.212857914640736,
+     "segment.gold_breach_pct": 47.32600732600733,
+     "segment.hindi_breach_pct": 50.02966654800047,
+     "quality.mean_minutes_late": 2680.3197842305094
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 22.91622389622248,
+     "turnaround.p90_resolution_min": 1092.4640100870622,
+     "quality.late_minutes_per_100": 143250.213482793,
+     "quality.mean_utilisation": 3.442092247227629,
+     "quality.p99_wait_min": 18438.274265038057,
+     "productivity.transfers_per_100": 0.9020709849576122,
+     "segment.p1_breach_pct": 27.22420313344138,
+     "segment.gold_breach_pct": 23.469387755102037,
+     "segment.hindi_breach_pct": 30.71081049009138,
+     "quality.mean_minutes_late": 6224.127872715489
+    },
+    "opslens": {
+     "turnaround.breach_pct": 27.46436189891453,
+     "turnaround.p90_resolution_min": 1428.77445524139,
+     "quality.late_minutes_per_100": 129444.092612406,
+     "quality.mean_utilisation": 3.568376980921556,
+     "quality.p99_wait_min": 15894.9391381128,
+     "productivity.transfers_per_100": 0.8902637731126172,
+     "segment.p1_breach_pct": 29.62506753106429,
+     "segment.gold_breach_pct": 10.75353218210361,
+     "segment.hindi_breach_pct": 31.62454016850599,
+     "quality.mean_minutes_late": 4685.9138401797745
+    }
+   }
+  },
+  {
+   "seed": 7025,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 45.13066618825499,
+     "turnaround.p90_resolution_min": 3849.5932679192024,
+     "quality.late_minutes_per_100": 77213.48260335933,
+     "quality.mean_utilisation": 1.1904635828247077,
+     "quality.p99_wait_min": 11270.324606927146,
+     "productivity.transfers_per_100": 1.0121396962085873,
+     "segment.p1_breach_pct": 15.266157390566265,
+     "segment.gold_breach_pct": 46.658723066229776,
+     "segment.hindi_breach_pct": 48.96347482724581,
+     "quality.mean_minutes_late": 1681.9864035378596
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 14.563150340868317,
+     "turnaround.p90_resolution_min": 3938.237566652218,
+     "quality.late_minutes_per_100": 98314.37506097234,
+     "quality.mean_utilisation": 1.200935676684849,
+     "quality.p99_wait_min": 14101.244238437843,
+     "productivity.transfers_per_100": 1.022604951560818,
+     "segment.p1_breach_pct": 16.151327755547474,
+     "segment.gold_breach_pct": 14.457352795154401,
+     "segment.hindi_breach_pct": 20.58242843040474,
+     "quality.mean_minutes_late": 6689.321779202528
+    },
+    "opslens": {
+     "turnaround.breach_pct": 19.64627436909461,
+     "turnaround.p90_resolution_min": 4228.38742276769,
+     "quality.late_minutes_per_100": 101142.71356201837,
+     "quality.mean_utilisation": 1.2089373686933367,
+     "quality.p99_wait_min": 13311.512457364259,
+     "productivity.transfers_per_100": 1.0061595502930272,
+     "segment.p1_breach_pct": 15.359120488258357,
+     "segment.gold_breach_pct": 8.152119948366597,
+     "segment.hindi_breach_pct": 24.234945705824284,
+     "quality.mean_minutes_late": 5056.056854259886
+    }
+   }
+  },
+  {
+   "seed": 7026,
+   "reproduced": true,
+   "mean": {
+    "baseline_d": {
+     "turnaround.breach_pct": 21.40235462448872,
+     "turnaround.p90_resolution_min": 946.2880116105989,
+     "quality.late_minutes_per_100": 50137.37437208564,
+     "quality.mean_utilisation": 3.199117619644882,
+     "quality.p99_wait_min": 11268.468666175659,
+     "productivity.transfers_per_100": 0.8126098384111727,
+     "segment.p1_breach_pct": 6.327344059767525,
+     "segment.gold_breach_pct": 21.668986134735324,
+     "segment.hindi_breach_pct": 26.53047464940669,
+     "quality.mean_minutes_late": 2314.339035738501
+    },
+    "least_slack": {
+     "turnaround.breach_pct": 9.954276116269304,
+     "turnaround.p90_resolution_min": 1909.2451596363424,
+     "quality.late_minutes_per_100": 58002.96135141755,
+     "quality.mean_utilisation": 3.257983618490256,
+     "quality.p99_wait_min": 13920.829974725251,
+     "productivity.transfers_per_100": 0.8266069456756714,
+     "segment.p1_breach_pct": 8.211774035351322,
+     "segment.gold_breach_pct": 9.664450286067728,
+     "segment.hindi_breach_pct": 15.540722761596548,
+     "quality.mean_minutes_late": 5783.026683687361
+    },
+    "opslens": {
+     "turnaround.breach_pct": 13.434890122707975,
+     "turnaround.p90_resolution_min": 1449.544738619079,
+     "quality.late_minutes_per_100": 41019.23496426211,
+     "quality.mean_utilisation": 3.350263461913297,
+     "quality.p99_wait_min": 9663.923748667987,
+     "productivity.transfers_per_100": 0.7986127311466742,
+     "segment.p1_breach_pct": 8.645839854754898,
+     "segment.gold_breach_pct": 6.051234472449874,
+     "segment.hindi_breach_pct": 18.709546925566343,
+     "quality.mean_minutes_late": 3000.8325249607256
+    }
+   }
+  }
+ ],
+ "all_reproduced": true
+}

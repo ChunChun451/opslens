@@ -292,3 +292,40 @@ any change after the freeze except presentation fixes.
 ## 8. Done means
 An independent harsh rater, given `docs/JUDGE_PACKET.md` and the running app, scores every
 criterion 9 or 10 except real-world validity (8+), and every number it quotes is in `results.json`.
+
+---
+
+## W13 — v6 overload mode: prediction picks the strategy (pre-registered 23 Oct, before any run)
+**Why:** the 30 worlds showed OpsLens wins every world up to 1.05× today's load and loses all 11
+sustained-overload worlds to least slack. A one-moment optimiser cannot beat greedy (one agent is
+free at a time); the lever is using predictions to change strategy. Owner decision (23 Oct): go.
+**Mode (opslens/policies.py, off unless `overload` is set in the weights):** every risk refresh, OpsLens
+predicts the work for the next `horizon_min` (expected minutes of every waiting ticket, from history
+days 1–35, + last hour's arrival rate × horizon × the average ticket) against the minutes its agents on
+shift can give in that window. If work > `threshold` × capacity: value per expected minute of work
+(the c-mu rule), the starvation guard pauses, and (candidate B) urgency weights become equal.
+**Candidates (fixed now):** A {threshold 1.0, horizon 120}; B {1.0, 120, flat urgency}; C {1.2, 60}.
+**Design (choose one):** main world validation days 36–42, seeds 1–5; and 20 of the 30 worlds (the 11
+losses; the 6 heavy wins 7029, 7018, 7002, 7013, 7012, 7015; the normal wins 7022, 7004, 7009), seeds
+1–3. Choose the candidate with the smallest total loss margin Σ max(0, candidate − best other policy)
+over the 20 worlds, among candidates whose main-validation mean is not above v5's; it must keep every
+design world v5 won (within 0.05 points). If none qualifies: v6 is not built further (reported).
+**Adoption (both, run once):** (1) main world validation days, 20 fresh seeds 26–45: v6 − v5 missed
+SLA, 95% CI upper bound < +0.05 points; (2) 30 NEW worlds 7101–7130 (same ranges and runner as W1):
+v6 lowest (within 0.05 points) in ≥ 27 of 30. Only then: main test days once, full `make eval`, and
+the post-freeze sealed world includes v6. Otherwise v5 stays and the ledger shows v6 as missed.
+
+**W13 round 2 (24 Oct, written after round 1 and BEFORE any round-2 run).** Round 1 chose C by the
+rule (loss margin 29.36 vs v5's 35.20 over the 20 design worlds; better than v5 in 14, worse in 3) but
+C turned none of the 11 losses into a win, so it could not meet the adoption rule. Round 2 adds two
+candidates that switch strategy instead of re-weighting: when OpsLens predicts sustained overload
+(the backlog cannot clear within 240 minutes), the decision is handed to least slack first, the
+published rule that won every overloaded world. D1: threshold 1.5; D2: threshold 2.0. Same choice
+rule over A, B, C, D1, D2 (main validation days 36–42 seeds 1–5, the same 20 design worlds rebuilt
+from the same seeds). The adoption rule and the confirmation set (30 NEW worlds 7101–7130, 20 fresh
+seeds 26–45 on main validation days) are unchanged and still unseen; only the final choice goes there.
+
+**W13 round 2 result (24 Oct):** D1 and D2 failed the main-validation gate (worse than v5: +0.76
+[+0.63, +0.89] and +0.37 [+0.19, +0.55]; the overload trigger fired for a third to a half of a normal
+week), so their design-world runs were stopped. The pre-registered choice stays **C**. It goes to the
+unchanged adoption test, run once: main validation days with 20 fresh seeds, and 30 new worlds 7101–7130.

@@ -238,6 +238,14 @@ def assemble(timings: dict[str, float]) -> dict:
                                 **part("llm_eval")}  # + routing (c), attribution (b)
     if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
         results["worlds"] = part("worlds")
+        if (PARTS / "worlds_diagnosis.json").exists():  # 23-24 Oct: who misses in the 11 losses (analysis)
+            diag = part("worlds_diagnosis")
+            seg = {"p1": "segment.p1_breach_pct", "gold": "segment.gold_breach_pct", "hindi": "segment.hindi_breach_pct",
+                   "mean_minutes_late": "quality.mean_minutes_late"}
+            diag["opslens_lower_than_least_slack"] = {
+                name: sum(r["mean"]["opslens"][key] < r["mean"]["least_slack"][key] for r in diag["worlds"])
+                for name, key in seg.items()}
+            results["worlds"]["diagnosis"] = diag
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
         sealed = part("sealed_world_new")
         for key in ("test", "best_baselines_test", "rescue_test"):
@@ -452,6 +460,12 @@ def worlds_md(r: dict) -> list[str]:
              f"(rule needs {w['wins_needed']}); median OpsLens - industry standard {w['median_opslens_minus_d']:+.2f} points, "
              f"95% CI [{w['median_ci'][0]:+.2f}, {w['median_ci'][1]:+.2f}]. Rule {'PASSED' if w['rule_passed'] else 'NOT passed'}.", "",
              "| World | Volume | Chats | Mismatch | Industry std | Least slack | OpsLens | Best other |", "|---|---|---|---|---|---|---|---|"]
+    dg = w.get("diagnosis")
+    if dg:
+        lo = dg["opslens_lower_than_least_slack"]
+        lines.insert(4, f"Diagnosis of the {len(dg['worlds'])} losses (same worlds rebuilt, reproduced exactly: {dg['all_reproduced']}; "
+                        f"analysis after the result): OpsLens misses fewer gold customers in {lo['gold']}, keeps late customers "
+                        f"less late in {lo['mean_minutes_late']}, fewer P1 in {lo['p1']}, fewer Hindi in {lo['hindi']}.")
     bd = w.get("breakdown")
     if bd:
         lines[4:4] = [f"Breakdown (from the same runs, added after them): OpsLens beats the industry standard in "

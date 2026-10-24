@@ -432,8 +432,21 @@ class OpsLensPolicy:
     """Risk-aware, skill-aware assignment with an optimiser. See opslens/optimize.py."""
 
     def __init__(self, world: World, predicted: dict[str, str], risk_model, weights: dict,
-                 settings: OpsLensSettings | None = None, log_window: tuple[float, float] | None = None) -> None:
+                 settings: OpsLensSettings | None = None, log_window: tuple[float, float] | None = None,
+                 handle: dict | None = None) -> None:
         self.settings = settings or OpsLensSettings()
+        # v6 candidate (23 Oct): expected minutes of work per (category, channel) from history days
+        # 1-35 (expected_handle_minutes). Only the overload mode uses it; without it the mode is off.
+        self.handle = handle
+        self.mean_handle = float(np.mean([v for k, v in handle.items() if isinstance(k, str)])) if handle else 0.0
+        # v6 round 2 (24 Oct): under predicted sustained overload, hand dispatch to least slack first,
+        # the published rule that won every overloaded world (eval/parts/worlds.json).
+        self.switch = None
+        if handle and (weights.get("overload") or {}).get("switch_to") == "least_slack":
+            self.switch = LeastSlackPolicy(world, predicted, handle)
+        self.overload = False
+        self._overload_checked = -1e9
+        self.overload_minutes = 0.0  # how long the mode was on (reported by the design runs)
         self.log_window = log_window  # record decisions made in this time window (for the dashboard)
         self.decision_log: list[dict] = []
         self.name = self.settings.label
@@ -553,6 +566,13 @@ class OpsLensPolicy:
             on_shift = [{"languages": set(a.languages), "skills": set(a.skills)}
                         for k, a in enumerate(self.world.agents) if state.shift_end(k, now) is not None]
             self.only_cross = {t.idx: self.only_cross_skill_can_save(t, on_shift, now) for t in waiting}
+        if self.w.get("overload") and self.handle and now - self._overload_checked >= self.w["risk_refresh_min"]:
+            if self.overload:
+                self.overload_minutes += now - self._overload_checked
+            self._overload_checked = now
+            self.overload = self.projected_overload(state, now, waiting)
+        if self.overload and self.switch is not None:
+            return self.switch.decide(state, now)  # the strategy chosen from the forecast
         candidates = self.candidates(free, waiting, now)
         slots = {a.agent_id: a.free_slots for a in free}
         if self.settings.use_optimizer:
@@ -567,6 +587,30 @@ class OpsLensPolicy:
                                           "value": round(c.value, 3), "reason": c.reason})
         return [Assignment(c.ticket_idx, c.agent_id, c.believed_category, deliberate_cross_skill=c.cross_skill,
                            reason=c.reason) for c in chosen]
+
+    def expected_handle(self, t: TicketView) -> float:
+        cat = self.category(t)
+        return self.handle.get((cat, t.channel), self.handle.get(cat, self.mean_handle))
+
+    def projected_overload(self, state: SimState, now: float, waiting: list[TicketView]) -> bool:
+        """v6 candidate: will the floor fall behind over the next `horizon_min`? Predicted work = the
+        expected minutes of every waiting ticket + the arrivals expected in the window (last hour's
+        rate) x the average ticket; capacity = minutes the agents on shift have left in the window
+        (x their chat slots). Overloaded if work > threshold x capacity.
+        Example: 180 waiting x 8.5 min + 90 arrivals/h x 2 h x 8.5 min = 3,060 min of work; 20 agents
+        x 120 min = 2,400 min of capacity → 1.28 > 1.0 → overload mode."""
+        cfg = self.w["overload"]
+        horizon = float(cfg["horizon_min"])
+        work = sum(self.expected_handle(t) for t in waiting)
+        created = self.world.created_min
+        arrived_last_hour = int(np.searchsorted(created, now, side="right") - np.searchsorted(created, now - 60.0))
+        work += arrived_last_hour * horizon / 60.0 * self.mean_handle
+        capacity = 0.0
+        for k, a in enumerate(self.world.agents):
+            end = state.shift_end(k, now)
+            if end is not None:
+                capacity += min(horizon, end - now) * a.max_concurrent
+        return work > float(cfg["threshold"]) * capacity
 
     def refresh_pressure_only(self, state: SimState, now: float, waiting: list[TicketView]) -> None:
         """Ablation 'without risk scores': keep the scarcity signal, skip the risk model."""
@@ -586,7 +630,10 @@ class OpsLensPolicy:
         out: list[Candidate] = []
         # Crisis mode: with a very long queue, serving long-lost tickets first would sink tickets
         # that can still be saved, so the fairness guard pauses until the queue is back to normal.
-        guard_on = len(waiting) <= self.w.get("guard_queue_limit", float("inf"))
+        guard_on = len(waiting) <= self.w.get("guard_queue_limit", float("inf")) and not self.overload
+        value_w = self.w
+        if self.overload and self.w["overload"].get("flat_urgency"):
+            value_w = {**self.w, "urgency_weight": {p: 1.0 for p in self.w["urgency_weight"]}}
         for agent in free:
             rare_here = [p for p in self.rare if p[0] in agent.languages and p[1] in agent.skills]
             values: list[float] = []
@@ -600,8 +647,12 @@ class OpsLensPolicy:
                 rescue = self.rescue.get(t.idx, default) if self.settings.use_risk else default
                 if not skilled and rescue < self.w["cross_skill_min_rescue"]:
                     continue  # cross-skill work (1.6x slower) only to save a ticket that is in real danger
-                value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, self.w,
+                value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, value_w,
                                      sla_min=t.sla_deadline_min - t.created_min, guard_on=guard_on)
+                if self.overload:
+                    # v6 candidate: agent time is the bottleneck, so value per expected minute of work
+                    # (the c-mu rule), scaled by the average ticket so penalties keep their meaning.
+                    value *= self.mean_handle / max(1.0, self.expected_handle(t))
                 if not skilled and self.only_cross.get(t.idx, False):
                     pass  # v5: only a cross-skill job can still save it, so no mismatch penalty
                 elif not skilled and self.w.get("mismatch_cost") is not None:

@@ -29,7 +29,7 @@ HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2")
 # with all ~7,600 values, 199 of 200 random one-decimal numbers matched something by chance;
 # with these out, 55% of random one-decimal numbers are caught.
 BULK = re.compile(r"per_seed|replay|horizon|series|confusion|assignments|alerts_used|step_seconds|"
-                  r"sensitivity|bottlenecks|clusters|examples")
+                  r"sensitivity|bottlenecks|clusters|examples|shown_days\[\d+\]\.incidents")
 NAMES_A_VERSION = re.compile(r"\bv[12]\b")  # a line about v1 or v2 may quote their history records
 # Numbers that come from somewhere other than results.json, each with its source.
 OTHER_SOURCES = {

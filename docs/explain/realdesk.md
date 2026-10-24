@@ -106,6 +106,68 @@ alerts = {
 ```
 Risks screen (real): show the chosen forecast's hit rate next to the calendar rule's.
 
+**7. `fasttrack_second_look` and `detector_second_look` (23 Oct, pre-registered in `f9b5e02`)**
+Second looks after W3 and W4b missed. Both were chosen on the check weeks and run once; the first
+verdicts above stay as they are. Show them as "a second look", never instead of the first result.
+```
+fasttrack_second_look = {
+  why, label, candidates: [{id, label}], check_incidents,
+  check_saved_20: {unassigned, opslens, unassigned_then_risk, rescue_model, unassigned_then_rescue},
+  chosen_on_check: "rescue_model", chosen_label, rescue_model_rounds,
+  results: {"10" | "20" | "30": {unassigned | opslens | <chosen>: {saved, ci_low, ci_high}}},
+  chosen_minus_unassigned: {"10" | "20" | "30": {diff, ci_low, ci_high}},
+  rule: {text, budget: 20, diff, ci_low, ci_high, passed: bool}
+}
+detector_second_look = {
+  label, max_false_alarms_per_30_days: 10,
+  candidates: [{name, slow_flag, pool_days, z, check_found, check_plants, check_false_alarms_per_30_days}],
+  chosen_on_check: str, chosen: {name, slow_flag, pool_days, z},
+  test_seeds: [9201, 9220], test_plants: 60, found_v1, found_v2, recall_v1_pct, recall_v2_pct,
+  v2_minus_v1: {diff, ci_low, ci_high}, clean_alerts_v2, false_alarms_per_30_days_v2,
+  clean_alert_list_v2: [{type, segment, known_on, z}], rule: {text, passed: bool}
+}
+```
+
+**8. `shadow` (W11, 24 Oct) — shadow mode on real days: what OpsLens said vs what happened**
+Frozen models, no retraining, test months only (`opslens/realdesk_shadow.py`). The picks are exactly
+the W3 benchmark's picks for those days (checked in code). Minutes count from the day's midnight, so
+`picked_up_at` / `resolved_at` can exceed 1440 (a later day) or be `null`.
+```
+shadow = {
+  assumption: str,                           // the W3 fast-track assumption: show it with the saved counts
+  how: str, privacy: str,                    // UCI has no free text, nothing needed masking
+  min_day_incidents: 50,
+  days: [{date: "2016-05-02", weekday: "Mon", opened, missed_flag}],    // every test day with >= 50 new incidents
+  showcase: "2016-05-05", showcase_why: str, others_why: str,
+  pickers: ["opslens", "priority", "unassigned"], features: [str],
+  shown_days: [DAY, ...]                     // [0] = showcase, then 4 more (busiest weekday of each other busy week)
+}
+DAY = {date, weekday, summary: SUMMARY, incidents: [INCIDENT, ...]}   // incidents sorted by opened_at
+SUMMARY = {
+  incidents, benchmark_incidents,            // benchmark = Moderate/Low (Critical/High: the desk fast-tracks them anyway)
+  actual_misses, actual_misses_benchmark,    // company's own SLA flag
+  opslens:  {flagged, caught, recall_pct, precision_pct},   // flagged = the day's top 20% at the 1-hour mark
+  priority: {flagged, caught, recall_pct, precision_pct},   // caught = flagged AND missed (benchmark incidents)
+  fast_track_saved: {opslens, priority, unassigned}         // under the assumption
+}
+INCIDENT = {
+  ticket_id, opened_at: int, priority: "3 - Moderate", in_benchmark: bool,
+  risk: 0.514, reasons: [{text: "state after 1 h: New", share: 0.56}, ...],   // up to 3, same wording as at_risk
+  unassigned_at_1h: bool, top20_opslens: bool, top20_priority: bool, pick_unassigned: bool,
+  picked_up_at: int | null, resolved_at: int | null,
+  picked_up_recorded: bool,                  // false: New straight to Resolved, no pickup in the log
+  first_state: str, made_sla: bool,          // the company's flag
+  rule_missed: bool | null,                  // our deadline rule; null when not scorable
+  fast_track_saved: {opslens: bool, priority: bool, unassigned: bool}
+}
+```
+For an hour-by-hour replay: an incident appears at `opened_at`, gets its OpsLens score and flags at
+`opened_at + 60`, is picked up at `picked_up_at`, resolves at `resolved_at`.
+Showcase (Thu 5 May 2016): 403 incidents, 111 missed by the company's flag; of the 102 misses in the
+benchmark, OpsLens's top 20% at the 1-hour mark caught 53 (recall 52.0%, precision 67.1%), the
+priority field's top 20% caught 16 (15.7%, 20.3%). Fast-track saved that day: OpsLens 5, priority
+field 5, still unassigned 9.
+
 ## What it does
 - Answers the five questions on a real company's IT service desk: 24,918 incidents, a real SLA flag.
 - Plan v3 showed a prediction win (early warning). Plan v4 asks for proof a judge can trust:
@@ -197,6 +259,24 @@ The check weeks picked the candidate that did worst later — reported as it is.
 92.8%; same day last week 76.6% / 84.5%; average 72.8% / 93.8%; calendar rule "every weekday"
 54.0% / 97.9%. The forecast adds precision over the calendar, mostly on big teams (Group 70 and
 Group 20: 90.9% / 100%); for teams that usually close 2–3 incidents a day every weekday is an overload.
+
+## Second looks (23 Oct)
+**Rescue picker.** W3 showed that ranking by risk ties "still unassigned": fast-track only helps an
+incident that is still waiting. OpsLens's food dispatcher ranks by *rescue*, so three rescue-style
+pickers were written down first and the check weeks chose one: the **rescue model** (LightGBM trained
+on the learning part to predict "would fast-track save this one?"; 77 saved on the check weeks, vs 59
+for still unassigned). On the test months at 20%: **160 saved** [117.9, 208.6] vs 115 for still
+unassigned and 108 for the risk score: +45 [0.0, 100.5]. The interval does not exclude zero, so the
+rule is **not passed**. At 10% the gap is +46 [30.8, 66.7], at 30% +25 [5.1, 62.6] — clear at the
+other two budgets, but the rule names 20%. Say it as it is: "the rescue model saved the most at every
+budget; at the pre-registered 20% budget the gap is not proven".
+
+**Detector v2.** Eight settings (slowdown signal "open after 24 h" or "not closed within 2 h", 1 or 3
+days pooled, z 3.5 or 3.0) on 60 plants in the check weeks. Pooling 3 days found twice as many (18 of
+60 vs 9) but no setting stayed within 10 false alarms per 30 clean check days (fewest: 15.0, the v1
+setting). The pre-registered fallback kept the fewest-false-alarm setting, which is v1, so v2 = v1:
+**11 of 60** fresh test plants for both, 7.7 false alarms per 30 days. Not passed. The honest lesson:
+on this log, every setting that finds more plants also raises more false alarms than the limit we set first.
 
 ## Weaknesses
 - **The fast-track is an assumption**, not a replay: we remove waiting time and keep everything else.

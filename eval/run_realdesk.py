@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT))
 from eval import realdesk_plants as P  # noqa: E402
 from opslens import realdesk as R  # noqa: E402
 from opslens import realdesk_fasttrack as FT  # noqa: E402
+from opslens import realdesk_shadow as S  # noqa: E402
 from opslens import realdesk_watch as W  # noqa: E402
 from opslens.adapters.uci_incidents import load_uci  # noqa: E402
 
@@ -78,6 +79,73 @@ def blind_plants(incidents: pd.DataFrame, events: pd.DataFrame, check: np.ndarra
     }
 
 
+MAX_FALSE_ALARMS_PER_30_DAYS = 10   # detector v2: a product limit (about 2 a week), fixed 23 Oct before any v2 run
+
+
+def plant_run(table: pd.DataFrame, seeds: list[int], period: dict, settings: dict) -> list[int]:
+    """Plants found per set, for one detector setting (the same seed gives the same plants)."""
+    found = []
+    for seed in seeds:
+        rng = np.random.default_rng(seed)
+        plants = P.random_plant_set(rng, table, period)
+        alerts = W.watch(P.apply_plants(table, plants, rng, period), period["first_day"], period["last_day"], settings)
+        scored, _ = P.score_set(alerts, plants)
+        found.append(sum(p["found"] for p in scored))
+    return found
+
+
+def detector_second_look(incidents: pd.DataFrame, events: pd.DataFrame) -> dict:
+    """Detector v2 (pre-registered 23 Oct): choose one of 8 settings on the CHECK weeks (plants seeds
+    9301-9320 there, false alarms on the clean check weeks), then run v1 and the choice once on 20
+    FRESH plant sets in the test weeks (seeds 9201-9220). v2 is better only if it finds more of the same
+    60 plants with a 95% CI (plant sets resampled) above 0 and stays within 10 false alarms per 30 days."""
+    table = W.as_of_table(incidents, events)
+    chk, tst = P.CHECK, P.TEST
+    check_days = (pd.Timestamp(chk["last_day"]) - pd.Timestamp(chk["first_day"])).days + 1
+    test_days = (pd.Timestamp(tst["last_day"]) - pd.Timestamp(tst["first_day"])).days + 1
+    rows = []
+    for cand in W.V2_CANDIDATES:
+        clean = W.watch(table, chk["first_day"], chk["last_day"], cand)
+        found = plant_run(table, P.CHECK_SEEDS, chk, cand)
+        rows.append({**cand, "check_found": int(sum(found)), "check_plants": 3 * len(found),
+                     "check_false_alarms_per_30_days": 30.0 * len(clean) / check_days})
+    ok = [r for r in rows if r["check_false_alarms_per_30_days"] <= MAX_FALSE_ALARMS_PER_30_DAYS]
+    if ok:  # most plants found; ties: fewer false alarms, then list order
+        best = max(ok, key=lambda r: (r["check_found"], -r["check_false_alarms_per_30_days"]))
+    else:
+        best = min(rows, key=lambda r: r["check_false_alarms_per_30_days"])
+    chosen = next(c for c in W.V2_CANDIDATES if c["name"] == best["name"])
+    v1 = plant_run(table, P.SECOND_SEEDS, tst, W.V1)
+    v2 = plant_run(table, P.SECOND_SEEDS, tst, chosen)
+    clean_v2 = W.watch(table, tst["first_day"], tst["last_day"], chosen)
+    diff = np.array(v2) - np.array(v1)
+    draws = np.random.default_rng(0).integers(0, len(diff), size=(2000, len(diff)))
+    low, high = (float(x) for x in np.percentile(diff[draws].sum(axis=1), [2.5, 97.5]))
+    fa = 30.0 * len(clean_v2) / test_days
+    return {"label": "Second look, pre-registered 23 Oct: chosen on the check weeks, run once on fresh test plants. "
+                     "The 19 Oct result (blind_plants) stays as it is.",
+            "max_false_alarms_per_30_days": MAX_FALSE_ALARMS_PER_30_DAYS, "candidates": rows,
+            "chosen_on_check": chosen["name"], "chosen": chosen,
+            "test_seeds": [P.SECOND_SEEDS[0], P.SECOND_SEEDS[-1]], "test_plants": 3 * len(v1),
+            "found_v1": int(sum(v1)), "found_v2": int(sum(v2)),
+            "recall_v1_pct": 100.0 * sum(v1) / (3 * len(v1)), "recall_v2_pct": 100.0 * sum(v2) / (3 * len(v2)),
+            "v2_minus_v1": {"diff": int(diff.sum()), "ci_low": low, "ci_high": high},
+            "clean_alerts_v2": int(len(clean_v2)), "false_alarms_per_30_days_v2": fa,
+            "clean_alert_list_v2": [{"type": r.type, "segment": r.segment, "known_on": str(r.known_on.date()), "z": r.z}
+                                    for r in clean_v2.itertuples()],
+            "rule": {"text": "v2 is better only if it finds more of the same fresh test plants than v1 with a 95% CI "
+                             "(plant sets resampled) above 0, with at most 10 false alarms per 30 clean test days.",
+                     "passed": bool(diff.sum() > 0 and low > 0 and fa <= MAX_FALSE_ALARMS_PER_30_DAYS)}}
+
+
+def check_shadow_against_benchmark(sh: dict, ft: dict) -> None:
+    """The day pages must add up to the W3 benchmark: no shown day can save more than the whole test
+    period, and the shown days' incidents are the benchmark's incidents of those days."""
+    for p in S.SHADOW_PICKERS:
+        shown = sum(d["summary"]["fast_track_saved"][p] for d in sh["shown_days"])
+        assert shown <= ft["results"]["20"][p]["saved"], p
+
+
 def main() -> int:
     started = time.perf_counter()
     incidents, events = load_uci()
@@ -113,6 +181,19 @@ def main() -> int:
     out["forecast_candidates"] = R.forecast_candidates(daily)
     out["alerts"] = R.bottleneck_alerts(daily, out["forecast_candidates"]["chosen_on_check"])
     out["blind_plants"] = blind_plants(incidents, events, check)
+    # ---- Second looks (pre-registered 23 Oct) ----
+    out["fasttrack_second_look"] = FT.second_look(incidents, events, model, out["fasttrack"]["deadline_rule"]["limits_h"],
+                                                  learn, check, test)
+    for b in FT.BUDGETS:  # the same picks as the benchmark: a free consistency check
+        for c in ("unassigned", "opslens"):
+            assert out["fasttrack_second_look"]["results"][str(b)][c]["saved"] == out["fasttrack"]["results"][str(b)][c]["saved"]
+    out["detector_second_look"] = detector_second_look(incidents, events)
+    # ---- Shadow mode on real days (W11, 24 Oct): frozen models, test months only ----
+    out["shadow"] = S.shadow(incidents, events, model, out["fasttrack"]["deadline_rule"]["limits_h"], test)
+    check_shadow_against_benchmark(out["shadow"], out["fasttrack"])
+    twin_part = PARTS / "realdesk_twin.json"   # W14, its own step (eval/run_realdesk_twin.py)
+    if twin_part.exists():
+        out["twin"] = json.loads(twin_part.read_text(encoding="utf-8"))
     out["seconds"] = time.perf_counter() - started
     report(out)
     (PARTS / "realdesk.json").write_text(json.dumps(out, indent=1, default=str), encoding="utf-8")
@@ -154,6 +235,21 @@ def report(out: dict) -> None:
     print(f"blind plants: {bp['found']}/{bp['plants']} found ({bp['recall_pct']:.0f}%), by type {bp['by_type']}; "
           f"clean false alarms {bp['clean_alerts']} in {bp['days']} days ({bp['false_alarms_per_30_days']:.1f} per 30 days); "
           f"median delay {bp['median_delay_days']} days")
+    sl = out["fasttrack_second_look"]
+    print(f"fast-track second look: check saved at 20% {sl['check_saved_20']}, chose {sl['chosen_on_check']}; test 20%: "
+          f"{ {c: v['saved'] for c, v in sl['results']['20'].items()} }; chosen - unassigned {sl['rule']['diff']} "
+          f"[{sl['rule']['ci_low']:.1f}, {sl['rule']['ci_high']:.1f}] -> {'PASSED' if sl['rule']['passed'] else 'NOT passed'}")
+    sh = out["shadow"]
+    print(f"shadow: {len(sh['days'])} days with >= {sh['min_day_incidents']} incidents; showcase {sh['showcase']}; " + "; ".join(
+        f"{d['date']}: {d['summary']['incidents']} inc, {d['summary']['actual_misses']} missed, OpsLens caught "
+        f"{d['summary']['opslens']['caught']} (P {d['summary']['opslens']['precision_pct']:.0f}%) vs priority {d['summary']['priority']['caught']}, "
+        f"saved {d['summary']['fast_track_saved']}" for d in sh["shown_days"]))
+    ds = out["detector_second_look"]
+    print("detector v2 candidates on check: " + "; ".join(f"{r['name']} {r['check_found']}/{r['check_plants']} FA {r['check_false_alarms_per_30_days']:.1f}"
+                                                         for r in ds["candidates"]))
+    print(f"detector v2: chose {ds['chosen_on_check']}; fresh test plants v1 {ds['found_v1']}/{ds['test_plants']} vs v2 {ds['found_v2']}; "
+          f"diff {ds['v2_minus_v1']['diff']} [{ds['v2_minus_v1']['ci_low']:.0f}, {ds['v2_minus_v1']['ci_high']:.0f}]; "
+          f"v2 false alarms {ds['false_alarms_per_30_days_v2']:.1f} per 30 days -> {'PASSED' if ds['rule']['passed'] else 'NOT passed'}")
 
 
 if __name__ == "__main__":

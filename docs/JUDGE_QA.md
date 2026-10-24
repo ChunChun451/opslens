@@ -397,3 +397,59 @@ chats per agent. OpsLens beats the industry standard in 29 of 30 (median −8.19
 Yes, and we show it. All 11 losses are floors in sustained overload (1.06× today's load or more, the
 backlog growing for weeks), all to least-slack-first. In 10 of the 11 OpsLens keeps late customers
 less late: least slack wins the count by letting the already-late wait much longer.
+
+**Q66. (Attack) A logistic regression would do just as well as your LightGBM.**
+On ranking it nearly does: AUC 0.957 vs 0.977 on the same 26,811 test snapshots. But dispatch does not use the ranking, it uses the *rescue*: how much serving a ticket now lowers its risk. Swapped into the dispatcher, the logistic regression misses 3.87% of SLAs vs 2.05% (+1.83 points [+1.66, +2.00], test days, 5 seeds), almost as bad as no model (4.19%).
+
+**Q67. Isn't "least time left" all you need?**
+It ranks well (AUC 0.884) but cannot tell what serving now changes: time left is the same whether the ticket waits or not, so its rescue is zero for every ticket. That is our "no risk model" ablation: 4.19% vs 2.05%.
+
+**Q68. Are your probabilities honest?**
+Brier 0.055 (LR 0.080, rule 0.131). The reliability bins per model are in `results.prediction_baselines` (predicted vs observed per decile).
+
+**Q69. (Attack) Do your bottleneck alerts come true?**
+Made 1–7 days ahead from the P80 forecast: 58% of alert hours really were over 85% load (naive forecast 56%) and we caught 98% of those hours (naive 91%). Most overloaded hours do not turn into a breach cluster (precision 15–18% against that), because the floor absorbs them with cross-skill help. So the alerts are cautious by design: better than naive, not a crystal ball.
+
+**Q70. (Attack) SHAP reasons are decoration: you never checked the model uses them.**
+We did. Remove a ticket's top reason and its risk falls more than when a random feature is removed in 98.9% of 3,000 at-risk test tickets (3.18 vs 0.17 log-odds). Rule fixed before the run: ≥ 80%.
+
+**Q71. Do the reasons point at the real cause?**
+For the Hindi refund problem we planted, 98.6% of at-risk Hindi refund/payment tickets name language or skill coverage in their top 3 reasons. For other Team B tickets it is 63%: at night, few capable agents on shift is a real cause for everyone.
+
+**Q72. Why did the optimiser give this ticket to this agent?**
+Every assignment names the runner-up: "runner-up B03, value 0.31 lower", or "C04 valued it more but took T061200": the optimiser maximises the whole floor, not each pair. A test proves the text never changes a decision.
+
+**Q73. (Attack) Your staffing "optimiser" is a greedy search. Did you try a real one?**
+Yes: an exact CP-SAT tour scheduler (start hours and days off for every agent at once). It beats greedy on the planning score every week, but missed SLAs did not follow: −0.03 points on 20 fresh seeds (CI crosses 0) and +0.21 [+0.05, +0.37] on the test days. Our rule, fixed before the run, said keep greedy, so we did.
+
+**Q74. Then why does staffing matter at all?**
+The staffing plan is a small lever here (removing it costs +0.06 points); the dispatcher's risk-based rescues decide most of the outcome. A better roster objective would be measured in simulated breaches, not in Erlang-C shortfall: that is the next step, not a claim.
+
+**Q75. Is CP-SAT fast enough?**
+N ≤ 2 changes per team: proven optimal in about 17 s per week; N = 4 gives its best roster within 30 s. Rosters are weekly, so seconds are fine.
+
+**Q76. (Attack) 98% on text you generated yourselves proves nothing.**
+Agreed, so we ran the same classifier on BANKING77, 3,080 real bank-customer queries we never saw: 90.3% alone, 91.0% with the LLM cascade (+0.71 [+0.16, +1.27]). Published: frozen BERT 87.2%, fine-tuned BERT 93.7%.
+
+**Q77. Does the LLM earn its cost?**
+Where data is scarce, a lot: with 10 examples per intent the cascade goes 68.5% → 78.7% (+10.1 points) sending 25% of queries, about $6 per million tickets at list price. With full data it adds +0.7 points for 5.6% of traffic, $1.41 per million.
+
+**Q78. Why not send everything to the LLM?**
+Zero-shot it scored 79.0%, below our local model (90.3%) on full data, and slower (~10 s per batch vs 0.3 ms per query). The cascade uses each where it is strong.
+
+**Q79. Does the LLM diagnose root causes better than your rules?**
+No: 61 of 62 cards vs 62 of 62. We use it for the readable one-line cause, never for numbers (0 of 62 replies contained a digit).
+
+**Q80. If risk ties a simple rule, is OpsLens's idea of 'rescue' any better on the real desk?**
+We wrote three rescue pickers down first and let the check weeks choose. The rescue model saved the most
+at every budget: 160 vs 115 at 20%, but +45 [0.0, 100.5] does not exclude zero, so we do not claim it.
+At 10% the gap is +46 [30.8, 66.7].
+
+**Q81. (Attack) Did a second, better-tuned detector find more planted problems?**
+No. Detector v2 was designed on the check weeks with a limit of 10 false alarms per 30 days fixed first. No setting met it, so the fallback rule kept v1: on 60 fresh test plants both found 11. We report it as missed.
+
+**Q82. (Attack) Why not just simulate the real desk with OpsLens's routing and show fewer misses?**
+We tried, the honest way: a digital twin of the desk, with a validation gate fixed before any run. Running the desk's own policy, the twin had to reproduce reality on months it was not fitted to. It missed 27.9% vs 22.4% real, so it failed and we show no twin result. A log does not record real work time; a twin that cannot reproduce reality would only show our assumptions. What we do show on real data: the warnings (shadow mode) and the fast-track estimate.
+
+**Q83. When least slack beats you under overload, who pays for OpsLens's extra misses?**
+We rebuilt the 11 worlds and looked (analysis after the result, labelled as such). OpsLens misses fewer gold customers in 11 of 11 and keeps late customers less late in 11 of 11: it follows its business-impact weights and never abandons the late. It does not protect P1 better (4 of 11). Least slack wins the raw count by letting the already-late wait much longer.
