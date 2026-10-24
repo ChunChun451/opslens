@@ -17,6 +17,7 @@ import { escapeHtml, kpiInfo, unitForPath, spreadUnit } from "../format.js";
 import { policyStyle } from "../charts.js";
 import { CAUSE_LABELS } from "./patterns.js";
 import { hasMission, missionHtml, initMission } from "../mission.js";
+import { thousandHtml, journeyHtml, initStoryCards } from "../storycards.js";
 
 const BREACH = "turnaround.breach_pct";
 // The four supporting KPIs shown under the hero (a design choice; values come from the JSON).
@@ -34,13 +35,16 @@ export function render(section) {
   section.innerHTML = `
     ${pageHeader("Results on days it never saw", "14 held-out days. Same customers, same agents, same luck for every way of working; only the decisions differ.")}
     ${r.sim ? heroCard() : missing("The simulator comparison", "M7")}
+    ${r.sim ? thousandHtml() : ""}
     ${proofStrip()}
+    ${r.risk ? journeyHtml() : ""}
     ${r.sim && hasMission() ? missionHtml() : ""}
     ${issuesCard()}
     ${r.sim ? fold("More numbers: time to solve, waits, queues, transfers", `<div class="grid cols-4 stretch">${KEY_KPIS.map(kpiCard).join("")}</div>`, { hint: "against the industry standard" }) : ""}
     ${r.sim ? fold("Who is protected: urgent orders, gold and Hindi-speaking customers", segmentsCard()) : ""}
     ${r.brief ? fold("Today's brief, written by the LLM (numbers filled in by code)", briefCard()) : ""}`;
   if (r.sim && hasMission()) initMission();
+  initStoryCards(section); // 24 Oct: the 1,000-customer wall and one ticket's journey
 }
 
 // The hero: OpsLens's breach rate, its paired CIs against each baseline, and the three bars.
