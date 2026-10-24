@@ -23,6 +23,7 @@ import * as live from "./tabs/live.js";
 import * as upload from "./tabs/upload.js";
 import * as realdesk from "./tabs/realdesk.js";
 import { state, store } from "./data.js";
+import { addScene } from "./scenes.js";
 
 // Simple line icons for the side menu (24×24 grid, drawn with strokes in the text colour).
 const ICONS = {
@@ -152,6 +153,7 @@ export function showTab(id, viewId) {
     drawn.add(view.id);
     try {
       view.module.render(container);
+      addScene(container, view.id); // the screen's cartoon moment (js/scenes.js)
     } catch (error) {
       // A bug in one view must not take down the whole demo.
       container.innerHTML = `<div class="callout warn">This view failed to draw: ${error.message}</div>`;

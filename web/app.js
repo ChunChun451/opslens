@@ -18,6 +18,7 @@ import { initMotion, initSliderFill } from "./js/motion.js";
 import { initIntro } from "./js/intro.js";
 import { initLiveTicker } from "./js/liveticker.js";
 import { initThemeSwitch } from "./js/themeswitch.js";
+import { initScenes } from "./js/scenes.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -52,6 +53,7 @@ async function start() {
   initStory();
   initAsk();
   initLiveTicker(); // today's live run in the side menu, on every screen
+  initScenes(); // the cartoon moment on every screen talks, and naps after a quiet minute
   initThemeSwitch(); // Neon / Light
   initIntro(); // the cold open plays last, over the ready dashboard
 }

@@ -32,6 +32,7 @@ export function mascotHtml(id, mood = "idle") {
         <g class="mascot-lids"><path d="M21.5 29 h9 M37.5 29 h9" stroke="#0d1428" stroke-width="5" stroke-linecap="round"/>
           <path d="M22 31 h8 M38 31 h8" stroke="#7dd3fc" stroke-width="1.4" stroke-linecap="round"/></g>
         <path class="mascot-closed" d="M22 32 q4 3 8 0 M38 32 q4 3 8 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path class="mascot-happy" d="M22 32 q4 -4 8 0 M38 32 q4 -4 8 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
         <circle cx="21" cy="40" r="3" fill="#ff4d8d" opacity="0.55"/>
         <circle cx="47" cy="40" r="3" fill="#ff4d8d" opacity="0.55"/>
         <path class="mascot-smile" d="M27 41 q7 6 14 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
@@ -68,11 +69,12 @@ export function customerHtml(id) {
     </div>`;
 }
 
-// Set Lenny's mood: "idle", "tired" or "sleep" (keeps a running cheer).
+// Set Lenny's mood: "idle", "tired", "sleep", "worried" or "happy" (keeps a running cheer).
+// worried = frown and sweat without the towel (Risks); happy = smiling closed eyes (Results).
 export function setMood(id, mood) {
   const el = document.getElementById(id);
   if (!el) return;
-  ["idle", "tired", "sleep"].forEach((m) => el.classList.toggle(`is-${m}`, m === mood));
+  ["idle", "tired", "sleep", "worried", "happy"].forEach((m) => el.classList.toggle(`is-${m}`, m === mood));
 }
 
 // A hop and a short speech bubble ("+1 helped!"), then back to its mood.
