@@ -15,6 +15,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpsLens</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
   <!-- Design v2 skin (Claude 2): Inter, refined palette, motion, the Overview's live floor. -->
   <link rel="stylesheet" href="theme.css">
@@ -38,7 +39,7 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <svg class="brand-logo" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+        <svg class="brand-logo" viewBox="0 0 40 40" width="42" height="42" aria-hidden="true">
           <defs><linearGradient id="lens-g" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
           <circle cx="18" cy="18" r="13" fill="none" stroke="url(#lens-g)" stroke-width="3.2"/>
@@ -46,7 +47,7 @@
           <path d="M28 28l7 7" stroke="url(#lens-g)" stroke-width="3.6" stroke-linecap="round"/>
         </svg>
         <div>
-          <div class="brand-name">OpsLens</div>
+          <div class="brand-name">OpsLens <span class="brand-by">by SoyaChaap</span></div>
           <div class="brand-tag">Every ticket is a promise</div>
         </div>
       </div>
@@ -81,9 +82,9 @@
           <button id="plan-button" class="btn" type="button" aria-label="Your plan">
             Your plan <span id="plan-count" class="count">0</span>
           </button>
-          <button id="story-button" class="btn btn-primary" type="button">
+          <button id="story-button" class="btn btn-primary" type="button" aria-label="Story mode">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
-            Story mode
+            <span class="story-label">Story mode</span>
           </button>
         </div>
       </header>

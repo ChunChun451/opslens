@@ -4,11 +4,15 @@
 // Diwali, cricket and FIFA days"): a logo that knows today's date makes the product feel alive,
 // and the finale (29–31 Oct 2026) falls in Diwali season. The season comes from the calendar on
 // this laptop; clicking the logo shows the next doodle (for the demo), and ?doodle=cricket in the
-// address picks one. The splash screen (js/splash.js) and the festival layer (js/fest.js) read
+// address picks one (?doodle=classic shows the plain OpsLens mark). The splash screen (js/splash.js) and the festival layer (js/fest.js) read
 // currentSeason() too. Pure SVG + CSS (web/neon.css, "Doodles").
+//
+// Outside festivals the side menu shows the OpsLens mark (js/logo.js: OPS inside a lens, with eyes).
 //
 // Example: 24 Oct 2026 → "diwali": the lens becomes a diya whose flame flickers, with sparkles,
 // and the tag line says "Shubh Deepavali · every ticket is a promise".
+
+import { logoBody } from "./logo.js";
 
 // The seasons, in priority order. "from"/"to" are month-day; "years" pins festivals that move.
 // Diwali 2026 is on 8 Nov (Lakshmi Puja); the window covers the festive shopping weeks.
@@ -67,7 +71,7 @@ const SPARK = (x, y, c, cls = "") => `<path class="spark ${cls}" d="M${x} ${y - 
 
 // One SVG body (40×40) per doodle. Each keeps the lens idea: a ring and a handle.
 const DOODLES = {
-  classic: () => LENS,
+  classic: () => `<svg x="0" y="0" width="40" height="40" viewBox="0 0 120 120">${logoBody("lg-side")}</svg>`,
   diwali: () => `
     <circle cx="18" cy="18" r="14" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.7"/>
     <path d="M28 28l7 7" stroke="url(#lens-g)" stroke-width="3.6" stroke-linecap="round"/>

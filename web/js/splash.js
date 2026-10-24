@@ -3,7 +3,7 @@
 //
 // Why (24 Oct, the owner: "whenever the app starts it shows something, like Myntra shows 'sale
 // ends tomorrow, big fashion festival' with a monument animation, and then the UI opens"): the
-// first three seconds set the mood. The splash follows the season of js/season.js (Diwali:
+// first three seconds set the mood. The brand line is the OpsLens mark, "by SoyaChaap". The splash follows the season of js/season.js (Diwali:
 // fireworks over India Gate while a row of diyas lights up one by one) and counts down to the
 // Deviathon finale (29 Oct 2026, GLA University) from this laptop's clock. It carries no result
 // numbers. It shows once per browser session; any click or key skips it; reduced-motion users see it still, briefly. The cold open
@@ -11,7 +11,8 @@
 //
 // Example on 24 Oct 2026: "Festive Ops Fest · The festive rush is here · Grand finale in 5 days".
 
-import { currentSeason, doodleSvg } from "./season.js";
+import { currentSeason } from "./season.js";
+import { logoSvg, TEAM } from "./logo.js";
 import { escapeHtml } from "./format.js";
 
 const SHOW_MS = 3600;
@@ -85,14 +86,11 @@ export function initSplash(done) {
       ${count ? `<div class="sp-count"><span class="sp-dot"></span>${escapeHtml(count)}</div>` : ""}
     </div>
     ${monument()}
-    <div class="sp-brand"><svg class="sp-logo" viewBox="0 0 40 40" aria-hidden="true">${doodleSvg(season.id)}</svg>
-      <div><b>OpsLens</b><span>${escapeHtml(season.tag)}</span></div></div>
+    <div class="sp-brand">${logoSvg("lg-splash", 72, "sp-logo lg")}
+      <div><b>OpsLens</b><span class="sp-by">by ${TEAM}</span></div></div>
     <div class="sp-bar"><i></i></div>
     <div class="sp-skip">Tap anywhere to skip</div>`;
   document.body.appendChild(el);
-  // Keep the logo's gradient id unique so the side menu's logo is not affected when this goes.
-  el.querySelectorAll("#lens-g").forEach((g) => { g.id = "lens-g-sp"; });
-  el.querySelectorAll("[stroke='url(#lens-g)']").forEach((p) => p.setAttribute("stroke", "url(#lens-g-sp)"));
 
   let closed = false;
   const close = () => {

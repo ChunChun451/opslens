@@ -1,0 +1,41 @@
+// logo.js — the OpsLens mark: "OPS" written inside a big lens, and the O and the bowl of the P are
+// two eyes that blink and look around. "OpsLens by SoyaChaap" is the word mark.
+//
+// Why (24 Oct, the owner: "make a good OpsLens logo, OPS written inside a big lens with eyes
+// inside OPS, and write OpsLens by SoyaChaap, our team name"): the name says what the product
+// does (it looks at operations), so the letters themselves look. One drawing (120×120 grid) is
+// used everywhere: the side menu (when no festival doodle is on), the splash, and the browser tab
+// (web/favicon.svg is the same drawing, without motion). Motion is CSS (web/neon.css, "Logo").
+//
+// Example: logoSvg("lg-side", 44) → a 44-px lens whose O and P eyes blink every few seconds.
+
+export const TEAM = "SoyaChaap";
+
+// The drawing itself, without the outer <svg>; `id` keeps its gradient unique on the page.
+export function logoBody(id) {
+  return `<defs>
+      <linearGradient id="${id}-ring" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#22d3ee"/><stop offset="0.55" stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient>
+      <radialGradient id="${id}-glass" cx="0.35" cy="0.3" r="0.8">
+        <stop offset="0" stop-color="#1e2a55"/><stop offset="1" stop-color="#0a0f22"/></radialGradient>
+    </defs>
+    <g class="lg-handle"><path d="M86 86 L111 111" stroke="url(#${id}-ring)" stroke-width="14" stroke-linecap="round"/>
+      <path d="M90 90 l6 6" stroke="#0a0f22" stroke-width="15" stroke-linecap="butt" opacity="0.35"/></g>
+    <circle cx="52" cy="52" r="43" fill="url(#${id}-glass)" stroke="url(#${id}-ring)" stroke-width="9"/>
+    <path class="lg-shine" d="M24 34 a32 32 0 0 1 22 -16" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.35"/>
+    <g class="lg-letters">
+      <circle cx="26" cy="54" r="12.5" fill="none" stroke="#22d3ee" stroke-width="5"/>
+      <g class="lg-eye e1"><circle cx="26" cy="54" r="8" fill="#fff"/>
+        <g class="lg-pupil"><circle cx="26" cy="54" r="4.4" fill="#0a0f22"/><circle cx="24.4" cy="52.4" r="1.5" fill="#fff"/></g></g>
+      <path d="M46 41 V71" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+      <path d="M46 40 h9 a9 9 0 0 1 0 18 h-9" fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>
+      <g class="lg-eye e2"><circle cx="55" cy="49" r="4.6" fill="#fff"/>
+        <g class="lg-pupil"><circle cx="55" cy="49" r="2.6" fill="#0a0f22"/></g></g>
+      <path d="M87 44 q-3 -5 -9 -4.5 q-7 0.8 -6.5 7 q0.6 4 7 6 q7 2 7 7.5 q-0.4 6 -7.5 6 q-6 0 -9 -5" stroke="#fff" stroke-width="6.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <path class="lg-spark" d="M88 20 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z" fill="#fde047"/>`;
+}
+
+export function logoSvg(id, size = 44, cls = "lg") {
+  return `<svg class="${cls}" viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true">${logoBody(id)}</svg>`;
+}
