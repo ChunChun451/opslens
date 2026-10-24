@@ -9,6 +9,8 @@ Why this design:
 - Everything runs locally: no network calls at serve time (LLM answers are already cached),
   so the demo works with Wi-Fi off.
 - Live endpoints (What-if M10, Plant-a-problem M11, Upload M10) are added as their milestones land.
+- "Live now" (GET /api/live, 24 Oct): today's weekday simulated once on this laptop (both the industry
+  standard and OpsLens), then shown minute by minute at the viewer's real clock (opslens/live.py).
 - "Your plan" (POST /api/plan/impact, 19 Oct): the accepted recommendations are replayed on one
   test day with and without them. Each run takes ~20 s, so the runs go to a few worker processes
   in parallel and every finished run is kept in memory (the same run is never simulated twice).
@@ -217,6 +219,56 @@ def ask(request: dict) -> JSONResponse:
         return JSONResponse(answer(question, client, tools, results, inputs["test_days"], first_weekday))
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
+
+
+# ---- Live now (opslens/live.py, 24 Oct): today's day, simulated here, shown at the real clock ----------
+
+_LIVE: dict = {}  # (day, seed) -> LiveDay, simulated once and kept
+_LIVE_BUILDING: dict = {}  # (day, seed) -> the thread simulating it
+_LIVE_LOCK = threading.Lock()
+
+
+def _live_key(weekday: int, seed: int) -> tuple[int, int]:
+    import pandas as pd
+
+    from opslens.config import load_config
+    from opslens.live import matching_test_day
+
+    first_weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
+    return matching_test_day(weekday, first_weekday, engine_inputs()["test_days"]), seed
+
+
+_LIVE_BUILD_ONE_AT_A_TIME = threading.Lock()
+
+
+def _build_live(key: tuple[int, int]) -> None:
+    from opslens.live import simulate_live_day
+
+    try:
+        with _LIVE_BUILD_ONE_AT_A_TIME:  # it briefly wraps one engine function: one build at a time
+            _LIVE[key] = simulate_live_day(engine_inputs(), key[0], key[1])
+    finally:
+        _LIVE_BUILDING.pop(key, None)
+
+
+@app.get("/api/live")
+def live(weekday: int, minute: float, seed: int = 1) -> JSONResponse:
+    """The floor at the viewer's real clock: `weekday` (0 = Monday) and `minute` of the day come
+    from the browser. The first request for a weekday starts the simulation (about 20-40 s) and
+    answers {"ready": false}; the page asks again until it is ready."""
+    from opslens.live import state_at
+
+    if not (0 <= weekday <= 6 and 0 <= minute < 1440 and 1 <= seed <= 99):
+        return JSONResponse({"error": "weekday 0-6, minute 0-1439, seed 1-99"}, status_code=400)
+    key = _live_key(weekday, seed)
+    with _LIVE_LOCK:
+        if key not in _LIVE and key not in _LIVE_BUILDING:
+            thread = threading.Thread(target=_build_live, args=(key,), daemon=True)
+            _LIVE_BUILDING[key] = thread
+            thread.start()
+    if key not in _LIVE:
+        return JSONResponse({"ready": False, "day": key[0], "seed": seed})
+    return JSONResponse({"ready": True, **state_at(_LIVE[key], minute)}, headers={"Cache-Control": "no-store"})
 
 
 app.mount("/web", StaticFiles(directory=ROOT / "web", html=True), name="web")

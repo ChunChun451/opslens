@@ -19,6 +19,7 @@ import * as compare from "./tabs/compare.js";
 import * as whatif from "./tabs/whatif.js";
 import * as tested from "./tabs/tested.js";
 import * as ledger from "./tabs/ledger.js";
+import * as live from "./tabs/live.js";
 import * as upload from "./tabs/upload.js";
 import * as realdesk from "./tabs/realdesk.js";
 import { state, store } from "./data.js";
@@ -35,7 +36,8 @@ const ICONS = {
 
 export const TABS = [
   { id: "overview", label: "Overview", views: {
-    food: [{ id: "overview", label: "Overview", module: overview }],
+    food: [{ id: "overview", label: "Overview", module: overview },
+           { id: "live", label: "Live now", module: live }],
     real: [{ id: "rd-overview", label: "Overview", module: realdesk.overview }] } },
   { id: "problems", label: "Problems", views: {
     food: [{ id: "patterns", label: "Why it goes wrong", module: patterns }],
@@ -61,7 +63,7 @@ export const TABS = [
 
 // Old tab names (before Plan v3) → the screen that now holds them.
 const ALIAS = { patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
-                compare: "proof", whatif: "proof", ledger: "proof", tested: "proof" };
+                compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview" };
 
 const framed = new Set(); // screens whose frame (sub-tabs + empty views) is drawn
 const drawn = new Set(); // views already drawn (Chart.js needs a visible canvas, so we wait)

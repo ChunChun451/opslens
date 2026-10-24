@@ -24,6 +24,7 @@ export const state = {
   world: readStored("opslens-world", "food"),
   plan: readStored("opslens-plan", {}),
   planimpact: null, // POST /api/plan/impact (live simulation of the accepted plan)
+  live: null, // GET /api/live (Live now: the floor at the viewer's real clock)
 };
 
 // localStorage can be missing or blocked (private windows); the dashboard must still work.
@@ -115,6 +116,7 @@ export const LIVE_SOURCES = {
   plant: "POST /api/plant (live detection on fresh data)",
   upload: "POST /api/upload (live analysis of the uploaded file)",
   planimpact: "POST /api/plan/impact (live simulation of your plan)",
+  live: "GET /api/live (today's day, simulated on this laptop, at your clock)",
 };
 
 export function liveSource(path) {

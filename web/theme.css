@@ -1407,3 +1407,38 @@ tr.hot td { background: var(--bad-soft); }
   .page-title { font-size: 1.75rem; }
   .table-wrap { overflow-x: auto; }
 }
+
+/* =============================================================================================
+   Live now (Claude 2, 24 Oct) — Overview → "Live now" (js/tabs/live.js). Reuses the mission band
+   (dark night, two floors); the one new thing is the real clock, ticking.
+   ============================================================================================= */
+.live-band { margin-bottom: 20px; }
+.live-clock {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 4.6rem);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  margin: 4px 0 6px;
+  color: #fff;
+}
+.live-status { margin: 12px 0 0; font-size: 0.85rem; color: #a9a7d6; min-height: 1.2em; }
+.live-panels .card { min-height: 260px; }
+.live-ticket {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.live-ticket:first-child { border-top: 0; }
+.live-risk { font-family: var(--font-display); font-size: 1.35rem; font-weight: 750; color: var(--chilli); }
+.live-risk .ev { color: inherit; font-weight: inherit; }
+.live-ticket-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.live-text { margin: 4px 0; color: var(--ink-2); }
+.live-reasons { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.9rem; }
+.live-decisions { list-style: none; margin: 0; padding: 0; }
+.live-decisions li { padding: 10px 0; border-top: 1px solid var(--border); }
+.live-decisions li:first-child { border-top: 0; }
+.live-when { font-variant-numeric: tabular-nums; color: var(--muted); margin-right: 8px; }
+@media (max-width: 760px) { .live-ticket { grid-template-columns: 56px minmax(0, 1fr); } }
