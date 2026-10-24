@@ -1605,24 +1605,24 @@ html[data-theme="light"] .bot-launch { background: linear-gradient(135deg, #10b9
 .bot-launch .bl-text b, .bot-launch .bl-text small { white-space: nowrap; }
 .bot-launch .bl-text b { font-size: 0.92rem; }
 
-/* The assistant's colour transition (owner's palette, 24 Oct): green #00FF5B -> cyan #00E5FF -> electric blue
-   #1200FF / #0014FF, flowing slowly across the button; the glow follows. Still when motion is off. */
-.bot-launch { background: linear-gradient(115deg, #00c853 0%, #00ff5b 12%, #00e5ff 38%, #1200ff 66%, #0014ff 82%, #00e5ff 100%);
-  background-size: 260% 100%; background-position: 0% 50%; box-shadow: 0 6px 22px rgba(0, 229, 255, 0.4); }
-.bot-launch .bl-text b, .bot-launch .bl-text small { text-shadow: 0 1px 3px rgba(0, 10, 60, 0.55); }
-.bot-launch .bl-text small { color: #f0fdff; }
-.bot-launch .bl-ping { background: #ffe53b; box-shadow: 0 0 0 2px #1200ff; }
-html[data-theme="light"] .bot-launch { background: linear-gradient(115deg, #00c853 0%, #00ff5b 12%, #00e5ff 38%, #1200ff 66%, #0014ff 82%, #00e5ff 100%); background-size: 260% 100%; }
-.bot-panel { border-left-color: rgba(0, 229, 255, 0.45); }
-.bp-head { background: linear-gradient(120deg, rgba(0, 255, 91, 0.22), rgba(0, 229, 255, 0.2) 45%, rgba(18, 0, 255, 0.32)); }
-.bm-user .bm-bubble, .bp-send { background: linear-gradient(135deg, #00e5ff, #1200ff); }
-.bp-form input:focus { border-color: #00e5ff; box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.25); }
-.bot-chip { border-color: rgba(0, 229, 255, 0.45); background: rgba(0, 229, 255, 0.07); }
-.bot-chip:hover { background: rgba(18, 0, 255, 0.25); }
-.bm-typing i { background: #00e5ff; }
+/* The assistant's colour transition (owner's palette, 24 Oct): pink #FF2CDF -> #FC007A -> #FF0A6C ->
+   #FF005B -> red #FF2525, flowing slowly across the button; the glow follows. Still when motion is off. */
+.bot-launch { background: linear-gradient(115deg, #ff2cdf 0%, #fc007a 28%, #ff0a6c 48%, #ff005b 66%, #ff2525 84%, #ff2cdf 100%);
+  background-size: 260% 100%; background-position: 0% 50%; box-shadow: 0 6px 22px rgba(255, 0, 91, 0.45); }
+.bot-launch .bl-text b, .bot-launch .bl-text small { text-shadow: 0 1px 3px rgba(90, 0, 30, 0.45); }
+.bot-launch .bl-text small { color: #fff0f6; }
+.bot-launch .bl-ping { background: #ffe53b; box-shadow: 0 0 0 2px #ff005b; }
+html[data-theme="light"] .bot-launch { background: linear-gradient(115deg, #ff2cdf 0%, #fc007a 28%, #ff0a6c 48%, #ff005b 66%, #ff2525 84%, #ff2cdf 100%); background-size: 260% 100%; }
+.bot-panel { border-left-color: rgba(255, 0, 91, 0.45); }
+.bp-head { background: linear-gradient(120deg, rgba(255, 44, 223, 0.24), rgba(255, 10, 108, 0.22) 50%, rgba(255, 37, 37, 0.24)); }
+.bm-user .bm-bubble, .bp-send { background: linear-gradient(135deg, #fc007a, #ff2525); }
+.bp-form input:focus { border-color: #ff0a6c; box-shadow: 0 0 0 3px rgba(255, 10, 108, 0.25); }
+.bot-chip { border-color: rgba(255, 10, 108, 0.45); background: rgba(255, 10, 108, 0.08); }
+.bot-chip:hover { background: rgba(255, 10, 108, 0.22); }
+.bm-typing i { background: #ff0a6c; }
 @media (prefers-reduced-motion: no-preference) {
   .bot-launch { animation: ai-flow 7s ease-in-out infinite alternate, ai-glow 7s ease-in-out infinite alternate; }
   @keyframes ai-flow { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
-  @keyframes ai-glow { 0% { box-shadow: 0 6px 22px rgba(0, 255, 91, 0.45); } 50% { box-shadow: 0 6px 24px rgba(0, 229, 255, 0.55); } 100% { box-shadow: 0 6px 26px rgba(18, 0, 255, 0.55); } }
+  @keyframes ai-glow { 0% { box-shadow: 0 6px 22px rgba(255, 44, 223, 0.45); } 50% { box-shadow: 0 6px 24px rgba(255, 10, 108, 0.55); } 100% { box-shadow: 0 6px 26px rgba(255, 37, 37, 0.55); } }
   .bp-head { background-size: 200% 100%; animation: ai-flow 9s ease-in-out infinite alternate; }
 }
