@@ -11,7 +11,7 @@
 //
 // Example: Risks → Lenny worried, the alarm rings, the bubble says "T060758 needs help: 7 min left!".
 
-import { mascotHtml, setMood, cheer } from "./mascot.js";
+import { mascotHtml, customerHtml, biryaniHtml, setMood, cheer } from "./mascot.js";
 import { state } from "./data.js";
 import { escapeHtml } from "./format.js";
 
@@ -90,7 +90,8 @@ function sceneFor(viewId, r) {
   const lines = (list) => list.filter(Boolean);
   switch (viewId) {
     case "overview":
-      return { mood: "happy", prop: "trophy", at: "side", stage: "confetti", lines: lines([
+      return { mood: "happy", prop: "trophy", at: "side", stage: "confetti",
+        complaint: "Chicken biryani mein chicken ke kam pieces diye!", lines: lines([
         ours && `Only ${ours}% of promises missed on days I never saw. Trophy time!`,
         raceLine,
         "Every number here clicks through to its evidence.",
@@ -180,7 +181,13 @@ export function addScene(container, viewId) {
   const scene = sceneFor(viewId, state.results);
   if (!scene || !scene.lines.length || container.querySelector(".sc")) return;
   const id = `sc-${viewId}`;
-  const html = `<div class="sc sc-${scene.stage}-scene" data-scene="${viewId}" aria-hidden="true">
+  // A complaining customer with the plate they got, on screens that have one (Results).
+  const customer = scene.complaint
+    ? `<div class="sc-customer">${customerHtml(`${id}-customer`)}${biryaniHtml(`${id}-biryani`, true)}
+        <div class="sc-say sc-complain">${escapeHtml(scene.complaint)}</div></div>`
+    : "";
+  const html = `<div class="sc sc-${scene.stage}-scene${customer ? " sc-has-customer" : ""}" data-scene="${viewId}" aria-hidden="true">
+      ${customer}
       <div class="sc-cast sc-at-${scene.at}" title="Click me">
         ${mascotHtml(id, scene.mood)}
         <span class="sc-prop sc-prop-${scene.prop}">${PROPS[scene.prop]}</span>

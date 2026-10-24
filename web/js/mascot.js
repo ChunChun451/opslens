@@ -71,14 +71,27 @@ export function customerHtml(id) {
 
 // The wrong order: a steaming plate of biryani (rice, a chicken leg, mint, lemon), with a thought
 // cloud of the crossed-out dosa the customer wanted. Decoration only, like the rest of the scene.
-export function biryaniHtml(id) {
-  return `<div class="biryani" id="${id}" aria-hidden="true">
+// few = true is the Results screen's complaint ("chicken ke kam pieces"): one tiny piece on the
+// plate, a bobbing "?", and a cloud full of the drumsticks the customer expected.
+const DRUMSTICK = (x, y) => `<g transform="translate(${x} ${y})"><path d="M0 6 q5 -7 11 -4 q3 5 -3 8 q-6 1 -8 -4z" fill="#92400e"/>
+    <path d="M10 2 l4 -4" stroke="#fef3c7" stroke-width="2.4" stroke-linecap="round"/><circle cx="14.5" cy="-2.5" r="1.8" fill="#fef3c7"/></g>`;
+export function biryaniHtml(id, few = false) {
+  const wish = few
+    ? `${DRUMSTICK(6, 10)}${DRUMSTICK(17, 6)}${DRUMSTICK(25, 13)}`
+    : `<path class="dosa" d="M11 17 L33 9 L31 18 Z" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
+          <path d="M14 15 l3 -1 M20 13 l3 -1 M26 11 l3 -1" stroke="#b45309" stroke-width="0.8"/>
+          <path class="no" d="M12 6 L32 22 M32 6 L12 22" stroke="#ff4d8d" stroke-width="2.4" stroke-linecap="round"/>`;
+  const chicken = few
+    ? `<g class="leg few"><path d="M34 21 q4 -4 8 -1 q1 3 -3 4 q-4 0 -5 -3z" fill="#92400e"/></g>
+        <text class="huh" x="46" y="14" font-size="13" font-weight="900" fill="#ff4d8d">?</text>`
+    : `<g class="leg"><path d="M30 22 q8 -9 16 -5 q4 6 -4 10 q-8 2 -12 -5z" fill="#92400e"/>
+          <path d="M44 16 l5 -5" stroke="#fef3c7" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="50" cy="10" r="2.2" fill="#fef3c7"/></g>`;
+  return `<div class="biryani${few ? " is-few" : ""}" id="${id}" aria-hidden="true">
       <div class="biryani-wish">
         <svg viewBox="0 0 44 30" width="58" height="40">
           <path d="M8 22a7 7 0 01-1-14a9 9 0 0116-4a8 8 0 0114 5a6 6 0 01-2 13z" fill="#fff"/>
-          <path class="dosa" d="M11 17 L33 9 L31 18 Z" fill="#f59e0b" stroke="#b45309" stroke-width="1"/>
-          <path d="M14 15 l3 -1 M20 13 l3 -1 M26 11 l3 -1" stroke="#b45309" stroke-width="0.8"/>
-          <path class="no" d="M12 6 L32 22 M32 6 L12 22" stroke="#ff4d8d" stroke-width="2.4" stroke-linecap="round"/>
+          ${wish}
         </svg>
         <i></i><i></i>
       </div>
@@ -92,9 +105,7 @@ export function biryaniHtml(id) {
         <path d="M38 22 Q48 24 50 33 L44 33 Q44 27 38 22 Z" fill="#f97316" opacity="0.75"/>
         <g fill="#fff"><circle cx="20" cy="28" r="1"/><circle cx="27" cy="24" r="1"/><circle cx="34" cy="19" r="1"/>
           <circle cx="40" cy="27" r="1"/><circle cx="46" cy="30" r="1"/><circle cx="31" cy="29" r="1"/><circle cx="24" cy="31" r="1"/></g>
-        <g class="leg"><path d="M30 22 q8 -9 16 -5 q4 6 -4 10 q-8 2 -12 -5z" fill="#92400e"/>
-          <path d="M44 16 l5 -5" stroke="#fef3c7" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="50" cy="10" r="2.2" fill="#fef3c7"/></g>
+        ${chicken}
         <path d="M17 22 q3 -5 7 -3 q-3 4 -7 3z" fill="#22c55e"/>
         <circle cx="52" cy="35" r="3.4" fill="#facc15" stroke="#a16207" stroke-width="0.8"/>
       </svg>

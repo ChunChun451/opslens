@@ -905,3 +905,22 @@ html[data-theme="neon"] .sc {
   @keyframes cross-out { 0%, 30% { stroke-dashoffset: 30; } 50%, 100% { stroke-dashoffset: 0; } }
 }
 @media (max-width: 760px) { .biryani-wish { display: none; } }
+
+/* Results: the customer's "chicken ke kam pieces" complaint beside happy Lenny (js/scenes.js).
+   Confetti falls over the whole strip; the plate has one tiny piece and a bobbing "?". */
+.sc.sc-has-customer { position: relative; grid-template-columns: minmax(0, 1.3fr) auto minmax(0, 1fr); padding-top: 34px; }
+.sc-has-customer .sc-stage { position: absolute; inset: 0; height: auto; pointer-events: none; }
+.sc-customer { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sc-customer .customer svg { width: 60px; height: 60px; }
+.sc-customer .biryani { margin-top: 10px; }
+.sc-complain { background: #ffe4ec; color: #831843; }
+.sc-complain::before { border-right-color: #ffe4ec; }
+.biryani.is-few .leg.few { transform-origin: 38px 21px; }
+@media (prefers-reduced-motion: no-preference) {
+  .biryani .huh { animation: huh-bob 1.1s ease-in-out infinite alternate; }
+  @keyframes huh-bob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+}
+@media (max-width: 900px) {
+  .sc.sc-has-customer { grid-template-columns: auto minmax(0, 1fr); }
+  .sc-has-customer .sc-customer { grid-column: 1 / -1; }
+}
