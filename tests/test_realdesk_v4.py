@@ -187,3 +187,34 @@ def test_slowdown_plant_also_updates_the_two_hour_signal() -> None:
     plant = {"type": "slowdown", "segment": "G1", "first_day": days[0], "last_day": days[-1], "size": 1.5}
     out = P.plant_slowdown(table, plant)
     assert out["open_2h"].all() and out["open_24h"].sum() == 15   # 2 h × 1.5 = 3 h: not within 2 h, still within 24 h
+
+
+# ---- shadow mode (24 Oct) --------------------------------------------------------------------
+
+def test_minute_of_day_runs_past_midnight_and_keeps_unknowns() -> None:
+    from opslens.realdesk_shadow import minute_of_day
+    day = pd.Timestamp("2016-05-02")
+    times = pd.Series(pd.to_datetime(["2016-05-02 13:24", "2016-05-06 14:18", None]))
+    assert minute_of_day(times, day) == [804, 6618, None]
+
+
+def test_choose_days_takes_the_busiest_weekday_then_one_per_other_busy_week() -> None:
+    from opslens.realdesk_shadow import choose_days
+    dates = pd.date_range("2016-05-02", "2016-05-22")
+    daily = pd.DataFrame({"opened": [300, 350, 320, 310, 290, 40, 30, 280, 400, 260, 250, 240, 35, 25,
+                                     200, 210, 330, 220, 230, 20, 10]}, index=dates)
+    daily["weekday"] = daily.index.weekday
+    daily["week"] = daily.index.to_period("W").astype(str)
+    assert [str(d.date()) for d in choose_days(daily)] == ["2016-05-10", "2016-05-03", "2016-05-18"]
+
+
+def test_day_summary_counts_caught_misses_and_flag_precision() -> None:
+    from opslens.realdesk_shadow import day_summary
+    rows = pd.DataFrame({"in_benchmark": [True] * 5 + [False], "missed_flag": [True, True, False, False, True, True],
+                         "top20_opslens": [True, False, True, False, False, False],
+                         "top20_priority": [False, False, False, True, False, False],
+                         "saved_opslens": [True] + [False] * 5, "saved_priority": [False] * 6, "saved_unassigned": [False] * 6})
+    s = day_summary(rows)
+    assert s["actual_misses"] == 4 and s["actual_misses_benchmark"] == 3
+    assert (s["opslens"]["caught"], s["opslens"]["recall_pct"], s["opslens"]["precision_pct"]) == (1, 100 / 3, 50.0)
+    assert s["priority"]["caught"] == 0 and s["fast_track_saved"]["opslens"] == 1

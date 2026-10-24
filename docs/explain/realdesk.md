@@ -128,6 +128,46 @@ detector_second_look = {
 }
 ```
 
+**8. `shadow` (W11, 24 Oct) — shadow mode on real days: what OpsLens said vs what happened**
+Frozen models, no retraining, test months only (`opslens/realdesk_shadow.py`). The picks are exactly
+the W3 benchmark's picks for those days (checked in code). Minutes count from the day's midnight, so
+`picked_up_at` / `resolved_at` can exceed 1440 (a later day) or be `null`.
+```
+shadow = {
+  assumption: str,                           // the W3 fast-track assumption: show it with the saved counts
+  how: str, privacy: str,                    // UCI has no free text, nothing needed masking
+  min_day_incidents: 50,
+  days: [{date: "2016-05-02", weekday: "Mon", opened, missed_flag}],    // every test day with >= 50 new incidents
+  showcase: "2016-05-05", showcase_why: str, others_why: str,
+  pickers: ["opslens", "priority", "unassigned"], features: [str],
+  shown_days: [DAY, ...]                     // [0] = showcase, then 4 more (busiest weekday of each other busy week)
+}
+DAY = {date, weekday, summary: SUMMARY, incidents: [INCIDENT, ...]}   // incidents sorted by opened_at
+SUMMARY = {
+  incidents, benchmark_incidents,            // benchmark = Moderate/Low (Critical/High: the desk fast-tracks them anyway)
+  actual_misses, actual_misses_benchmark,    // company's own SLA flag
+  opslens:  {flagged, caught, recall_pct, precision_pct},   // flagged = the day's top 20% at the 1-hour mark
+  priority: {flagged, caught, recall_pct, precision_pct},   // caught = flagged AND missed (benchmark incidents)
+  fast_track_saved: {opslens, priority, unassigned}         // under the assumption
+}
+INCIDENT = {
+  ticket_id, opened_at: int, priority: "3 - Moderate", in_benchmark: bool,
+  risk: 0.514, reasons: [{text: "state after 1 h: New", share: 0.56}, ...],   // up to 3, same wording as at_risk
+  unassigned_at_1h: bool, top20_opslens: bool, top20_priority: bool, pick_unassigned: bool,
+  picked_up_at: int | null, resolved_at: int | null,
+  picked_up_recorded: bool,                  // false: New straight to Resolved, no pickup in the log
+  first_state: str, made_sla: bool,          // the company's flag
+  rule_missed: bool | null,                  // our deadline rule; null when not scorable
+  fast_track_saved: {opslens: bool, priority: bool, unassigned: bool}
+}
+```
+For an hour-by-hour replay: an incident appears at `opened_at`, gets its OpsLens score and flags at
+`opened_at + 60`, is picked up at `picked_up_at`, resolves at `resolved_at`.
+Showcase (Thu 5 May 2016): 403 incidents, 111 missed by the company's flag; of the 102 misses in the
+benchmark, OpsLens's top 20% at the 1-hour mark caught 53 (recall 52.0%, precision 67.1%), the
+priority field's top 20% caught 16 (15.7%, 20.3%). Fast-track saved that day: OpsLens 5, priority
+field 5, still unassigned 9.
+
 ## What it does
 - Answers the five questions on a real company's IT service desk: 24,918 incidents, a real SLA flag.
 - Plan v3 showed a prediction win (early warning). Plan v4 asks for proof a judge can trust:

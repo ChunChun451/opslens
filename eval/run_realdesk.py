@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT))
 from eval import realdesk_plants as P  # noqa: E402
 from opslens import realdesk as R  # noqa: E402
 from opslens import realdesk_fasttrack as FT  # noqa: E402
+from opslens import realdesk_shadow as S  # noqa: E402
 from opslens import realdesk_watch as W  # noqa: E402
 from opslens.adapters.uci_incidents import load_uci  # noqa: E402
 
@@ -137,6 +138,14 @@ def detector_second_look(incidents: pd.DataFrame, events: pd.DataFrame) -> dict:
                      "passed": bool(diff.sum() > 0 and low > 0 and fa <= MAX_FALSE_ALARMS_PER_30_DAYS)}}
 
 
+def check_shadow_against_benchmark(sh: dict, ft: dict) -> None:
+    """The day pages must add up to the W3 benchmark: no shown day can save more than the whole test
+    period, and the shown days' incidents are the benchmark's incidents of those days."""
+    for p in S.SHADOW_PICKERS:
+        shown = sum(d["summary"]["fast_track_saved"][p] for d in sh["shown_days"])
+        assert shown <= ft["results"]["20"][p]["saved"], p
+
+
 def main() -> int:
     started = time.perf_counter()
     incidents, events = load_uci()
@@ -179,6 +188,9 @@ def main() -> int:
         for c in ("unassigned", "opslens"):
             assert out["fasttrack_second_look"]["results"][str(b)][c]["saved"] == out["fasttrack"]["results"][str(b)][c]["saved"]
     out["detector_second_look"] = detector_second_look(incidents, events)
+    # ---- Shadow mode on real days (W11, 24 Oct): frozen models, test months only ----
+    out["shadow"] = S.shadow(incidents, events, model, out["fasttrack"]["deadline_rule"]["limits_h"], test)
+    check_shadow_against_benchmark(out["shadow"], out["fasttrack"])
     out["seconds"] = time.perf_counter() - started
     report(out)
     (PARTS / "realdesk.json").write_text(json.dumps(out, indent=1, default=str), encoding="utf-8")
@@ -224,6 +236,11 @@ def report(out: dict) -> None:
     print(f"fast-track second look: check saved at 20% {sl['check_saved_20']}, chose {sl['chosen_on_check']}; test 20%: "
           f"{ {c: v['saved'] for c, v in sl['results']['20'].items()} }; chosen - unassigned {sl['rule']['diff']} "
           f"[{sl['rule']['ci_low']:.1f}, {sl['rule']['ci_high']:.1f}] -> {'PASSED' if sl['rule']['passed'] else 'NOT passed'}")
+    sh = out["shadow"]
+    print(f"shadow: {len(sh['days'])} days with >= {sh['min_day_incidents']} incidents; showcase {sh['showcase']}; " + "; ".join(
+        f"{d['date']}: {d['summary']['incidents']} inc, {d['summary']['actual_misses']} missed, OpsLens caught "
+        f"{d['summary']['opslens']['caught']} (P {d['summary']['opslens']['precision_pct']:.0f}%) vs priority {d['summary']['priority']['caught']}, "
+        f"saved {d['summary']['fast_track_saved']}" for d in sh["shown_days"]))
     ds = out["detector_second_look"]
     print("detector v2 candidates on check: " + "; ".join(f"{r['name']} {r['check_found']}/{r['check_plants']} FA {r['check_false_alarms_per_30_days']:.1f}"
                                                          for r in ds["candidates"]))
