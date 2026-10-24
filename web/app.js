@@ -19,6 +19,9 @@ import { initIntro } from "./js/intro.js";
 import { initLiveTicker } from "./js/liveticker.js";
 import { initThemeSwitch } from "./js/themeswitch.js";
 import { initScenes } from "./js/scenes.js";
+import { initSeason } from "./js/season.js";
+import { initSplash } from "./js/splash.js";
+import { initFest } from "./js/fest.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -55,7 +58,9 @@ async function start() {
   initLiveTicker(); // today's live run in the side menu, on every screen
   initScenes(); // the cartoon moment on every screen talks, and naps after a quiet minute
   initThemeSwitch(); // Neon / Light
-  initIntro(); // the cold open plays last, over the ready dashboard
+  initSeason(); // the logo dresses up for the season (Diwali, cricket, ...)
+  initFest(); // the celebrity banner and the gift button: spin, coupons, membership
+  initSplash(initIntro); // the festive splash, then the cold open, over the ready dashboard
 }
 
 // The status line: what this world's numbers are, and how they were tested.
