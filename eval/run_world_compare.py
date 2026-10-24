@@ -48,7 +48,8 @@ def main() -> int:
              "tag": p} for p in policies for s in SEEDS]
     if "--v6-design" in sys.argv:  # W13: only the overload-mode candidates (the rest is in the counted run)
         from eval.run_design_v6 import candidate_jobs
-        jobs = candidate_jobs(FIRST, LAST, SEEDS, with_v5=False)
+        from eval.run_design_v6 import ROUND2
+        jobs = candidate_jobs(FIRST, LAST, SEEDS, with_v5=False, names=ROUND2 if "--round2" in sys.argv else None)
     if "--v6" in sys.argv:  # W13 confirmation: every policy plus the chosen v6, one run
         cfg = json.loads(sys.argv[sys.argv.index("--v6") + 1])
         jobs += [{"policy": "opslens", "seed": s, "first_day": FIRST, "last_day": LAST, "staffing": True,

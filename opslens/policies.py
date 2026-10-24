@@ -439,6 +439,11 @@ class OpsLensPolicy:
         # 1-35 (expected_handle_minutes). Only the overload mode uses it; without it the mode is off.
         self.handle = handle
         self.mean_handle = float(np.mean([v for k, v in handle.items() if isinstance(k, str)])) if handle else 0.0
+        # v6 round 2 (24 Oct): under predicted sustained overload, hand dispatch to least slack first,
+        # the published rule that won every overloaded world (eval/parts/worlds.json).
+        self.switch = None
+        if handle and (weights.get("overload") or {}).get("switch_to") == "least_slack":
+            self.switch = LeastSlackPolicy(world, predicted, handle)
         self.overload = False
         self._overload_checked = -1e9
         self.overload_minutes = 0.0  # how long the mode was on (reported by the design runs)
@@ -566,6 +571,8 @@ class OpsLensPolicy:
                 self.overload_minutes += now - self._overload_checked
             self._overload_checked = now
             self.overload = self.projected_overload(state, now, waiting)
+        if self.overload and self.switch is not None:
+            return self.switch.decide(state, now)  # the strategy chosen from the forecast
         candidates = self.candidates(free, waiting, now)
         slots = {a.agent_id: a.free_slots for a in free}
         if self.settings.use_optimizer:

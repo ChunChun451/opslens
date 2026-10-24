@@ -314,3 +314,13 @@ design world v5 won (within 0.05 points). If none qualifies: v6 is not built fur
 SLA, 95% CI upper bound < +0.05 points; (2) 30 NEW worlds 7101–7130 (same ranges and runner as W1):
 v6 lowest (within 0.05 points) in ≥ 27 of 30. Only then: main test days once, full `make eval`, and
 the post-freeze sealed world includes v6. Otherwise v5 stays and the ledger shows v6 as missed.
+
+**W13 round 2 (24 Oct, written after round 1 and BEFORE any round-2 run).** Round 1 chose C by the
+rule (loss margin 29.36 vs v5's 35.20 over the 20 design worlds; better than v5 in 14, worse in 3) but
+C turned none of the 11 losses into a win, so it could not meet the adoption rule. Round 2 adds two
+candidates that switch strategy instead of re-weighting: when OpsLens predicts sustained overload
+(the backlog cannot clear within 240 minutes), the decision is handed to least slack first, the
+published rule that won every overloaded world. D1: threshold 1.5; D2: threshold 2.0. Same choice
+rule over A, B, C, D1, D2 (main validation days 36–42 seeds 1–5, the same 20 design worlds rebuilt
+from the same seeds). The adoption rule and the confirmation set (30 NEW worlds 7101–7130, 20 fresh
+seeds 26–45 on main validation days) are unchanged and still unseen; only the final choice goes there.

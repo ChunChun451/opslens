@@ -51,7 +51,7 @@ DIAG_DIR = ROOT / "eval" / "parts" / "worlds_diag"  # the overload diagnosis (23
 WORLD_SEEDS = list(range(7001, 7031))
 SKIP = {".git", ".venv", ".venv-challengers", ".claude", "data/generated",
         "cache", ".pytest_tmp", ".pytest_cache", "__pycache__", "eval/parts/worlds", "eval/parts/worlds_diag",
-        "eval/parts/worlds_v6design", "eval/parts/worlds_v6confirm",
+        "eval/parts/worlds_v6design", "eval/parts/worlds_v6design2", "eval/parts/worlds_v6confirm",
         "eval/challengers"}
 CATEGORIES = ["late_delivery", "missing_item", "wrong_item", "refund", "payment_failure", "app_bug",
               "account", "restaurant_partner"]
@@ -275,7 +275,7 @@ def diagnose_losses() -> int:
     return 0
 
 
-MODE_ARGS: dict[str, list[str]] = {"v6design": ["--v6-design"]}  # "v6confirm" is added by --v6-confirm
+MODE_ARGS: dict[str, list[str]] = {"v6design": ["--v6-design"], "v6design2": ["--v6-design", "--round2"]}  # "v6confirm" is added by --v6-confirm
 CONFIRM_SEEDS = list(range(7101, 7131))  # W13: 30 new worlds, same ranges as W1
 
 
@@ -292,8 +292,9 @@ def main() -> int:
         return diagnose_losses()
     if "--v6-design" in sys.argv:  # W13 design: the 20 design worlds, candidates only
         from eval.run_design_v6 import DESIGN_WORLDS
+        mode = "v6design2" if "--round2" in sys.argv else "v6design"
         with ThreadPoolExecutor(max_workers=3) as pool:
-            list(pool.map(lambda s: run_world_safe_mode(s, "v6design"), DESIGN_WORLDS))
+            list(pool.map(lambda s: run_world_safe_mode(s, mode), DESIGN_WORLDS))
         return 0
     if "--v6-confirm" in sys.argv:  # W13 confirmation: 30 NEW worlds, every policy + the chosen v6, once
         MODE_ARGS["v6confirm"] = ["--v6", sys.argv[sys.argv.index("--v6-confirm") + 1]]
