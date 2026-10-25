@@ -180,6 +180,43 @@ async def upload(mapping: str = Form("{}"), file: UploadFile | None = File(None)
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
+@app.post("/api/anyfile/peek")
+async def anyfile_peek(file: UploadFile | None = File(None), example: str | None = Form(None)) -> JSONResponse:
+    """OpsLens on your file, step 1: keep the CSV, return its columns and a suggested mapping."""
+    from server.anyfile_jobs import keep_example, keep_file
+
+    try:
+        if example == "uci_incidents" or file is None:
+            return JSONResponse(keep_example())
+        return JSONResponse(keep_file(await file.read(), file.filename or "uploaded file"))
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
+@app.post("/api/anyfile/run")
+def anyfile_run(request: dict) -> JSONResponse:
+    """Step 2: start the report for {token, mapping, target_min}; returns {job}."""
+    from server.anyfile_jobs import start_job
+
+    try:
+        target = request.get("target_min")
+        return JSONResponse(start_job(str(request["token"]), dict(request.get("mapping") or {}),
+                                      float(target) if target not in (None, "") else None))
+    except (ValueError, KeyError) as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
+@app.get("/api/anyfile/job/{job_id}")
+def anyfile_job(job_id: str) -> JSONResponse:
+    """Step 3: poll the job: {status, step, steps, elapsed, result | error}."""
+    from server.anyfile_jobs import job_state
+
+    try:
+        return JSONResponse(job_state(job_id))
+    except ValueError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=404)
+
+
 @app.post("/api/plant")
 def plant(request: dict) -> JSONResponse:
     """Hide the judge's problem in fresh data and see whether OpsLens finds it (server/plant_demo.py)."""

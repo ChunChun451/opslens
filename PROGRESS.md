@@ -497,3 +497,13 @@ better than v5 in 15, worse in 6; v6 and v5 both beat the industry standard in 3
 except the timestamps and the re-timed scale test). Guide (`docs/GUIDE.md` / `.pdf`) rewritten 25 Oct: longer, simpler,
 no role labels.
 
+**Update 25 Oct — OpsLens on your file (branch feature/any-file).** Any relevant CSV of work items (tickets, incidents,
+delivery orders) goes through: map start, end or duration, and what a miss is (SLA column, due time, or a promised time);
+OpsLens learns on the first 70% and scores the last 30% once. Report: early warning vs the file's priority field and a rule
+of thumb (share of real misses caught, 1 in 5 flagged, 95% interval over days); shadow mode on the busiest later day;
+problem cards found early and re-checked later; "what this file cannot tell you" (no replay without work times and rosters).
+Leakage guards: outcome-like column names, the person's ticks, and a screen that drops any column with single-column AUC > 0.97.
+Junk or small files are refused with the reason. Background job with live steps (server/anyfile_jobs.py, /api/anyfile/*).
+UCI as a plain CSV (`results.anyfile`): 1.5 s; AUC 0.796 vs priority 0.575; caught 48.9% vs 25.5%; 5 May 2016 shadow
+50 vs 22 of 111. 100,000 rows: 7.5 s. 228 tests pass. Explain file docs/explain/anyfile.md; JUDGE_QA Q85-Q88.
+

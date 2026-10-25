@@ -114,7 +114,7 @@ export function getPath(root, path) {
 export const LIVE_SOURCES = {
   whatif: "POST /api/whatif (live simulation)",
   plant: "POST /api/plant (live detection on fresh data)",
-  upload: "POST /api/upload (live analysis of the uploaded file)",
+  upload: "POST /api/anyfile (OpsLens on your file: learned on its first 70%, scored on the rest)",
   planimpact: "POST /api/plan/impact (live simulation of your plan)",
   live: "GET /api/live (today's day, simulated on this laptop, at your clock)",
 };

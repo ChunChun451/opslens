@@ -343,6 +343,9 @@ class Results(Strict):
     # Plan v4 W13 (eval/run_design_v6.py + run_worlds.py --v6-summary): the overload-mode candidate's
     # pre-registered adoption test: 20 fresh seeds on main validation days + 30 NEW worlds. Not adopted.
     v6: dict[str, Any] | None = None
+    # OpsLens on your file (eval/run_anyfile.py, 25 Oct): the upload report run once on the UCI log as a
+    # plain one-row-per-incident CSV, plus the time for a 100,000-row file. The live screen computes the same.
+    anyfile: dict[str, Any] | None = None
     # Plan v4: W7 risk model vs LR vs time-left rule (offline + in dispatch), bottleneck alerts scored (eval/run_w7.py)
     prediction_baselines: dict[str, Any] | None = None
     # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)

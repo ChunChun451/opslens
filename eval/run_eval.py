@@ -249,6 +249,8 @@ def assemble(timings: dict[str, float]) -> dict:
                 name: sum(r["mean"]["opslens"][key] < r["mean"]["least_slack"][key] for r in diag["worlds"])
                 for name, key in seg.items()}
             results["worlds"]["diagnosis"] = diag
+    if (PARTS / "anyfile.json").exists():  # OpsLens on your file, on the UCI log as a plain CSV (not a STEP)
+        results["anyfile"] = part("anyfile")
     if (PARTS / "v6_adoption.json").exists():  # Plan v4 W13: v6 overload mode, adoption test run once (not adopted)
         results["v6"] = part("v6_adoption")
     if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
