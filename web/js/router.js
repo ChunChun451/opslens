@@ -25,7 +25,6 @@ import * as realdesk from "./tabs/realdesk.js";
 import * as worlds from "./tabs/worlds.js";
 import * as shadow from "./tabs/shadow.js";
 import { state, store } from "./data.js";
-import { addScene } from "./scenes.js";
 
 // Simple line icons for the side menu (24×24 grid, drawn with strokes in the text colour).
 const ICONS = {
@@ -163,7 +162,7 @@ export function showTab(id, viewId) {
     drawn.add(view.id);
     try {
       view.module.render(container);
-      addScene(container, view.id); // the screen's cartoon moment (js/scenes.js)
+      // (25 Oct, owner: "calm it down": no cartoon strip on the screens; Live now keeps its own scene.)
     } catch (error) {
       // A bug in one view must not take down the whole demo.
       container.innerHTML = `<div class="callout warn">This view failed to draw: ${error.message}</div>`;
@@ -175,6 +174,9 @@ export function showTab(id, viewId) {
     history.replaceState(null, "", hash); // no hashchange event, no double draw
   }
   document.getElementById("tab-panels").scrollTop = 0;
+  // The screen id on <body>, for screen-specific styling (25 Oct, owner: no top-bar Ask box on
+  // Overview, the side-menu bot answers questions there).
+  document.body.dataset.screen = tab.id;
   // Story mode and motion listen for view ids (e.g. "compare", the old tab names), so send that.
   document.dispatchEvent(new CustomEvent("tab-shown", { detail: view.id }));
 }

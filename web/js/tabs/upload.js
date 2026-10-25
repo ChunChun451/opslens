@@ -13,7 +13,6 @@ import { pageHeader, card, stat, backendMissing, postForm, showWaiting } from ".
 import { ev, evText } from "../evidence.js";
 import { CAUSE_LABELS } from "./patterns.js";
 import { escapeHtml } from "../format.js";
-import { chaseHtml } from "../chase.js";
 
 // The fields OpsLens needs, and column names that usually mean the same thing.
 const FIELDS = [
@@ -59,7 +58,7 @@ export function render(section) {
           </div>
         </div>
         <div id="up-mapping"></div>
-        <div id="up-result" style="margin-top: 16px">${chaseHtml()}</div>`,
+        <div id="up-result" style="margin-top: 16px"></div>`,
     })}
     <p class="card-foot">The UCI ServiceNow incident log (CC BY 4.0) has a real SLA flag (<code>made_sla</code>),
       priority, assignment group and reassignment count, so it shows the engine on data we did not generate.</p>`;

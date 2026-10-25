@@ -13,7 +13,8 @@
 import { openEvidenceAt, closeEvidence } from "./evidence.js";
 
 // Ink colours for text, axes and grid (text never wears a series colour).
-export const INK = "#0f172a";
+// Chart ink (error bars, reference lines): light on the dark theme, or it would vanish.
+export const INK = document.documentElement.dataset.theme === "neon" ? "#dfe3f7" : "#0f172a";
 export const INK_SOFT = "#5b6b80";
 export const GRID = "#edf1f5";
 export const ALERT = "#c22b33"; // used only for the "bottleneck" label on the forecast

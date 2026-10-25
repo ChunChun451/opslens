@@ -22,6 +22,9 @@
   <!-- Neon skin (24 Oct): dark glass, cyan and violet. Applies only while <html data-theme="neon">;
        the Neon/Light switch in the top bar flips it and remembers the choice in this browser. -->
   <link rel="stylesheet" href="neon.css">
+  <!-- Midnight boxes (25 Oct, the owner's reference UI kit): navy, teal and violet, everything in
+       rounded boxes. Loaded last, on top of the Neon skin. -->
+  <link rel="stylesheet" href="boxes.css">
   <script>
     try { if (JSON.parse(localStorage.getItem("opslens-theme")) === "light") document.documentElement.removeAttribute("data-theme"); }
     catch (error) { /* storage blocked: stay on the default */ }
@@ -68,13 +71,7 @@
           <button type="button" data-world="real">IT service desk <span>real, public</span></button>
         </div>
         <div id="data-source" class="status"></div>
-        <!-- Ask OpsLens (web/js/ask.js): plain-words questions, answered by the engine. -->
-        <form id="ask-form" class="ask-form" role="search" autocomplete="off">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v10H9l-5 4z"/></svg>
-          <input id="ask-input" type="text" placeholder="Ask OpsLens… e.g. what if Team C loses 2 agents on Saturday?"
-                 aria-label="Ask OpsLens a question" maxlength="300">
-          <kbd>/</kbd>
-        </form>
+        <!-- The top-bar Ask box was removed (owner, 25 Oct): the side-menu AI bot answers questions. -->
         <div class="topbar-actions">
           <button id="theme-button" class="btn theme-switch" type="button" aria-label="Switch between neon and light colours">
             <span class="swatch" aria-hidden="true"></span><span id="theme-label">Light</span>

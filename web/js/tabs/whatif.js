@@ -16,7 +16,6 @@ import { state, policyKeys, policyLabel, teamNames } from "../data.js";
 import { ev } from "../evidence.js";
 import { pageHeader, card, postJson, policyName, shortLabel, showWaiting } from "../ui.js";
 import { escapeHtml, kpiInfo, unitSuffix } from "../format.js";
-import { chaseHtml } from "../chase.js";
 
 // Slider ranges. These are input limits for the judge, not results.
 const AGENT_DELTA_LIMIT = 5;
@@ -80,9 +79,9 @@ export function render(section) {
   updateLabels(section);
 }
 
-// Before the first run: the "industry wants OpsLens" cartoon (js/chase.js), then the hint.
+// Before the first run: a short hint (the "industry wants OpsLens" cartoon was removed, owner 25 Oct).
 function emptyState() {
-  return `${chaseHtml()}<div class="wi-empty"><div><strong>No simulation yet</strong>
+  return `<div class="wi-empty"><div><strong>No simulation yet</strong>
       Move a slider, then press Run simulation.<br>The server replays the whole day for every policy.</div></div>`;
 }
 
