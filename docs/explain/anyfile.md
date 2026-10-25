@@ -6,7 +6,7 @@ They say which column is the start, the end (or a duration), and what counts as 
 OpsLens learns on the first 70% of items (by start time) and scores the last 30% once.
 The report shows which real misses OpsLens would have flagged the moment they opened, against the file's own priority field
 and a rule of thumb; shadow mode on the busiest later day; and recurring problems found early and checked again later.
-On the real UCI log (24,918 incidents) it takes about 1.5 s; a 100,000-row file about 7.5 s.
+On the real UCI log (24,918 incidents) it takes about 1.5 s; a 100,000-row file about 2.9 s.
 
 ## Why it does not "replay your floor"
 A log records one way of working. To know what would have happened under OpsLens's dispatch, you need how long each item

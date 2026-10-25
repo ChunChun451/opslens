@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-25T13:21:02 (commit 00dfabd). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-25T13:35:59 (commit 8316048). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 

@@ -15,6 +15,7 @@ Example: upload uci_one_row.csv -> token "a1b2..." and 18 columns; run with the 
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import io
 import json
@@ -57,8 +58,13 @@ def read_csv(content: bytes) -> pd.DataFrame:
     """Read a CSV whatever its separator (comma, semicolon, tab); "?" and "NaN " count as empty."""
     if len(content) > MAX_BYTES:
         raise ValueError("the file is larger than 60 MB; please upload a sample (a few months of tickets)")
+    head = content[:20000].decode("utf-8", errors="ignore")
+    try:  # find the separator on the first lines, then read with pandas' fast parser
+        sep = csv.Sniffer().sniff(head, delimiters=",;\t|").delimiter
+    except csv.Error:
+        sep = ","
     try:
-        raw = pd.read_csv(io.BytesIO(content), sep=None, engine="python", na_values=["?", "NaN", "NaN ", "nan"])
+        raw = pd.read_csv(io.BytesIO(content), sep=sep, na_values=["?", "NaN", "NaN ", "nan"], low_memory=False)
     except Exception as exc:  # noqa: BLE001 - any parse failure is the same message to the person
         raise ValueError(f"this does not read as a CSV table ({exc.__class__.__name__})") from exc
     if raw.shape[1] < 2:

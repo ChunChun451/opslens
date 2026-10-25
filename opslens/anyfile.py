@@ -56,12 +56,42 @@ Progress = Callable[[str], None]
 
 # ---- 1. Reading and mapping the file -----------------------------------------------------------
 
+COMMON_FORMATS = ["%d-%m-%Y %H:%M", "%d-%m-%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%d/%m/%Y %H:%M:%S",
+                  "%d-%m-%Y", "%d/%m/%Y", "%m/%d/%Y %H:%M", "%m/%d/%Y %H:%M:%S", "%Y/%m/%d %H:%M:%S"]
+
+
 def parse_times(values: pd.Series) -> pd.Series:
-    """ISO first; if most fail, day-first (29/2/2016 01:16, as in UCI, or 19-03-2022)."""
-    iso = pd.to_datetime(values, errors="coerce", format="ISO8601")
-    if iso.notna().mean() >= 0.9:
-        return iso
+    """ISO first; then the common day-first and month-first layouts, tried on a sample so the whole
+    column is parsed with one fast format; finally pandas' slow "mixed" parser (day first).
+
+    Example: "12-02-2022 21:55" -> 12 Feb 2022 21:55 ("%d-%m-%Y %H:%M"); "29/2/2016 01:16" -> 29 Feb 2016.
+    """
+    text = values.astype(str).str.strip()
+    sample = text[values.notna() & ~text.str.lower().str.contains("nan|nat|none", regex=True)].head(500)
+    # Every layout is tried on 500 values first: on a non-ISO column, pandas' ISO attempt falls back to
+    # a slow row-by-row parser (seconds on 45k rows).
+    if len(sample) and pd.to_datetime(sample, errors="coerce", format="ISO8601").notna().mean() >= 0.9:
+        return pd.to_datetime(values, errors="coerce", format="ISO8601")
+    for fmt in COMMON_FORMATS:
+        if len(sample) and pd.to_datetime(sample, errors="coerce", format=fmt).notna().mean() >= 0.8:
+            parsed = pd.to_datetime(text, errors="coerce", format=fmt)
+            rest = parsed.isna() & values.notna()  # the few odd rows get the slow parser, not all of them
+            if rest.any():
+                parsed[rest] = pd.to_datetime(values[rest], errors="coerce", dayfirst=True, format="mixed")
+            return parsed
     return pd.to_datetime(values, errors="coerce", dayfirst=True, format="mixed")
+
+
+def clock_text(values: pd.Series) -> pd.Series:
+    """A time-of-day column as "HH:MM" text. Spreadsheet exports sometimes store it as a fraction of a
+    day: 0.458333333 -> "11:00", 0.958333333 -> "23:00"; "21:55" stays "21:55"."""
+    text = values.astype(str).str.strip()
+    number = pd.to_numeric(text, errors="coerce")
+    fraction = number.notna() & (number >= 0) & (number < 1)
+    if fraction.any():
+        minutes = (number[fraction] * 1440).round().astype(int)
+        text[fraction] = [f"{m // 60:02d}:{m % 60:02d}" for m in minutes]
+    return text.where(values.notna(), None)
 
 
 def column_kind(values: pd.Series) -> str:
@@ -121,10 +151,13 @@ GUESSES = {
 
 
 def suggest_mapping(raw: pd.DataFrame, columns: list[dict]) -> dict[str, str]:
-    lower = {c.lower().strip(): c for c in raw.columns}
+    # Compare names without case, spaces or underscores: "Time_taken (min)" matches "time_taken(min)".
+    squash = lambda name: re.sub(r"[\s_]+", "", str(name).lower())  # noqa: E731
+    lower = {squash(c): c for c in raw.columns}
     out = {}
     for key, names in GUESSES.items():
         for guess in names:
+            guess = squash(guess)
             if guess in lower:
                 out[key] = lower[guess]
                 break
@@ -162,7 +195,7 @@ def build_items(raw: pd.DataFrame, m: dict, target_min: float | None) -> tuple[p
     notes: list[str] = []
     created = raw[m["created_at"]].astype(str)
     if m.get("created_time"):
-        created = created + " " + raw[m["created_time"]].astype(str)
+        created = created + " " + clock_text(raw[m["created_time"]])
     items = pd.DataFrame({"created_at": parse_times(created)})
     items["id"] = raw[m["id"]].astype(str) if m.get("id") else [f"row {i + 1}" for i in range(len(raw))]
     if m.get("resolved_at"):

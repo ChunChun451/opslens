@@ -505,5 +505,5 @@ problem cards found early and re-checked later; "what this file cannot tell you"
 Leakage guards: outcome-like column names, the person's ticks, and a screen that drops any column with single-column AUC > 0.97.
 Junk or small files are refused with the reason. Background job with live steps (server/anyfile_jobs.py, /api/anyfile/*).
 UCI as a plain CSV (`results.anyfile`): 1.5 s; AUC 0.796 vs priority 0.575; caught 48.9% vs 25.5%; 5 May 2016 shadow
-50 vs 22 of 111. 100,000 rows: 7.5 s. 228 tests pass. Explain file docs/explain/anyfile.md; JUDGE_QA Q85-Q88.
+50 vs 22 of 111. 100,000 rows: 2.9 s. 228 tests pass. Explain file docs/explain/anyfile.md; JUDGE_QA Q85-Q88.
 

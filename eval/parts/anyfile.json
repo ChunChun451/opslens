@@ -593,7 +593,7 @@
  "steps": [
   {
    "name": "Reading the file and the column mapping",
-   "seconds": 0.1
+   "seconds": 0.2
   },
   {
    "name": "Checking the file can be learned from",
@@ -605,7 +605,7 @@
   },
   {
    "name": "Learning on the first 70% of items",
-   "seconds": 0.5
+   "seconds": 0.4
   },
   {
    "name": "Scoring the last 30%, which it never saw",
@@ -617,7 +617,7 @@
   },
   {
    "name": "Finding recurring problems, then checking them on later items",
-   "seconds": 0.4
+   "seconds": 0.5
   }
  ],
  "seconds": 1.5,
@@ -627,7 +627,7 @@
  ],
  "scale": {
   "rows": 100000,
-  "seconds": 7.5,
+  "seconds": 2.9,
   "file": "generated delivery orders (tests/test_anyfile.py), 90 days"
  }
 }

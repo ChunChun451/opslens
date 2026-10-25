@@ -475,5 +475,5 @@ such a column and checks it is dropped; the screen lists every column it learned
 
 **Q88. What if my file is junk or too small?**
 It is refused, with the reason: it needs at least 500 rows, 7 days, 30 misses and 30 in time, and items that end after they
-start. A 100,000-row file takes 7.5 s.
+start. A 100,000-row file takes 2.9 s.
 

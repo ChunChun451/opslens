@@ -112,3 +112,9 @@ def test_every_picker_gets_the_same_number_of_flags_each_day():
 
 def test_open_counts_only_look_back():
     assert A.open_counts(np.array([0.0, 1.0, 2.0]), np.array([5.0, 1.5, 9.0])).tolist() == [0, 1, 1]
+
+
+def test_spreadsheet_day_fractions_read_as_clock_times():
+    times = pd.Series(["21:55", "0.458333333", None, "0.958333333"])
+    out = A.clock_text(times)
+    assert out[[0, 1, 3]].tolist() == ["21:55", "11:00", "23:00"] and pd.isna(out[2])
