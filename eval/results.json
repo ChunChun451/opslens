@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-25T01:33:31",
-  "git_commit": "94aa978",
+  "generated_at": "2026-10-25T13:35:59",
+  "git_commit": "8316048",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -11610,7 +11610,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.047
+   "seconds": 0.052
   }
  },
  "details": {
@@ -108681,6 +108681,639 @@
     "hindi": 5,
     "mean_minutes_late": 11
    }
+  }
+ },
+ "anyfile": {
+  "file": "UCI ServiceNow incident log, one row per incident (cache/uci_one_row.csv)",
+  "rows": 24918,
+  "mapping": {
+   "id": "ticket_id",
+   "created_at": "created_at",
+   "resolved_at": "resolved_at",
+   "sla_met": "made_sla",
+   "priority": "priority",
+   "team": "first_team",
+   "category": "category",
+   "features": [
+    "channel",
+    "impact",
+    "urgency",
+    "subcategory",
+    "location"
+   ]
+  },
+  "summary": {
+   "items": 24918,
+   "from": "2016-02-29",
+   "to": "2017-02-16",
+   "days": 207,
+   "missed_pct": 36.6,
+   "median_min": 1548.0,
+   "p90_min": 51213.5,
+   "by_team": [
+    {
+     "name": "Group 9",
+     "items": 344,
+     "missed_pct": 88.1
+    },
+    {
+     "name": "Group 75",
+     "items": 63,
+     "missed_pct": 81.0
+    },
+    {
+     "name": "Group 15",
+     "items": 37,
+     "missed_pct": 78.4
+    },
+    {
+     "name": "Group 10",
+     "items": 324,
+     "missed_pct": 75.0
+    },
+    {
+     "name": "Group 12",
+     "items": 91,
+     "missed_pct": 74.7
+    },
+    {
+     "name": "Group 81",
+     "items": 30,
+     "missed_pct": 73.3
+    }
+   ],
+   "by_category": [
+    {
+     "name": "Category 22",
+     "items": 52,
+     "missed_pct": 80.8
+    },
+    {
+     "name": "Category 55",
+     "items": 106,
+     "missed_pct": 79.2
+    },
+    {
+     "name": "Category 45",
+     "items": 602,
+     "missed_pct": 74.1
+    },
+    {
+     "name": "Category 34",
+     "items": 501,
+     "missed_pct": 66.5
+    },
+    {
+     "name": "Category 7",
+     "items": 31,
+     "missed_pct": 61.3
+    },
+    {
+     "name": "Category 40",
+     "items": 436,
+     "missed_pct": 61.0
+    }
+   ],
+   "by_priority": [
+    {
+     "name": "2 - High",
+     "items": 408,
+     "missed_pct": 99.5
+    },
+    {
+     "name": "1 - Critical",
+     "items": 270,
+     "missed_pct": 98.1
+    },
+    {
+     "name": "3 - Moderate",
+     "items": 23466,
+     "missed_pct": 35.5
+    },
+    {
+     "name": "4 - Low",
+     "items": 774,
+     "missed_pct": 15.9
+    }
+   ]
+  },
+  "notes": [
+   "A miss is the file's own \"made_sla\" column.",
+   "1556 items have no end in the file; they count as still open at its end."
+  ],
+  "dropped_after_the_fact": [],
+  "features": [
+   "opened at hour",
+   "weekday",
+   "open when it arrived",
+   "arrived in the hour before",
+   "open in its team",
+   "priority",
+   "team",
+   "category",
+   "channel",
+   "impact",
+   "urgency",
+   "subcategory",
+   "location"
+  ],
+  "rule_column": "subcategory",
+  "learn": {
+   "items": 17442,
+   "from": "2016-02-29",
+   "to": "2016-05-02"
+  },
+  "test": {
+   "items": 7476,
+   "from": "2016-05-02",
+   "to": "2017-02-16"
+  },
+  "warning": {
+   "auc": {
+    "opslens": 0.796,
+    "rule": 0.688,
+    "priority": 0.575
+   },
+   "caught_pct": {
+    "opslens": 48.9,
+    "rule": 39.1,
+    "priority": 25.5
+   },
+   "misses": 1741,
+   "items": 7476,
+   "vs": {
+    "rival": "priority",
+    "gap_pts": 23.4,
+    "ci": [
+     20.1,
+     26.3
+    ]
+   },
+   "at_risk": [
+    {
+     "id": "INC0031766",
+     "opened": "2016-05-20 17:13",
+     "risk": 0.988,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.76
+      },
+      {
+       "text": "team: Group 65",
+       "share": 0.15
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0031344",
+     "opened": "2016-05-19 15:42",
+     "risk": 0.987,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 1 - Critical",
+       "share": 0.75
+      },
+      {
+       "text": "team: Group 55",
+       "share": 0.13
+      },
+      {
+       "text": "location: Location 18",
+       "share": 0.05
+      }
+     ]
+    },
+    {
+     "id": "INC0030083",
+     "opened": "2016-05-17 00:17",
+     "risk": 0.987,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.75
+      },
+      {
+       "text": "team: Group 65",
+       "share": 0.15
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0030920",
+     "opened": "2016-05-18 15:46",
+     "risk": 0.987,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 1 - Critical",
+       "share": 0.77
+      },
+      {
+       "text": "team: Group 65",
+       "share": 0.14
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0033896",
+     "opened": "2016-05-30 15:40",
+     "risk": 0.986,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 1 - Critical",
+       "share": 0.76
+      },
+      {
+       "text": "team: Group 65",
+       "share": 0.14
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0031809",
+     "opened": "2016-05-20 20:19",
+     "risk": 0.986,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.78
+      },
+      {
+       "text": "team: Group 65",
+       "share": 0.15
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.04
+      }
+     ]
+    },
+    {
+     "id": "INC0029503",
+     "opened": "2016-05-15 01:44",
+     "risk": 0.986,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.78
+      },
+      {
+       "text": "team: Group 65",
+       "share": 0.15
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.04
+      }
+     ]
+    },
+    {
+     "id": "INC0026626",
+     "opened": "2016-05-06 00:59",
+     "risk": 0.985,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 1 - Critical",
+       "share": 0.79
+      },
+      {
+       "text": "team: Group 55",
+       "share": 0.14
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.04
+      }
+     ]
+    }
+   ]
+  },
+  "shadow": {
+   "date": "2016-05-05",
+   "weekday": "Thu",
+   "items": 403,
+   "misses": 111,
+   "flags": 81,
+   "caught": {
+    "opslens": 50,
+    "rule": 47,
+    "priority": 22
+   },
+   "examples": [
+    {
+     "id": "INC0026571",
+     "opened": "17:19",
+     "risk": 0.972,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.81
+      },
+      {
+       "text": "team: Group 20",
+       "share": 0.13
+      },
+      {
+       "text": "location: (other)",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0026103",
+     "opened": "01:00",
+     "risk": 0.972,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.67
+      },
+      {
+       "text": "team: Group 10",
+       "share": 0.29
+      },
+      {
+       "text": "58 open in its team",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0026286",
+     "opened": "10:39",
+     "risk": 0.97,
+     "missed": false,
+     "reasons": [
+      {
+       "text": "priority 1 - Critical",
+       "share": 0.78
+      },
+      {
+       "text": "team: Group 20",
+       "share": 0.15
+      },
+      {
+       "text": "urgency: 1 - High",
+       "share": 0.03
+      }
+     ]
+    },
+    {
+     "id": "INC0026418",
+     "opened": "13:26",
+     "risk": 0.969,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.67
+      },
+      {
+       "text": "team: Group 31",
+       "share": 0.18
+      },
+      {
+       "text": "subcategory: Subcategory 88",
+       "share": 0.07
+      }
+     ]
+    },
+    {
+     "id": "INC0026304",
+     "opened": "10:54",
+     "risk": 0.968,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.69
+      },
+      {
+       "text": "team: Group 72",
+       "share": 0.21
+      },
+      {
+       "text": "subcategory: Subcategory 163",
+       "share": 0.04
+      }
+     ]
+    },
+    {
+     "id": "INC0026340",
+     "opened": "11:31",
+     "risk": 0.967,
+     "missed": true,
+     "reasons": [
+      {
+       "text": "priority 2 - High",
+       "share": 0.68
+      },
+      {
+       "text": "team: Group 72",
+       "share": 0.22
+      },
+      {
+       "text": "subcategory: Subcategory 163",
+       "share": 0.05
+      }
+     ]
+    }
+   ]
+  },
+  "cards": [
+   {
+    "column": "category",
+    "value": "Category 46",
+    "learn_pct": 55.9,
+    "learn_rest_pct": 40.8,
+    "learn_items": 1727,
+    "excess_misses": 261.8,
+    "test_pct": 40.9,
+    "test_rest_pct": 21.5,
+    "test_items": 705,
+    "gap_ci": [
+     15.3,
+     23.1
+    ],
+    "still_true": true,
+    "examples": [
+     "INC0024858",
+     "INC0024958",
+     "INC0024983"
+    ]
+   },
+   {
+    "column": "urgency",
+    "value": "1 - High",
+    "learn_pct": 98.2,
+    "learn_rest_pct": 41.0,
+    "learn_items": 379,
+    "excess_misses": 216.5,
+    "test_pct": 98.0,
+    "test_rest_pct": 21.7,
+    "test_items": 152,
+    "gap_ci": [
+     72.6,
+     79.4
+    ],
+    "still_true": true,
+    "examples": [
+     "INC0024983",
+     "INC0025009",
+     "INC0025032"
+    ]
+   },
+   {
+    "column": "category",
+    "value": "Category 45",
+    "learn_pct": 74.9,
+    "learn_rest_pct": 41.2,
+    "learn_items": 538,
+    "excess_misses": 181.1,
+    "test_pct": 67.2,
+    "test_rest_pct": 22.9,
+    "test_items": 64,
+    "gap_ci": [
+     32.9,
+     54.7
+    ],
+    "still_true": true,
+    "examples": [
+     "INC0026826",
+     "INC0041123",
+     "INC0047485"
+    ]
+   },
+   {
+    "column": "priority",
+    "value": "2 - High",
+    "learn_pct": 99.7,
+    "learn_rest_pct": 41.3,
+    "learn_items": 288,
+    "excess_misses": 168.0,
+    "test_pct": 99.2,
+    "test_rest_pct": 22.1,
+    "test_items": 120,
+    "gap_ci": [
+     74.3,
+     79.8
+    ],
+    "still_true": true,
+    "examples": [
+     "INC0024983",
+     "INC0025085",
+     "INC0025176"
+    ]
+   },
+   {
+    "column": "impact",
+    "value": "1 - High",
+    "learn_pct": 98.9,
+    "learn_rest_pct": 41.4,
+    "learn_items": 279,
+    "excess_misses": 160.6,
+    "test_pct": 98.6,
+    "test_rest_pct": 21.8,
+    "test_items": 142,
+    "gap_ci": [
+     73.5,
+     79.7
+    ],
+    "still_true": true,
+    "examples": [
+     "INC0025009",
+     "INC0025032",
+     "INC0025096"
+    ]
+   },
+   {
+    "column": "team",
+    "value": "Group 9",
+    "learn_pct": 87.8,
+    "learn_rest_pct": 41.6,
+    "learn_items": 254,
+    "excess_misses": 117.3,
+    "test_pct": 88.9,
+    "test_rest_pct": 22.5,
+    "test_items": 90,
+    "gap_ci": [
+     59.4,
+     74.9
+    ],
+    "still_true": true,
+    "examples": [
+     "INC0025378",
+     "INC0025396",
+     "INC0025402"
+    ]
+   }
+  ],
+  "flag_share_pct": 20,
+  "steps": [
+   {
+    "name": "Reading the file and the column mapping",
+    "seconds": 0.2
+   },
+   {
+    "name": "Checking the file can be learned from",
+    "seconds": 0.0
+   },
+   {
+    "name": "Building what was known when each item opened",
+    "seconds": 0.2
+   },
+   {
+    "name": "Learning on the first 70% of items",
+    "seconds": 0.4
+   },
+   {
+    "name": "Scoring the last 30%, which it never saw",
+    "seconds": 0.2
+   },
+   {
+    "name": "Shadow mode on the busiest later day",
+    "seconds": 0.0
+   },
+   {
+    "name": "Finding recurring problems, then checking them on later items",
+    "seconds": 0.5
+   }
+  ],
+  "seconds": 1.5,
+  "cannot": [
+   "Replay your floor under OpsLens's dispatch: that needs how long each item was actually worked on, who was on shift and who can handle what. A log records one way of working, not those.",
+   "Say what would have happened to an item OpsLens flagged: every outcome shown is your file's own."
+  ],
+  "scale": {
+   "rows": 100000,
+   "seconds": 2.9,
+   "file": "generated delivery orders (tests/test_anyfile.py), 90 days"
   }
  },
  "v6": {

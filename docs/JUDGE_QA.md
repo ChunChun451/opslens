@@ -459,3 +459,21 @@ We tried, with the rule written first. Round 1's best mode (value per minute of 
 week (−0.006 points) but was lowest in only 18 of 30 new worlds — we needed 27. Switching to least slack fired too
 often on normal weeks. v5 stays; it still beat the industry standard in 30 of 30 new worlds.
 
+**Q85. Can I upload my own CSV and see what OpsLens would have done?**
+Yes. Map start, end or duration, and what a miss is. OpsLens learns on your first 70% and scores the rest once. On the UCI log
+as a plain CSV it took 1.5 s: flagging 1 item in 5 as they opened, it caught 48.9% of the real misses; the priority field 25.5%.
+
+**Q86. (Attack) Then tell me how many SLA breaches I would have had with OpsLens.**
+Not from a log, honestly. Replaying your floor needs how long each item was worked on, who was on shift and who can handle
+what; an export has none of these. We show what a log can answer: which misses OpsLens would have flagged in time. In shadow
+mode, the busiest later day of the UCI log: 50 of 111 real misses flagged, the priority field 22.
+
+**Q87. (Attack) Couldn't a column in my file leak the answer?**
+Three guards: outcome-like names (resolved, closed, sla, duration, taken...) are never suggested; you can untick any column;
+and any column that alone sorts the learning items almost perfectly is dropped as written after the fact. A test plants
+such a column and checks it is dropped; the screen lists every column it learned from.
+
+**Q88. What if my file is junk or too small?**
+It is refused, with the reason: it needs at least 500 rows, 7 days, 30 misses and 30 in time, and items that end after they
+start. A 100,000-row file takes 2.9 s.
+

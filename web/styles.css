@@ -2095,3 +2095,21 @@ body.has-fixture .ask-panel {
   font-size: 0.74rem;
   color: var(--muted);
 }
+
+/* ---- Your data: OpsLens on your file (25 Oct) ----------------------------------------------- */
+.up-miss { display: grid; gap: 10px; }
+.up-miss label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.up-miss .field { display: inline-flex; }
+.up-miss .field-label:empty { display: none; }
+.up-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.up-check { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+.up-check small { grid-column: 2; color: var(--muted); font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.up-step { display: flex; align-items: center; gap: 10px; color: var(--muted); }
+.up-step.is-done { color: var(--ink-2); }
+.up-step.is-now { color: var(--ink); font-weight: 600; }
+.up-mark { width: 18px; display: inline-flex; justify-content: center; color: var(--blue); }
+.up-step .spinner { width: 14px; height: 14px; }
+.bad { color: var(--bad); }
+.mono { font-variant-numeric: tabular-nums; }
