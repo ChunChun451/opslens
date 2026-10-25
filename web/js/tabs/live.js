@@ -43,7 +43,7 @@ let draft = clone(NORMAL);
 let waitingSince = null;
 let seenDecisions = new Set();
 let lastGap = null; // the live gap last drawn (for the mascot's cheer)
-const JOKE = "Dosa ke jagah biryani de diya!"; // the owner's line; the others are real masked tickets
+const JOKE = "Waiting for the first ticket…"; // shown until the live floor has real tickets in danger
 let lines = [JOKE];
 let lineIndex = 0;
 let talk = null;
@@ -77,7 +77,7 @@ export function render(section) {
       <div class="lv-scene" aria-hidden="true">
         <div class="lv-scene-customer">${customerHtml("lv-customer")}${biryaniHtml("lv-biryani")}<div class="lv-say" id="lv-say">${escapeHtml(JOKE)}</div></div>
         <div class="lv-scene-track"><i class="tk"></i><i class="tk"></i><i class="tk"></i><i class="tk"></i></div>
-        <div class="lv-scene-lenny"><div class="lv-scene-status" id="lv-scene-status">Lenny is on shift</div>${mascotHtml("lv-mascot", "tired")}</div>
+        <div class="lv-scene-lenny"><div class="lv-scene-status" id="lv-scene-status">On shift</div>${mascotHtml("lv-mascot", "tired")}</div>
       </div>
 
       <div class="lv-floors">
@@ -311,8 +311,10 @@ function draw(d) {
   const waiting = ours.waiting;
   setMood("lv-mascot", waiting >= BUSY_WAITING ? "tired" : "idle");
   const status = document.getElementById("lv-scene-status");
-  if (status) status.textContent = waiting >= BUSY_WAITING ? `${waiting} customers waiting… phew!` : `${waiting} waiting, all calm`;
-  lines = [JOKE, ...d.danger.slice(0, 4).map((t) => t.text).filter(Boolean)];
+  if (status) status.textContent = waiting >= BUSY_WAITING ? `${waiting} customers waiting, busy` : `${waiting} waiting, all calm`;
+  // Clean skin (25 Oct): the strip shows only real (masked) tickets in danger, no made-up line.
+  const real = d.danger.slice(0, 4).map((t) => t.text).filter(Boolean);
+  lines = real.length ? real : [JOKE];
   bump("lv-saved", String(Math.abs(diff)));
   document.getElementById("lv-saved-label").textContent = diff >= 0
     ? `more customer${diff === 1 ? "" : "s"} helped in time today, with the same agents`

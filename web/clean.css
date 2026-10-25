@@ -1,0 +1,677 @@
+/*
+  OpsLens "Clean" skin (25 Oct, owner: "same features, better design, no AI slop").
+
+  What it is: the last style layer. It changes how things look, never what they do. Every screen,
+  button and live feature is the same JavaScript as before; this file only restyles it.
+  Why: the neon skin (glows, gradients, aurora, cartoon characters) read as generated. A support
+  floor tool should feel like an instrument: calm surfaces, one accent, numbers that line up.
+
+  The system (use these, not new colours):
+  - Graphite dark (default, html[data-theme="dark"]) and a light theme (html[data-theme="light"]).
+  - One accent, blue, for OpsLens. Grey for every other way of working. Coral for a missed
+    promise. Violet only for "rescue from another team" on the floor. Green only for "live".
+  - Inter (bundled, works offline) with tabular numbers, so columns of numbers line up.
+  - Motion answers a change (a number counts up, a ticket arrives, a view opens) or shows live
+    state (the live dot). Nothing glows, drifts or shimmers. All motion stops for reduced motion.
+
+  Example: the Live now hero is a plain dark panel; "7 more customers helped" is the one big
+  number, in the accent; the industry standard's bar is grey, OpsLens's is blue.
+*/
+
+/* ---- 1. Tokens ---------------------------------------------------------------------------- */
+:root {
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Inter", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f9fafb;
+  --surface-3: #f1f3f6;
+  --border: #e4e7ec;
+  --border-strong: #d2d7de;
+  --ink: #0e1116;
+  --ink-2: #3d4554;
+  --muted: #5e6876;
+  --text: var(--ink);
+  --blue: #2158d4;
+  --blue-soft: rgba(33, 88, 212, 0.08);
+  --accent: var(--blue);
+  --violet: #7048e8;
+  --magenta: #7048e8;
+  --good: #0f8a5f;
+  --good-soft: rgba(15, 138, 95, 0.08);
+  --bad: #c2410c;
+  --bad-soft: rgba(194, 65, 12, 0.07);
+  --warn: #a16207;
+  --warn-soft: rgba(161, 98, 7, 0.08);
+  --brand: var(--blue);
+  --base: #9aa1ab;
+  --nav-bg: #fbfbfc;
+  --nav-ink: #465060;
+  --nav-active: #ffffff;
+  --night: #ffffff;
+  --night-2: #f9fafb;
+  --saffron: var(--blue);
+  --saffron-soft: var(--blue-soft);
+  --chilli: var(--bad);
+  --kept: var(--blue);
+  --missed: var(--bad);
+  --reported: var(--muted);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(14, 17, 22, 0.04);
+  --shadow-hover: 0 1px 2px rgba(14, 17, 22, 0.06), 0 6px 16px -8px rgba(14, 17, 22, 0.12);
+  --shadow-lg: 0 24px 56px -16px rgba(14, 17, 22, 0.28), 0 0 0 1px rgba(14, 17, 22, 0.06);
+  --ease: cubic-bezier(0.16, 0.84, 0.24, 1);
+  --glow-cyan: none;
+  --glow-violet: none;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0d10;
+  --surface: #111419;
+  --surface-2: #161a20;
+  --surface-3: #1c2129;
+  --border: #22272f;
+  --border-strong: #30363f;
+  --ink: #eceef1;
+  --ink-2: #c4c9d1;
+  --muted: #8b939f;
+  --blue: #7aabff;
+  --blue-soft: rgba(122, 171, 255, 0.12);
+  --violet: #b69cff;
+  --magenta: #b69cff;
+  --good: #5bd6a8;
+  --good-soft: rgba(91, 214, 168, 0.1);
+  --bad: #ff8f6b;
+  --bad-soft: rgba(255, 143, 107, 0.11);
+  --warn: #f2c14e;
+  --warn-soft: rgba(242, 193, 78, 0.1);
+  --base: #5c6370;
+  --nav-bg: #0b0d10;
+  --nav-ink: #a6adb8;
+  --nav-active: #161a20;
+  --night: #111419;
+  --night-2: #161a20;
+  --shadow: none;
+  --shadow-hover: 0 0 0 1px var(--border-strong);
+  --shadow-lg: 0 28px 64px -18px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border-strong);
+}
+
+/* ---- 2. Base ------------------------------------------------------------------------------ */
+body {
+  background: var(--bg) !important;
+  color: var(--ink);
+  font-family: var(--font);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+body::before { content: none !important; }
+::selection { background: var(--blue-soft); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.ev, .stat-value, .lv-big, .lv-clock, .live-clock, table td, .mission-score .v, .count, kbd,
+.lt-ours, .lt-theirs, .tw-big, .fix-number { font-variant-numeric: tabular-nums; }
+
+/* ---- 3. Frame: side menu, top bar --------------------------------------------------------- */
+.sidebar {
+  background: var(--nav-bg) !important;
+  border-right: 1px solid var(--border) !important;
+  backdrop-filter: none !important;
+}
+.brand-name { color: var(--ink) !important; font-weight: 650; letter-spacing: -0.02em; }
+.brand-tag { color: var(--muted); }
+.brand-by { background: none !important; color: var(--muted) !important; padding: 0; font-weight: 600; font-size: 0.7rem; }
+.brand-logo { filter: none !important; }
+.nav a { color: var(--nav-ink) !important; border-radius: 9px; transition: background 0.18s var(--ease), color 0.18s var(--ease); }
+.nav a:hover { background: var(--surface-2) !important; color: var(--ink) !important; }
+.nav a[aria-current="page"] {
+  background: var(--nav-active) !important;
+  color: var(--ink) !important;
+  box-shadow: inset 0 0 0 1px var(--border) !important;
+}
+.nav a[aria-current="page"]::before { background: var(--blue) !important; box-shadow: none !important; }
+.nav a[aria-current="page"] .nav-icon { color: var(--blue) !important; stroke: var(--blue) !important; }
+.sidebar-foot { color: var(--muted) !important; border-color: var(--border) !important; }
+.intro-replay { background: var(--surface) !important; color: var(--ink) !important; border: 1px solid var(--border) !important; }
+.intro-replay svg { fill: var(--blue) !important; }
+
+.live-ticker {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+.lt-ours { color: var(--blue) !important; }
+.lt-theirs { color: var(--muted) !important; }
+
+.topbar {
+  background: color-mix(in srgb, var(--bg) 86%, transparent) !important;
+  border-bottom: 1px solid var(--border) !important;
+  backdrop-filter: saturate(140%) blur(10px) !important;
+}
+.status { color: var(--muted) !important; }
+.status-dot { background: var(--good) !important; box-shadow: none !important; }
+.world-switch { background: var(--surface) !important; border: 1px solid var(--border) !important; box-shadow: none !important; }
+.world-switch button { color: var(--muted) !important; background: transparent !important; box-shadow: none !important; }
+.world-switch button[aria-pressed="true"] {
+  background: var(--surface-3) !important;
+  color: var(--ink) !important;
+  box-shadow: inset 0 0 0 1px var(--border-strong) !important;
+}
+.world-switch button span { color: var(--muted) !important; }
+.ask-form {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.ask-form:focus-within { border-color: var(--blue) !important; box-shadow: 0 0 0 4px var(--blue-soft) !important; }
+.ask-form svg { fill: none; stroke: var(--blue); stroke-width: 1.8; }
+.ask-form input { color: var(--ink) !important; background: transparent !important; }
+.ask-form input::placeholder { color: var(--muted) !important; }
+kbd { background: var(--surface-2) !important; color: var(--muted) !important; border: 1px solid var(--border-strong) !important; box-shadow: none !important; }
+
+/* ---- 4. Buttons, pills, tabs, inputs ------------------------------------------------------ */
+.btn {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease), transform 0.18s var(--ease);
+}
+.btn:hover { border-color: var(--muted) !important; filter: none !important; }
+.btn:active { transform: translateY(1px); }
+.btn-primary, #story-button {
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+  border-color: var(--ink) !important;
+}
+.btn-primary:hover, #story-button:hover { background: var(--ink-2) !important; border-color: var(--ink-2) !important; }
+.btn-primary svg, #story-button svg { fill: currentColor; }
+.btn.ghost { background: transparent !important; }
+.theme-switch .swatch {
+  background: linear-gradient(90deg, var(--ink) 50%, var(--surface) 50%) !important;
+  box-shadow: inset 0 0 0 1px var(--border-strong) !important;
+}
+#plan-button .count, .count {
+  background: var(--blue-soft) !important;
+  color: var(--blue) !important;
+  box-shadow: none !important;
+}
+.pill { background: var(--surface-2) !important; color: var(--ink-2) !important; border: 1px solid var(--border) !important; }
+.pill.p1 { background: var(--bad-soft) !important; color: var(--bad) !important; border-color: transparent !important; }
+.pill.good { background: var(--good-soft) !important; color: var(--good) !important; }
+.subnav button {
+  background: transparent !important;
+  color: var(--muted) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  transition: color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.subnav button:hover { color: var(--ink) !important; background: var(--surface-2) !important; }
+.subnav button[aria-current="true"] {
+  color: var(--ink) !important;
+  background: var(--surface) !important;
+  border-color: var(--border-strong) !important;
+}
+.chip-btn {
+  background: var(--surface) !important;
+  color: var(--ink-2) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+.chip-btn:hover { border-color: var(--border-strong) !important; color: var(--ink) !important; }
+.chip-btn[aria-pressed="true"], .chip-btn.is-on {
+  background: var(--blue-soft) !important;
+  border-color: var(--blue) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+input[type="text"], input[type="number"], select, textarea, .plan-sim select {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: none !important;
+}
+input[type="range"] { accent-color: var(--blue); }
+input[type="range"]::-webkit-slider-thumb { background: var(--surface) !important; border: 2px solid var(--blue) !important; box-shadow: none !important; }
+input[type="range"]::-moz-range-thumb { background: var(--surface) !important; border: 2px solid var(--blue) !important; box-shadow: none !important; }
+.segmented, .dropzone { background: var(--surface-2) !important; border-color: var(--border-strong) !important; }
+#lv-apply.is-ready { box-shadow: 0 0 0 2px var(--blue) !important; }
+
+/* ---- 5. Pages and panels ------------------------------------------------------------------ */
+.page-title {
+  font-family: var(--font-display) !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--ink) !important;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  animation: none !important;
+}
+.card-title, .ledger-claim, .challenge-q, .mission h2 {
+  font-family: var(--font-display) !important;
+  color: var(--ink) !important;
+  letter-spacing: -0.015em;
+}
+.page-sub, .card-sub, .stat-label, .stat-sub, .section-label { color: var(--muted) !important; }
+.stat-value { color: var(--ink) !important; }
+.divider, hr { border-color: var(--border) !important; }
+
+.card, .stat-card, .proof, .challenge, .playbook, .week, .stepper, .live-volume, .fold, .fact,
+.lv-lane, .lv-feed, .tale-card {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  backdrop-filter: none !important;
+}
+.card { transition: border-color 0.2s var(--ease); }
+.card:hover { border-color: var(--border-strong) !important; box-shadow: var(--shadow) !important; }
+.fold[open] { border-color: var(--border-strong) !important; box-shadow: var(--shadow) !important; }
+.fold > summary:hover { background: var(--surface-2) !important; }
+.fact b, .fact b .ev { color: var(--ink) !important; text-shadow: none !important; }
+.challenge { border-left: 1px solid var(--border) !important; }
+.proof::before { background: var(--blue) !important; }
+
+/* Clickable numbers: quiet ink, a dotted underline says "click me", the accent on hover. */
+.ev {
+  color: inherit !important;
+  text-shadow: none !important;
+  text-decoration: underline dotted color-mix(in srgb, var(--muted) 55%, transparent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.ev:hover, .ev:focus-visible { color: var(--blue) !important; background: var(--blue-soft) !important; text-decoration-color: var(--blue); }
+.ev-text:hover, .ev-text:focus-visible { background: var(--blue-soft) !important; }
+.stat-value .ev, .proof-a .ev { color: inherit !important; text-shadow: none !important; }
+
+/* Tables. */
+table th { color: var(--muted) !important; border-color: var(--border) !important; background: transparent !important; font-weight: 550; }
+table td { border-color: var(--border) !important; color: var(--ink-2) !important; }
+tbody tr:hover td { background: var(--surface-2) !important; }
+.kpi-table td.better .ev, .delta.good, .better { color: var(--good) !important; }
+
+/* Bars, rings, tracks. */
+.cbar-track, .queue-track, .share-bar, .lv-bar-track { background: var(--surface-3) !important; }
+.reason-bar { background: var(--ink-2) !important; box-shadow: none !important; }
+.cbar-fill { box-shadow: none !important; }
+.cbar.is-ours .cbar-fill { background: var(--blue) !important; box-shadow: none !important; }
+.ring { background: conic-gradient(var(--c) calc(var(--p) * 1%), var(--surface-3) 0) !important; }
+.ring-value { color: var(--ink) !important; }
+
+/* Messages. */
+.callout { background: var(--surface-2) !important; border: 1px solid var(--border) !important; color: var(--ink-2) !important; }
+.callout.warn, .ticket .action.warn { background: var(--warn-soft) !important; color: var(--ink-2) !important; border-color: transparent !important; }
+.action { background: var(--blue-soft) !important; border: 1px solid transparent !important; color: var(--ink-2) !important; }
+.alert-score { background: var(--surface-2) !important; color: var(--ink-2) !important; border: 1px solid var(--border) !important; }
+.disclosure summary { color: var(--ink-2) !important; }
+
+/* Floating panels: evidence, Ask answer, Your plan, story card. */
+.evidence-popover, .ask-panel, .plan-panel, .story-card {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: var(--shadow-lg) !important;
+  backdrop-filter: none !important;
+}
+.story-card .btn-primary { background: var(--ink) !important; color: var(--bg) !important; }
+.story-target {
+  outline: 2px solid var(--blue) !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 8px var(--blue-soft) !important;
+}
+
+/* ---- 6. The dark bands become plain panels ------------------------------------------------ */
+.mission, .ledger-tally, .lv-hero {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+  background-clip: border-box !important;
+}
+.lv-hero::before, .lv-hero::after { content: none !important; }
+.mission h2 span { color: var(--ink) !important; background: none !important; }
+.mission .btn { background: var(--surface) !important; color: var(--ink) !important; border-color: var(--border-strong) !important; box-shadow: none !important; }
+.mission-score .ours .v, .live-saved b, .ledger-tally .t-kept { color: var(--blue) !important; text-shadow: none !important; }
+.mission-score .theirs .v, .ledger-tally .t-missed { color: var(--muted) !important; text-shadow: none !important; }
+.mission-score .v .ev, .ledger-tally .ev, .live-risk .ev { color: inherit !important; text-shadow: none !important; }
+.mission-progress > i, .live-progress i { background: var(--blue) !important; box-shadow: none !important; }
+.live-clock, .lv-clock { text-shadow: none !important; animation: none !important; color: var(--ink) !important; }
+.live-dot { background: var(--good) !important; box-shadow: none !important; }
+.lv-big { text-shadow: none !important; color: var(--blue) !important; }
+.lv-big .bumped { animation: lv-bump 0.6s var(--ease) !important; }
+@keyframes lv-bump { from { transform: translateY(-6px); opacity: 0.4; } to { transform: none; opacity: 1; } }
+.lv-bar.ours i, .lv-bar-track .ours, .lv-bar.ours .lv-bar-track i { background: var(--blue) !important; box-shadow: none !important; }
+.lv-bar.theirs i, .lv-bar.theirs .lv-bar-track i { background: var(--base) !important; box-shadow: none !important; }
+.lv-lane.is-ours { border-color: color-mix(in srgb, var(--blue) 45%, var(--border)) !important; box-shadow: none !important; }
+.lv-lane.is-ours::after { content: none !important; }
+.lv-risk, .lv-risk .ev, .live-risk { color: var(--bad) !important; text-shadow: none !important; }
+.live-ticket, .live-decisions li, .lv-decisions li { border-color: var(--border) !important; }
+.lv-decisions li.fresh { animation: slide-in 0.6s var(--ease) !important; }
+
+/* ---- 7. The floor: agents, rescues, waiting and late customers ---------------------------- */
+.tile.busy, .mission .tile.busy { background: var(--blue) !important; box-shadow: none !important; animation: none !important; filter: none !important; }
+.tile.cross, .mission .tile.cross { background: var(--violet) !important; box-shadow: none !important; animation: none !important; filter: none !important; }
+.tile.wrong, .mission .tile.wrong { background: var(--bad) !important; box-shadow: none !important; }
+.tile.idle { background: transparent !important; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--blue) 55%, transparent) !important; }
+.dot { background: color-mix(in srgb, var(--muted) 55%, transparent) !important; box-shadow: none !important; }
+.dot.late, .mission .dot.late { background: var(--bad) !important; box-shadow: none !important; }
+.floor-team { background: var(--surface-2) !important; border-color: var(--border) !important; }
+.floor-name, .floor-legend { color: var(--muted) !important; }
+.floor-name b { color: var(--ink) !important; }
+
+/* ---- 8. Live now's incoming strip: the latest complaint and tickets flowing in, no cartoon -- */
+.lv-scene {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  padding: 14px 20px !important;
+  min-height: 0;
+}
+.lv-scene .customer, .lv-scene .biryani, .lv-scene .mascot, .lv-scene .biryani-wish { display: none !important; }
+.lv-scene-customer::before {
+  content: "Incoming";
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.lv-say {
+  background: transparent !important;
+  color: var(--ink) !important;
+  font-weight: 500 !important;
+  font-size: 0.98rem !important;
+  padding: 0 !important;
+  max-width: 420px !important;
+}
+.lv-say::before { content: none !important; }
+.lv-scene-track::before { border-top: 1px dashed var(--border-strong) !important; }
+.lv-scene-track .tk {
+  background: var(--surface-3) !important;
+  box-shadow: inset 0 0 0 1px var(--border-strong) !important;
+  border-radius: 4px !important;
+}
+.lv-scene-track .tk::after { background: var(--blue) !important; box-shadow: 0 4px 0 var(--muted) !important; }
+.lv-scene-lenny::after {
+  content: "";
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  box-shadow: inset 0 0 0 5px var(--surface), inset 0 0 0 9px var(--blue);
+}
+.lv-scene-status { color: var(--muted) !important; }
+
+/* ---- 9. Decoration that is gone: cartoon strips, characters, seasonal doodles -------------- */
+.sc, .lv-sleep .mascot, .mascot-bubble, .mascot-z, .doodle, .sc-stage { display: none !important; }
+.chr svg, .mascot svg { filter: none !important; }
+
+/* Loading while the simulator runs (What-if, Your data): a calm progress line, no chase scene. */
+.chase {
+  position: relative;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+.chase :is(.ch-old, .ch-bin, .ch-thrower, .ch-fly, .ch-card, .ch-run, .ch-crowd, .ch-badge, .ch-speed, .ch-ground, .heart, .chr, .mascot) { display: none !important; }
+.chase::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 30%;
+  background: var(--blue);
+  animation: clean-load 1.4s var(--ease) infinite;
+}
+@keyframes clean-load { from { left: -30%; } to { left: 100%; } }
+.ch-say { background: transparent !important; color: var(--ink-2) !important; box-shadow: none !important; }
+.ch-say::before, .ch-say::after { content: none !important; }
+
+/* ---- 10. Story cards: "Out of 1,000 customers" and "Follow one ticket" ---------------------- */
+.tw-chip { box-shadow: none !important; }
+.tw-big { color: var(--blue) !important; text-shadow: none !important; }
+.jr-city, .dl-cloud, .rider, .jr-avatar svg { display: none !important; }
+.jr-line { background: var(--border-strong) !important; box-shadow: none !important; }
+.jr-step { box-shadow: none !important; }
+.jr-meter i { background: var(--blue) !important; box-shadow: none !important; }
+
+/* ---- 11. Ledger -------------------------------------------------------------------------- */
+.ledger::before { background: var(--border-strong) !important; }
+.ledger-entry { border-color: var(--border) !important; }
+.ledger-entry::before { background: var(--bg) !important; box-shadow: none !important; }
+.ledger-entry.is-kept::before { background: var(--blue) !important; }
+.ledger-entry.is-missed::before { box-shadow: none !important; }
+.ledger-when time { color: var(--ink) !important; }
+.ledger-when a { color: var(--blue) !important; }
+.is-kept .ledger-stamp { color: var(--blue) !important; border-color: var(--blue) !important; background: var(--blue-soft) !important; box-shadow: none !important; }
+.is-missed .ledger-stamp { color: var(--bad) !important; border-color: color-mix(in srgb, var(--bad) 60%, transparent) !important; background: transparent !important; box-shadow: none !important; }
+
+/* ---- 12. Findings, fixes, tickets ---------------------------------------------------------- */
+.finding-card, .fix-card { box-shadow: var(--shadow) !important; }
+.finding-card:hover, .fix-card:hover, .risk-cards .ticket:hover { box-shadow: var(--shadow-hover) !important; border-color: var(--border-strong) !important; }
+.cbar-fill.is-bad { box-shadow: none !important; }
+.fix-card.is-win .fix-number, .fix-card.is-win .fix-number .ev { text-shadow: none !important; }
+
+/* ---- 13. OpsLens AI (the assistant in the side menu) -------------------------------------- */
+.bot-launch {
+  background: var(--surface) !important;
+  background-image: none !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: none !important;
+  animation: none !important;
+  filter: none !important;
+}
+.bot-launch:hover { border-color: var(--blue) !important; }
+.bot-launch .bl-text b, .bot-launch .bl-text small { text-shadow: none !important; }
+.bot-launch .bl-text small { color: var(--muted) !important; }
+.bot-launch .bl-ping { background: var(--good) !important; box-shadow: none !important; }
+.bot-launch .mascot { background: transparent !important; }
+.bot-panel {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border-left: 1px solid var(--border-strong) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.bp-head { background: var(--surface) !important; animation: none !important; border-bottom: 1px solid var(--border) !important; }
+.bp-title span, .bs-group > span, .bm-related > span, .bm-src, .bt-tag small { color: var(--muted) !important; }
+.bp-close { background: var(--surface-2) !important; color: var(--ink) !important; border: 1px solid var(--border) !important; }
+.bm-bot .bm-bubble { background: var(--surface-2) !important; border: 1px solid var(--border) !important; color: var(--ink) !important; }
+.bm-user .bm-bubble { background: var(--ink) !important; color: var(--bg) !important; }
+.bm-bubble code { background: var(--surface-3) !important; }
+.bot-chip { background: var(--surface) !important; border: 1px solid var(--border-strong) !important; color: var(--ink-2) !important; }
+.bot-chip:hover { border-color: var(--blue) !important; color: var(--ink) !important; background: var(--blue-soft) !important; }
+.bm-id { background: var(--surface-3) !important; color: var(--ink-2) !important; }
+.bm-id.is-engine { background: var(--blue-soft) !important; color: var(--blue) !important; }
+.bm-attack { background: var(--bad-soft) !important; color: var(--bad) !important; }
+.bm-go { background: var(--ink) !important; color: var(--bg) !important; }
+.bt-tag { background: var(--surface-3) !important; color: var(--ink-2) !important; }
+.bt-tag.is-cat { background: var(--bad-soft) !important; color: var(--bad) !important; }
+.bt-tag.is-team { background: var(--blue-soft) !important; color: var(--blue) !important; }
+.bm-evidence { border-left: 0 !important; border-radius: 8px !important; background: var(--surface-2) !important; box-shadow: inset 0 0 0 1px var(--border); }
+.bm-evidence span { color: var(--ink-2) !important; }
+.bm-typing i { background: var(--muted) !important; }
+.bp-form { border-top: 1px solid var(--border) !important; }
+.bp-form input { background: var(--surface-2) !important; border: 1px solid var(--border-strong) !important; color: var(--ink) !important; }
+.bp-form input:focus { border-color: var(--blue) !important; box-shadow: 0 0 0 4px var(--blue-soft) !important; }
+.bp-send { background: var(--ink) !important; color: var(--bg) !important; }
+
+/* ---- 14. Splash: the particle word stays; the colours calm down --------------------------- */
+.splash { background: #08090b !important; color: #eceef1 !important; }
+.sp-pill { background: rgba(255, 255, 255, 0.04) !important; border-color: rgba(255, 255, 255, 0.1) !important; color: #a6adb8 !important; backdrop-filter: none !important; }
+.sp-live { background: #5bd6a8 !important; }
+.sp-mark { filter: none !important; }
+.sp-logo { filter: none !important; }
+.splash .sp-by, .sp-by { background: none !important; color: #8b939f !important; box-shadow: none !important; padding: 0; }
+.sp-tag { color: #c4c9d1 !important; letter-spacing: 0 !important; font-weight: 500 !important; }
+.sp-bar { background: rgba(255, 255, 255, 0.08) !important; }
+.sp-bar i { background: #7aabff !important; }
+.sp-skip { color: rgba(236, 238, 241, 0.4) !important; }
+
+/* ---- 15. Fixture banner and small things -------------------------------------------------- */
+.fixture-banner { background: var(--bad) !important; color: #fff !important; }
+.wd-stamp, .stamp { box-shadow: none !important; text-shadow: none !important; }
+
+/* ---- 16. Motion: one calm entrance per view; nothing loops except live state -------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .view:not([hidden]) { animation: clean-view 0.36s var(--ease); }
+  @keyframes clean-view { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .floor .dot.late { animation: clean-late 2.4s ease-in-out infinite; }
+  @keyframes clean-late { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chase::after { animation: none; width: 100%; opacity: 0.4; }
+  .view:not([hidden]) { animation: none !important; }
+}
+
+/* The assistant's lens mark (js/bot.js): the arc turns while it thinks. */
+.lens-mark { display: block; color: var(--ink); flex-shrink: 0; }
+.bm-face { padding-top: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .is-talking .lens-arc { transform-origin: 13px 13px; animation: lens-think 0.9s linear infinite; }
+  @keyframes lens-think { to { transform: rotate(360deg); } }
+}
+
+/* Top bar: Ask OpsLens gets the room; the status line gives way first (the red FIXTURE banner
+   still covers the case that matters). */
+.ask-form { flex: 1 1 340px !important; max-width: 640px !important; min-width: 200px !important; }
+#data-source { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (max-width: 1700px) { #data-source { display: none !important; } }
+
+/* ---- 17. "Out of 1,000 customers": grey dots are kept promises, coral ones were missed ------ */
+.tw-wall i {
+  background: color-mix(in srgb, var(--bad) calc(var(--on) * 100%), var(--surface-3)) !important;
+  box-shadow: none !important;
+  transform: scale(calc(0.82 + var(--on) * 0.18)) !important;
+}
+.tw-chip, .jr-chip { border: 1px solid var(--border-strong) !important; color: var(--ink-2) !important; background: transparent !important; }
+.tw-chip:hover, .jr-chip:hover { border-color: var(--muted) !important; color: var(--ink) !important; }
+.tw-chip[aria-pressed="true"], .jr-chip[aria-pressed="true"] { background: var(--ink) !important; border-color: var(--ink) !important; color: var(--bg) !important; }
+.tw-chip.is-ours[aria-pressed="true"] { background: var(--blue) !important; border-color: var(--blue) !important; color: var(--bg) !important; }
+.tw-big b { color: var(--bad) !important; text-shadow: none !important; font-weight: 650 !important; letter-spacing: -0.03em; }
+#ov-thousand[data-policy="opslens"] .tw-big b { color: var(--blue) !important; text-shadow: none !important; }
+.tw-floor input { accent-color: var(--blue) !important; }
+.tw-save b { color: var(--blue) !important; }
+
+/* ---- 18. "Follow one ticket": a route, a countdown ring and five steps; no cartoon city ---- */
+.jr-road {
+  height: 150px !important;
+  background:
+    linear-gradient(var(--border) 1px, transparent 1px) 0 0 / 100% 30px,
+    linear-gradient(90deg, var(--border) 1px, transparent 1px) 0 0 / 40px 100%,
+    var(--surface-2) !important;
+  border: 1px solid var(--border);
+}
+.jr-road :is(.dl-cloud, .jr-city, .jr-lane, .rider, .dl-phone) { display: none !important; }
+.dl-route path:first-child { stroke: var(--border-strong) !important; opacity: 1 !important; }
+.dl-route .dl-done { stroke: var(--blue) !important; }
+.dl-pin { box-shadow: none !important; background: var(--bad) !important; }
+.dl-pin::after { background: var(--surface) !important; }
+.dl-start { background: var(--muted) !important; }
+#ov-journey[data-step="4"] .dl-end { background: var(--good) !important; }
+.dl-watch {
+  border: 3px solid var(--border-strong) !important;
+  background: conic-gradient(var(--bad) 0 calc((80 - var(--step, 0) * 18) * 1%), var(--surface) 0) !important;
+  box-shadow: none !important;
+}
+.dl-watch::before, .dl-watch i { background: var(--ink-2) !important; }
+.jr-ontime { background: var(--good) !important; color: var(--bg) !important; font-weight: 650 !important; }
+.jr-line { background: var(--border) !important; }
+.jr-line i { background: var(--blue) !important; box-shadow: none !important; }
+.jr-step svg { background: var(--surface) !important; border-color: var(--border-strong) !important; }
+.jr-step.is-done, .jr-step.is-done svg { color: var(--blue) !important; border-color: var(--blue) !important; }
+.jr-step[aria-current="step"] svg { border-color: var(--ink) !important; color: var(--ink) !important; background: var(--surface-3) !important; box-shadow: none !important; }
+#ov-journey[data-step="4"] .jr-step[aria-current="step"] svg { border-color: var(--good) !important; color: var(--good) !important; background: var(--good-soft) !important; box-shadow: none !important; }
+.jr-msg { background: var(--surface-3) !important; color: var(--ink) !important; font-weight: 500 !important; }
+.jr-tags span { background: var(--surface-3) !important; border: 1px solid var(--border-strong) !important; font-weight: 550 !important; }
+.jr-meter { background: var(--surface-3) !important; }
+.jr-meter.is-hot i { background: var(--bad) !important; }
+.jr-meter.is-cool i { background: var(--blue) !important; }
+.jr-avatar { background: var(--surface-3) !important; border: 2px solid var(--blue) !important; }
+.jr-panel { background: var(--surface) !important; border-color: var(--border) !important; }
+
+/* ---- 19. Problems: one look for every cause (the tag names it); the bad segment is coral ---- */
+.finding-card, .finding-card[class*="cause-"] { --cause: var(--bad) !important; border-top: 1px solid var(--border) !important; }
+.cause-tag { color: var(--ink-2) !important; background: var(--surface-3) !important; font-weight: 600 !important; }
+.cbar-fill.is-bad { background: var(--bad) !important; }
+.cbar-fill.is-normal { background: var(--base) !important; }
+.finding-do .do-tag, .do-tag { color: var(--blue) !important; background: var(--blue-soft) !important; }
+
+/* Narrow screens (a 1024-px projector, a small window): the top bar wraps instead of pushing
+   "Your plan" off the edge; Ask OpsLens takes its own full-width row. */
+@media (max-width: 1180px) {
+  .topbar { flex-wrap: wrap; flex-basis: auto !important; height: auto; row-gap: 10px; padding-top: 10px; padding-bottom: 10px; }
+  .topbar .ask-form { order: 10; flex: 1 1 100% !important; max-width: none !important; }
+}
+
+/* ---- 20. Proof → Beyond our world, Results lead, real-desk zones -------------------------- */
+.proof-strip .proof.is-lead { border-color: var(--border-strong) !important; }
+.wd-verdict.is-missed .wd-got b { color: var(--bad) !important; }
+.wd-verdict.is-kept .wd-got b { color: var(--blue) !important; }
+.wd-zone.is-good { border-color: color-mix(in srgb, var(--blue) 40%, var(--border)) !important; background: var(--blue-soft) !important; }
+.wd-zone.is-good b { color: var(--blue) !important; }
+.wd-zone.is-bad { border-color: color-mix(in srgb, var(--bad) 40%, var(--border)) !important; background: var(--bad-soft) !important; }
+.wd-zone.is-bad b { color: var(--bad) !important; }
+tr.hot td { color: var(--bad) !important; }
+tr.is-chosen td { background: var(--blue-soft) !important; }
+
+/* The chase scene only decorated empty states (What-if, Your data); the empty-state text says it. */
+.chase { display: none !important; }
+.ledger-tally .t-reported { color: var(--muted) !important; }
+.ledger-tally .t-missed { color: var(--bad) !important; }
+
+/* ---- 21. Real desk: fast-track bars, assumption note, second looks ------------------------ */
+.ft-track { background: var(--surface-3) !important; }
+.ft-track i { background: var(--base) !important; }
+.ft-row.is-ours .ft-track i { background: var(--blue) !important; }
+.ft-row.is-ours > b { color: var(--blue) !important; }
+.ft-row.is-ceiling .ft-track i { background: repeating-linear-gradient(90deg, var(--border-strong) 0 6px, transparent 6px 10px) !important; }
+.ft-assume, .sh-honest { border: 1px solid var(--border) !important; background: var(--surface-2) !important; }
+.ft-assume b { color: var(--warn) !important; }
+.second-look { border-left: 0 !important; border-radius: 10px !important; background: var(--surface-2) !important; box-shadow: inset 0 0 0 1px var(--border); }
+.pill.bad { background: var(--bad-soft) !important; color: var(--bad) !important; border-color: transparent !important; }
+
+/* ---- 22. Shadow mode: blue = OpsLens warned, coral = a real miss, a ring = warned in time --- */
+.sh-day { border: 1px solid var(--border-strong) !important; color: var(--ink-2) !important; background: transparent !important; }
+.sh-day[aria-pressed="true"] { background: var(--ink) !important; border-color: var(--ink) !important; color: var(--bg) !important; }
+.sh-progress { background: var(--surface-3) !important; }
+.sh-progress i { background: var(--blue) !important; }
+.sh-midnight { background: var(--muted) !important; }
+.sh-t { background: var(--surface) !important; }
+.sh-t.is-miss b { color: var(--bad) !important; }
+.sh-t.is-ours b { color: var(--blue) !important; }
+.sh-t.is-theirs b { color: var(--ink-2) !important; }
+.sh-wall i { background: var(--surface-3) !important; box-shadow: none; }
+.sh-wall i.is-open, .sh-legend .d-open { background: var(--muted) !important; }
+.sh-wall i.is-flag, .sh-legend .d-flag { box-shadow: 0 0 0 2px var(--blue) !important; }
+.sh-wall i.is-made, .sh-legend .d-made { background: color-mix(in srgb, var(--good) 70%, transparent) !important; }
+.sh-wall i.is-miss, .sh-legend .d-miss { background: var(--bad) !important; }
+.sh-wall i.is-caught, .sh-legend .d-caught { background: var(--bad) !important; box-shadow: 0 0 0 2px var(--blue) !important; }
+.sh-feed-box { background: var(--surface) !important; }
+.sh-feed li { background: var(--surface-2) !important; }
+.sh-feed .f-flag { border-left: 2px solid var(--blue) !important; }
+.sh-feed .f-caught { border-left: 2px solid var(--good) !important; }
+.sh-feed .f-miss { border-left: 2px solid var(--bad) !important; }
+.sh-final p { background: var(--blue-soft) !important; border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent) !important; }
+.sh-final .t-ours, .ai-vs div:first-child b { color: var(--blue) !important; }
+
+/* An interval inside a sentence stays on the line ("(gap +45.8 pts [39.5, 50.8])."), instead of
+   breaking the sentence; under a big KPI number it still sits on its own line. */
+p .ci, li .ci, .rep-line .ci, .ft-verdict .ci, .sh-final .ci { display: inline; margin: 0 0 0 4px; font-size: 0.85em; }
+.lt-head { color: var(--ink) !important; }
+.lt-sub { color: var(--muted) !important; }
+.live-ticker:hover, .live-ticker:focus-visible { outline: 1px solid var(--border-strong) !important; }
+.mission-clock, .mission-lane-title, .lv-o-diff, .lv-o-diff .ev, .sky-count b { color: var(--ink) !important; }
+/* Text that was tinted for the old indigo bands now follows the theme. */
+.ledger-tally-note, .live-saved, .lt-sub, .lv-live, .lv-big-label, .lv-bar, .lv-col-title, .lv-midnight, .lv-o-diff span .ev,
+.lv-fine, .mission-eyebrow, .mission p, .mission-legend { color: var(--muted) !important; }
+.lv-big-label, .live-saved, .lv-bar { color: var(--ink-2) !important; }
+.ledger-tally-line { color: var(--ink) !important; }

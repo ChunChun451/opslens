@@ -12,7 +12,7 @@
 
 import { state, policyLabel, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS } from "../charts.js";
+import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS, cssVar } from "../charts.js";
 import { pageHeader, missing, fold, onFirstOpen } from "../ui.js";
 import { escapeHtml, prettyKey, unitForKey } from "../format.js";
 
@@ -655,7 +655,7 @@ function drawStress() {
         label: policyLabel(k) + " (breach %)",
         data: rows.map((row) => row[k]),
         backgroundColor: policyStyle(k).color,
-        borderColor: "#ffffff",
+        borderColor: cssVar("--surface"),
         borderWidth: 2, // white gap between neighbouring bars
         borderRadius: 4,
       })),

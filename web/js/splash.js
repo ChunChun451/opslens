@@ -21,7 +21,8 @@ const SWIRL_MS = 1500; // chaos, before the particles head for the letters
 const SEEN_KEY = "opslens.splashSeen";
 const FINALE = new Date(2026, 9, 29, 9, 0); // 29 Oct 2026, 09:00 (local time)
 const FINALE_END = new Date(2026, 9, 31, 23, 59);
-const PINK = [255, 10, 108], VIOLET = [138, 36, 224], BLUE = [45, 39, 255];
+// Clean skin (25 Oct): white into the OpsLens blue, no neon.
+const PINK = [236, 238, 241], VIOLET = [176, 200, 255], BLUE = [122, 171, 255];
 
 function countdownLabel(now = new Date()) {
   if (now > FINALE_END) return "";

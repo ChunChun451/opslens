@@ -18,8 +18,6 @@ import { initMotion, initSliderFill } from "./js/motion.js";
 import { initIntro } from "./js/intro.js";
 import { initLiveTicker } from "./js/liveticker.js";
 import { initThemeSwitch } from "./js/themeswitch.js";
-import { initScenes } from "./js/scenes.js";
-import { initSeason } from "./js/season.js";
 import { initSplash } from "./js/splash.js";
 import { initBot } from "./js/bot.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
@@ -56,9 +54,9 @@ async function start() {
   initStory();
   initAsk();
   initLiveTicker(); // today's live run in the side menu, on every screen
-  initScenes(); // the cartoon moment on every screen talks, and naps after a quiet minute
-  initThemeSwitch(); // Neon / Light
-  initSeason(); // the logo dresses up for the season (Diwali, cricket, ...)
+  // Clean skin (25 Oct): the cartoon strips (scenes.js) and the seasonal logo (season.js) are
+  // decoration, not features, so they no longer start. Their files stay for the record.
+  initThemeSwitch(); // Dark / Light
   initBot(); // the OpsLens AI assistant in the side menu (server/bot.py)
   initSplash(initIntro); // the festive splash, then the cold open, over the ready dashboard
 }

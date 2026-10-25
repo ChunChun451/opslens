@@ -11,7 +11,7 @@
 
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { makeChart, SLOTS } from "../charts.js";
+import { makeChart, SLOTS, cssVar } from "../charts.js";
 import { pageHeader, card, missing, backendMissing, postJson, showWaiting, fold, onFirstOpen, factLine } from "../ui.js";
 import { escapeHtml, prettyKey, CATEGORIES } from "../format.js";
 
@@ -145,7 +145,7 @@ function drawDecomposition(decomposition) {
     label: prettyKey(stage),
     data: teams.map((team) => decomposition[team][stage]),
     backgroundColor: SLOTS[s % SLOTS.length],
-    borderColor: "#ffffff",
+    borderColor: cssVar("--surface"),
     borderWidth: 2, // a thin white gap between stacked segments
     borderRadius: 4,
     barThickness: 22,

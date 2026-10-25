@@ -13,7 +13,14 @@
 // Example: "Isn't this data leakage?" → Q19 with its tested answer and two related questions;
 // "dosa ke jagah biryani de diya" → Wrong item, Hindi / Hinglish, Team C (Order accuracy).
 
-import { characterHtml } from "./characters.js";
+// Clean skin (25 Oct): the assistant wears the OpsLens lens mark instead of a cartoon robot.
+// While it thinks (.is-talking), the accent arc turns.
+function lensMark(size) {
+  return `<svg class="lens-mark" width="${size}" height="${size}" viewBox="0 0 26 26" aria-hidden="true">
+    <circle cx="13" cy="13" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path class="lens-arc" d="M7.5 13a5.5 5.5 0 0 1 5.5-5.5" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="13" cy="13" r="2.2" fill="var(--blue)"/></svg>`;
+}
 import { escapeHtml } from "./format.js";
 import { factsTable } from "./ask.js";
 import { setWorld } from "./router.js";
@@ -51,7 +58,7 @@ let busy = false;
 
 export function initBot() {
   const launch = `<button type="button" class="bot-launch" id="bot-launch" aria-label="Open the OpsLens AI assistant">
-      ${characterHtml("bot-mini", "robot", "happy")}
+      ${lensMark(28)}
       <span class="bl-text"><b>Ask OpsLens AI</b><small>ask me anything</small></span>
       <i class="bl-ping" aria-hidden="true"></i>
     </button>`;
@@ -84,7 +91,7 @@ function panelHtml() {
       <div class="bs-chips">${qs.map((q) => `<button type="button" class="bot-chip" data-q="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join("")}</div></div>`).join("");
   return `<aside class="bot-panel" id="bot-panel" role="dialog" aria-label="OpsLens AI assistant" hidden>
       <header class="bp-head">
-        <div class="bp-avatar" id="bp-avatar">${characterHtml("bot-big", "robot", "happy")}</div>
+        <div class="bp-avatar" id="bp-avatar">${lensMark(40)}</div>
         <div class="bp-title"><b>OpsLens AI</b><span><i class="bp-dot"></i>Answers from tested results. It never makes up a number.</span></div>
         <button type="button" class="bp-close" id="bot-close" aria-label="Close the assistant">✕</button>
       </header>
@@ -224,7 +231,7 @@ function addMessage(who, html, extra = "") {
   const el = document.createElement("div");
   el.className = `bm bm-${who} ${extra}`;
   el.innerHTML = who === "bot"
-    ? `<div class="bm-face">${characterHtml("bm-face-" + log.children.length, "robot", "happy")}</div><div class="bm-bubble">${html}</div>`
+    ? `<div class="bm-face">${lensMark(24)}</div><div class="bm-bubble">${html}</div>`
     : `<div class="bm-bubble">${html}</div>`;
   log.appendChild(el);
   log.scrollTop = log.scrollHeight;

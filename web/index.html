@@ -10,7 +10,7 @@
     results JSON and fills each tab. Every number on screen comes from that JSON
     (CLAUDE.md rule 1.5).
 -->
-<html lang="en" data-theme="neon">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,11 +19,13 @@
   <link rel="stylesheet" href="styles.css">
   <!-- Design v2 skin (Claude 2): Inter, refined palette, motion, the Overview's live floor. -->
   <link rel="stylesheet" href="theme.css">
-  <!-- Neon skin (24 Oct): dark glass, cyan and violet. Applies only while <html data-theme="neon">;
-       the Neon/Light switch in the top bar flips it and remembers the choice in this browser. -->
+  <!-- Component layouts from the neon pass (24 Oct). Its colours apply only under data-theme="neon",
+       which is no longer used; the layouts (Live now, story cards, Shadow mode, the assistant) stay. -->
   <link rel="stylesheet" href="neon.css">
+  <!-- Clean skin (25 Oct): graphite dark by default, light on request; the look of every screen. -->
+  <link rel="stylesheet" href="clean.css">
   <script>
-    try { if (JSON.parse(localStorage.getItem("opslens-theme")) === "light") document.documentElement.removeAttribute("data-theme"); }
+    try { if (JSON.parse(localStorage.getItem("opslens-theme")) === "light") document.documentElement.dataset.theme = "light"; }
     catch (error) { /* storage blocked: stay on the default */ }
   </script>
   <!-- Chart.js 4.5.0, downloaded once and kept in the repo (works offline). -->

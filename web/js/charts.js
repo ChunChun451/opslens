@@ -13,10 +13,12 @@
 import { openEvidenceAt, closeEvidence } from "./evidence.js";
 
 // Ink colours for text, axes and grid (text never wears a series colour).
-export const INK = "#0f172a";
-export const INK_SOFT = "#5b6b80";
-export const GRID = "#edf1f5";
-export const ALERT = "#c22b33"; // used only for the "bottleneck" label on the forecast
+// Clean skin (25 Oct): they follow the theme (dark is the default), read once at start.
+const LIGHT_THEME = document.documentElement.dataset.theme === "light";
+export const INK = LIGHT_THEME ? "#0e1116" : "#c4c9d1";
+export const INK_SOFT = LIGHT_THEME ? "#5e6876" : "#8b939f";
+export const GRID = LIGHT_THEME ? "#eef0f3" : "#1c2129";
+export const ALERT = LIGHT_THEME ? "#c2410c" : "#ff8f6b"; // used only for the "bottleneck" label on the forecast
 
 // One colour + line style per policy. The colour follows the policy everywhere.
 // Design v2: OpsLens is the only vivid colour; baselines step back but stay distinguishable
@@ -39,26 +41,39 @@ export const SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"];
 
 // Calm defaults that match the cards: light grid, no axis borders, muted ticks, round
 // legend markers. Chart is the global from vendor/chart.umd.js.
-// Neon theme (web/neon.css): light ink on dark glass, neon policy colours. Read once at start;
-// the theme switch reloads the page, so every chart is drawn in the right colours.
-const NEON = document.documentElement.dataset.theme === "neon";
-if (NEON) {
-  Object.assign(POLICY_STYLE.opslens, { color: "#22d3ee" });
-  Object.assign(POLICY_STYLE.baseline_a, { color: "#fb923c" });
-  Object.assign(POLICY_STYLE.baseline_b, { color: "#94a3b8" });
-  Object.assign(POLICY_STYLE.baseline_c, { color: "#a78bfa" });
-  Object.assign(POLICY_STYLE.baseline_d, { color: "#f472b6" });
+// Clean skin (web/clean.css, 25 Oct): OpsLens is the one accent (blue); every other policy is a
+// muted colour with its own dash. Dark is the default; the theme switch reloads the page, so
+// every chart is drawn in the right colours. Read once at start.
+const DARK = document.documentElement.dataset.theme !== "light";
+if (DARK) {
+  Object.assign(POLICY_STYLE.opslens, { color: "#7aabff" });
+  Object.assign(POLICY_STYLE.baseline_a, { color: "#d29a6c" });
+  Object.assign(POLICY_STYLE.baseline_b, { color: "#6b7280" });
+  Object.assign(POLICY_STYLE.baseline_c, { color: "#a99be0" });
+  Object.assign(POLICY_STYLE.baseline_d, { color: "#a3a9b2" });
+} else {
+  Object.assign(POLICY_STYLE.opslens, { color: "#2158d4" });
+  Object.assign(POLICY_STYLE.baseline_a, { color: "#b8642a" });
+  Object.assign(POLICY_STYLE.baseline_b, { color: "#8b939f" });
+  Object.assign(POLICY_STYLE.baseline_c, { color: "#7c6bd0" });
+  Object.assign(POLICY_STYLE.baseline_d, { color: "#4b5563" });
+}
+
+// A colour from the active theme (web/clean.css), for charts that cannot read CSS themselves.
+// Example: cssVar("--blue") -> "#7aabff" on the dark theme, "#2158d4" on the light one.
+export function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
 export function setChartDefaults() {
   Chart.defaults.font.family = '"Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif'; // Inter: web/theme.css
   Chart.defaults.font.size = 14;
-  Chart.defaults.color = NEON ? "#9aa3bf" : INK_SOFT;
-  Chart.defaults.borderColor = NEON ? "rgba(130, 145, 255, 0.12)" : GRID;
+  Chart.defaults.color = DARK ? "#8b939f" : "#5e6876";
+  Chart.defaults.borderColor = DARK ? "#22272f" : "#e4e7ec";
   Chart.defaults.maintainAspectRatio = false;
-  Chart.defaults.animation.duration = 300;
+  Chart.defaults.animation.duration = 500;
   Chart.defaults.scale.border.display = false;
-  Chart.defaults.scale.grid.color = NEON ? "rgba(130, 145, 255, 0.1)" : GRID;
+  Chart.defaults.scale.grid.color = DARK ? "#1c2129" : "#eef0f3";
   Chart.defaults.scale.ticks.padding = 8;
   Chart.defaults.plugins.legend.align = "start";
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
@@ -66,8 +81,10 @@ export function setChartDefaults() {
   Chart.defaults.plugins.legend.labels.boxWidth = 8;
   Chart.defaults.plugins.legend.labels.boxHeight = 8;
   Chart.defaults.plugins.legend.labels.padding = 16;
-  Chart.defaults.plugins.legend.labels.color = NEON ? "#e9ecf7" : INK;
-  Chart.defaults.plugins.tooltip.backgroundColor = "#0b1322";
+  Chart.defaults.plugins.legend.labels.color = DARK ? "#c4c9d1" : "#3d4554";
+  Chart.defaults.plugins.tooltip.backgroundColor = DARK ? "#1c2129" : "#0e1116";
+  Chart.defaults.plugins.tooltip.borderColor = DARK ? "#30363f" : "#0e1116";
+  Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: "600" };
   Chart.defaults.plugins.tooltip.bodyFont = { size: 14 };
   Chart.defaults.plugins.tooltip.padding = 10;

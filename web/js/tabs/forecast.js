@@ -9,7 +9,7 @@
 
 import { state, teamNames } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { makeChart, shadeRanges, INK, POLICY_STYLE } from "../charts.js";
+import { makeChart, shadeRanges, INK, POLICY_STYLE, cssVar } from "../charts.js";
 import { pageHeader, card, missing, fold, factLine } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
@@ -97,7 +97,7 @@ function drawChart(section) {
       label: "80% interval",
       data: points.map(({ p }) => p.hi80),
       borderWidth: 0,
-      backgroundColor: "rgba(42, 120, 214, 0.14)",
+      backgroundColor: cssVar("--blue-soft"),
       fill: "-1", // fill down to the lo80 line = the band
       pointRadius: 0,
     },
@@ -124,7 +124,7 @@ function drawChart(section) {
     datasets.push({
       label: "Actual",
       data: points.map(({ p }) => p.actual_hours),
-      borderColor: "#eb6834",
+      borderColor: cssVar("--ink-2"),
       borderWidth: 1.5,
       pointRadius: 0,
     });
@@ -185,7 +185,7 @@ function bottleneckRanges(points) {
     if (b.team !== selectedTeam || isNight(b)) return;
     const inside = points.map(({ p }) => p.time >= b.start && p.time < b.end);
     runsOf(inside, "bottleneck").forEach((r) => {
-      ranges.push({ ...r, color: "rgba(194, 43, 51, 0.12)" });
+      ranges.push({ ...r, color: cssVar("--bad-soft") });
     });
   });
   return ranges;

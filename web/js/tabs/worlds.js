@@ -15,7 +15,7 @@ import { state, lookup, policyLabel } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, fold, onFirstOpen, factLine } from "../ui.js";
 import { escapeHtml } from "../format.js";
-import { makeChart } from "../charts.js";
+import { makeChart, cssVar } from "../charts.js";
 
 const BREACH = "turnaround.breach_pct";
 
@@ -131,8 +131,8 @@ function drawChart(w) {
   makeChart(canvas, {
     type: "scatter",
     data: { datasets: [
-      { label: "OpsLens lowest", data: wins, backgroundColor: "#22d3ee", pointRadius: 6, pointHoverRadius: 8 },
-      { label: "Another way is lower", data: losses, backgroundColor: "#ff4d8d", pointRadius: 6, pointHoverRadius: 8, pointStyle: "rectRot" },
+      { label: "OpsLens lowest", data: wins, backgroundColor: cssVar("--blue"), pointRadius: 6, pointHoverRadius: 8 },
+      { label: "Another way is lower", data: losses, backgroundColor: cssVar("--bad"), pointRadius: 6, pointHoverRadius: 8, pointStyle: "rectRot" },
     ] },
     options: {
       scales: {
@@ -146,13 +146,13 @@ function drawChart(w) {
       afterDatasetsDraw(chart) {
         const { ctx, chartArea, scales } = chart;
         ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.35)";
+        ctx.strokeStyle = cssVar("--muted");
         ctx.setLineDash([5, 4]);
         const y0 = scales.y.getPixelForValue(0);
         ctx.beginPath(); ctx.moveTo(chartArea.left, y0); ctx.lineTo(chartArea.right, y0); ctx.stroke();
         if (limit) {
           const x = scales.x.getPixelForValue(limit);
-          ctx.strokeStyle = "rgba(167,139,250,0.6)";
+          ctx.strokeStyle = cssVar("--border-strong");
           ctx.beginPath(); ctx.moveTo(x, chartArea.top); ctx.lineTo(x, chartArea.bottom); ctx.stroke();
         }
         ctx.restore();
