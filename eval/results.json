@@ -1,8 +1,8 @@
 {
  "meta": {
   "fixture": false,
-  "generated_at": "2026-10-24T17:42:43",
-  "git_commit": "e494df4",
+  "generated_at": "2026-10-25T01:33:31",
+  "git_commit": "94aa978",
   "data_seed": 2026,
   "n_tickets": 71530,
   "start_date": "2026-08-31",
@@ -11610,7 +11610,7 @@
    "agents": 500,
    "edges": 15000,
    "assigned": 500,
-   "seconds": 0.04
+   "seconds": 0.047
   }
  },
  "details": {
@@ -100322,6 +100322,829 @@
    }
   }
  },
+ "tracking": {
+  "days": [
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55,
+   56
+  ],
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "policies": {
+   "baseline_a": {
+    "days": [
+     {
+      "day": 43,
+      "name": "Mon 12 Oct",
+      "tickets": 1073.0,
+      "missed": 74.6,
+      "missed_pct": 6.9524697110904,
+      "missed_pct_std": 0.947219082741615,
+      "late_per_100": 834.4879860149156
+     },
+     {
+      "day": 44,
+      "name": "Tue 13 Oct",
+      "tickets": 1159.0,
+      "missed": 95.0,
+      "missed_pct": 8.196721311475411,
+      "missed_pct_std": 2.015180451100373,
+      "late_per_100": 3189.2464513754126
+     },
+     {
+      "day": 45,
+      "name": "Wed 14 Oct",
+      "tickets": 1216.0,
+      "missed": 110.0,
+      "missed_pct": 9.046052631578949,
+      "missed_pct_std": 4.946872459918013,
+      "late_per_100": 1088.573393927038
+     },
+     {
+      "day": 46,
+      "name": "Thu 15 Oct",
+      "tickets": 1259.0,
+      "missed": 88.4,
+      "missed_pct": 7.021445591739476,
+      "missed_pct_std": 0.7753909364172064,
+      "late_per_100": 1423.8322842144025
+     },
+     {
+      "day": 47,
+      "name": "Fri 16 Oct",
+      "tickets": 1314.0,
+      "missed": 254.6,
+      "missed_pct": 19.375951293759513,
+      "missed_pct_std": 4.634072081654863,
+      "late_per_100": 4666.619946015638
+     },
+     {
+      "day": 48,
+      "name": "Sat 17 Oct",
+      "tickets": 1456.0,
+      "missed": 261.8,
+      "missed_pct": 17.980769230769234,
+      "missed_pct_std": 4.877921128852623,
+      "late_per_100": 2813.5499565410873
+     },
+     {
+      "day": 49,
+      "name": "Sun 18 Oct",
+      "tickets": 1297.0,
+      "missed": 96.0,
+      "missed_pct": 7.401696222050887,
+      "missed_pct_std": 2.4283755972280066,
+      "late_per_100": 708.7458469116528
+     },
+     {
+      "day": 50,
+      "name": "Mon 19 Oct",
+      "tickets": 1694.0,
+      "missed": 388.6,
+      "missed_pct": 22.939787485242032,
+      "missed_pct_std": 7.17930536959292,
+      "late_per_100": 5377.707626259678
+     },
+     {
+      "day": 51,
+      "name": "Tue 20 Oct",
+      "tickets": 1246.0,
+      "missed": 240.8,
+      "missed_pct": 19.325842696629216,
+      "missed_pct_std": 7.592100215017307,
+      "late_per_100": 6770.577140328508
+     },
+     {
+      "day": 52,
+      "name": "Wed 21 Oct",
+      "tickets": 1203.0,
+      "missed": 90.4,
+      "missed_pct": 7.514546965918538,
+      "missed_pct_std": 2.455089386916651,
+      "late_per_100": 1506.255111776152
+     },
+     {
+      "day": 53,
+      "name": "Thu 22 Oct",
+      "tickets": 1212.0,
+      "missed": 140.6,
+      "missed_pct": 11.6006600660066,
+      "missed_pct_std": 4.4161572995121405,
+      "late_per_100": 2019.206405323208
+     },
+     {
+      "day": 54,
+      "name": "Fri 23 Oct",
+      "tickets": 1173.0,
+      "missed": 154.0,
+      "missed_pct": 13.128729752770672,
+      "missed_pct_std": 3.6914978848441544,
+      "late_per_100": 3174.048158506203
+     },
+     {
+      "day": 55,
+      "name": "Sat 24 Oct",
+      "tickets": 1314.0,
+      "missed": 186.2,
+      "missed_pct": 14.17047184170472,
+      "missed_pct_std": 4.269738739075577,
+      "late_per_100": 3012.8580129393513
+     },
+     {
+      "day": 56,
+      "name": "Sun 25 Oct",
+      "tickets": 1416.0,
+      "missed": 176.8,
+      "missed_pct": 12.485875706214689,
+      "missed_pct_std": 4.3117862523860255,
+      "late_per_100": 1384.331612084039
+     }
+    ],
+    "teams": {
+     "A": [
+      6.790123456790124,
+      4.8427672955974845,
+      15.894428152492669,
+      8.411214953271028,
+      19.719101123595504,
+      11.604938271604938,
+      8.097826086956522,
+      50.0,
+      26.88235294117647,
+      7.976190476190476,
+      15.905044510385755,
+      13.9209726443769,
+      11.1484593837535,
+      9.027027027027028
+     ],
+     "B": [
+      5.587044534412955,
+      6.711864406779661,
+      6.86084142394822,
+      11.666666666666666,
+      34.81481481481482,
+      24.12087912087912,
+      7.947019867549669,
+      18.194444444444446,
+      11.890034364261169,
+      8.614232209737827,
+      13.80191693290735,
+      26.734006734006734,
+      26.96165191740413,
+      15.97667638483965
+     ],
+     "C": [
+      12.48062015503876,
+      17.482014388489212,
+      6.413793103448276,
+      3.491124260355029,
+      9.055374592833877,
+      22.944444444444446,
+      8.882521489971348,
+      15.61320754716981,
+      29.07407407407407,
+      7.234042553191489,
+      7.445255474452554,
+      7.304964539007092,
+      14.258675078864353,
+      17.872340425531913
+     ],
+     "D": [
+      2.7049180327868854,
+      4.17910447761194,
+      5.797101449275362,
+      4.866666666666666,
+      15.028248587570621,
+      13.577981651376145,
+      4.028776978417266,
+      4.61139896373057,
+      7.079037800687286,
+      6.352201257861635,
+      8.125,
+      3.094339622641509,
+      3.255813953488372,
+      6.5443425076452595
+     ]
+    }
+   },
+   "baseline_b": {
+    "days": [
+     {
+      "day": 43,
+      "name": "Mon 12 Oct",
+      "tickets": 1073.0,
+      "missed": 35.0,
+      "missed_pct": 3.2618825722273996,
+      "missed_pct_std": 0.3785665612598306,
+      "late_per_100": 370.18905286239976
+     },
+     {
+      "day": 44,
+      "name": "Tue 13 Oct",
+      "tickets": 1159.0,
+      "missed": 87.2,
+      "missed_pct": 7.523727351164797,
+      "missed_pct_std": 1.4300324541140772,
+      "late_per_100": 3097.0844210600653
+     },
+     {
+      "day": 45,
+      "name": "Wed 14 Oct",
+      "tickets": 1216.0,
+      "missed": 61.6,
+      "missed_pct": 5.065789473684211,
+      "missed_pct_std": 2.523076708136022,
+      "late_per_100": 780.794910289939
+     },
+     {
+      "day": 46,
+      "name": "Thu 15 Oct",
+      "tickets": 1259.0,
+      "missed": 72.0,
+      "missed_pct": 5.718824463860207,
+      "missed_pct_std": 0.9531374106433678,
+      "late_per_100": 1775.2874228354788
+     },
+     {
+      "day": 47,
+      "name": "Fri 16 Oct",
+      "tickets": 1314.0,
+      "missed": 122.4,
+      "missed_pct": 9.315068493150685,
+      "missed_pct_std": 3.0991042466837277,
+      "late_per_100": 3425.4185030798835
+     },
+     {
+      "day": 48,
+      "name": "Sat 17 Oct",
+      "tickets": 1456.0,
+      "missed": 91.8,
+      "missed_pct": 6.304945054945055,
+      "missed_pct_std": 2.3769095184363827,
+      "late_per_100": 1553.2086397850503
+     },
+     {
+      "day": 49,
+      "name": "Sun 18 Oct",
+      "tickets": 1297.0,
+      "missed": 37.8,
+      "missed_pct": 2.914417887432537,
+      "missed_pct_std": 1.107144620992376,
+      "late_per_100": 414.36309561869194
+     },
+     {
+      "day": 50,
+      "name": "Mon 19 Oct",
+      "tickets": 1694.0,
+      "missed": 211.8,
+      "missed_pct": 12.502951593860685,
+      "missed_pct_std": 5.210278019524454,
+      "late_per_100": 5361.693939148291
+     },
+     {
+      "day": 51,
+      "name": "Tue 20 Oct",
+      "tickets": 1246.0,
+      "missed": 147.6,
+      "missed_pct": 11.845906902086677,
+      "missed_pct_std": 3.109679996403016,
+      "late_per_100": 5268.211995026844
+     },
+     {
+      "day": 52,
+      "name": "Wed 21 Oct",
+      "tickets": 1203.0,
+      "missed": 56.2,
+      "missed_pct": 4.671654197838737,
+      "missed_pct_std": 1.0667954930776777,
+      "late_per_100": 1080.569081624195
+     },
+     {
+      "day": 53,
+      "name": "Thu 22 Oct",
+      "tickets": 1212.0,
+      "missed": 84.4,
+      "missed_pct": 6.963696369636963,
+      "missed_pct_std": 5.151515479154194,
+      "late_per_100": 1766.2789280014647
+     },
+     {
+      "day": 54,
+      "name": "Fri 23 Oct",
+      "tickets": 1173.0,
+      "missed": 77.2,
+      "missed_pct": 6.581415174765558,
+      "missed_pct_std": 2.706248152197843,
+      "late_per_100": 2928.3996695999635
+     },
+     {
+      "day": 55,
+      "name": "Sat 24 Oct",
+      "tickets": 1314.0,
+      "missed": 86.4,
+      "missed_pct": 6.575342465753425,
+      "missed_pct_std": 1.5527725330297826,
+      "late_per_100": 2293.7042899423636
+     },
+     {
+      "day": 56,
+      "name": "Sun 25 Oct",
+      "tickets": 1416.0,
+      "missed": 48.8,
+      "missed_pct": 3.446327683615819,
+      "missed_pct_std": 1.0888080860711464,
+      "late_per_100": 474.42724280566637
+     }
+    ],
+    "teams": {
+     "A": [
+      2.7777777777777777,
+      3.9622641509433962,
+      6.56891495601173,
+      6.728971962616822,
+      10.95505617977528,
+      6.123456790123457,
+      4.2934782608695645,
+      28.761061946902657,
+      11.235294117647058,
+      5.416666666666666,
+      11.335311572700297,
+      4.498480243161095,
+      3.8095238095238093,
+      2.864864864864865
+     ],
+     "B": [
+      3.4008097165991904,
+      5.830508474576272,
+      5.436893203883495,
+      11.266666666666666,
+      22.22222222222222,
+      11.813186813186814,
+      3.8410596026490067,
+      9.351851851851851,
+      8.52233676975945,
+      7.415730337078652,
+      9.39297124600639,
+      15.757575757575756,
+      14.277286135693213,
+      4.956268221574344
+     ],
+     "C": [
+      6.201550387596899,
+      17.48201438848921,
+      4.344827586206897,
+      2.72189349112426,
+      3.7785016286644955,
+      3.7777777777777777,
+      1.8911174785100286,
+      8.30188679245283,
+      24.135802469135804,
+      3.7588652482269502,
+      4.963503649635037,
+      4.468085106382978,
+      5.7413249211356465,
+      4.308510638297872
+     ],
+     "D": [
+      0.6557377049180328,
+      3.283582089552239,
+      3.550724637681159,
+      2.466666666666667,
+      1.638418079096045,
+      3.180428134556575,
+      1.3669064748201438,
+      1.6062176165803108,
+      2.1993127147766325,
+      2.389937106918239,
+      1.1111111111111112,
+      1.1320754716981132,
+      2.059800664451827,
+      1.529051987767584
+     ]
+    }
+   },
+   "baseline_d": {
+    "days": [
+     {
+      "day": 43,
+      "name": "Mon 12 Oct",
+      "tickets": 1073.0,
+      "missed": 31.0,
+      "missed_pct": 2.8890959925442683,
+      "missed_pct_std": 0.2717125766470317,
+      "late_per_100": 350.61487698922474
+     },
+     {
+      "day": 44,
+      "name": "Tue 13 Oct",
+      "tickets": 1159.0,
+      "missed": 73.4,
+      "missed_pct": 6.33304572907679,
+      "missed_pct_std": 1.8631562245696691,
+      "late_per_100": 1563.2779987194083
+     },
+     {
+      "day": 45,
+      "name": "Wed 14 Oct",
+      "tickets": 1216.0,
+      "missed": 53.4,
+      "missed_pct": 4.391447368421053,
+      "missed_pct_std": 1.7295172371546224,
+      "late_per_100": 639.6134086075315
+     },
+     {
+      "day": 46,
+      "name": "Thu 15 Oct",
+      "tickets": 1259.0,
+      "missed": 63.8,
+      "missed_pct": 5.067513899920572,
+      "missed_pct_std": 0.9045743274032051,
+      "late_per_100": 1381.553971423145
+     },
+     {
+      "day": 47,
+      "name": "Fri 16 Oct",
+      "tickets": 1314.0,
+      "missed": 101.2,
+      "missed_pct": 7.701674277016743,
+      "missed_pct_std": 2.6403637708023764,
+      "late_per_100": 2947.4549104399966
+     },
+     {
+      "day": 48,
+      "name": "Sat 17 Oct",
+      "tickets": 1456.0,
+      "missed": 66.6,
+      "missed_pct": 4.574175824175824,
+      "missed_pct_std": 0.7884902548662726,
+      "late_per_100": 1464.8195305675977
+     },
+     {
+      "day": 49,
+      "name": "Sun 18 Oct",
+      "tickets": 1297.0,
+      "missed": 31.8,
+      "missed_pct": 2.451811873554356,
+      "missed_pct_std": 0.8848158860721524,
+      "late_per_100": 389.7985584973218
+     },
+     {
+      "day": 50,
+      "name": "Mon 19 Oct",
+      "tickets": 1694.0,
+      "missed": 179.6,
+      "missed_pct": 10.602125147579693,
+      "missed_pct_std": 7.157307774655113,
+      "late_per_100": 2066.7787999696166
+     },
+     {
+      "day": 51,
+      "name": "Tue 20 Oct",
+      "tickets": 1246.0,
+      "missed": 92.8,
+      "missed_pct": 7.4478330658105945,
+      "missed_pct_std": 2.643241094993718,
+      "late_per_100": 1767.691917396307
+     },
+     {
+      "day": 52,
+      "name": "Wed 21 Oct",
+      "tickets": 1203.0,
+      "missed": 43.8,
+      "missed_pct": 3.6408977556109727,
+      "missed_pct_std": 0.950325026568765,
+      "late_per_100": 878.7886462409064
+     },
+     {
+      "day": 53,
+      "name": "Thu 22 Oct",
+      "tickets": 1212.0,
+      "missed": 78.0,
+      "missed_pct": 6.435643564356435,
+      "missed_pct_std": 4.831138154801123,
+      "late_per_100": 1310.578399205035
+     },
+     {
+      "day": 54,
+      "name": "Fri 23 Oct",
+      "tickets": 1173.0,
+      "missed": 69.0,
+      "missed_pct": 5.882352941176471,
+      "missed_pct_std": 2.232873120836964,
+      "late_per_100": 2571.6195265165834
+     },
+     {
+      "day": 55,
+      "name": "Sat 24 Oct",
+      "tickets": 1314.0,
+      "missed": 73.8,
+      "missed_pct": 5.616438356164383,
+      "missed_pct_std": 1.263638990259083,
+      "late_per_100": 2103.620776641869
+     },
+     {
+      "day": 56,
+      "name": "Sun 25 Oct",
+      "tickets": 1416.0,
+      "missed": 34.8,
+      "missed_pct": 2.457627118644068,
+      "missed_pct_std": 0.6021489759122091,
+      "late_per_100": 340.4116648717688
+     }
+    ],
+    "teams": {
+     "A": [
+      2.654320987654321,
+      4.8427672955974845,
+      5.337243401759531,
+      5.8566978193146415,
+      7.1348314606741585,
+      3.753086419753086,
+      3.9673913043478257,
+      23.761061946902654,
+      3.1176470588235294,
+      4.0476190476190474,
+      11.335311572700297,
+      3.404255319148936,
+      3.753501400560224,
+      2.864864864864865
+     ],
+     "B": [
+      4.37246963562753,
+      5.762711864406779,
+      5.11326860841424,
+      10.733333333333333,
+      23.0976430976431,
+      12.142857142857142,
+      3.9072847682119205,
+      9.49074074074074,
+      10.652920962199312,
+      7.116104868913858,
+      9.009584664536742,
+      16.363636363636363,
+      15.51622418879056,
+      4.839650145772595
+     ],
+     "C": [
+      4.263565891472868,
+      11.438848920863311,
+      2.5517241379310347,
+      2.366863905325444,
+      1.5635179153094463,
+      1.2222222222222223,
+      1.0888252148997135,
+      5.518867924528302,
+      12.098765432098766,
+      1.5602836879432622,
+      2.6277372262773726,
+      2.340425531914893,
+      1.4511041009463723,
+      1.2765957446808511
+     ],
+     "D": [
+      0.2459016393442623,
+      3.432835820895522,
+      4.3478260869565215,
+      1.6,
+      0.6779661016949152,
+      0.8562691131498472,
+      0.5755395683453237,
+      2.020725388601036,
+      4.123711340206185,
+      2.138364779874214,
+      1.527777777777778,
+      0.9811320754716981,
+      1.06312292358804,
+      0.8562691131498472
+     ]
+    }
+   },
+   "opslens": {
+    "days": [
+     {
+      "day": 43,
+      "name": "Mon 12 Oct",
+      "tickets": 1073.0,
+      "missed": 19.8,
+      "missed_pct": 1.8452935694315002,
+      "missed_pct_std": 0.41365034522222077,
+      "late_per_100": 205.6138012876891
+     },
+     {
+      "day": 44,
+      "name": "Tue 13 Oct",
+      "tickets": 1159.0,
+      "missed": 20.4,
+      "missed_pct": 1.7601380500431407,
+      "missed_pct_std": 0.5644668588022821,
+      "late_per_100": 207.17838774058418
+     },
+     {
+      "day": 45,
+      "name": "Wed 14 Oct",
+      "tickets": 1216.0,
+      "missed": 22.0,
+      "missed_pct": 1.8092105263157894,
+      "missed_pct_std": 0.26005572863226795,
+      "late_per_100": 226.14639153782656
+     },
+     {
+      "day": 46,
+      "name": "Thu 15 Oct",
+      "tickets": 1259.0,
+      "missed": 22.2,
+      "missed_pct": 1.7633042096902305,
+      "missed_pct_std": 0.4328650228256937,
+      "late_per_100": 240.4651656979057
+     },
+     {
+      "day": 47,
+      "name": "Fri 16 Oct",
+      "tickets": 1314.0,
+      "missed": 27.8,
+      "missed_pct": 2.115677321156773,
+      "missed_pct_std": 0.400538732631378,
+      "late_per_100": 457.2758751238051
+     },
+     {
+      "day": 48,
+      "name": "Sat 17 Oct",
+      "tickets": 1456.0,
+      "missed": 27.0,
+      "missed_pct": 1.8543956043956045,
+      "missed_pct_std": 0.2913901570823685,
+      "late_per_100": 292.81477367188825
+     },
+     {
+      "day": 49,
+      "name": "Sun 18 Oct",
+      "tickets": 1297.0,
+      "missed": 20.4,
+      "missed_pct": 1.5728604471858134,
+      "missed_pct_std": 0.32528948511532735,
+      "late_per_100": 175.11974555591533
+     },
+     {
+      "day": 50,
+      "name": "Mon 19 Oct",
+      "tickets": 1694.0,
+      "missed": 67.4,
+      "missed_pct": 3.97874852420307,
+      "missed_pct_std": 2.214915051652194,
+      "late_per_100": 2157.4865235789307
+     },
+     {
+      "day": 51,
+      "name": "Tue 20 Oct",
+      "tickets": 1246.0,
+      "missed": 29.4,
+      "missed_pct": 2.359550561797753,
+      "missed_pct_std": 1.2646499100114248,
+      "late_per_100": 701.1043232134494
+     },
+     {
+      "day": 52,
+      "name": "Wed 21 Oct",
+      "tickets": 1203.0,
+      "missed": 20.4,
+      "missed_pct": 1.6957605985037407,
+      "missed_pct_std": 0.3507069511176889,
+      "late_per_100": 189.7318965700718
+     },
+     {
+      "day": 53,
+      "name": "Thu 22 Oct",
+      "tickets": 1212.0,
+      "missed": 25.4,
+      "missed_pct": 2.0957095709570956,
+      "missed_pct_std": 0.2377039651961706,
+      "late_per_100": 421.5403802472121
+     },
+     {
+      "day": 54,
+      "name": "Fri 23 Oct",
+      "tickets": 1173.0,
+      "missed": 17.0,
+      "missed_pct": 1.4492753623188406,
+      "missed_pct_std": 0.4746602184850829,
+      "late_per_100": 315.99049387334423
+     },
+     {
+      "day": 55,
+      "name": "Sat 24 Oct",
+      "tickets": 1314.0,
+      "missed": 26.4,
+      "missed_pct": 2.009132420091324,
+      "missed_pct_std": 0.9173550201098426,
+      "late_per_100": 406.8456855040132
+     },
+     {
+      "day": 56,
+      "name": "Sun 25 Oct",
+      "tickets": 1416.0,
+      "missed": 23.4,
+      "missed_pct": 1.652542372881356,
+      "missed_pct_std": 0.2373974055645708,
+      "late_per_100": 168.11371823111662
+     }
+    ],
+    "teams": {
+     "A": [
+      2.5308641975308643,
+      2.955974842767296,
+      2.7565982404692084,
+      2.7414330218068534,
+      3.370786516853933,
+      3.0617283950617287,
+      2.8260869565217392,
+      6.238938053097344,
+      2.2941176470588234,
+      2.5,
+      3.382789317507419,
+      2.0060790273556233,
+      2.8011204481792715,
+      2.7027027027027026
+     ],
+     "B": [
+      1.7813765182186234,
+      1.3559322033898304,
+      1.6181229773462782,
+      2.066666666666667,
+      3.3670033670033668,
+      1.8131868131868132,
+      1.5231788079470199,
+      3.5648148148148153,
+      2.680412371134021,
+      2.022471910112359,
+      2.4920127795527156,
+      2.2222222222222223,
+      2.47787610619469,
+      1.6909620991253642
+     ],
+     "C": [
+      2.558139534883721,
+      1.6546762589928057,
+      1.8620689655172413,
+      1.5976331360946747,
+      1.3680781758957656,
+      1.2222222222222223,
+      1.0888252148997135,
+      3.2547169811320757,
+      2.345679012345679,
+      1.4184397163120566,
+      1.3138686131386863,
+      1.1347517730496455,
+      1.5772870662460567,
+      1.2234042553191489
+     ],
+     "D": [
+      0.2459016393442623,
+      0.8955223880597016,
+      0.7971014492753623,
+      0.6,
+      0.4519774011299435,
+      1.1009174311926606,
+      0.5755395683453237,
+      2.5906735751295336,
+      2.1305841924398625,
+      0.8176100628930818,
+      0.9027777777777779,
+      0.22641509433962267,
+      0.9966777408637875,
+      0.9174311926605505
+     ]
+    }
+   }
+  },
+  "checks": {
+   "baseline_a": true,
+   "baseline_b": true,
+   "baseline_d": true,
+   "opslens": true
+  },
+  "summary": {
+   "days": 14,
+   "opslens_better_than_industry_days": 14,
+   "worst_day_opslens": "Mon 19 Oct",
+   "worst_day_industry": "Mon 19 Oct"
+  }
+ },
  "concurrency": {
   "first_day": 43,
   "last_day": 56,
@@ -107860,6 +108683,599 @@
    }
   }
  },
+ "v6": {
+  "candidate": "C",
+  "config": {
+   "threshold": 1.2,
+   "horizon_min": 60,
+   "flat_urgency": false
+  },
+  "design_choice": "C",
+  "round2_main_gate": {
+   "D1": {
+    "breach_pct": 2.680388793596341,
+    "vs_v5": {
+     "mean_diff": 0.759291023441967,
+     "ci_low": 0.6305032712094232,
+     "ci_high": 0.8880787756745108,
+     "n": 5
+    },
+    "overload_minutes": 5010.041492206544
+   },
+   "D2": {
+    "breach_pct": 2.2893081761006293,
+    "vs_v5": {
+     "mean_diff": 0.3682104059462552,
+     "ci_low": 0.18965299283000386,
+     "ci_high": 0.5467678190625065,
+     "n": 5
+    },
+    "overload_minutes": 3317.077688580731
+   }
+  },
+  "confirm_main": {
+   "candidate": "C",
+   "config": {
+    "threshold": 1.2,
+    "horizon_min": 60,
+    "flat_urgency": false
+   },
+   "seeds": [
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45
+   ],
+   "v5_breach_pct": 1.8867924528301887,
+   "v6_breach_pct": 1.8810748999428246,
+   "v6_minus_v5": {
+    "mean_diff": -0.005717552887364164,
+    "ci_low": -0.02815983136559541,
+    "ci_high": 0.01672472559086708,
+    "n": 20
+   },
+   "passed": true
+  },
+  "worlds": [
+   {
+    "seed": 7101,
+    "volume_factor": 1.8431960807800314,
+    "breach_pct": {
+     "baseline_a": 54.023721980815786,
+     "baseline_b": 31.46656942882899,
+     "baseline_c": 20.477680877571483,
+     "baseline_d": 30.03231132314362,
+     "least_slack": 15.729233137844764,
+     "opslens": 20.874735381405287,
+     "opslens_v6": 20.93854771237858
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": 0.06381233097329186
+   },
+   {
+    "seed": 7102,
+    "volume_factor": 1.0190639908191537,
+    "breach_pct": {
+     "baseline_a": 21.08644044127915,
+     "baseline_b": 11.0529255690546,
+     "baseline_c": 6.987501745566262,
+     "baseline_d": 7.766024298282363,
+     "least_slack": 4.4756318949867335,
+     "opslens": 2.391425778522553,
+     "opslens_v6": 2.485686356654099
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": 0.09426057813154598
+   },
+   {
+    "seed": 7103,
+    "volume_factor": 1.2996144732038466,
+    "breach_pct": {
+     "baseline_a": 58.32892362383143,
+     "baseline_b": 34.595188667725004,
+     "baseline_c": 20.90745037380768,
+     "baseline_d": 35.76342247730696,
+     "least_slack": 11.623994247025143,
+     "opslens": 12.756950380591851,
+     "opslens_v6": 11.835660303116647
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.921290077475204
+   },
+   {
+    "seed": 7104,
+    "volume_factor": 1.164758852819473,
+    "breach_pct": {
+     "baseline_a": 10.601491569390403,
+     "baseline_b": 5.037289234760052,
+     "baseline_c": 4.225032425421531,
+     "baseline_d": 4.3725680933852145,
+     "least_slack": 3.6186770428015564,
+     "opslens": 2.5194552529182883,
+     "opslens_v6": 2.551880674448768
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": 0.03242542153047978
+   },
+   {
+    "seed": 7105,
+    "volume_factor": 0.9728430549780281,
+    "breach_pct": {
+     "baseline_a": 12.530357349369723,
+     "baseline_b": 8.999267568713618,
+     "baseline_c": 5.807409120696966,
+     "baseline_d": 8.627269573262403,
+     "least_slack": 4.778150418256813,
+     "opslens": 2.594348714390347,
+     "opslens_v6": 2.5403800932886162
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.05396862110173073
+   },
+   {
+    "seed": 7106,
+    "volume_factor": 2.6056657938364873,
+    "breach_pct": {
+     "baseline_a": 66.51415789741243,
+     "baseline_b": 42.881834753117346,
+     "baseline_c": 20.403494629512625,
+     "baseline_d": 34.96299846764999,
+     "least_slack": 14.260296157505246,
+     "opslens": 16.804287675112747,
+     "opslens_v6": 15.95386972846177
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.8504179466509765
+   },
+   {
+    "seed": 7107,
+    "volume_factor": 1.6004639313760414,
+    "breach_pct": {
+     "baseline_a": 9.828545214748551,
+     "baseline_b": 5.173461781065428,
+     "baseline_c": 4.8511955960777575,
+     "baseline_d": 4.566775617867997,
+     "least_slack": 4.2800619301565455,
+     "opslens": 3.033430815987155,
+     "opslens_v6": 3.055221056253225
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": 0.02179024026607035
+   },
+   {
+    "seed": 7108,
+    "volume_factor": 1.7430146137193916,
+    "breach_pct": {
+     "baseline_a": 44.645880210007505,
+     "baseline_b": 33.57334190506804,
+     "baseline_c": 21.707918139933568,
+     "baseline_d": 29.526411657559198,
+     "least_slack": 14.761598628522448,
+     "opslens": 18.792456873459766,
+     "opslens_v6": 18.201007178827815
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.591449694631951
+   },
+   {
+    "seed": 7109,
+    "volume_factor": 1.4300491244779583,
+    "breach_pct": {
+     "baseline_a": 23.757682626084513,
+     "baseline_b": 13.673477210871317,
+     "baseline_c": 6.040045488813074,
+     "baseline_d": 13.328477785870355,
+     "least_slack": 4.753325411124315,
+     "opslens": 5.18649135584774,
+     "opslens_v6": 5.401157664737226
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": 0.2146663088894858
+   },
+   {
+    "seed": 7110,
+    "volume_factor": 1.3347433961288282,
+    "breach_pct": {
+     "baseline_a": 14.953206716212497,
+     "baseline_b": 7.316267547481421,
+     "baseline_c": 5.187173135150013,
+     "baseline_d": 6.264794935315166,
+     "least_slack": 3.7888797137352044,
+     "opslens": 2.4456372144233414,
+     "opslens_v6": 2.4167354803192955
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.02890173410404584
+   },
+   {
+    "seed": 7111,
+    "volume_factor": 1.6979816490918065,
+    "breach_pct": {
+     "baseline_a": 66.77537531661395,
+     "baseline_b": 45.6195849503745,
+     "baseline_c": 27.630477557099216,
+     "baseline_d": 42.34419332746307,
+     "least_slack": 18.146734935698834,
+     "opslens": 18.74789376990727,
+     "opslens_v6": 18.400026090075986
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.3478676798312854
+   },
+   {
+    "seed": 7112,
+    "volume_factor": 0.882431582273319,
+    "breach_pct": {
+     "baseline_a": 13.28459793294681,
+     "baseline_b": 8.335433997143097,
+     "baseline_c": 6.138139652130072,
+     "baseline_d": 6.715822199815142,
+     "least_slack": 4.249642887152341,
+     "opslens": 2.451474665994454,
+     "opslens_v6": 2.4703806402823294
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": 0.018905974287875438
+   },
+   {
+    "seed": 7113,
+    "volume_factor": 1.395162935602774,
+    "breach_pct": {
+     "baseline_a": 28.761684724877842,
+     "baseline_b": 17.588166560441895,
+     "baseline_c": 11.034098151688974,
+     "baseline_d": 17.211068621202468,
+     "least_slack": 8.4289356277884,
+     "opslens": 7.7477692797960485,
+     "opslens_v6": 7.628266411727215
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.11950286806883348
+   },
+   {
+    "seed": 7114,
+    "volume_factor": 1.18217192050986,
+    "breach_pct": {
+     "baseline_a": 16.86549264659471,
+     "baseline_b": 9.977592627658902,
+     "baseline_c": 6.838982515937637,
+     "baseline_d": 8.612636495613204,
+     "least_slack": 5.559237518146816,
+     "opslens": 3.956005806981001,
+     "opslens_v6": 3.944959919207221
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.011045887773780017
+   },
+   {
+    "seed": 7115,
+    "volume_factor": 2.489949110941326,
+    "breach_pct": {
+     "baseline_a": 20.912704795606516,
+     "baseline_b": 9.199047159478235,
+     "baseline_c": 6.120698239083311,
+     "baseline_d": 6.715074641727369,
+     "least_slack": 4.054933860306226,
+     "opslens": 4.2824207051326235,
+     "opslens_v6": 4.014338564764816
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.26808214036780775
+   },
+   {
+    "seed": 7116,
+    "volume_factor": 1.3110148429888198,
+    "breach_pct": {
+     "baseline_a": 48.786159557329974,
+     "baseline_b": 31.49681305596414,
+     "baseline_c": 16.15325348462562,
+     "baseline_d": 26.12733767598235,
+     "least_slack": 9.55943125306437,
+     "opslens": 13.256286334664145,
+     "opslens_v6": 13.951110177208099
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": 0.6948238425439541
+   },
+   {
+    "seed": 7117,
+    "volume_factor": 0.707149140386088,
+    "breach_pct": {
+     "baseline_a": 7.116750208855471,
+     "baseline_b": 3.668024227234753,
+     "baseline_c": 3.3077485380116958,
+     "baseline_d": 3.153717627401838,
+     "least_slack": 2.8299916457811194,
+     "opslens": 2.0963868003341686,
+     "opslens_v6": 2.0755012531328316
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.02088554720133695
+   },
+   {
+    "seed": 7118,
+    "volume_factor": 1.7544756199013873,
+    "breach_pct": {
+     "baseline_a": 58.14207991995497,
+     "baseline_b": 37.289725470577196,
+     "baseline_c": 23.31936714401851,
+     "baseline_d": 36.17972609592895,
+     "least_slack": 14.70201988618598,
+     "opslens": 13.380443165947511,
+     "opslens_v6": 13.922414691597359
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": 0.5419715256498474
+   },
+   {
+    "seed": 7119,
+    "volume_factor": 1.4610468277029243,
+    "breach_pct": {
+     "baseline_a": 17.697856344610383,
+     "baseline_b": 10.384283246977548,
+     "baseline_c": 8.30285482068475,
+     "baseline_d": 9.350553692979782,
+     "least_slack": 5.606776389312202,
+     "opslens": 5.031494463070202,
+     "opslens_v6": 4.837193944935486
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.19430051813471572
+   },
+   {
+    "seed": 7120,
+    "volume_factor": 1.803622612467536,
+    "breach_pct": {
+     "baseline_a": 53.641317810255146,
+     "baseline_b": 29.310131285608122,
+     "baseline_c": 14.216414829493848,
+     "baseline_d": 22.08839071918091,
+     "least_slack": 8.411774419948808,
+     "opslens": 9.130129634216827,
+     "opslens_v6": 8.890677896127487
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.23945173808933973
+   },
+   {
+    "seed": 7121,
+    "volume_factor": 1.3447422337712294,
+    "breach_pct": {
+     "baseline_a": 42.406666122048854,
+     "baseline_b": 23.38044277428315,
+     "baseline_c": 13.49699098657517,
+     "baseline_d": 18.327751000735233,
+     "least_slack": 8.527353429730686,
+     "opslens": 12.372355199738584,
+     "opslens_v6": 12.477194129019958
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": 0.1048389292813745
+   },
+   {
+    "seed": 7122,
+    "volume_factor": 1.07913392870435,
+    "breach_pct": {
+     "baseline_a": 9.070050170373795,
+     "baseline_b": 6.926251262820842,
+     "baseline_c": 6.2790020718823305,
+     "baseline_d": 6.424547524871149,
+     "least_slack": 5.366346466670091,
+     "opslens": 3.885207445077995,
+     "opslens_v6": 3.9280149312511767
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": 0.04280748617318153
+   },
+   {
+    "seed": 7123,
+    "volume_factor": 1.8036183101459196,
+    "breach_pct": {
+     "baseline_a": 75.01568204020772,
+     "baseline_b": 46.240937837420944,
+     "baseline_c": 17.984472209368093,
+     "baseline_d": 39.93110185613656,
+     "least_slack": 12.004730320324953,
+     "opslens": 19.242120417502186,
+     "opslens_v6": 18.242583166229625
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.9995372512725602
+   },
+   {
+    "seed": 7124,
+    "volume_factor": 1.1124883873794813,
+    "breach_pct": {
+     "baseline_a": 29.407359328972987,
+     "baseline_b": 18.295138715529152,
+     "baseline_c": 9.123437682027726,
+     "baseline_d": 17.67104365336928,
+     "least_slack": 6.655349742872835,
+     "opslens": 4.7997070913841595,
+     "opslens_v6": 4.781400302894137
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.01830678849002254
+   },
+   {
+    "seed": 7125,
+    "volume_factor": 1.0544468084617482,
+    "breach_pct": {
+     "baseline_a": 63.74884957562123,
+     "baseline_b": 40.37052186658486,
+     "baseline_c": 20.048062174046425,
+     "baseline_d": 31.540375634863825,
+     "least_slack": 11.77352830896138,
+     "opslens": 12.871118382929405,
+     "opslens_v6": 12.407539966595087
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.4635784163343182
+   },
+   {
+    "seed": 7126,
+    "volume_factor": 1.5319800393857728,
+    "breach_pct": {
+     "baseline_a": 58.552678763537266,
+     "baseline_b": 32.5372349327022,
+     "baseline_c": 15.388845059647613,
+     "baseline_d": 27.526357311912786,
+     "least_slack": 10.10303856176337,
+     "opslens": 11.339023165746253,
+     "opslens_v6": 10.382748810633771
+    },
+    "best_other": "least_slack",
+    "v6_lowest": false,
+    "v5_lowest": false,
+    "v6_minus_v5": -0.9562743551124822
+   },
+   {
+    "seed": 7127,
+    "volume_factor": 1.2406073974203424,
+    "breach_pct": {
+     "baseline_a": 20.535262421481946,
+     "baseline_b": 14.389270935667291,
+     "baseline_c": 10.221487898544252,
+     "baseline_d": 11.632580155398768,
+     "least_slack": 7.432050251555476,
+     "opslens": 6.739900568604686,
+     "opslens_v6": 6.217439195022476
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.5224613735822095
+   },
+   {
+    "seed": 7128,
+    "volume_factor": 0.8060445935196862,
+    "breach_pct": {
+     "baseline_a": 19.949766774309293,
+     "baseline_b": 8.80426982418371,
+     "baseline_c": 7.333153928955866,
+     "baseline_d": 8.472371725870111,
+     "least_slack": 5.969680660208109,
+     "opslens": 5.148905633297453,
+     "opslens_v6": 4.982956584140653
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.16594904915679987
+   },
+   {
+    "seed": 7129,
+    "volume_factor": 3.084674039334402,
+    "breach_pct": {
+     "baseline_a": 83.13586515744561,
+     "baseline_b": 52.77219460018571,
+     "baseline_c": 28.580579945226088,
+     "baseline_d": 43.42595531107114,
+     "least_slack": 21.15495374778142,
+     "opslens": 22.270413860385293,
+     "opslens_v6": 19.47588654983133
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": false,
+    "v6_minus_v5": -2.7945273105539634
+   },
+   {
+    "seed": 7130,
+    "volume_factor": 1.0605170562393902,
+    "breach_pct": {
+     "baseline_a": 75.07317405214077,
+     "baseline_b": 45.432577768701925,
+     "baseline_c": 18.54196446804166,
+     "baseline_d": 33.428629773330606,
+     "least_slack": 13.377237764617794,
+     "opslens": 9.987407256143216,
+     "opslens_v6": 9.943162480430196
+    },
+    "best_other": "least_slack",
+    "v6_lowest": true,
+    "v5_lowest": true,
+    "v6_minus_v5": -0.04424477571301999
+   }
+  ],
+  "n_worlds": 30,
+  "tie_points": 0.05,
+  "wins_needed": 27,
+  "v6_lowest_in": 18,
+  "v5_lowest_in": 16,
+  "v6_beats_industry_standard_in": 30,
+  "v5_beats_industry_standard_in": 30,
+  "v6_minus_v5_mean": -0.2593913711973092,
+  "v6_better_than_v5_in": 15,
+  "v6_worse_than_v5_in": 6,
+  "adopted": false
+ },
  "sealed_world_new": {
   "data_seed": 6262,
   "classifier": "local only",
@@ -110798,17 +112214,19 @@
   }
  },
  "brief": {
-  "text": "On held-out test days, the share of tickets that missed their SLA was 2.0% with OpsLens, 6.8% under priority-first routing, and 13.1% via first-in-first-out routing. The time by which the large majority of tickets are resolved came to 140 min for OpsLens compared to 196 min for priority-first routing. Among cases where phone (IVR) tickets are transferred more, 10,788 tickets belong to the top issue group, which generated a rate of 13.0 transfers per 100 tickets beside 2.6 transfers per 100 tickets for comparable tickets.",
-  "source": "llm",
+  "text": "On the held-out days OpsLens missed 2.0% of deadlines against 5.5% for the industry standard (-3.46 points, 95% interval -4.77 to -2.15), and it was lower on 14 of 14 days. Watch next: Team B short by up to 5.2 agents, Sat 24 Oct 18:00-23:00. Biggest recurring problem: phone (IVR) tickets are transferred more, 13.0 transfers per 100 tickets against 2.6 transfers per 100 tickets for comparable tickets. Do first: cross-train 2 Hindi-speaking agents on payment failure and refund, which alone means 26.8 fewer missed deadlines over the held-out days.",
+  "source": "template",
   "numbers_used": [
    "sim.policies.opslens.kpis.turnaround.breach_pct.mean",
-   "sim.policies.baseline_b.kpis.turnaround.breach_pct.mean",
-   "sim.policies.baseline_a.kpis.turnaround.breach_pct.mean",
-   "sim.policies.opslens.kpis.turnaround.p90_resolution_min.mean",
-   "sim.policies.baseline_b.kpis.turnaround.p90_resolution_min.mean",
-   "patterns.cards[0].affected_tickets",
+   "sim.policies.baseline_d.kpis.turnaround.breach_pct.mean",
+   "sim.comparisons[30].mean_diff",
+   "tracking.summary.opslens_better_than_industry_days",
+   "forecast.bottlenecks[0].text",
+   "patterns.cards[0].title",
    "patterns.cards[0].value",
-   "patterns.cards[0].comparison_value"
+   "patterns.cards[0].comparison_value",
+   "plan.items[13].title",
+   "plan.items[13].effect.breaches.diff"
   ]
  }
 }

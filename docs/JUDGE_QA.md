@@ -453,3 +453,9 @@ We tried, the honest way: a digital twin of the desk, with a validation gate fix
 
 **Q83. When least slack beats you under overload, who pays for OpsLens's extra misses?**
 We rebuilt the 11 worlds and looked (analysis after the result, labelled as such). OpsLens misses fewer gold customers in 11 of 11 and keeps late customers less late in 11 of 11: it follows its business-impact weights and never abandons the late. It does not protect P1 better (4 of 11). Least slack wins the raw count by letting the already-late wait much longer.
+
+**Q84. (Attack) You lose overloaded worlds to least slack. Why not switch strategy when overload is predicted?**
+We tried, with the rule written first. Round 1's best mode (value per minute of work) was no worse on a normal
+week (−0.006 points) but was lowest in only 18 of 30 new worlds — we needed 27. Switching to least slack fired too
+often on normal weeks. v5 stays; it still beat the industry standard in 30 of 30 new worlds.
+

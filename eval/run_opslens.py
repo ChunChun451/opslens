@@ -121,9 +121,25 @@ def run_one(job: dict) -> dict:
         ms = policy.stats.solve_ms or [0.0]
         out["solver"] = {"solves": policy.stats.solves, "fallbacks": policy.stats.fallbacks,
                          "median_ms": float(np.median(ms)), "max_ms": float(np.max(ms))}
+    if job.get("daily"):  # performance tracking (eval/run_tracking.py): the same run, day by day
+        out["daily"] = daily_breakdown(result.tickets)
     if hasattr(policy, "overload_minutes") and policy.handle:  # OpsLens v6 candidates only
         out["overload_minutes"] = policy.overload_minutes
     return out
+
+
+def daily_breakdown(tickets: pd.DataFrame) -> list[dict]:
+    """One row per day (the day a ticket was created) and per team (the team its true category belongs
+    to): tickets, missed SLAs, minutes past SLA and the mean wait. Sums, so seeds and days add up exactly."""
+    from opslens.classify import TEAM_OF
+    t = tickets.assign(day=(tickets["created_min"] // MINUTES_PER_DAY).astype(int) + 1,
+                       team=tickets["category"].map(TEAM_OF).fillna("?"),
+                       late=(tickets["resolution_min"] - tickets["sla_min"]).clip(lower=0).fillna(0.0))
+    rows = []
+    for (day, team), g in t.groupby(["day", "team"]):
+        rows.append({"day": int(day), "team": str(team), "tickets": int(len(g)), "missed": int(g["breached"].sum()),
+                     "late_minutes": float(g.loc[g["breached"], "late"].sum()), "wait_sum": float(g["wait_min"].fillna(0).sum())})
+    return rows
 
 
 PUBLISHED_RULES = {"least_slack", "least_slack_rescue", "gen_cmu", "clairvoyant"}

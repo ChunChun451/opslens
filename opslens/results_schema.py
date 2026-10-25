@@ -334,9 +334,15 @@ class Results(Strict):
     # Plan v4 W2 (eval/run_concurrency.py): every policy when agents hold 2-3 chats at once, at equal
     # load and at today's volume, with paired CIs and the optimiser ablation at 3 chats.
     concurrency: dict[str, Any] | None = None
+    # Performance tracking (eval/run_tracking.py, 24 Oct): the test fortnight day by day and team by
+    # team, per policy; the daily rows are checked to add up exactly to the totals above.
+    tracking: dict[str, Any] | None = None
     # Plan v4 W1 (eval/run_worlds.py): 30 random worlds drawn from pre-registered ranges, every policy
     # on each world's test days, and the pre-registered rule. Run once; not a make-eval step.
     worlds: dict[str, Any] | None = None
+    # Plan v4 W13 (eval/run_design_v6.py + run_worlds.py --v6-summary): the overload-mode candidate's
+    # pre-registered adoption test: 20 fresh seeds on main validation days + 30 NEW worlds. Not adopted.
+    v6: dict[str, Any] | None = None
     # Plan v4: W7 risk model vs LR vs time-left rule (offline + in dispatch), bottleneck alerts scored (eval/run_w7.py)
     prediction_baselines: dict[str, Any] | None = None
     # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
