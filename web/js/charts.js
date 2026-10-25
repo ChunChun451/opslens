@@ -46,19 +46,19 @@ if (NEON) {
   Object.assign(POLICY_STYLE.opslens, { color: "#22d3ee" });
   Object.assign(POLICY_STYLE.baseline_a, { color: "#fb923c" });
   Object.assign(POLICY_STYLE.baseline_b, { color: "#94a3b8" });
-  Object.assign(POLICY_STYLE.baseline_c, { color: "#a78bfa" });
-  Object.assign(POLICY_STYLE.baseline_d, { color: "#f472b6" });
+  Object.assign(POLICY_STYLE.baseline_c, { color: "#c9c9cc" });
+  Object.assign(POLICY_STYLE.baseline_d, { color: "#ff5a5f" });
 }
 
 export function setChartDefaults() {
   Chart.defaults.font.family = '"Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif'; // Inter: web/theme.css
   Chart.defaults.font.size = 14;
-  Chart.defaults.color = NEON ? "#9aa3bf" : INK_SOFT;
-  Chart.defaults.borderColor = NEON ? "rgba(130, 145, 255, 0.12)" : GRID;
+  Chart.defaults.color = NEON ? "#8d8d94" : INK_SOFT;
+  Chart.defaults.borderColor = NEON ? "#232327" : GRID;
   Chart.defaults.maintainAspectRatio = false;
   Chart.defaults.animation.duration = 300;
   Chart.defaults.scale.border.display = false;
-  Chart.defaults.scale.grid.color = NEON ? "rgba(130, 145, 255, 0.1)" : GRID;
+  Chart.defaults.scale.grid.color = NEON ? "#1d1d21" : GRID;
   Chart.defaults.scale.ticks.padding = 8;
   Chart.defaults.plugins.legend.align = "start";
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
@@ -66,7 +66,7 @@ export function setChartDefaults() {
   Chart.defaults.plugins.legend.labels.boxWidth = 8;
   Chart.defaults.plugins.legend.labels.boxHeight = 8;
   Chart.defaults.plugins.legend.labels.padding = 16;
-  Chart.defaults.plugins.legend.labels.color = NEON ? "#e9ecf7" : INK;
+  Chart.defaults.plugins.legend.labels.color = NEON ? "#c9c9cc" : INK;
   Chart.defaults.plugins.tooltip.backgroundColor = "#0b1322";
   Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: "600" };
   Chart.defaults.plugins.tooltip.bodyFont = { size: 14 };

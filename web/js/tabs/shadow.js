@@ -15,7 +15,7 @@
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, fold } from "../ui.js";
-import { escapeHtml } from "../format.js";
+import { escapeHtml, tidyDash } from "../format.js";
 
 const S = "realdesk.shadow";
 const DAY_SHARE = 0.72; // share of the replay spent on the day itself; the rest fast-forwards the weeks after
@@ -224,7 +224,7 @@ function apply(e) {
   if (e.kind === "flag") {
     if (x.top20_opslens && dot) dot.classList.add("is-flag");
     if (!x.top20_opslens) return "";
-    const why = x.reasons && x.reasons[0] ? escapeHtml(x.reasons[0].text) : "";
+    const why = x.reasons && x.reasons[0] ? escapeHtml(tidyDash(x.reasons[0].text)) : "";
     return `<li class="f-flag"><time>${when}</time> OpsLens warns: <b>${escapeHtml(x.ticket_id)}</b> ${Math.round(x.risk * 100)}% risk${why ? ` · ${why}` : ""}${x.top20_priority ? " · the priority field agrees" : ""}</li>`;
   }
   // The real outcome.

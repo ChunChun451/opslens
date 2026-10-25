@@ -13,7 +13,7 @@
 
 import { lookup, state, policyLabel, liveSource, LIVE_SOURCES } from "./data.js";
 import {
-  fmt, fmtSigned, spreadUnit, escapeHtml, definitionFor, kpiInfo, prettyKey,
+  fmt, fmtSigned, spreadUnit, escapeHtml, definitionFor, kpiInfo, prettyKey, tidyDash,
 } from "./format.js";
 
 // HTML for one clickable number.
@@ -39,7 +39,7 @@ export function evText(path, display) {
   if (value === undefined || value === null || value === "") {
     return "";
   }
-  let text = Array.isArray(value) ? value.join(", ") : String(value);
+  let text = tidyDash(Array.isArray(value) ? value.join(", ") : String(value));
   if (display !== undefined) {
     text = display;
   }

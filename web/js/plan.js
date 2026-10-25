@@ -183,7 +183,7 @@ function renderPanel() {
         <button type="button" class="btn btn-primary" id="plan-simulate">Simulate this day with your plan</button></div>
       <div id="plan-result" class="plan-result">${state.planimpact ? impactHtml(state.planimpact) : ""}</div>` : ""}
     ${overridden.length ? `<h4>Overridden (${overridden.length})</h4>${overridden.map((id) =>
-      `<div class="plan-item small">${escapeHtml(state.plan[id].title)} — <em>${escapeHtml(state.plan[id].reason)}</em></div>`).join("")}` : ""}`;
+      `<div class="plan-item small">${escapeHtml(state.plan[id].title)}: <em>${escapeHtml(state.plan[id].reason)}</em></div>`).join("")}` : ""}`;
   document.getElementById("plan-close").addEventListener("click", () => togglePanel(false));
   const sim = document.getElementById("plan-simulate");
   if (sim) {

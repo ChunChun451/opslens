@@ -132,7 +132,7 @@ function drawChart(w) {
     type: "scatter",
     data: { datasets: [
       { label: "OpsLens lowest", data: wins, backgroundColor: "#22d3ee", pointRadius: 6, pointHoverRadius: 8 },
-      { label: "Another way is lower", data: losses, backgroundColor: "#ff4d8d", pointRadius: 6, pointHoverRadius: 8, pointStyle: "rectRot" },
+      { label: "Another way is lower", data: losses, backgroundColor: "#ff5a5f", pointRadius: 6, pointHoverRadius: 8, pointStyle: "rectRot" },
     ] },
     options: {
       scales: {
@@ -152,7 +152,7 @@ function drawChart(w) {
         ctx.beginPath(); ctx.moveTo(chartArea.left, y0); ctx.lineTo(chartArea.right, y0); ctx.stroke();
         if (limit) {
           const x = scales.x.getPixelForValue(limit);
-          ctx.strokeStyle = "rgba(167,139,250,0.6)";
+          ctx.strokeStyle = "rgba(141,141,148,0.6)";
           ctx.beginPath(); ctx.moveTo(x, chartArea.top); ctx.lineTo(x, chartArea.bottom); ctx.stroke();
         }
         ctx.restore();

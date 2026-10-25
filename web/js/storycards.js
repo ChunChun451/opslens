@@ -19,7 +19,7 @@
 import { state, policyKeys } from "./data.js";
 import { ev } from "./evidence.js";
 import { shortLabel } from "./ui.js";
-import { escapeHtml } from "./format.js";
+import { escapeHtml, tidyDash } from "./format.js";
 
 const BREACH = "turnaround.breach_pct";
 const DOTS = 1000;
@@ -251,7 +251,7 @@ function stepPanel(n, t, i) {
     case 2:
       return `${meter(t.probability, "is-hot")}
         <div class="jr-facts">Chance it misses its promise: <strong>${ev(`${at}.probability`, "frac_pct")}</strong></div>
-        <ul class="jr-why">${(t.reasons || []).slice(0, 2).map((x) => `<li>${escapeHtml(x.text)}</li>`).join("")}</ul>`;
+        <ul class="jr-why">${(t.reasons || []).slice(0, 2).map((x) => `<li>${escapeHtml(tidyDash(x.text))}</li>`).join("")}</ul>`;
     case 3:
       return `<div class="jr-agent"><span class="jr-avatar"></span><div><strong>OpsLens:</strong> ${escapeHtml(t.action)}</div></div>
         <div class="jr-facts">The optimiser checks every free agent's skills and languages, every few minutes.</div>`;

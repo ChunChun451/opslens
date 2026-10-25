@@ -120,6 +120,16 @@ export function prettyKey(key) {
 }
 
 // Every text we put into innerHTML goes through this, because ticket texts are user input.
+// Engine text such as "113 min left of 240 min SLA — 23% of the push" reads better on screen as
+// "113 min left of 240 min SLA (23% of the push)"; any other spaced em dash becomes a comma.
+// Display only: the results file keeps its text. Example: tidyDash("a — 40% of the push") ->
+// "a (40% of the push)".
+export function tidyDash(value) {
+  return String(value)
+    .replace(/\s+—\s+(\d+% of the push)/g, " ($1)")
+    .replace(/\s+—\s+/g, ", ");
+}
+
 export function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")

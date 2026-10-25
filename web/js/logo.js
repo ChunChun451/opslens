@@ -15,9 +15,9 @@ export const TEAM = "SoyaChaap";
 export function logoBody(id) {
   return `<defs>
       <linearGradient id="${id}-ring" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#22d3ee"/><stop offset="0.55" stop-color="#818cf8"/><stop offset="1" stop-color="#c084fc"/></linearGradient>
+        <stop offset="0" stop-color="#22d3ee"/><stop offset="0.55" stop-color="#22d3ee"/><stop offset="1" stop-color="#67e8f9"/></linearGradient>
       <radialGradient id="${id}-glass" cx="0.35" cy="0.3" r="0.8">
-        <stop offset="0" stop-color="#1e2a55"/><stop offset="1" stop-color="#0a0f22"/></radialGradient>
+        <stop offset="0" stop-color="#1d1d21"/><stop offset="1" stop-color="#0a0f22"/></radialGradient>
     </defs>
     <g class="lg-handle"><path d="M86 86 L111 111" stroke="url(#${id}-ring)" stroke-width="14" stroke-linecap="round"/>
       <path d="M90 90 l6 6" stroke="#0a0f22" stroke-width="15" stroke-linecap="butt" opacity="0.35"/></g>

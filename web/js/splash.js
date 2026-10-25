@@ -21,7 +21,8 @@ const SWIRL_MS = 1500; // chaos, before the particles head for the letters
 const SEEN_KEY = "opslens.splashSeen";
 const FINALE = new Date(2026, 9, 29, 9, 0); // 29 Oct 2026, 09:00 (local time)
 const FINALE_END = new Date(2026, 9, 31, 23, 59);
-const PINK = [255, 10, 108], VIOLET = [138, 36, 224], BLUE = [45, 39, 255];
+// Refined (25 Oct): white into cyan, no pink-violet-indigo.
+const PINK = [244, 244, 242], VIOLET = [134, 232, 248], BLUE = [34, 211, 238];
 
 function countdownLabel(now = new Date()) {
   if (now > FINALE_END) return "";

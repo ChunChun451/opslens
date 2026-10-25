@@ -119,7 +119,7 @@ export const risks = { render(section) {
     ${d.alerts ? alertsCard(d) : ""}
     ${card({ title: "Teams likely to fall behind next week", sub: `Forecast new incidents per team and day vs what the team usually closes in a day.
       Honest note: on this data our learned forecast (WAPE ${ev(`${fc}.wape_learned`, "ratio")}) is not better than "same day last week"
-      (${ev(`${fc}.wape_same_day_last_week`, "ratio")}) — three months of history is short.`,
+      (${ev(`${fc}.wape_same_day_last_week`, "ratio")}). Three months of history is short.`,
       body: week.length ? `<div class="table-wrap"><table><thead><tr><th>Team</th><th>Day</th><th class="num">Forecast new</th>
         <th class="num">Usually closes</th><th class="num">Actually came</th></tr></thead><tbody>${rows}</tbody></table></div>`
         : `<p class="muted">No team is forecast above its usual closures next week.</p>` })}`;

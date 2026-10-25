@@ -1,0 +1,335 @@
+/*
+  OpsLens "Neon, refined" (25 Oct, owner: "I like 8002, but remove the AI-slop tells; keep the
+  animations"). The last style layer over neon.css. It changes colour, shape and type only:
+  every screen, feature and animation stays exactly as it is.
+
+  The tells it removes (owner's checklist):
+  1. Indigo-to-violet gradients and glowing mesh backgrounds -> a neutral near-black stage, solid
+     panels, ONE accent (cyan = OpsLens / promise kept). Red-coral is kept for "promise missed"
+     (a meaning, not decoration). Amber marks the one rescue state on the floor.
+  2. Gradient text and shimmering titles -> solid type.
+  3. Pill buttons and pill tabs everywhere -> small radii (6-8 px), sharper edges.
+  4. Left-border and top-border accent cards -> hairline borders; the tag says the type.
+  5. Rainbow category colours -> one look; the label carries the meaning.
+  6. Generic type -> Bricolage Grotesque (bundled) for big, tight display headings, Inter for
+     reading, tabular numbers.
+  Motion is untouched (floor tiles breathing, the live sweep, the border light, the mascots, the
+  scenes, the splash); only its colours follow the palette above.
+
+  Example: the Live now hero keeps its travelling border light, now one cyan stroke instead of a
+  cyan-violet glow; "7 more customers helped" stays the big cyan number.
+*/
+
+/* ---- 1. Palette ---------------------------------------------------------------------------- */
+html[data-theme="neon"] {
+  --bg: #09090b;
+  --surface: #111113;
+  --surface-2: #161619;
+  --surface-3: #1d1d21;
+  --border: #232327;
+  --border-strong: #303036;
+  --ink: #f4f4f2;
+  --ink-2: #c9c9cc;
+  --muted: #8d8d94;
+  --text: var(--ink);
+  --blue: #22d3ee;
+  --blue-soft: rgba(34, 211, 238, 0.1);
+  --violet: #f5b83d;          /* the floor's "rescue from another team" (was violet) */
+  --magenta: #f5b83d;
+  --good: #34d399;
+  --good-soft: rgba(52, 211, 153, 0.1);
+  --bad: #ff5a5f;             /* promise missed (was neon pink) */
+  --bad-soft: rgba(255, 90, 95, 0.1);
+  --warn: #fbbf24;
+  --warn-soft: rgba(251, 191, 36, 0.08);
+  --brand: #22d3ee;
+  --nav-bg: #09090b;
+  --nav-ink: #a3a3aa;
+  --nav-active: #161619;
+  --night: #111113;
+  --night-2: #161619;
+  --saffron: #22d3ee;
+  --saffron-soft: rgba(34, 211, 238, 0.1);
+  --chilli: #ff5a5f;
+  --kept: #22d3ee;
+  --missed: #ff5a5f;
+  --reported: #8d8d94;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: none;
+  --shadow-hover: 0 0 0 1px var(--border-strong);
+  --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.75), 0 0 0 1px var(--border-strong);
+  --glow-cyan: 0 0 10px rgba(34, 211, 238, 0.35);
+  --glow-violet: none;
+  --font-display: "Bricolage Grotesque", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ---- 2. The stage: no mesh glow, no drifting aurora ------------------------------------------ */
+html[data-theme="neon"] body { background: var(--bg) !important; }
+html[data-theme="neon"] body::before { content: none !important; animation: none !important; }
+html[data-theme="neon"] ::selection { background: rgba(34, 211, 238, 0.25); }
+
+/* ---- 3. Frame ------------------------------------------------------------------------------ */
+html[data-theme="neon"] .sidebar,
+html[data-theme="neon"] .topbar { background: var(--bg) !important; backdrop-filter: none !important; border-color: var(--border) !important; }
+html[data-theme="neon"] .brand-logo { filter: none !important; }
+html[data-theme="neon"] .brand-name { letter-spacing: -0.02em; }
+.brand-by, html[data-theme="neon"] .brand-by { background: none !important; color: var(--muted) !important; padding: 0 !important; font-weight: 600 !important; }
+html[data-theme="neon"] .nav a { border-radius: 8px; }
+html[data-theme="neon"] .nav a:hover { background: var(--surface-2) !important; }
+html[data-theme="neon"] .nav a[aria-current="page"] {
+  background: var(--surface-2) !important;
+  box-shadow: inset 0 0 0 1px var(--border-strong) !important;
+}
+html[data-theme="neon"] .nav a[aria-current="page"]::before { background: var(--blue) !important; box-shadow: none !important; }
+html[data-theme="neon"] .nav a[aria-current="page"] .nav-icon { color: var(--blue) !important; stroke: var(--blue) !important; }
+html[data-theme="neon"] .world-switch { background: var(--surface) !important; border-radius: 8px !important; }
+html[data-theme="neon"] .world-switch button { border-radius: 6px !important; }
+html[data-theme="neon"] .world-switch button[aria-pressed="true"] {
+  background: var(--surface-3) !important;
+  box-shadow: inset 0 0 0 1px var(--border-strong) !important;
+  color: var(--ink) !important;
+}
+html[data-theme="neon"] .live-ticker {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+html[data-theme="neon"] .lt-theirs { color: var(--bad) !important; }
+html[data-theme="neon"] .intro-replay { border-radius: 8px !important; }
+
+/* ---- 4. Panels: solid, a hairline edge, no glass, no violet glow on hover ------------------- */
+html[data-theme="neon"] :is(.card, .stat-card, .proof, .challenge, .playbook, .week, .stepper, .live-volume, .fold, .fact, .lv-lane, .lv-feed) {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  border-radius: var(--radius);
+}
+html[data-theme="neon"] :is(.card, .fold):hover { border-color: var(--border-strong) !important; box-shadow: none !important; }
+html[data-theme="neon"] .fold[open] { border-color: var(--border-strong) !important; box-shadow: none !important; }
+html[data-theme="neon"] .fold > summary:hover { background: var(--surface-2) !important; }
+html[data-theme="neon"] .fact b, html[data-theme="neon"] .fact b .ev { text-shadow: none !important; }
+
+/* No left-border or top-border accent cards: the hairline edge is enough, the tag names the type. */
+html[data-theme="neon"] .challenge, .challenge { border-left: 1px solid var(--border) !important; }
+.proof::before { content: none !important; }
+.second-look { border-left: 0 !important; border-radius: 8px !important; box-shadow: inset 0 0 0 1px var(--border); background: var(--surface-2) !important; }
+.bm-evidence { border-left: 0 !important; border-radius: 8px !important; box-shadow: inset 0 0 0 1px var(--border); }
+.sh-feed .f-flag, .sh-feed .f-caught, .sh-feed .f-miss { border-left: 0 !important; }
+.sh-feed .f-flag time { color: var(--blue) !important; }
+.sh-feed .f-caught time { color: var(--good) !important; }
+.sh-feed .f-miss time { color: var(--bad) !important; }
+.ft-assume, .sh-honest { border: 1px solid var(--border) !important; background: var(--surface-2) !important; border-radius: 8px !important; }
+.ft-assume b { color: var(--warn) !important; }
+
+/* ---- 5. Type: big, tight display headings; quiet body; no gradient text ---------------------- */
+html[data-theme="neon"] .page-title {
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  color: var(--ink) !important;
+  animation: none !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  font-size: clamp(2.2rem, 3.2vw, 3rem) !important;
+  letter-spacing: -0.045em !important;
+  line-height: 1.02 !important;
+}
+html[data-theme="neon"] :is(.card-title, .ledger-claim, .challenge-q) {
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.02em;
+}
+html[data-theme="neon"] :is(.page-sub, .card-sub) { color: var(--muted) !important; max-width: 68ch; }
+html[data-theme="neon"] :is(.stat-value, .lv-big, .tw-big b, .wd-got b, .sh-clock b, .lv-clock, .live-clock) {
+  font-variant-numeric: tabular-nums;
+  text-shadow: none !important;
+}
+html[data-theme="neon"] :is(.stat-value .ev, .proof-a .ev) { text-shadow: none !important; }
+
+/* Clickable numbers: quiet ink with a dotted underline; the accent appears on hover. */
+html[data-theme="neon"] .ev {
+  color: inherit !important;
+  text-decoration: underline dotted rgba(141, 141, 148, 0.6);
+  text-underline-offset: 3px;
+}
+html[data-theme="neon"] .ev:hover, html[data-theme="neon"] .ev:focus-visible { color: var(--blue) !important; background: var(--blue-soft) !important; }
+
+/* ---- 6. Buttons, chips, tabs: solid, small radii, no gradient, no shimmer ------------------- */
+html[data-theme="neon"] .btn {
+  background: var(--surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+html[data-theme="neon"] .btn:hover { border-color: var(--muted) !important; box-shadow: none !important; }
+html[data-theme="neon"] :is(.btn-primary, #story-button) {
+  background: var(--blue) !important;
+  background-image: none !important;
+  color: #04141a !important;
+  border-color: var(--blue) !important;
+  box-shadow: none !important;
+}
+html[data-theme="neon"] :is(.btn-primary, #story-button):hover { background: #67e8f9 !important; box-shadow: none !important; }
+html[data-theme="neon"] .story-card .btn-primary { background: var(--blue) !important; color: #04141a !important; }
+html[data-theme="neon"] :is(.pill, .chip-btn, .tw-chip, .jr-chip, .sh-day, .bot-chip, .cause-tag, .plant-types li) { border-radius: 6px !important; }
+html[data-theme="neon"] .chip-btn { background: var(--surface) !important; }
+html[data-theme="neon"] :is(.chip-btn[aria-pressed="true"], .chip-btn.is-on) {
+  background: var(--blue-soft) !important;
+  border-color: var(--blue) !important;
+  box-shadow: none !important;
+}
+html[data-theme="neon"] .subnav button { border-radius: 8px !important; background: transparent !important; border-color: transparent !important; }
+html[data-theme="neon"] .subnav button:hover { background: var(--surface-2) !important; }
+html[data-theme="neon"] .subnav button[aria-current="true"] {
+  background: var(--surface) !important;
+  border-color: var(--border-strong) !important;
+  box-shadow: inset 0 -2px 0 var(--blue) !important;
+  color: var(--ink) !important;
+}
+html[data-theme="neon"] #plan-button .count { background: var(--blue) !important; color: #04141a !important; box-shadow: none !important; }
+.theme-switch .swatch { background: linear-gradient(90deg, #f4f4f2 50%, #09090b 50%) !important; box-shadow: inset 0 0 0 1px var(--border-strong) !important; }
+html[data-theme="neon"] input[type="range"]::-webkit-slider-thumb { background: var(--bg) !important; box-shadow: none !important; }
+html[data-theme="neon"] input[type="range"]::-moz-range-thumb { background: var(--bg) !important; box-shadow: none !important; }
+html[data-theme="neon"] :is(input[type="text"], input[type="number"], select, textarea) { border-radius: 8px; }
+
+/* ---- 7. Bars and meters: one solid colour each ------------------------------------------------ */
+html[data-theme="neon"] .reason-bar { background: var(--blue) !important; box-shadow: none !important; }
+html[data-theme="neon"] .cbar.is-ours .cbar-fill { box-shadow: none !important; }
+html[data-theme="neon"] :is(.cbar-track, .queue-track, .share-bar) { background: var(--surface-3) !important; }
+html[data-theme="neon"] .live-progress i, .sh-progress i { background: var(--blue) !important; box-shadow: none !important; }
+html[data-theme="neon"] :is(.lv-bar.ours i, .lv-bar.theirs i) { box-shadow: none !important; }
+
+/* ---- 8. Floating panels ---------------------------------------------------------------------- */
+html[data-theme="neon"] :is(.evidence-popover, .ask-panel, .plan-panel, .story-card) {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: var(--shadow-lg) !important;
+  backdrop-filter: none !important;
+}
+html[data-theme="neon"] .story-target {
+  outline-color: var(--blue) !important;
+  box-shadow: 0 0 0 4px var(--blue-soft) !important;
+}
+
+/* ---- 9. The bands (Live now hero, replay, ledger tally): solid, no colour wash ------------------ */
+html[data-theme="neon"] :is(.mission, .ledger-tally, .lv-hero) {
+  background: var(--surface) !important;
+  box-shadow: 0 0 0 1px var(--border) !important;
+}
+/* The travelling light on the Live hero's border stays: one cyan stroke, no violet, no halo. */
+html[data-theme="neon"] .lv-hero::before {
+  background: conic-gradient(from var(--spin), transparent 0deg, #22d3ee 50deg, transparent 110deg, transparent 360deg) !important;
+  filter: none !important;
+  padding: 1px !important;
+  inset: -1px !important;
+}
+html[data-theme="neon"] :is(.lv-big, .lv-clock, .live-clock, .lv-risk, .lv-risk .ev, .live-risk) { text-shadow: none !important; }
+html[data-theme="neon"] .lv-clock { animation: none !important; }
+html[data-theme="neon"] :is(.mission-score .ours .v, .live-saved b, .ledger-tally .t-kept) { text-shadow: none !important; }
+html[data-theme="neon"] :is(.mission-score .theirs .v, .ledger-tally .t-missed) { text-shadow: none !important; }
+html[data-theme="neon"] .ledger-tally .t-reported { color: var(--muted) !important; }
+html[data-theme="neon"] .lv-lane.is-ours { border-color: rgba(34, 211, 238, 0.4) !important; box-shadow: none !important; }
+html[data-theme="neon"] .lv-scene,
+html[data-theme="neon"] .sc { background: var(--surface) !important; }
+
+/* ---- 10. The floor: the breathing stays, the halo shrinks; rescues are amber ---------------- */
+html[data-theme="neon"] .tile.busy { box-shadow: 0 0 6px rgba(34, 211, 238, 0.35); }
+html[data-theme="neon"] .tile.cross { background: var(--violet) !important; box-shadow: none !important; }
+html[data-theme="neon"] .tile.wrong { background: var(--bad) !important; box-shadow: none !important; }
+html[data-theme="neon"] :is(.dot.late, .mission .dot.late) { background: var(--bad) !important; box-shadow: none !important; }
+html[data-theme="neon"] .floor-team { background: var(--surface-2) !important; border-color: var(--border) !important; }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme="neon"] .floor .tile.cross { animation: none; }
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 2px rgba(34, 211, 238, 0.25); filter: brightness(0.9); }
+    50% { box-shadow: 0 0 8px rgba(34, 211, 238, 0.55); filter: brightness(1.1); }
+  }
+}
+
+/* ---- 11. Ledger -------------------------------------------------------------------------------- */
+html[data-theme="neon"] .ledger::before { background: var(--border-strong) !important; }
+html[data-theme="neon"] .ledger-entry.is-kept::before { box-shadow: none !important; }
+html[data-theme="neon"] .ledger-entry.is-missed::before { box-shadow: none !important; }
+html[data-theme="neon"] .ledger-when a { color: var(--blue) !important; }
+html[data-theme="neon"] :is(.is-kept, .is-missed) .ledger-stamp { box-shadow: none !important; }
+
+/* ---- 12. Problems: one look for every cause; the bad segment is red-coral ------------------- */
+.finding-card, .finding-card[class*="cause-"] { --cause: var(--bad) !important; border-top: 1px solid var(--border) !important; }
+.cause-tag { color: var(--ink-2) !important; background: var(--surface-3) !important; font-weight: 600 !important; }
+html[data-theme="neon"] :is(.finding-card:hover, .fix-card:hover, .risk-cards .ticket:hover) {
+  box-shadow: none !important;
+  border-color: var(--border-strong) !important;
+}
+html[data-theme="neon"] .cbar-fill.is-bad { box-shadow: none !important; }
+html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-number .ev) { text-shadow: none !important; }
+
+/* ---- 13. Story cards, worlds, real desk, Shadow mode: the same palette ------------------------- */
+.tw-chip[aria-pressed="true"], .jr-chip[aria-pressed="true"] { background: var(--bad) !important; border-color: var(--bad) !important; }
+.tw-chip.is-ours[aria-pressed="true"] { background: var(--blue) !important; border-color: var(--blue) !important; color: #04141a !important; }
+.tw-big b { color: var(--bad) !important; text-shadow: none !important; }
+#ov-thousand[data-policy="opslens"] .tw-big b { color: var(--blue) !important; text-shadow: none !important; }
+.tw-wall i { background: color-mix(in srgb, var(--bad) calc(var(--on) * 100%), rgba(52, 211, 153, 0.45)) !important; box-shadow: none !important; }
+.tw-save b { color: var(--blue) !important; }
+.jr-line i { background: var(--blue) !important; box-shadow: none !important; }
+.jr-step[aria-current="step"] svg { border-color: var(--bad) !important; color: var(--bad) !important; background: var(--bad-soft) !important; box-shadow: none !important; }
+.jr-step.is-done, .jr-step.is-done svg { color: var(--blue) !important; border-color: var(--blue) !important; }
+.jr-tags span { background: var(--surface-3) !important; border: 1px solid var(--border-strong) !important; border-radius: 6px !important; }
+.jr-meter.is-hot i { background: var(--bad) !important; }
+.jr-meter.is-cool i { background: var(--blue) !important; }
+.proof-strip .proof.is-lead { border-color: rgba(34, 211, 238, 0.45) !important; }
+.wd-verdict.is-missed .wd-got b, .wd-zone.is-bad b, tr.hot td, .pill.bad, .sh-t.is-miss b { color: var(--bad) !important; }
+.wd-zone.is-good { border-color: rgba(34, 211, 238, 0.4) !important; background: var(--blue-soft) !important; }
+.wd-zone.is-bad { border-color: rgba(255, 90, 95, 0.4) !important; background: var(--bad-soft) !important; }
+.pill.bad { background: var(--bad-soft) !important; border-color: transparent !important; }
+.ft-row.is-ours .ft-track i { background: var(--blue) !important; }
+.sh-day[aria-pressed="true"] { background: var(--blue) !important; border-color: var(--blue) !important; color: #04141a !important; }
+.sh-wall i.is-miss, .sh-legend .d-miss { background: var(--bad) !important; }
+.sh-wall i.is-caught, .sh-legend .d-caught { background: var(--bad) !important; box-shadow: 0 0 0 2px var(--blue) !important; transform: none; }
+.sh-final p { border-radius: 8px !important; }
+
+/* ---- 14. The assistant: a solid cyan button; the mascot keeps moving --------------------------- */
+.bot-launch, html[data-theme="light"] .bot-launch {
+  background: var(--blue) !important;
+  background-image: none !important;
+  color: #04141a !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+.bot-launch:hover { background: #67e8f9 !important; filter: none !important; }
+.bot-launch .bl-text b, .bot-launch .bl-text small { text-shadow: none !important; color: #04141a !important; }
+.bot-launch .bl-text small { opacity: 0.75; }
+.bot-launch .bl-ping { background: #04141a !important; box-shadow: none !important; }
+.bot-panel { background: var(--surface) !important; border-left: 1px solid var(--border-strong) !important; }
+.bp-head { background: var(--surface) !important; animation: none !important; border-bottom: 1px solid var(--border) !important; }
+.bm-user .bm-bubble, .bp-send { background: var(--blue) !important; background-image: none !important; color: #04141a !important; }
+.bm-bot .bm-bubble { background: var(--surface-2) !important; border-color: var(--border) !important; }
+.bp-form input { border-radius: 8px !important; }
+.bp-form input:focus { border-color: var(--blue) !important; box-shadow: 0 0 0 3px var(--blue-soft) !important; }
+.bot-chip { border-color: var(--border-strong) !important; background: transparent !important; color: var(--ink-2) !important; }
+.bot-chip:hover { border-color: var(--blue) !important; background: var(--blue-soft) !important; color: var(--ink) !important; }
+.bm-typing i { background: var(--blue) !important; }
+.bm-id { background: var(--surface-3) !important; color: var(--ink-2) !important; }
+.bm-id.is-engine { background: var(--blue-soft) !important; color: var(--blue) !important; }
+.bm-attack { background: var(--bad-soft) !important; color: var(--bad) !important; }
+.bt-tag.is-cat { background: var(--bad-soft) !important; color: var(--bad) !important; }
+.bt-tag.is-team { background: var(--blue-soft) !important; color: var(--blue) !important; }
+
+/* ---- 15. Splash: deep black, no violet halo; the particle word stays ---------------------- */
+.splash { background: #050506 !important; }
+.sp-mark, .sp-logo { filter: none !important; }
+.splash .sp-by, .sp-by { background: none !important; box-shadow: none !important; color: #8d8d94 !important; padding: 0 !important; }
+.sp-bar i { background: #22d3ee !important; }
+.sp-live { background: #ff5a5f !important; }
+.sp-pill { border-radius: 8px !important; border-color: rgba(255, 255, 255, 0.1) !important; }
+
+/* ---- 16. Results: the headline tile leads, the other two follow (not three equal cards) ------ */
+@media (min-width: 1000px) {
+  .proof-strip { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) !important; }
+}
+.chr svg, .mascot svg, .biryani-plate { filter: none !important; }

@@ -15,7 +15,7 @@
 import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
-import { escapeHtml, prettyKey } from "../format.js";
+import { escapeHtml, prettyKey, tidyDash } from "../format.js";
 import { mascotHtml, customerHtml, biryaniHtml, cheer, setMood } from "../mascot.js";
 
 const BUSY_WAITING = 60; // customers waiting on the OpsLens floor above which Lenny sweats (a look, not a result)
@@ -358,7 +358,7 @@ function drawDanger(d) {
             <b>${escapeHtml(prettyKey(t.category))}</b><span class="muted">${escapeHtml(LANGUAGE[t.language] || t.language)}</span>
             <span class="muted lv-left">${ev(`live.danger[${i}].minutes_left`, "min")} left</span></div>
           <div class="lv-quote">“${escapeHtml(t.text)}”</div>
-          <div class="lv-why">${escapeHtml(t.reasons[0] || "")}</div>
+          <div class="lv-why">${escapeHtml(tidyDash(t.reasons[0] || ""))}</div>
           <ul class="lv-more">${t.reasons.slice(1).map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul>
         </div>
         <div class="lv-fix">${t.nobody_capable ? `<span class="lv-fix-no">nobody capable on shift → rescue</span>`
