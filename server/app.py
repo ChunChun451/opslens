@@ -189,6 +189,8 @@ async def anyfile_peek(file: UploadFile | None = File(None), example: str | None
         if example == "uci_incidents" or file is None:
             return JSONResponse(keep_example())
         return JSONResponse(keep_file(await file.read(), file.filename or "uploaded file"))
+    except FileNotFoundError:
+        return JSONResponse({"error": "the UCI example is not on this laptop yet; run `mingw32-make data` once"}, status_code=400)
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
 
