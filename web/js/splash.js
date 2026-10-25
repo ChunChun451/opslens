@@ -45,6 +45,9 @@ function colourAt(t) {
 
 // Points of the word "OpsLens" written on a hidden canvas, every `gap` pixels.
 function wordPoints(w, h, size, centerY) {
+  // A window with no size yet (opened hidden or minimised) has nothing to sample; without this
+  // guard getImageData throws and the splash never closes, so the app stays covered.
+  if (w < 1 || h < 1 || size < 1) return { points: [], minX: 0, maxX: 0 };
   const off = document.createElement("canvas");
   off.width = w; off.height = h;
   const g = off.getContext("2d");

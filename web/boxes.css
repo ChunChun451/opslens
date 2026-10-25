@@ -1,0 +1,101 @@
+/*
+  OpsLens "boxes" layer (25 Oct) — the owner's reference UI kit for SHAPES: every piece of content in
+  its own rounded box with a thin edge, sub-menus as one segmented box. The COLOURS stay the Neon
+  skin's (owner, 25 Oct: "put every same, only previous colour"): this file uses neon.css's colour
+  tokens and adds none of its own.
+
+  How it works: loaded after neon.css and, like it, applies only while <html data-theme="neon"> (the
+  default). The one rule outside it hides the top-bar Ask box on Overview, in both themes.
+
+  Example: "Live now | Results on the test days" is one rounded box; the chosen item keeps the neon
+  cyan-violet highlight.
+*/
+
+
+/* ---- 1. Segmented controls: the world switch and the sub-menus are one box each -------------- */
+html[data-theme="neon"] .subnav {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0 0 18px;
+  padding: 3px;
+  background: rgba(15, 21, 38, 0.9);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+}
+html[data-theme="neon"] .subnav button { border: 0; background: transparent; border-radius: 999px; }
+html[data-theme="neon"] .subnav button[aria-current="true"] {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(167, 139, 250, 0.22));
+  box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+html[data-theme="neon"] .world-switch { border-color: var(--border-strong); }
+
+/* ---- 2. Boxes: every block of content is a rounded box with a thin edge ---------------------- */
+html[data-theme="neon"] .page-head {
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 18px 22px;
+  background: linear-gradient(180deg, rgba(25, 32, 55, 0.78), rgba(15, 20, 36, 0.78));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(10px);
+}
+html[data-theme="neon"] .lv-scene,
+html[data-theme="neon"] .lv-whatif,
+html[data-theme="neon"] .lv-custom,
+html[data-theme="neon"] .lv-key,
+html[data-theme="neon"] .lead,
+html[data-theme="neon"] .card-foot {
+  background: linear-gradient(180deg, rgba(25, 32, 55, 0.78), rgba(15, 20, 36, 0.78));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+html[data-theme="neon"] .lv-key,
+html[data-theme="neon"] .lv-whatif { padding: 10px 14px; }
+html[data-theme="neon"] .lead,
+html[data-theme="neon"] .card-foot { padding: 14px 18px; }
+html[data-theme="neon"] .sc { border-radius: var(--radius); }
+html[data-theme="neon"] .fact { border-radius: 10px; }
+
+/* ---- 3. Calm (owner, 25 Oct: "calm it down"): the same neon colours, without the moving
+   background, the glows and the shimmer. Movement that tells you something stays: the live dot's
+   ping, late customers pulsing, bars growing, screens gliding in. -------------------------------- */
+html[data-theme="neon"] body::before { content: none; }
+html[data-theme="neon"] .lv-hero::before,
+html[data-theme="neon"] .lv-lane.is-ours::after { content: none; }
+html[data-theme="neon"] .page-title,
+html[data-theme="neon"] .lv-clock,
+html[data-theme="neon"] .floor .tile.busy,
+html[data-theme="neon"] .floor .tile.cross { animation: none; filter: none; }
+html[data-theme="neon"] .page-title {
+  background-image: linear-gradient(90deg, #ffffff 0%, #c9d4ff 55%, #9ee9f6 100%);
+  background-size: 100% 100%;
+}
+/* No text glows: numbers stay sharp on a projector. */
+html[data-theme="neon"] :is(.lv-big, .lv-clock, .live-clock, .lv-risk, .lv-risk .ev, .live-risk, .live-saved b,
+  .mission-score .v, .ledger-tally .t-kept, .ledger-tally .t-missed, .stat-value .ev, .proof-a .ev,
+  .fact b, .fact b .ev, .fix-number, .fix-number .ev, .ring-value) { text-shadow: none; }
+/* No glowing edges: boxes keep their thin border and a quiet shadow. */
+html[data-theme="neon"] :is(.btn, .btn-primary, #story-button, .chip-btn, .subnav button, .lv-hero, .mission,
+  .ledger-tally, .live-ticker, .lv-lane.is-ours, .tile, .dot.late, .reason-bar, .live-progress i,
+  .lv-bar i, .cbar-fill, #plan-button .count, .story-card, .theme-switch .swatch, .live-dot) { box-shadow: none; }
+html[data-theme="neon"] :is(.btn:hover, .btn-primary:hover, #story-button:hover) { box-shadow: none; }
+html[data-theme="neon"] :is(.card:hover, .finding-card:hover, .fix-card:hover, .risk-cards .ticket:hover, .fold[open]) {
+  box-shadow: var(--shadow);
+  border-color: var(--border-strong);
+}
+html[data-theme="neon"] :is(.lv-hero, .mission, .ledger-tally) { border: 1px solid var(--border-strong); }
+html[data-theme="neon"] .brand-logo { filter: none; }
+
+/* ---- 4. Bigger answers, more room between boxes ------------------------------------------- */
+html[data-theme="neon"] .proof-a { font-size: 2.5rem; }
+html[data-theme="neon"] .proof-strip .proof.is-lead .proof-a { font-size: 3.1rem; }
+html[data-theme="neon"] .proof { padding: 22px 24px; }
+html[data-theme="neon"] .page-head { margin-bottom: 22px; }
+html[data-theme="neon"] :is(.view > .card, .view > .grid, .view > .fold, .view > .lead, .view > .card-foot) { margin-bottom: 22px; }
+html[data-theme="neon"] .grid { gap: 20px; }
+/* Free agents are drawn as an outline (an inset shadow), so they keep it. */
+html[data-theme="neon"] .floor .tile.idle,
+html[data-theme="neon"] .tile.idle { box-shadow: inset 0 0 0 1.5px rgba(34, 211, 238, 0.55); }

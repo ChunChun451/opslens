@@ -22,8 +22,11 @@
   <!-- Neon skin (24 Oct): dark glass, cyan and violet. Applies only while <html data-theme="neon">;
        the Neon/Light switch in the top bar flips it and remembers the choice in this browser. -->
   <link rel="stylesheet" href="neon.css">
-  <!-- Neon, refined (25 Oct): the same neon look and motion without the AI-slop tells
-       (no violet gradients or glow wash, sharper shapes, one accent). -->
+  <!-- Boxes (Claude 2, 25 Oct, the owner's reference UI kit): every block in a rounded box, sub-menus
+       as one segmented box, calmer motion. -->
+  <link rel="stylesheet" href="boxes.css">
+  <!-- Neon, refined (25 Oct): loaded last, so the boxes keep the de-slopped look: no violet gradients
+       or glow wash, solid panels, small radii, one accent (cyan). -->
   <link rel="stylesheet" href="refined.css">
   <script>
     try { if (JSON.parse(localStorage.getItem("opslens-theme")) === "light") document.documentElement.removeAttribute("data-theme"); }

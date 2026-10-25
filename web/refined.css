@@ -333,3 +333,13 @@ html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-
   .proof-strip { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) !important; }
 }
 .chr svg, .mascot svg, .biryani-plate { filter: none !important; }
+
+/* ---- 17. Claude 2's boxes (web/boxes.css, 25 Oct): keep the boxes, in this palette -------------- */
+html[data-theme="neon"] :is(.page-head, .lv-scene, .lv-whatif, .lv-custom, .lv-key, .lead, .card-foot) {
+  background: var(--surface) !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+html[data-theme="neon"] .subnav { border-radius: 10px !important; background: var(--surface) !important; }
+html[data-theme="neon"] .subnav button { border-radius: 7px !important; }
+html[data-theme="neon"] .subnav button[aria-current="true"] { background: var(--surface-3) !important; box-shadow: inset 0 -2px 0 var(--blue) !important; }
