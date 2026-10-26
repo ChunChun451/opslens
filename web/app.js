@@ -12,6 +12,7 @@ import { initThemeSwitch } from "./js/themeswitch.js";
 import { initSeason } from "./js/season.js";
 import { initBot } from "./js/bot.js";
 import { initSource, restoreUpload } from "./js/source.js";
+import { initRole } from "./js/role.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -44,6 +45,7 @@ async function start() {
   initSliderFill();
   initSource();
   initTabs();
+  initRole();
   initPlan(realPlanItems());
   initStory();
   initAsk();

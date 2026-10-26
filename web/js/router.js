@@ -12,10 +12,14 @@ import * as realdesk from "./tabs/realdesk.js";
 import * as yourfile from "./tabs/yourfile.js";
 import * as worlds from "./tabs/worlds.js";
 import * as shadow from "./tabs/shadow.js";
+import * as team from "./tabs/team.js";
+import * as agent from "./tabs/agent.js";
 import { state, store, storeSession } from "./data.js";
 
 const ICONS = {
   overview: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+  team: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="16.5" cy="9.5" r="2.6"/><path d="M15.5 14.6c2.6-.3 4.6 1.3 5 4.9"/>',
+  agent: '<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/>',
   problems: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
   risks: '<path d="M12 3.8L21 19.5H3z"/><path d="M12 10v4.5M12 17.2v.1"/>',
   actions: '<path d="M4 7l1.8 1.8L9 5.5M4 14l1.8 1.8L9 12.5"/><path d="M12.5 7.5H20M12.5 14.5H20M4.5 19.5H20"/>',
@@ -29,6 +33,10 @@ export const TABS = [
            { id: "rd-shadow", label: "Shadow mode", module: shadow }],
     upload: [{ id: "up-overview", label: "Overview", module: yourfile.overview },
              { id: "up-shadow", label: "Shadow mode", module: shadow }] } },
+  { id: "team", label: "Team", views: {
+    food: [{ id: "team", label: "Team", module: team }],
+    real: [{ id: "rd-team", label: "Team", module: team.realNote }],
+    upload: [{ id: "up-team", label: "Team", module: team.realNote }] } },
   { id: "problems", label: "Problems", views: {
     food: [{ id: "patterns", label: "Why it goes wrong", module: patterns }],
     real: [{ id: "rd-problems", label: "Why it goes wrong", module: realdesk.problems }],
@@ -52,6 +60,10 @@ export const TABS = [
     real: [{ id: "rd-proof", label: "Against the real desk", module: realdesk.proof },
            { id: "ledger", label: "Rules we wrote first", module: ledger }],
     upload: [{ id: "up-proof", label: "Does it work on your file?", module: yourfile.proof }] } },
+  { id: "agent", label: "Agent", views: {
+    food: [{ id: "agent", label: "Agent", module: agent }],
+    real: [{ id: "agent", label: "Agent", module: agent }],
+    upload: [{ id: "agent", label: "Agent", module: agent }] } },
 ];
 
 const OTHER_SOURCE_VIEW = { "rd-overview": "up-overview", "rd-shadow": "up-shadow", "rd-problems": "up-problems",

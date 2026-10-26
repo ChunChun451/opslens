@@ -12,6 +12,9 @@ export const state = {
   plan: readStored("opslens-plan", {}),
   planimpact: null,
   live: null,
+  role: readStored("opslens-role", "lead"),
+  agent: readStored("opslens-agent", null),
+  feedback: readStored("opslens-agent-feedback", []),
 };
 
 function readStored(key, fallback) {

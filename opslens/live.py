@@ -18,6 +18,7 @@ POLICIES = ("baseline_d", "opslens")
 RISK_EVERY_MIN = 10
 RISK_SHOWN = 5
 STATUS_LETTER = {"off": "o", "idle": "i", "busy": "b", "cross": "x", "wrong": "w"}
+STATUS_WORD = {letter: word for word, letter in STATUS_LETTER.items()}
 
 
 def matching_test_day(weekday: int, first_weekday: int, test_days: tuple[int, int]) -> int:
@@ -37,6 +38,7 @@ class LiveDay:
     tickets: dict[str, pd.DataFrame] = field(default_factory=dict)
     danger: list[dict] = field(default_factory=list)
     decisions: list[dict] = field(default_factory=list)
+    work: dict[str, list[dict]] = field(default_factory=dict)
 
 
 class _CaptureFeatures:
@@ -67,9 +69,7 @@ def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[
     for key in POLICIES:
         world = build_world(inputs["tickets"], seed=seed, agents=inputs["agents"])
         if live is None:
-            live = LiveDay(day=day, seed=seed, start=start,
-                           agents=[{"id": a.agent_id, "team": a.team, "name": a.name,
-                                    "languages": sorted(a.languages)} for a in world.agents])
+            live = LiveDay(day=day, seed=seed, start=start, agents=[_agent_card(a, day) for a in world.agents])
         policy = make_policy(key, world, inputs["preds"], inputs["model"], inputs["weights"])
         capture = None
         if key == "opslens":
@@ -96,7 +96,58 @@ def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[
         if key == "opslens":
             live.decisions = [{"minute": d["minute"], "ticket_id": world.ticket_ids[d["ticket_idx"]],
                                "agent": d["agent_id"], "reason": d["reason"]} for d in policy.decision_log]
+            live.work = _work_by_agent(policy.decision_log, world, t, tickets_info)
     return live
+
+
+def _agent_card(agent, day: int) -> dict:
+    start_min, _ = agent.schedule_on(day - 1)
+    end_min = start_min + agent.shift_minutes
+    return {"id": agent.agent_id, "team": agent.team, "name": agent.name, "languages": sorted(agent.languages),
+            "skills": sorted(agent.team_skills), "extra_skills": sorted(agent.skills - agent.team_skills),
+            "shift": f"{clock(start_min % MINUTES_PER_DAY)}-{clock(end_min % MINUTES_PER_DAY)}"}
+
+
+def _work_by_agent(decision_log: list[dict], world, tickets: pd.DataFrame, tickets_info: pd.DataFrame) -> dict[str, list[dict]]:
+    resolved_by_idx = dict(zip(tickets["idx"].to_numpy(), tickets["resolved_min"].to_numpy()))
+    work: dict[str, list[dict]] = {}
+    for d in decision_log:
+        i = d["ticket_idx"]
+        ticket_id = world.ticket_ids[i]
+        info = tickets_info.loc[ticket_id]
+        resolved = resolved_by_idx.get(i, math.nan)
+        work.setdefault(d["agent_id"], []).append({
+            "minute": float(d["minute"]), "ticket_id": ticket_id, "reason": d["reason"],
+            "created": float(world.created_min[i]), "deadline": float(world.created_min[i] + world.sla_min[i]),
+            "resolved": None if math.isnan(resolved) else float(resolved),
+            "priority": str(info["priority"]), "category": str(d.get("believed") or info["category"]), "language": str(info["language"]),
+            "text": mask_pii(str(info["text"])).text[:140]})
+    return work
+
+
+def _ticket_now(job: dict, now: float, start: float) -> dict:
+    return {"ticket_id": job["ticket_id"], "priority": job["priority"], "category": job["category"],
+            "language": job["language"], "text": job["text"], "reason": job["reason"],
+            "minutes_left": round(job["deadline"] - now, 1), "waited": round(min(job["minute"], now) - job["created"], 1),
+            "assigned_at": round(job["minute"] - start, 1)}
+
+
+def floor_now(live: LiveDay, now: float, status: str) -> list[dict]:
+    rows = []
+    for i, agent in enumerate(live.agents):
+        word = STATUS_WORD.get(status[i], "off") if i < len(status) else "off"
+        mine = live.work.get(agent["id"], [])
+        started = [j for j in mine if live.start <= j["minute"] <= now]
+        done = [j for j in started if j["resolved"] is not None and j["resolved"] <= now]
+        last = started[-1] if started else None
+        working = word in ("busy", "cross", "wrong") and last is not None and (last["resolved"] is None or last["resolved"] > now)
+        lined_up = next((j for j in mine if j["minute"] > now and j["created"] <= now), None)
+        rows.append({"id": agent["id"], "status": word, "done": len(done),
+                     "kept": sum(1 for j in done if j["resolved"] <= j["deadline"]),
+                     "rescues": sum(1 for j in started if "cross-skill" in j["reason"]),
+                     "current": _ticket_now(last, now, live.start) if working else None,
+                     "next": _ticket_now(lined_up, now, live.start) if lined_up else None})
+    return rows
 
 
 def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dict,
@@ -158,6 +209,8 @@ def state_at(live: LiveDay, minute_of_day: float) -> dict:
     out["danger_minute"] = round(past[-1]["minute"] - live.start, 1) if past else None
     recent = [d for d in live.decisions if now - 15 <= d["minute"] <= now]
     out["decisions"] = [{**d, "minute": round(d["minute"] - live.start, 1)} for d in recent[-8:]][::-1]
+    if "opslens" in out["policies"]:
+        out["floor"] = floor_now(live, now, out["policies"]["opslens"]["status"])
     return out
 
 

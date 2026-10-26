@@ -395,7 +395,7 @@ class OpsLensPolicy:
         if self.log_window and self.log_window[0] <= now < self.log_window[1]:
             for c in chosen:
                 self.decision_log.append({"minute": now, "ticket_idx": c.ticket_idx, "agent_id": c.agent_id,
-                                          "value": round(c.value, 3), "reason": c.reason})
+                                          "value": round(c.value, 3), "reason": c.reason, "believed": c.believed_category})
         return [Assignment(c.ticket_idx, c.agent_id, c.believed_category, deliberate_cross_skill=c.cross_skill,
                            reason=c.reason) for c in chosen]
 

@@ -40,3 +40,30 @@ def test_live_change_text_is_parsed_and_bounded() -> None:
     assert _parse_agents("D:9") == (("D", 5),)
     with pytest.raises(ValueError):
         _parse_agents("E:1")
+
+
+def test_floor_now_follows_one_agent_through_the_day() -> None:
+    from opslens.live import floor_now
+
+    start = 47 * 1440.0
+
+    def job(minute, created, deadline, resolved, ticket, reason="in turn"):
+        return {"minute": start + minute, "ticket_id": ticket, "reason": reason, "created": start + created,
+                "deadline": start + deadline, "resolved": None if resolved is None else start + resolved,
+                "priority": "P2", "category": "refund", "language": "hi", "text": "paisa wapas"}
+
+    live = LiveDay(day=48, seed=1, start=start, agents=[{"id": "A01", "team": "A"}])
+    live.work = {"A01": [job(10, 5, 65, 30, "T1"), job(40, 35, 60, 90, "T2", "cross-skill rescue"),
+                         job(95, 45, 200, None, "T3")]}
+
+    at_50 = floor_now(live, start + 50, "b")[0]
+    assert (at_50["done"], at_50["kept"], at_50["rescues"]) == (1, 1, 1)
+    assert at_50["current"]["ticket_id"] == "T2" and at_50["current"]["minutes_left"] == 10
+    assert at_50["next"]["ticket_id"] == "T3" and at_50["next"]["waited"] == 5
+
+    at_100 = floor_now(live, start + 100, "b")[0]
+    assert (at_100["done"], at_100["kept"]) == (2, 1)
+    assert at_100["current"]["ticket_id"] == "T3" and at_100["next"] is None
+
+    assert floor_now(live, start + 50, "i")[0]["current"] is None
+    assert floor_now(live, start + 50, "i")[0]["status"] == "idle"

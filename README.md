@@ -63,6 +63,8 @@ assistant falls back to keyword rules. `mingw32-make demo` serves cached results
 3. Problems, Plant a problem: hide a problem in fresh data and watch it get found.
 4. Actions, Accept, then Your plan, Simulate: the day replayed with and without the change.
 5. Real data, Upload a CSV: any export of tickets, incidents or orders, or the UCI example.
+6. Team: who is doing what right now. Click a person, or switch the top bar to Agent, to see
+   their own screen: the next ticket OpsLens lines up for them, why, and Take it / Can't take it.
 
 ## Layout
 

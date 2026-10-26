@@ -325,3 +325,53 @@ html[data-theme="neon"] .subnav button[aria-current="true"] { background: var(--
 .brief-value .brief-text { font-family: var(--font); font-size: 1rem; font-weight: 600; line-height: 1.35; display: block; }
 .brief-sub { margin-top: 6px; font-size: 0.8rem; color: var(--ink-2); line-height: 1.4; }
 .finding-bars .cbar-track, html[data-theme="neon"] .finding-bars .cbar-track { background: transparent !important; }
+
+#tab-nav [data-tab="agent"] { display: none !important; }
+body[data-role="agent"] :is(#tab-nav, .world-switch:not(.role-switch), #plan-button, #story-button, #live-ticker, #data-source, #bot-launch) { display: none !important; }
+body[data-role="agent"] .sidebar::after { content: "Agent screen: your own work only. Switch to Team lead for the full dashboard."; display: block; margin: 18px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+
+.tm-tiles { margin-top: 4px; }
+.tm-teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; }
+.tm-rows { display: flex; flex-direction: column; gap: 6px; }
+.tm-row { display: grid; grid-template-columns: 34px minmax(110px, 1.1fr) auto minmax(0, 1.6fr); grid-template-areas: "av name status now" "av name status day";
+  align-items: center; column-gap: 12px; row-gap: 2px; width: 100%; text-align: left; font: inherit; color: inherit; background: none;
+  border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+.tm-row:hover { border-color: var(--blue); }
+.tm-avatar { grid-area: av; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 0.75rem; font-weight: 700; background: var(--surface-3); color: var(--ink-2); }
+.tm-name { grid-area: name; display: flex; flex-direction: column; min-width: 0; }
+.tm-name small { color: var(--muted); font-size: 0.74rem; }
+.tm-status { grid-area: status; font-size: 0.74rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; white-space: nowrap; background: var(--surface-3); color: var(--ink-2); }
+.tm-status.is-busy, .tm-status.is-wrong { background: var(--blue-soft); color: var(--blue); }
+.tm-status.is-cross { background: color-mix(in srgb, #f5a524 18%, transparent); color: #f5a524; }
+.tm-status.is-idle { background: color-mix(in srgb, #34d399 16%, transparent); color: #34d399; }
+.tm-now { grid-area: now; font-size: 0.82rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tm-now b { font-weight: 600; margin-left: 6px; }
+.tm-day { grid-area: day; font-size: 0.74rem; color: var(--muted); }
+.is-urgent { color: var(--bad) !important; }
+.tm-off { display: flex; flex-wrap: wrap; gap: 8px; }
+.tm-off-chip { font: inherit; font-size: 0.82rem; color: inherit; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; text-align: left; }
+.tm-off-chip small { display: block; color: var(--muted); font-size: 0.72rem; }
+.tm-feedback li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+.ag-head { align-items: flex-start; }
+.ag-skills { margin-top: 10px; }
+.ag-extra { opacity: 0.8; }
+.ag-pick { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--muted); }
+.ag-pick select { font: inherit; font-size: 0.95rem; color: var(--ink); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 10px; min-width: 220px; }
+.ag-status { display: flex; align-items: center; gap: 10px; margin: 4px 0 16px; font-size: 0.9rem; color: var(--ink-2); }
+.ag-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.ag-card .card-head { display: flex; justify-content: space-between; align-items: baseline; }
+.ag-left { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ag-quote { font-size: 1.05rem; margin: 12px 0; line-height: 1.45; }
+.ag-why { font-size: 0.85rem; color: var(--ink-2); }
+.ag-why ul { margin: 6px 0 0; padding-left: 18px; }
+.ag-why li { margin: 2px 0; }
+.ag-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; margin-top: 14px; }
+.ag-cant summary { list-style: none; }
+.ag-cant summary::-webkit-details-marker { display: none; }
+.ag-reasons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ag-done { margin-top: 14px; font-weight: 600; color: var(--blue); }
+@media (max-width: 640px) {
+  .tm-teams, .ag-cards { grid-template-columns: minmax(0, 1fr); }
+  .tm-row { grid-template-columns: 34px minmax(0, 1fr) auto; grid-template-areas: "av name status" "av now now" "av day day"; }
+}
