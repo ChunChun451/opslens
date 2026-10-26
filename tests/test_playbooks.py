@@ -1,5 +1,3 @@
-"""Fix-at-source playbooks: each scenario changes exactly what its playbook would, nothing else."""
-
 import json
 
 import pandas as pd
@@ -27,13 +25,12 @@ def tickets(rows: list[dict]) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def test_partner_fix_brings_the_cluster_back_to_the_normal_share() -> None:
-    # Cluster 7: 10 tickets, 5 wrong items (50%). Normal share 20% → remove x with (5−x)/(10−x) = 0.2 → x = 3.75 → 4.
     rows = [{"restaurant_cluster_id": 7, "category": "wrong_item"}] * 5 + [{"restaurant_cluster_id": 7}] * 5
     t, p = tickets(rows + [{"category": "wrong_item"}] * 3)
     spec = {"kind": "partner_fix", "restaurant_cluster_id": 7, "category": "wrong_item", "normal_share": 0.2, "fix_share": 1.0}
     out, _, _, info = apply_scenario(t, p, [], spec, 43, 56, 0)
     assert info["removed"] == 4 and len(out) == len(t) - 4
-    assert (out["restaurant_cluster_id"] != 7).sum() == 3  # other clusters untouched
+    assert (out["restaurant_cluster_id"] != 7).sum() == 3
 
 
 def test_fix_menu_corrects_menu_and_prediction_only_on_that_channel() -> None:
@@ -48,10 +45,10 @@ def test_fix_menu_corrects_menu_and_prediction_only_on_that_channel() -> None:
 
 
 def test_cross_trainee_covers_the_uncovered_hours() -> None:
-    day_b = agent("B01", "B", {"refund", "payment_failure"}, ("en", "hi"), 9)        # trained, day shift
-    night = agent("A09", "A", {"late_delivery"}, ("en", "hi"), 22)                   # Hindi, night: uncovered
-    day_a = agent("A01", "A", {"late_delivery"}, ("en", "hi"), 9)                    # Hindi, but same hours as B01
-    english = agent("A02", "A", {"late_delivery"}, ("en",), 22)                     # no Hindi: never picked
+    day_b = agent("B01", "B", {"refund", "payment_failure"}, ("en", "hi"), 9)
+    night = agent("A09", "A", {"late_delivery"}, ("en", "hi"), 22)
+    day_a = agent("A01", "A", {"late_delivery"}, ("en", "hi"), 9)
+    english = agent("A02", "A", {"late_delivery"}, ("en",), 22)
     skills = frozenset(TEAM_SKILLS["B"])
     assert pick_cross_trainees([day_b, night, day_a, english], "hi", skills, 2) == ["A09"]
     _, _, agents, _ = apply_scenario(*tickets([{}]), [day_b, night], {"kind": "cross_train", "agents": ["A09"],
@@ -67,11 +64,11 @@ def test_status_banner_only_after_the_alert_and_only_its_category() -> None:
     out, _, _, info = apply_scenario(t, p, [], {"kind": "status_banner", "hours": 4, "deflect_share": 0.5}, 43, 56, 0,
                                      alerts=[{"minute": at, "category": "app_bug"}])
     assert info["removed"] == 5 and (out["category"] == "refund").sum() == 5
-    assert (out["created_min"] < at).sum() == 5  # tickets before the alert are never touched
+    assert (out["created_min"] < at).sum() == 5
 
 
 def test_self_serve_only_small_orders_in_the_window() -> None:
-    sat_dinner = 47 * 1440 + 20 * 60  # day 48 = Saturday (day 1 is a Monday), 20:00
+    sat_dinner = 47 * 1440 + 20 * 60
     rows = ([{"day": 48, "created_min": sat_dinner, "selected_category": "missing_item", "order_value_inr": 200}] * 4
             + [{"day": 48, "created_min": sat_dinner, "selected_category": "missing_item", "order_value_inr": 900}] * 2
             + [{"day": 48, "created_min": sat_dinner - 8 * 60, "selected_category": "missing_item", "order_value_inr": 200}] * 3)
@@ -90,7 +87,7 @@ def test_every_cause_type_gets_a_playbook_except_other() -> None:
              {**card, "id": "F5", "cause_type": "other", "segment": {"language": "other"}}]
     books = playbooks_from_cards(cards, [], TEAM_SKILLS, CFG)
     assert [b.card_id for b in books] == ["F1", "F2", "F3", "F4"]
-    assert books[0].scenario["keep_error_share"] == 0.2  # 2 / 10
+    assert books[0].scenario["keep_error_share"] == 0.2
     assert all(b.assumptions for b in books)
 
 
@@ -98,7 +95,7 @@ def test_llm_message_with_a_digit_falls_back_to_the_template() -> None:
     pb = Playbook("pb", "F1", "process", "Fix the phone menu", "Product", "template text", {},
                   facts={"issue_value": ("13", "transfers per 100 phone tickets")})
     good = MockProvider(replies=[json.dumps({"message": "Phone tickets transfer {{issue_value}} times per hundred."})])
-    assert draft_message(pb, LLMClient([good]))["source"] == "template"  # "hundred" is a number word
+    assert draft_message(pb, LLMClient([good]))["source"] == "template"
     good = MockProvider(replies=[json.dumps({"message": "Phone tickets are transferred {{issue_value}} times as often."})])
     assert draft_message(pb, LLMClient([good])) == {"text": "Phone tickets are transferred 13 times as often.", "source": "llm"}
     bad = MockProvider(replies=[json.dumps({"message": "Please fix 13 menu options."})])

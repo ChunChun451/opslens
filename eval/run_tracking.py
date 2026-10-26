@@ -1,19 +1,3 @@
-"""Performance tracking: the test fortnight day by day, per policy and per team.
-
-Run:  .venv/Scripts/python.exe eval/run_tracking.py
-
-Why: the problem statement asks for "a dashboard for insights, recommendations, and performance
-tracking". Our results are totals over 14 held-out days; a team lead tracks a floor day by day. This
-re-runs the main comparison (same tickets, same luck, seeds 1-5, days 43-56) and keeps each day's and
-each team's missed SLAs. Nothing is tuned: the policies and weights are the shipped ones, and the
-check at the end proves the daily rows add up exactly to the totals already in results.json.
-
-Example (real run): Saturday 17 Oct (day 48), 1,456 tickets: the industry standard missed 4.57% of
-deadlines, OpsLens 1.85% (means over the 5 seeds); OpsLens was lower on all 14 days, worst day for both
-the sale day Mon 19 Oct (10.60% vs 3.98%). The dashboard draws one point per day and policy.
-Writes eval/parts/tracking.json.
-"""
-
 from __future__ import annotations
 
 import json
@@ -27,8 +11,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import PARTS, run_jobs  # noqa: E402
-from opslens.config import load_config  # noqa: E402
+from eval.run_opslens import PARTS, run_jobs
+from opslens.config import load_config
 
 POLICIES = ["baseline_a", "baseline_b", "baseline_d", "opslens"]
 SEEDS = [1, 2, 3, 4, 5]
@@ -36,13 +20,11 @@ FIRST, LAST = 43, 56
 
 
 def day_name(day: int) -> str:
-    """'Sat 17 Oct' for calendar day `day` (day 1 = the calendar's start date)."""
     date = pd.Timestamp(load_config("calendar")["start_date"]) + pd.Timedelta(days=day - 1)
     return date.strftime("%a %d %b").replace(" 0", " ")
 
 
 def aggregate(rows_by_seed: list[list[dict]]) -> dict:
-    """Mean over seeds of each day's (and team-day's) missed share; tickets and minutes past SLA too."""
     frames = [pd.DataFrame(rows).assign(seed=k) for k, rows in enumerate(rows_by_seed)]
     df = pd.concat(frames, ignore_index=True)
     per_day = df.groupby(["seed", "day"])[["tickets", "missed", "late_minutes"]].sum().reset_index()
@@ -73,7 +55,6 @@ def main() -> int:
         runs = sorted([r for r in results if r["job"]["policy"] == policy], key=lambda r: r["job"]["seed"])
         agg = aggregate([r["daily"] for r in runs])
         kpi = [r["kpis"]["turnaround.breach_pct"] for r in runs]
-        # The daily rows must add up to the run's own total, seed by seed (same tickets, nothing lost).
         out["checks"][policy] = bool(np.allclose(agg.pop("per_seed_total_pct"), kpi, atol=1e-9))
         out["policies"][policy] = agg
     d, o = out["policies"]["baseline_d"]["days"], out["policies"]["opslens"]["days"]

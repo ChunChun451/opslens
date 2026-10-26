@@ -1,38 +1,10 @@
-"""Blind plants in the REAL service-desk log: 20 random problem sets, fixed before the test ran.
-
-What it does: takes the real UCI incidents of the busy test weeks (2 May - 5 Jun 2016) as they
-happened, injects three problems of random place and size, and lets the detectors in
-opslens/realdesk_watch.py look for them. Only this file (eval/) knows the plants.
-
-The three problems (one of each per set), with the ranges fixed here BEFORE the first run:
-- spike     one category, one weekday: extra incidents = multiplier × its usual weekday count,
-            multiplier uniform in [0.5, 2.0]. The extra incidents are copies of real incidents of
-            the same category from other test days (same time of day, same team, same outcome).
-- slowdown  one team, 7 days: every incident sent to that team in the window takes `factor` ×
-            as long to resolve, factor uniform in [1.5, 3.0] (so more are still open after 24 h).
-- bounce    one category, 7 days: a share uniform in [0.15, 0.40] of its incidents that were NOT
-            passed on within 24 h are passed to another team once within 24 h.
-Places: categories and teams with a median of at least 8 incidents per weekday in the 4 weeks
-before the test period (4 Apr - 1 May 2016) — smaller ones cannot be watched day by day.
-Days: a spike on a weekday 2 May - 3 Jun; a 7-day window starting on a weekday 2 - 27 May.
-Seeds 9101-9120. A plant is FOUND when an alert of the same type and segment is raised between
-its first day and 2 days after its last day; delay = alert day − first day.
-
-Why: recall on problems we chose ourselves could be tuning. Problems drawn at random, inside a
-real company's log whose own noise we did not make, after the detectors were frozen, cannot be.
-
-Example: set 9101 planted [spike: Category 37 on Mon 9 May, ×0.89 = +14 incidents],
-[slowdown: Group 25 from Tue 17 May, ×2.58], [bounce: Category 9 from Fri 13 May, 34%] —
-none of the three was found (results.realdesk.blind_plants.set_list[0]).
-"""
-
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
 
 SEEDS = list(range(9101, 9121))
-FIRST_DAY, LAST_DAY = "2016-05-02", "2016-06-05"   # the busy test weeks (the tail after is sparse)
+FIRST_DAY, LAST_DAY = "2016-05-02", "2016-06-05"
 SPIKE_DAYS = ("2016-05-02", "2016-06-03")
 WINDOW_STARTS = ("2016-05-02", "2016-05-27")
 WINDOW_DAYS = 7
@@ -42,19 +14,15 @@ BOUNCE_SHARE = (0.15, 0.40)
 ELIGIBLE_FROM, ELIGIBLE_TO = "2016-04-04", "2016-05-01"
 MIN_WEEKDAY_MEDIAN = 8
 MATCH_SLACK_DAYS = 2
-# Where plants go. "test" is the 19 Oct run (the constants above). "check" (added 23 Oct for the
-# detector v2 choice, before any v2 candidate ran) is the last 20% of the learning period: the same
-# ranges and rules, shorter windows so a 7-day plant and its 2 days of slack fit inside it.
 TEST = {"first_day": FIRST_DAY, "last_day": LAST_DAY, "spike_days": SPIKE_DAYS, "window_starts": WINDOW_STARTS,
         "eligible": (ELIGIBLE_FROM, ELIGIBLE_TO)}
 CHECK = {"first_day": "2016-04-18", "last_day": "2016-05-01", "spike_days": ("2016-04-18", "2016-04-29"),
          "window_starts": ("2016-04-18", "2016-04-22"), "eligible": ("2016-03-21", "2016-04-17")}
-CHECK_SEEDS = list(range(9301, 9321))    # plants on the check weeks, to choose detector v2
-SECOND_SEEDS = list(range(9201, 9221))   # fresh plants on the test weeks, v1 and v2 on the same plants
+CHECK_SEEDS = list(range(9301, 9321))
+SECOND_SEEDS = list(range(9201, 9221))
 
 
 def usual_weekday(table: pd.DataFrame, by: str, period: dict = TEST) -> pd.Series:
-    """Median incidents per weekday per segment in the 4 weeks before the plant period."""
     days = pd.date_range(*period["eligible"])
     days = days[days.weekday < 5]
     window = table[table["date"].isin(days)]
@@ -68,7 +36,6 @@ def weekdays(first: str, last: str) -> list[pd.Timestamp]:
 
 
 def random_plant_set(rng: np.random.Generator, table: pd.DataFrame, period: dict = TEST) -> list[dict]:
-    """One spike, one slowdown, one bounce with random place, day and size (ranges above)."""
     cats = usual_weekday(table, "category", period)
     teams = usual_weekday(table, "team", period)
     cats, teams = cats[cats >= MIN_WEEKDAY_MEDIAN], teams[teams >= MIN_WEEKDAY_MEDIAN]
@@ -91,7 +58,6 @@ def random_plant_set(rng: np.random.Generator, table: pd.DataFrame, period: dict
 
 
 def apply_plants(table: pd.DataFrame, plants: list[dict], rng: np.random.Generator, period: dict = TEST) -> pd.DataFrame:
-    """The real table with the plants injected (the input is not changed)."""
     out = table.copy()
     for plant in plants:
         if plant["type"] == "spike":
@@ -104,7 +70,6 @@ def apply_plants(table: pd.DataFrame, plants: list[dict], rng: np.random.Generat
 
 
 def plant_spike(table: pd.DataFrame, plant: dict, rng: np.random.Generator, period: dict = TEST) -> pd.DataFrame:
-    """Copies of real incidents of the category from other weekdays of the period, moved to the spike day."""
     day = plant["first_day"]
     test_days = pd.DatetimeIndex(weekdays(period["first_day"], period["last_day"]))
     pool = table[(table["category"] == plant["segment"]) & table["date"].isin(test_days) & (table["date"] != day)]
@@ -120,7 +85,6 @@ def in_window(table: pd.DataFrame, plant: dict) -> np.ndarray:
 
 
 def plant_slowdown(table: pd.DataFrame, plant: dict) -> pd.DataFrame:
-    """The team's incidents opened in the window take `size` × as long to resolve."""
     out = table.copy()
     hit = in_window(out, plant) & (out["team"] == plant["segment"]).to_numpy()
     out.loc[hit, "resolution_h"] = out.loc[hit, "resolution_h"] * plant["size"]
@@ -131,7 +95,6 @@ def plant_slowdown(table: pd.DataFrame, plant: dict) -> pd.DataFrame:
 
 
 def plant_bounce(table: pd.DataFrame, plant: dict, rng: np.random.Generator) -> pd.DataFrame:
-    """A share of the category's not-yet-passed incidents in the window are passed on within 24 h."""
     out = table.copy()
     hit = in_window(out, plant) & (out["category"] == plant["segment"]).to_numpy() & ~out["bounced_24h"].to_numpy()
     flip = hit & (rng.uniform(0, 1, len(out)) < plant["size"])
@@ -140,7 +103,6 @@ def plant_bounce(table: pd.DataFrame, plant: dict, rng: np.random.Generator) -> 
 
 
 def score_set(alerts: pd.DataFrame, plants: list[dict]) -> tuple[list[dict], int]:
-    """For each plant: found? delay in days. Also the alerts that match no plant (false alarms)."""
     used = np.zeros(len(alerts), dtype=bool)
     scored = []
     for plant in plants:

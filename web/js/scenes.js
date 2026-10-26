@@ -1,29 +1,14 @@
-// scenes.js — a small cartoon moment at the top of every screen: a character that fits the
-// screen's job (js/characters.js), a speech bubble, and a tiny animated stage.
-//
-// Why (24 Oct, the owner liked the Live now scene and asked for "more in every page according to
-// situation", then "every page has same type animation"): each screen answers one question, and
-// its own character says it in one picture. Lenny the lens stays on Live now only. Problems:
-// turning gears. Risks: a sweating hourglass. Next 48 hours: a weather cloud. Actions: a rocket.
-// Proof: a delivery box racing, a robot, a ledger book, a flask. It is decoration with a job:
-// the bubble's lines quote the screen's own top result, read from eval/results.json (never a
-// number we did not compute). Clicking the character says the next line. After a minute without input it
-// falls asleep and wakes on the next mouse move. Pure SVG + CSS (web/neon.css, "Scenes").
-//
-// Example: Risks → the hourglass sweats as its sand runs out, the bubble says "T060758 needs help: 7 min left!".
-
 import { customerHtml, biryaniHtml, setMood, cheer } from "./mascot.js";
 import { characterHtml } from "./characters.js";
 import { state } from "./data.js";
 import { escapeHtml } from "./format.js";
 
-const LINE_MS = 4800; // how long one bubble line stays
-const SLEEP_MS = 60000; // no input for this long → the characters nap
+const LINE_MS = 4800;
+const SLEEP_MS = 60000;
 
-// The little animated stage beside the bubble.
 const STAGES = {
   confetti: () => `<div class="sc-confetti">${"<i></i>".repeat(12)}</div>`,
-  scan: () => `<div class="sc-scan">${'<i class="chip"></i>'.repeat(7)}<b class="beam"></b></div>`, // a light bar sweeps
+  scan: () => `<div class="sc-scan">${'<i class="chip"></i>'.repeat(7)}<b class="beam"></b></div>`,
   countdown: () => `<div class="sc-countdown"><i></i></div>`,
   weather: () => `<div class="sc-weather"><i class="cloud c1"></i><i class="cloud c2"></i>
       <svg viewBox="0 0 120 30" preserveAspectRatio="none"><path class="wave" d="M0 24 Q15 20 30 22 T60 12 T90 6 T120 18" fill="none" stroke="#22d3ee" stroke-width="2.4"/>
@@ -37,7 +22,6 @@ const STAGES = {
   drop: () => `<div class="sc-drop"><i class="doc"></i><b class="tray"></b></div>`,
 };
 
-// Small number helpers: values come straight from the results; we only round them.
 function num(value, digits = 1) {
   return typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : null;
 }
@@ -45,7 +29,6 @@ function pct(value) {
   return typeof value === "number" ? Math.round(value * 100) : null;
 }
 
-// One entry per view id: the character, its mood, the stage, and the lines.
 function sceneFor(viewId, r) {
   const means = r?.baseline_c?.test?.means;
   const ours = num(means?.opslens?.["turnaround.breach_pct"]);
@@ -139,14 +122,12 @@ function sceneFor(viewId, r) {
   }
 }
 
-const scenes = new Map(); // view id → { lines, index, mood }
+const scenes = new Map();
 
-// Add the scene to a freshly drawn view (below its title). Live now has its own scene.
 export function addScene(container, viewId) {
   const scene = sceneFor(viewId, state.results);
   if (!scene || !scene.lines.length || container.querySelector(".sc")) return;
   const id = `sc-${viewId}`;
-  // A complaining customer with the plate they got, on screens that have one (Results).
   const customer = scene.complaint
     ? `<div class="sc-customer">${customerHtml(`${id}-customer`)}${biryaniHtml(`${id}-biryani`, true)}
         <div class="sc-say sc-complain">${escapeHtml(scene.complaint)}</div></div>`
@@ -170,7 +151,6 @@ export function addScene(container, viewId) {
   });
 }
 
-// The next line in the visible scene's bubble, with a little pop.
 function nextLine(viewId) {
   const s = scenes.get(viewId);
   const say = s && document.getElementById(`${s.id}-say`);
@@ -190,7 +170,6 @@ function visibleScene() {
   return null;
 }
 
-// One timer for all scenes (only the visible one talks), and the nap after a quiet minute.
 export function initScenes() {
   setInterval(() => {
     const viewId = visibleScene();
@@ -212,6 +191,5 @@ export function initScenes() {
   ["pointermove", "keydown", "wheel", "touchstart"].forEach((type) =>
     window.addEventListener(type, wake, { passive: true }));
   wake();
-  // A new world draws every view again.
   document.addEventListener("world-changed", () => scenes.clear());
 }

@@ -1,15 +1,3 @@
-"""W8: are the risk explanations faithful? Design (pre-registered): docs/explain/w8_faithfulness.md.
-
-Run:  python eval/run_w8.py
-
-(a) Deletion test: remove a ticket's top reason (replace it with 30 random training rows' values,
-    average) vs remove one random other feature; on the raw score (log-odds) and the probability.
-(b) Planted Hindi refund/payment segment: share of shown tickets whose top 3 reasons name
-    language/skill, vs a control (non-Hindi Team B tickets).
-(c) is in opslens/policies.py (with_runner_up) and tests/test_w8.py.
-Writes eval/parts/w8.json.
-"""
-
 from __future__ import annotations
 
 import json
@@ -23,8 +11,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import risk  # noqa: E402
-from opslens.features import FEATURES  # noqa: E402
+from opslens import risk
+from opslens.features import FEATURES
 
 MODELS = ROOT / "data" / "generated" / "models"
 SEED = 8
@@ -46,13 +34,11 @@ def snapshots() -> tuple[pd.DataFrame, pd.DataFrame]:
     first_weekday = pd.Timestamp(cal["start_date"]).weekday()
     agents = pd.read_csv(ROOT / "data" / "generated" / "agents.csv")
     h = history_with_predictions()
-    snaps = lambda a, b: snapshots_from_history(h, agents, TEAM_OF, a, b, first_weekday=first_weekday)  # noqa: E731
+    snaps = lambda a, b: snapshots_from_history(h, agents, TEAM_OF, a, b, first_weekday=first_weekday)
     return snaps(1, sp["train_last_day"]), snaps(sp["validation_last_day"] + 1, sp["test_last_day"])
 
 
 def removed_scores(model: risk.RiskModel, M: np.ndarray, B: np.ndarray, cols: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Mean raw score and mean calibrated probability after replacing, for each row i, the features
-    cols[i] (shape n × k) with each background row's values."""
     n, k = cols.shape
     rep = np.repeat(M, len(B), axis=0)
     bg = np.tile(np.arange(len(B)), n)
@@ -84,7 +70,6 @@ def main() -> int:
     print(f"test rows {len(test_f):,}; shown (P >= {SHOWN_AT}) {len(shown):,}", flush=True)
     contrib = model.booster.predict(model.frame(shown), pred_contrib=True)[:, :-1]
 
-    # ---- (a) deletion test on a sample ----
     pick = np.sort(rng.choice(len(shown), size=min(SAMPLE, len(shown)), replace=False))
     sample, C = shown.iloc[pick].reset_index(drop=True), contrib[pick]
     M = model.matrix(sample)
@@ -120,7 +105,6 @@ def main() -> int:
     t1 = deletion["top1_vs_random1"]
     deletion["rule_faithful"] = bool(t1["share_top_drops_more_logodds"] >= 0.80 and t1["top_minus_random_logodds"]["ci95"][0] > 0)
 
-    # ---- (b) reasons vs the planted cause ----
     pos = np.where(contrib > 0, contrib, -np.inf)
     top3_all = np.argsort(-pos, axis=1)[:, :3]
     names = np.array(FEATURES)

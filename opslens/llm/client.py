@@ -1,22 +1,3 @@
-"""LLMClient: the one entry point the engine uses to ask an LLM for JSON.
-
-What `ask_json(task, system, user)` does, in order:
-1. Mask PII in the user text (privacy.py). Only masked text is ever sent or cached.
-2. Look in the cache for every provider's model. A hit costs nothing and works offline.
-3. Try providers in order (main, then fallback). Skip one that is out of daily budget.
-   Wait for a free slot in its per-minute window, then send. If the provider answers
-   "rate limit, try again in 21s" (up to 90 s), wait once and retry it before falling back.
-4. Parse the reply as JSON. If it is broken, ask once more ("reply with only JSON").
-5. Store the good reply in the cache and return it with where it came from.
-If every provider fails, raise LLMUnavailable. Callers then use their non-LLM fallback
-(e.g. the local classifier, or the template brief).
-
-Example:
-    client = build_client(["mock"])
-    result = client.ask_json("ping", "Reply in JSON.", "call me on 9876543210")
-    result.pii_masked  ->  {"[PHONE]": 1}      (the provider only saw "[PHONE]")
-"""
-
 from __future__ import annotations
 
 import json
@@ -42,7 +23,6 @@ MAX_RETRY_WAIT_S = 90.0
 
 
 def retry_after_seconds(message: str) -> float | None:
-    """Read 'Please try again in 21.36s' / 'in 1m9.5s' / 'in 660ms' from a rate-limit error."""
     match = re.search(r"try again in (?:(\d+)m)?([\d.]+)(ms|s)", message)
     if not match:
         return None
@@ -53,17 +33,14 @@ def retry_after_seconds(message: str) -> float | None:
 
 
 def parse_json_reply(text: str) -> Any:
-    """Parse a reply that should be JSON. Accepts ```json fences and text around the JSON."""
     cleaned = text.strip()
     if cleaned.startswith("```"):
-        # Drop the first line (``` or ```json) and the closing fence.
         cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else ""
         cleaned = cleaned.rsplit("```", 1)[0]
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
         pass
-    # Last try: the widest {...} or [...] block inside the text.
     for open_char, close_char in (("{", "}"), ("[", "]")):
         start = cleaned.find(open_char)
         end = cleaned.rfind(close_char)
@@ -76,8 +53,6 @@ def parse_json_reply(text: str) -> Any:
 
 
 class LLMClient:
-    """Asks providers in order, with cache, rate limits and PII masking."""
-
     def __init__(
         self,
         providers: list[ChatProvider],
@@ -90,7 +65,7 @@ class LLMClient:
         self.providers = providers
         self.cache = cache
         self.limiter = limiter
-        self._sleep = sleep_fn  # replaced in tests so they never really wait
+        self._sleep = sleep_fn
 
     def ask_json(self, task: str, system: str, user: str) -> LLMResult:
         masked = mask_pii(user)
@@ -113,7 +88,6 @@ class LLMClient:
             try:
                 text, data = self._send_and_parse(provider, messages)
             except Exception as exc:
-                # A per-minute limit says "try again in 21s": wait once and retry this provider.
                 wait = retry_after_seconds(str(exc))
                 if wait is not None and wait <= MAX_RETRY_WAIT_S:
                     log.info("LLM provider %s rate-limited; waiting %.0fs", cfg.name, wait)
@@ -124,7 +98,7 @@ class LLMClient:
                         exc = exc2
                     else:
                         exc = None
-                if exc is not None:  # any other error → try the next provider
+                if exc is not None:
                     log.warning("LLM provider %s failed on task %s: %s", cfg.name, task, exc)
                     errors.append(f"{cfg.name}: {exc}")
                     continue
@@ -158,7 +132,6 @@ class LLMClient:
         return None
 
     def _send_and_parse(self, provider: ChatProvider, messages: list[dict[str, str]]) -> tuple[str, Any]:
-        """Send once; if the reply is not JSON, send once more with a nudge."""
         text = self._send(provider, messages)
         try:
             return text, parse_json_reply(text)
@@ -168,18 +141,17 @@ class LLMClient:
                 {"role": "user", "content": JSON_RETRY_NUDGE},
             ]
             text = self._send(provider, retry_messages)
-            return text, parse_json_reply(text)  # raises LLMBadJSON if still broken
+            return text, parse_json_reply(text)
 
     def _send(self, provider: ChatProvider, messages: list[dict[str, str]]) -> str:
         cfg = provider.config
         if self.limiter is not None:
             self.limiter.wait_for_slot(cfg.name, cfg.requests_per_minute)
-            self.limiter.record_call(cfg.name)  # count it even if it fails: the provider does
+            self.limiter.record_call(cfg.name)
         return provider.send(messages)
 
 
 def provider_config(name: str, block: dict[str, Any]) -> ProviderConfig:
-    """Build a ProviderConfig from one block of config/providers.yaml."""
     return ProviderConfig(
         name=name,
         kind=block["kind"],
@@ -194,7 +166,6 @@ def provider_config(name: str, block: dict[str, Any]) -> ProviderConfig:
 
 
 def build_provider(name: str) -> ChatProvider | None:
-    """Create one provider from config. Returns None if its API key is missing."""
     load_env_file()
     cfg = load_config("providers")
     pc = provider_config(name, cfg["providers"][name])
@@ -210,10 +181,6 @@ def build_provider(name: str) -> ChatProvider | None:
 def build_client(
     names: list[str] | None = None, use_cache: bool = True, db_path: Path | None = None
 ) -> LLMClient:
-    """Client for the given providers (default: main + fallback from config).
-
-    `db_path` overrides the cache/usage database (tests use a temporary file).
-    """
     cfg = load_config("providers")
     chosen = names or [cfg["main"], cfg["fallback"]]
     providers = [p for p in (build_provider(n) for n in chosen) if p is not None]

@@ -1,11 +1,3 @@
-"""W5: CP-SAT weekly roster vs today's greedy moves. Design (pre-registered): docs/explain/roster_opt.md.
-
-Run:  python eval/run_roster_opt.py design     (validation week 36-42, seeds 1-5, N chosen)
-      python eval/run_roster_opt.py confirm    (same week, 20 fresh seeds 26-45, N fixed)
-      python eval/run_roster_opt.py test       (test days 43-56 once, seeds 1-5)
-Each stage adds its block to eval/parts/roster_opt.json; rosters go to data/generated/roster_opt/.
-"""
-
 from __future__ import annotations
 
 import json
@@ -30,11 +22,7 @@ KPIS = {"breach_pct": "turnaround.breach_pct", "late_minutes_per_100": "quality.
         "p90_resolution_min": "turnaround.p90_resolution_min"}
 
 
-# ---- Inputs: need and load per team-hour for a planning week ------------------------------------
-
 def week_inputs(first_days: list[int], fit_last_day: int, stop_last_day: int) -> dict:
-    """Forecast need/load for each planning week, from a model fitted on days 8..fit_last_day and
-    early-stopped/conformal-fitted on fit_last_day+1..stop_last_day (never the planned days)."""
     from eval.run_forecast import TEAMS, event_uplift, predict_normal_day, team_workload
     from opslens import forecast as F
     from opslens import staffing as S
@@ -54,7 +42,7 @@ def week_inputs(first_days: list[int], fit_last_day: int, stop_last_day: int) ->
     valid = rows[(rows["day"] > fit_last_day) & (rows["day"] <= stop_last_day)]
     model = F.train(train[~train["day"].isin(events)], valid[~valid["day"].isin(events)])
     uplift = event_uplift(model, train, events)
-    fc = lambda part: np.where(part["day"].isin(events), predict_normal_day(model, part) * uplift,  # noqa: E731
+    fc = lambda part: np.where(part["day"].isin(events), predict_normal_day(model, part) * uplift,
                                predict_normal_day(model, part))
     wf, wy = team_workload(valid, fc(valid), aht), team_workload(valid, valid["count"].to_numpy(), aht)
     q80_team = F.conformal_q(wy["arrivals"].to_numpy(), wf["arrivals"].to_numpy(), 0.8)
@@ -70,7 +58,6 @@ def week_inputs(first_days: list[int], fit_last_day: int, stop_last_day: int) ->
 
 
 def build_rosters(inputs: dict, planners: dict) -> dict:
-    """{name: (plan list for apply_staffing_plan, per-week info)} for each planner."""
     from opslens import staffing as S
     from opslens.roster_opt import plan_roster, weighted_shortage
 
@@ -97,10 +84,7 @@ def build_rosters(inputs: dict, planners: dict) -> dict:
     return out
 
 
-# ---- Simulation --------------------------------------------------------------------------------
-
 def run_with_plan(job: dict) -> dict:
-    """Worker: one OpsLens simulation with the roster file named in the job (none = published)."""
     import eval.run_opslens as R
     from opslens.world import apply_staffing_plan
 
@@ -182,7 +166,7 @@ def main() -> int:
     elif stage == "test":
         best = out["design"]["chosen"]
         n = int(best.removeprefix("cpsat_n"))
-        inputs = week_inputs([43, 50], fit_last_day=35, stop_last_day=42)  # the product's own forecast
+        inputs = week_inputs([43, 50], fit_last_day=35, stop_last_day=42)
         rosters = build_rosters(inputs, {"published": "published", "greedy": "greedy", best: n})
         save_rosters(rosters, "test")
         product = json.loads((GENERATED / "staffing_plan.json").read_text(encoding="utf-8"))

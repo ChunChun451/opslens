@@ -1,9 +1,3 @@
-"""The upload endpoints end to end: peek a file, start the report, poll until it is done.
-
-Uses a generated delivery-order file (tests/test_anyfile.py), so no download is needed, and
-checks that a broken mapping comes back as a readable error instead of a crash.
-"""
-
 from __future__ import annotations
 
 import time
@@ -66,7 +60,7 @@ def test_the_report_carries_the_file_name_the_replay_and_the_forecast():
     assert r["miss"] == {"rule": "promise", "column": None, "target_min": plan["miss"]["target_min"], "assumed": True}
     assert len(r["shadow"]["timeline"]) == r["shadow"]["items"]
     assert r["forecast"]["wape_learned"] > 0 and "forecast" not in r["needs"]
-    assert client.get(f"/api/anyfile/job/{job}").json()["result"] == r  # a page reload gets the same report back
+    assert client.get(f"/api/anyfile/job/{job}").json()["result"] == r
 
 
 def test_check_says_what_a_changed_promise_does_before_anything_is_learned():

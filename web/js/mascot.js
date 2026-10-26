@@ -1,16 +1,3 @@
-// mascot.js — "Lenny", a minimal cartoon made from the OpsLens lens logo, and the customer it serves.
-//
-// Why (24 Oct, the owner asked for "cartoon animation, minimal", then for a scene: the AI tired,
-// wiping its sweat, while a customer keeps complaining "dosa ke jagah biryani de diya"): a small
-// scene gives the live screen a face and says what OpsLens is for: support floors are flooded.
-// It never carries information of its own. Lenny looks tired when the live floor is busy, relaxed
-// when it is quiet, hops with "+N helped!" when the live gap grows (that change comes from the
-// same live answer), and sleeps when nobody is in danger. The customer's lines are one fixed joke
-// and the masked text of real tickets in danger. Pure SVG + CSS (web/neon.css, "Mascot").
-//
-// Example: 110 customers waiting → Lenny sweats and wipes his face; the customer says
-// "Dosa ke jagah biryani de diya!", then "paisa kat gaya but order place nahi hua".
-
 export function mascotHtml(id, mood = "idle") {
   return `<div class="mascot is-${mood}" id="${id}" aria-hidden="true">
       <div class="mascot-bubble"></div>
@@ -51,7 +38,6 @@ export function mascotHtml(id, mood = "idle") {
     </div>`;
 }
 
-// The customer: a round face with a phone and cross eyebrows, and a speech bubble.
 export function customerHtml(id) {
   return `<div class="customer" id="${id}" aria-hidden="true">
       <svg viewBox="0 0 80 80" width="68" height="68">
@@ -69,10 +55,6 @@ export function customerHtml(id) {
     </div>`;
 }
 
-// The wrong order: a steaming plate of biryani (rice, a chicken leg, mint, lemon), with a thought
-// cloud of the crossed-out dosa the customer wanted. Decoration only, like the rest of the scene.
-// few = true is the Results screen's complaint ("chicken ke kam pieces"): one tiny piece on the
-// plate, a bobbing "?", and a cloud full of the drumsticks the customer expected.
 const DRUMSTICK = (x, y) => `<g transform="translate(${x} ${y})"><path d="M0 6 q5 -7 11 -4 q3 5 -3 8 q-6 1 -8 -4z" fill="#92400e"/>
     <path d="M10 2 l4 -4" stroke="#fef3c7" stroke-width="2.4" stroke-linecap="round"/><circle cx="14.5" cy="-2.5" r="1.8" fill="#fef3c7"/></g>`;
 export function biryaniHtml(id, few = false) {
@@ -112,21 +94,18 @@ export function biryaniHtml(id, few = false) {
     </div>`;
 }
 
-// Set Lenny's mood: "idle", "tired", "sleep", "worried" or "happy" (keeps a running cheer).
-// worried = frown and sweat without the towel (Risks); happy = smiling closed eyes (Results).
 export function setMood(id, mood) {
   const el = document.getElementById(id);
   if (!el) return;
   ["idle", "tired", "sleep", "worried", "happy"].forEach((m) => el.classList.toggle(`is-${m}`, m === mood));
 }
 
-// A hop and a short speech bubble ("+1 helped!"), then back to its mood.
 export function cheer(id, text) {
   const el = document.getElementById(id);
   if (!el) return;
   el.querySelector(".mascot-bubble").textContent = text;
   el.classList.remove("cheer");
-  void el.offsetWidth; // restart the animation
+  void el.offsetWidth;
   el.classList.add("cheer");
   clearTimeout(el._cheerTimer);
   el._cheerTimer = setTimeout(() => el.classList.remove("cheer"), 2200);

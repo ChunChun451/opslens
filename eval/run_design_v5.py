@@ -1,24 +1,3 @@
-"""Design check v5 (validation days only): roster-aware cross-skill rescue.
-
-Why this file exists: the breach diagnosis (18 Oct) and the floor proof (opslens/floor.py) show the
-biggest avoidable group are tickets that NO trained agent who speaks their language can reach before
-their deadline (Hindi / regional-language refunds at night, teams nobody covers at night). For them,
-waiting means a breach, yet v3 charges the full cross-skill penalty. v4 lowered the penalty for every
-ticket and was not clearly better. v5 removes the penalty ONLY for tickets that nobody trained can
-reach in time: no such agent on shift now, and none in the published schedule before
-deadline − roster_margin_min. It uses the schedule and who is on shift now — never future absences.
-
-PRE-REGISTERED (written before the first run):
-- Grid: roster_margin_min 10 / 20 / 30, against v3; validation days 36-42, seeds 1-5, normal volume
-  and +25% volume.
-- Pick the margin with the lowest normal-volume breach % among those not worse than v3 at +25%
-  volume and not worse on minutes past SLA per 100 tickets (normal volume).
-- Adopt v5 only if its normal-volume breach % beats v3 with a paired 95% CI entirely below 0.
-  Otherwise v3 stays. If adopted: test days run once, then a NEW sealed world (unused seed) once.
-
-Run:  .venv/Scripts/python.exe eval/run_design_v5.py   → eval/parts/design_v5.json
-"""
-
 from __future__ import annotations
 
 import json
@@ -31,8 +10,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import PARTS, run_jobs  # noqa: E402
-from opslens.impact import paired_ci  # noqa: E402
+from eval.run_opslens import PARTS, run_jobs
+from opslens.impact import paired_ci
 
 SEEDS = [1, 2, 3, 4, 5]
 FIRST, LAST = 36, 42

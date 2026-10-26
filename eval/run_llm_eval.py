@@ -1,16 +1,3 @@
-"""W6 (b) and (c): does the LLM add value where we use it? Design: docs/explain/nlp_bench.md.
-
-Run:  python eval/run_llm_eval.py [--only attribution|routing]
-Needs eval/llm_eval/cards.json (python eval/llm_eval/make_cards.py) for (b).
-
-(b) Root-cause attribution: the LLM reads each evidence card that matches a planted problem — with
-    the card's cause type, title and recommendation removed — and names the cause type plus a
-    one-line root cause (no digits). Scored against the planted truth, paired with our rules.
-(c) Ask OpsLens routing: 60 labelled questions (eval/llm_eval/route_questions.json), LLM router
-    (groq_route, the product's) vs keyword rules, both through the product's grounding check.
-Writes eval/parts/llm_eval.json.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -25,11 +12,11 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.recall import finds  # noqa: E402
-from opslens.ask import SYSTEM as ROUTE_SYSTEM, check_route, rules_route  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.llm.base import LLMUnavailable  # noqa: E402
-from opslens.llm.client import build_client  # noqa: E402
+from eval.recall import finds
+from opslens.ask import SYSTEM as ROUTE_SYSTEM, check_route, rules_route
+from opslens.config import load_config
+from opslens.llm.base import LLMUnavailable
+from opslens.llm.client import build_client
 
 HERE = ROOT / "eval" / "llm_eval"
 OUT = ROOT / "eval" / "parts" / "llm_eval.json"
@@ -59,8 +46,6 @@ EVIDENCE_KEYS = ("metric", "value", "comparison_value", "comparison_text", "segm
                  "affected_share_pct", "not_explained_by", "examples")
 
 
-# ---- Shared ------------------------------------------------------------------------------------
-
 def ask(client, task: str, system: str, user: str):
     for wait in RETRY_WAITS_S:
         try:
@@ -87,10 +72,7 @@ def paired(a: np.ndarray, b: np.ndarray, rng: np.random.Generator) -> dict:
             "above_zero": bool(lo > 0)}
 
 
-# ---- (b) Attribution ---------------------------------------------------------------------------
-
 def matched_pairs(cards_file: dict, team_skills: dict) -> list[dict]:
-    """Every (planted problem, first matching card) pair, main world then blind sets."""
     pairs = []
     worlds = [("main", cards_file["main"]["cards"], cards_file["main"]["plants"])]
     worlds += [(f"blind{s['set']}", s["cards"], s["plants"]) for s in cards_file["blind"]]
@@ -130,8 +112,6 @@ def run_attribution(client, rng: np.random.Generator) -> dict:
             "unanswered": int(sum(not r["answered"] for r in rows)),
             "models": sorted({r["model"] for r in rows if r["model"]}), "rows": rows}
 
-
-# ---- (c) Routing -------------------------------------------------------------------------------
 
 def same_args(tool: str, want: dict, got: dict) -> bool:
     got = got or {}
@@ -182,7 +162,7 @@ def run_routing(client, rng: np.random.Generator) -> dict:
               f"llm {l_tool:14s}{'✓' if l_full else '✗'}", flush=True)
 
     def block(mask: np.ndarray) -> dict:
-        get = lambda k: np.array([r[k] for r in rows])[mask]  # noqa: E731
+        get = lambda k: np.array([r[k] for r in rows])[mask]
         want = get("want")
         return {"rules_tool": rate(get("rules") == want, rng), "rules_full": rate(get("rules_full"), rng),
                 "llm_tool": rate(get("llm") == want, rng), "llm_full": rate(get("llm_full"), rng),
@@ -210,8 +190,6 @@ def main() -> int:
         print("(b) attribution", flush=True)
         attribution = run_attribution(build_client(["gemini"]), rng)
         if attribution["unanswered"]:
-            # A card the LLM never answered would count as wrong and bias the test against it.
-            # Answers are cached, so a re-run only asks for the missing ones.
             print(f"{attribution['unanswered']} cards unanswered (provider down?): NOT written; run again later")
             return 1
         out["attribution"] = attribution

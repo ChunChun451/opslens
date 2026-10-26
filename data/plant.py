@@ -1,20 +1,3 @@
-"""Random planted problems for the blind recall test (and, later, the live Plant-a-problem demo).
-
-What it does: starts from a CLEAN floor (the main problems removed: Hindi refund cover restored,
-Team C's evening agents back at weekends, no spikes, no partner or IVR problem), then plants
-3 problems of random type, place and size. The pattern finder has never seen these choices.
-
-Problem types (one per cause type), each with random parameters:
-- skill_gap      a random language × team: only 1-2 agents of that team keep the language
-- capacity       a random team at weekend dinner: 2 evening agents off at weekends + 1.35× volume
-- volume_spike   a random category on a random day, 4-6 hours at 3-5×
-- partner_issue  a random restaurant cluster sends 3× its usual share of one category
-- process        a random channel's menu choice is wrong 25% of the time
-
-Example: set 7 → [capacity: Team A weekend dinner], [volume_spike: refund on day 29,
-13:00-17:00, ×4.2], [process: email menu wrong 25%].
-"""
-
 from __future__ import annotations
 
 import copy
@@ -26,7 +9,6 @@ DINNER = [19, 20, 21, 22]
 
 
 def clean_config(cfg: dict) -> dict:
-    """The generator config with every main planted problem switched off."""
     out = copy.deepcopy(cfg)
     for plant in out["planted"].values():
         plant["enabled"] = False
@@ -36,20 +18,18 @@ def clean_config(cfg: dict) -> dict:
 
 
 def clean_roster(roster: dict) -> dict:
-    """The roster without the two main planted problems."""
     out = copy.deepcopy(roster)
     for agent in out["agents"]:
         if agent["id"] in ("B03", "B06", "B08", "B10") and "hi" not in agent["langs"]:
-            agent["langs"] = agent["langs"] + ["hi"]  # Hindi refund cover across the day
+            agent["langs"] = agent["langs"] + ["hi"]
         if agent["id"] == "C05":
-            agent["days_off"] = [1, 2]  # Team C evening agents work weekends again
+            agent["days_off"] = [1, 2]
         if agent["id"] == "C07":
             agent["days_off"] = [3, 4]
     return out
 
 
 def random_plant_set(rng: np.random.Generator, roster: dict, cfg: dict, n: int = 3, days: int | None = None) -> list[dict]:
-    """Pick `n` different problem types with random parameters (spikes fall inside the first `days`)."""
     teams = list(roster["teams"])
     days = days or int(cfg["days"])
     types = rng.choice(PLANT_TYPES, size=n, replace=False)
@@ -78,7 +58,6 @@ def random_plant_set(rng: np.random.Generator, roster: dict, cfg: dict, n: int =
 
 
 def apply_plants(cfg: dict, roster: dict, plants: list[dict]) -> tuple[dict, dict, list[dict]]:
-    """Return (config, roster, planted records in the planted.json format)."""
     cfg, roster = copy.deepcopy(cfg), copy.deepcopy(roster)
     team_skills = {t: v["skills"] for t, v in roster["teams"].items()}
     records = []
@@ -114,7 +93,7 @@ def apply_plants(cfg: dict, roster: dict, plants: list[dict]) -> tuple[dict, dic
                                           "multiplier": p["multiplier"]})
             records.append({"id": pid, "name": f"cluster {p['cluster_id']} {p['category']}", "cause_type": "partner_issue",
                             "segment": {"category": p["category"], "restaurant_cluster_id": p["cluster_id"]}})
-        elif p["type"] == "process_category":  # used by the live Plant-a-problem demo
+        elif p["type"] == "process_category":
             cfg["extra_misrouting_category"][p["category"]] = p["wrong_prob"]
             records.append({"id": pid, "name": f"{p['category']} menu mislabels", "cause_type": "process",
                             "segment": {"category": p["category"]}})

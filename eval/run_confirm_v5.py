@@ -1,15 +1,3 @@
-"""Confirmation test for v5 (validation days only), written BEFORE it was run (18 Oct).
-
-Why: eval/run_design_v5.py chose roster_margin_min 10 but, with 5 seeds, its gain (-0.11 points,
-CI [-0.27, +0.04]) could not be told apart from luck; its interval is about +/-0.17 points wide.
-Adding seeds to that experiment after seeing it would be cheating, so this is a NEW experiment:
-- ONE candidate fixed in advance: v5 with roster_margin_min 10 (no choosing among variants);
-- 20 seeds never used before (6-25), validation days 36-42, normal and +25% volume;
-- adopt v5 only if its normal-volume breach % beats v3 with a paired 95% CI entirely below 0,
-  and it is not worse than v3 at +25% volume nor on minutes past SLA per 100 tickets.
-Run:  .venv/Scripts/python.exe eval/run_confirm_v5.py   -> eval/parts/confirm_v5.json
-"""
-
 from __future__ import annotations
 
 import json
@@ -22,8 +10,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import PARTS, run_jobs  # noqa: E402
-from opslens.impact import paired_ci  # noqa: E402
+from eval.run_opslens import PARTS, run_jobs
+from opslens.impact import paired_ci
 
 SEEDS = list(range(6, 26))
 FIRST, LAST = 36, 42

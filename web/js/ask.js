@@ -1,14 +1,3 @@
-// ask.js — "Ask OpsLens": the command bar in the top bar.
-//
-// What happens: the manager types a question in plain words ("What if Team C loses 2 agents
-// on Saturday?"). The server (POST /api/ask, opslens/ask.py) lets the LLM pick ONE engine tool,
-// checks it, runs the real engine and returns the answer lines. This file only shows them.
-//
-// Why the "How I answered" list: judges should see that the LLM understood the question and
-// the simulator produced the numbers — the LLM never writes a number (CLAUDE.md rule 1.5).
-// Numbers here are computed live at request time, so they are not clickable to results.json;
-// the panel says so.
-
 import { escapeHtml } from "./format.js";
 
 const EXAMPLES = [
@@ -31,7 +20,6 @@ export function initAsk() {
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") { panel.hidden = true; }
-    // "/" focuses the bar from anywhere (like many search boxes), unless already typing.
     if (event.key === "/" && document.activeElement?.tagName !== "INPUT") {
       event.preventDefault();
       input.focus();
@@ -82,7 +70,7 @@ async function ask(question, panel) {
   panel.querySelector(".ask-close").addEventListener("click", () => { panel.hidden = true; });
 }
 
-export function factsTable(facts) { // also used by the bot (js/bot.js)
+export function factsTable(facts) {
   if (!facts || !facts.length) return "";
   const rows = facts.map((f) => `<tr><td>${escapeHtml(f.label)}</td>
       <td class="num">${f.breach_pct.toFixed(1)}%</td><td class="num">${f.p90_min.toFixed(0)}</td>

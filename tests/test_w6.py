@@ -1,5 +1,3 @@
-"""Plan v4 W6: the scoring code of the routing and attribution tests (no LLM calls)."""
-
 import numpy as np
 
 from eval.run_llm_eval import EVIDENCE_KEYS, matched_pairs, paired, same_args, score_route

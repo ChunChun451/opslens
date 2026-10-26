@@ -1,12 +1,9 @@
-"""The real public service desk: the event-log helpers measure what they claim."""
-
 import pandas as pd
 
 from opslens.realdesk import masks, time_in_states
 
 
 def test_time_in_states_adds_up_the_hours_per_state() -> None:
-    # New 2 h → Active 5 h → Awaiting User Info 20 h → Resolved (the docstring example).
     t0 = pd.Timestamp("2016-03-01 08:00")
     events = pd.DataFrame({
         "number": ["INC1"] * 4,

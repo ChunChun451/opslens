@@ -1,5 +1,3 @@
-"""Pattern finder, live alerts, recall matcher and plant maker (small synthetic data, no network)."""
-
 import numpy as np
 import pandas as pd
 
@@ -13,8 +11,7 @@ TEAM_SKILLS = {"A": ["late_delivery"], "B": ["refund", "payment_failure"],
 
 
 def test_robust_z_matches_definition() -> None:
-    # CLAUDE.md example: median 40, MAD 5, today 95 → z ≈ 7.4
-    history = np.array([35, 40, 45, 40, 35, 45, 40], dtype=float)  # median 40, MAD 5
+    history = np.array([35, 40, 45, 40, 35, 45, 40], dtype=float)
     assert abs(robust_z(95.0, history) - 7.42) < 0.01
 
 
@@ -31,7 +28,6 @@ def toy_frame(n: int = 3000, seed: int = 0) -> pd.DataFrame:
         "team": "X", "priority": "P2", "tier": "normal", "when": "weekday lunch",
         "wait_min": rng.exponential(20, n), "transfers": (rng.random(n) < 0.03).astype(int),
     })
-    # Plant: Hindi refunds wait 6x; call tickets transfer 6x more.
     hi_refund = (df["language"] == "hi") & (df["category"] == "refund")
     df.loc[hi_refund, "wait_min"] *= 6
     calls = df["channel"] == "call"
@@ -43,7 +39,6 @@ def test_interaction_scan_needs_both_parents() -> None:
     findings = scan_interactions(toy_frame())
     segments = [f.segment for f in findings]
     assert {"category": "refund", "language": "hi"} in segments
-    # "Hindi" alone or "refund" alone is not reported as an interaction.
     assert all(len(s) == 2 for s in segments)
 
 
@@ -56,7 +51,7 @@ def test_merge_keeps_the_stronger_of_overlapping_findings() -> None:
     mask_a = np.array([1, 1, 1, 1, 0, 0], dtype=bool)
     mask_b = np.array([1, 1, 1, 0, 0, 0], dtype=bool)
     mask_c = np.array([0, 0, 0, 0, 1, 1], dtype=bool)
-    make = lambda name, mask, strength: Finding(name, "other", "m", 1, 1, "", {}, mask, strength)  # noqa: E731
+    make = lambda name, mask, strength: Finding(name, "other", "m", 1, 1, "", {}, mask, strength)
     kept = merge_overlapping([make("a", mask_a, 5), make("b", mask_b, 9), make("c", mask_c, 1)])
     assert [f.title for f in kept] == ["b", "c"]
 
@@ -67,7 +62,7 @@ def test_live_alerts_catch_a_surge_and_ignore_known_days() -> None:
     for day in range(1, 36):
         for minute in rng.uniform(0, 1440, 200):
             rows.append({"minute_of_run": (day - 1) * 1440 + minute, "cat": "app_bug"})
-        if day in (29, 33):  # surge on day 29 18:00-21:00 (unknown) and day 33 (a known sale day)
+        if day in (29, 33):
             for minute in rng.uniform(18 * 60, 21 * 60, 120):
                 rows.append({"minute_of_run": (day - 1) * 1440 + minute, "cat": "app_bug"})
     alerts = live_alerts(pd.DataFrame(rows), "cat", 29, 35, known_event_days={33})
@@ -75,8 +70,6 @@ def test_live_alerts_catch_a_surge_and_ignore_known_days() -> None:
     assert len(surge) == 1 and 18 * 60 < surge["minute"].iloc[0] - 28 * 1440 <= 20 * 60
     assert alerts[alerts["day"] == 33]["explained"].all()
 
-
-# ---- Recall matcher --------------------------------------------------------------------------
 
 def test_expand_team_and_when() -> None:
     have = expand({"team": "C", "when": "weekend dinner"}, TEAM_SKILLS)
@@ -96,8 +89,6 @@ def test_matcher_found_and_diagnosed() -> None:
     assert [c["id"] for c in result["unmatched"]] == ["F3"]
     assert not finds(cards[0], {"segment": {"language": "other"}}, TEAM_SKILLS)
 
-
-# ---- Plant maker -----------------------------------------------------------------------------
 
 def test_plants_change_config_and_roster() -> None:
     cfg = clean_config({**load_config("generator"), **load_config("calendar")})

@@ -1,20 +1,3 @@
-"""Turn simulation results into the KPIs the problem statement asks for.
-
-The PS asks how recommendations improve "turnaround time, productivity, and service
-quality", so the KPIs are grouped under exactly those three headings:
-- Turnaround:   breach %, mean / P90 resolution time, mean wait, max backlog
-- Productivity: tickets resolved per agent-hour, transfers per 100 tickets, busy agent-hours
-- Quality:      reopen rate, P99 wait, mean utilisation, load fairness (std of utilisation)
-
-Comparisons between policies are **paired by seed**: seed 3 of OpsLens and seed 3 of a
-baseline saw the same tickets and the same luck, so we take the difference per seed and
-report its mean with a 95% confidence interval (t-distribution, n = number of seeds).
-
-Example: breach % for seeds 1..5 — Baseline A [12.1, 12.6, 11.9, 12.4, 12.2],
-OpsLens [8.0, 8.3, 7.7, 8.4, 8.1] → differences [-4.1, -4.3, -4.2, -4.0, -4.1],
-mean -4.14, sd 0.11, CI = -4.14 ± 2.776 × 0.11 / √5 = [-4.28, -4.00] percentage points.
-"""
-
 from __future__ import annotations
 
 import math
@@ -23,12 +6,10 @@ import numpy as np
 
 from opslens.simulate import SimResult
 
-# 97.5% quantile of Student's t for small n (df = n - 1). Avoids a scipy dependency.
 T_975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447, 7: 2.365, 8: 2.306, 9: 2.262}
 
 
 def summarize(result: SimResult) -> dict[str, float]:
-    """KPIs for one policy run (one seed), flat dict with group prefixes."""
     t = result.tickets
     resolved = t["resolution_min"].dropna()
     busy_min = sum(result.agent_busy_minutes.values())
@@ -53,9 +34,6 @@ def summarize(result: SimResult) -> dict[str, float]:
         "quality.p99_wait_min": float(np.percentile(t["wait_min"].dropna(), 99)),
         "quality.mean_utilisation": float(utils.mean()) if len(utils) else 0.0,
         "quality.load_fairness_std": float(utils.std()) if len(utils) else 0.0,
-        # How late the late customers are. Breach % alone rewards giving up on a ticket once it
-        # is late; these two show whether that happens. Unresolved tickets count as resolved at
-        # the end of the run's drain window (a lower bound on their lateness).
         **lateness(t),
         "segment.p1_breach_pct": segment_rate(t, t["priority"] == "P1"),
         "segment.gold_breach_pct": segment_rate(t, t["tier"] == "gold"),
@@ -65,11 +43,6 @@ def summarize(result: SimResult) -> dict[str, float]:
 
 
 def lateness(t) -> dict[str, float]:
-    """Minutes past SLA: mean and P90 over breached tickets, and per 100 tickets overall.
-
-    Example: 3 tickets with SLA 60 resolved after 50, 90 and 150 min → 2 breached, late 30
-    and 90 min → mean 60, late minutes per 100 tickets = 100 × 120 / 3 = 4,000.
-    """
     if "sla_min" not in t:
         return {}
     end = t["resolved_min"].max()
@@ -84,7 +57,6 @@ def lateness(t) -> dict[str, float]:
 
 
 def segment_rate(t, mask) -> float:
-    """Breach % inside one group of tickets (e.g. gold customers)."""
     return 100.0 * float(t.loc[mask, "breached"].mean()) if mask.any() else 0.0
 
 
@@ -94,7 +66,6 @@ def mean_std(values: list[float]) -> tuple[float, float]:
 
 
 def paired_ci(treatment: list[float], control: list[float]) -> dict[str, float]:
-    """Mean difference (treatment − control) over paired seeds, with a 95% t-interval."""
     diffs = np.asarray(treatment, dtype=float) - np.asarray(control, dtype=float)
     n = len(diffs)
     mean = float(diffs.mean())

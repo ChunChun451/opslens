@@ -1,21 +1,3 @@
-"""M8 design check v3 (validation days only): what should a ticket past its SLA be worth?
-
-Why this file exists: on the test days, OpsLens v1 failed the +25% volume stress test
-(51.7% breaches vs 29.1% for priority-first): with aging per hour and a fixed 240-minute guard,
-already-lost tickets crowded out tickets that could still be saved. v2 measures aging in SLA
-units and starts the guard only when a ticket is 240 minutes PAST its SLA.
-To keep the test days honest, the choice between v1 and v2 is made here, on validation days
-36-42 (seeds 1-3), at normal volume and with +25% volume. The test days are then re-run once.
-
-Run:  .venv/Scripts/python.exe eval/run_design_v3.py   → eval/parts/design_v3.json
-
-v3 context: v2 won on validation (normal and +25%) but on the test days it still lost the +25%
-volume stress test (40.5% vs 29.1% for priority-first): there, +25% lands on a sale day and an
-unseen surge. A lost ticket kept its maximum age value and outranked savable P1s. v3 gives a
-ticket past its SLA a small fixed value (aging_lost) until the guard serves it. Chosen here on
-validation days at normal, +25% and the harsher +40% volume; test days re-run once more.
-"""
-
 from __future__ import annotations
 
 import json
@@ -28,7 +10,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import PARTS, run_jobs  # noqa: E402
+from eval.run_opslens import PARTS, run_jobs
 
 SEEDS = [1, 2, 3]
 FIRST, LAST = 36, 42

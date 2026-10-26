@@ -1,27 +1,12 @@
-// tabs/whatif.js — the judges' turn: change staffing or volume and re-run the simulator.
-//
-// Why: moat number three, "touch it". A judge picks a test day, adds or removes agents per
-// team, scales the volume and picks a policy. The server (opslens/whatif.py) simulates that
-// day for ALL three policies under the same changes and the same luck, so the answer is a fair
-// side-by-side comparison, not one number. It takes a while (three full-day simulations), so
-// the panel shows a spinner and keeps the button disabled until the answer arrives.
-//
-// Example request: { "day": 48, "policy": "opslens", "volume_factor": 1.25,
-//                    "agents_delta": { "A": 0, "B": 0, "C": 2, "D": 0 } }
-// Answer: { "request": {...}, "kpis": {...chosen policy...},
-//           "all_policies": { "baseline_a": {...}, "baseline_b": {...}, "opslens": {...} },
-//           "agents_on_roster": 42 }
-
 import { state, policyKeys, policyLabel, teamNames } from "../data.js";
 import { ev } from "../evidence.js";
 import { pageHeader, card, postJson, policyName, shortLabel, showWaiting } from "../ui.js";
 import { escapeHtml, kpiInfo, unitSuffix } from "../format.js";
 
-// Slider ranges. These are input limits for the judge, not results.
 const AGENT_DELTA_LIMIT = 5;
 const VOLUME_MIN = 0.5;
 const VOLUME_MAX = 2;
-const TIMEOUT_MS = 180000; // give up after 3 minutes, so a stuck server never freezes the panel
+const TIMEOUT_MS = 180000;
 
 export function render(section) {
   const meta = state.results.meta;
@@ -79,7 +64,6 @@ export function render(section) {
   updateLabels(section);
 }
 
-// Before the first run: a short hint (the "industry wants OpsLens" cartoon was removed, owner 25 Oct).
 function emptyState() {
   return `<div class="wi-empty"><div><strong>No simulation yet</strong>
       Move a slider, then press Run simulation.<br>The server replays the whole day for every policy.</div></div>`;
@@ -98,7 +82,6 @@ function buildRequest(section) {
   };
 }
 
-// Show the slider values in words next to each slider, and the request preview.
 function updateLabels(section) {
   const request = buildRequest(section);
   section.querySelector("#wi-volume-value").textContent = "×" + request.volume_factor.toFixed(2);
@@ -122,7 +105,6 @@ async function run(section) {
   } catch (error) {
     state.whatif = null;
     if (state.staticServer || /HTTP (404|405|501)/.test(error.message)) {
-      // The page is served without the OpsLens API (for example by python -m http.server).
       result.innerHTML = `<div class="callout warn"><strong>What-if needs the OpsLens server.</strong>
         Start it with <code>.venv/Scripts/python.exe -m uvicorn server.app:app --port 8000</code>
         and open <code>http://localhost:8000/</code>.</div>`;
@@ -135,8 +117,6 @@ async function run(section) {
   }
 }
 
-// The three policies side by side, the chosen one highlighted. Every value is clickable;
-// its path starts with "whatif." and the popover names the live simulation as the source.
 function answerHtml(answer) {
   if (!answer || !answer.all_policies) {
     return `<div class="callout warn">The server answered, but without "all_policies".</div>`;
@@ -167,9 +147,6 @@ function answerHtml(answer) {
     ${tradeOffNote(answer.all_policies)}`;
 }
 
-// Under heavy overload OpsLens saves the tickets that can still make their SLA first, so it
-// can have fewer breaches but more total minutes late than a baseline. Say so plainly when
-// the judge's scenario shows it, instead of letting them find it (Claude 2 review, 17 Oct).
 function tradeOffNote(all) {
   const other = all.baseline_d ? "baseline_d" : "baseline_b";
   const o = all.opslens;
@@ -185,7 +162,6 @@ function tradeOffNote(all) {
     (see How we tested → Baselines).</div>`;
 }
 
-// Which policy is best on this KPI (a comparison only; no new number is shown).
 function bestOf(allPolicies, keys, kpi, better) {
   if (!better) return null;
   let bestKey = null;

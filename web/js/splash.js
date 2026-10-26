@@ -1,27 +1,11 @@
-// splash.js — the opening screen: "chaos in, order out". Thousands of glowing particles (tickets)
-// swirl like a galaxy in the dark, then rush together and write "OpsLens" in light; the mouse
-// scatters them and they flow back; on exit they burst outward like a jump to warp speed.
-//
-// Why (24 Oct, the owner: the Diwali stage, the dark battle stage and the bright reveal were all
-// not right; "make it dark, something different, fascinating"): the picture is the product in
-// one sentence. A flood of tickets is chaos; OpsLens turns it into order. It is drawn on one
-// canvas with plain 2D drawing (no library, works offline): the letters' points are sampled from
-// the word written on a hidden canvas, and every particle eases to one of them. Colours run pink
-// #FF0A6C → violet → blue #2D27FF across the word. No result numbers; the countdown to the Deviathon
-// 2.0 finale (29 Oct 2026) ticks from this laptop's clock. Once per browser session; any click or
-// key skips it; reduced motion: the word is drawn still, briefly. The cold open plays after it.
-//
-// Example: a 1366×768 screen → about 2,000 particles; 1.6 s of swirl, 1.5 s to form the word.
-
 import { logoSvg, TEAM } from "./logo.js";
 import { escapeHtml } from "./format.js";
 
 const SHOW_MS = 5200;
-const SWIRL_MS = 1500; // chaos, before the particles head for the letters
+const SWIRL_MS = 1500;
 const SEEN_KEY = "opslens.splashSeen";
-const FINALE = new Date(2026, 9, 29, 9, 0); // 29 Oct 2026, 09:00 (local time)
+const FINALE = new Date(2026, 9, 29, 9, 0);
 const FINALE_END = new Date(2026, 9, 31, 23, 59);
-// Refined (25 Oct): white into cyan, no pink-violet-indigo.
 const PINK = [244, 244, 242], VIOLET = [134, 232, 248], BLUE = [34, 211, 238];
 
 function countdownLabel(now = new Date()) {
@@ -37,16 +21,12 @@ function remaining(now = new Date()) {
   return [d, h, m, s].map((n) => String(n).padStart(2, "0"));
 }
 
-// Pink → violet → blue, for a position 0..1 across the word.
 function colourAt(t) {
   const [a, b, u] = t < 0.5 ? [PINK, VIOLET, t * 2] : [VIOLET, BLUE, (t - 0.5) * 2];
   return a.map((c, i) => Math.round(c + (b[i] - c) * u));
 }
 
-// Points of the word "OpsLens" written on a hidden canvas, every `gap` pixels.
 function wordPoints(w, h, size, centerY) {
-  // A window with no size yet (opened hidden or minimised) has nothing to sample; without this
-  // guard getImageData throws and the splash never closes, so the app stays covered.
   if (w < 1 || h < 1 || size < 1) return { points: [], minX: 0, maxX: 0 };
   const off = document.createElement("canvas");
   off.width = w; off.height = h;
@@ -73,10 +53,8 @@ function wordPoints(w, h, size, centerY) {
 }
 
 export function initSplash(done) {
-  // Once per browser session (a reload in the middle of a demo should not wait again);
-  // ?splash=1 in the address shows it anyway.
   let seen = false;
-  try { seen = sessionStorage.getItem(SEEN_KEY) === "1"; sessionStorage.setItem(SEEN_KEY, "1"); } catch { /* show it */ }
+  try { seen = sessionStorage.getItem(SEEN_KEY) === "1"; sessionStorage.setItem(SEEN_KEY, "1"); } catch {   }
   if (seen && !new URLSearchParams(location.search).has("splash")) { if (done) done(); return; }
 
   const el = document.createElement("div");
@@ -97,7 +75,6 @@ export function initSplash(done) {
     <div class="sp-foot"><div class="sp-bar"><i></i></div><div class="sp-skip">Tap anywhere to skip</div></div>`;
   document.body.appendChild(el);
 
-  // ---- the particles ----
   const canvas = el.querySelector(".sp-canvas");
   const ctx = canvas.getContext("2d");
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -108,7 +85,6 @@ export function initSplash(done) {
   const size = Math.round(Math.min(w * 0.17, h * 0.24));
   const centerY = Math.round(h * 0.46);
   const { points, minX, maxX } = wordPoints(w, h, size, centerY);
-  // Place the logo above the word and the lines under it.
   el.querySelector(".sp-mark").style.top = `${Math.max(70, centerY - size * 0.62 - 78)}px`;
   el.querySelector(".sp-under").style.top = `${centerY + size * 0.5 + 18}px`;
 
@@ -125,11 +101,10 @@ export function initSplash(done) {
       angle, radius, spin: (0.004 + Math.random() * 0.01) * (Math.random() < 0.85 ? 1 : -1),
       vx: 0, vy: 0, size: 1 + Math.random() * 1.4, col: colourAt(t), phase: Math.random() * Math.PI * 2 });
   }
-  // A few dim stars that never join the word.
   const stars = Array.from({ length: Math.round((w * h) / 9000) }, () =>
     ({ x: Math.random() * w, y: Math.random() * h, s: Math.random() * 1.2, tw: Math.random() * Math.PI * 2 }));
 
-  el.particles = particles; // for checks in the browser console (where each particle is vs its letter point)
+  el.particles = particles;
   const mouse = { x: -9999, y: -9999 };
   el.addEventListener("pointermove", (event) => { mouse.x = event.clientX; mouse.y = event.clientY; });
   el.addEventListener("pointerleave", () => { mouse.x = -9999; mouse.y = -9999; });
@@ -139,16 +114,13 @@ export function initSplash(done) {
   let burstAt = 0;
   let frame = 0;
 
-  // Time-based motion: `k` is how many 60-fps frames this frame stands for, so a slow laptop or a
-  // throttled window still forms the word on time.
   let last = start;
   function draw(now) {
     const t = now - start;
     const k = Math.min(18, Math.max(0.5, (now - last) / 16.7));
     last = now;
-    const pull = 1 - Math.pow(1 - 0.12, k); // how far towards the goal, for a frame of this length
-    const damp = Math.pow(0.86, k); // how fast a push from the mouse fades
-    // Motion trails: paint the dark over the last frame instead of clearing it.
+    const pull = 1 - Math.pow(1 - 0.12, k);
+    const damp = Math.pow(0.86, k);
     ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = burstAt ? "rgba(5, 5, 12, 0.35)" : "rgba(5, 5, 12, 0.28)";
     ctx.fillRect(0, 0, w, h);
@@ -161,7 +133,6 @@ export function initSplash(done) {
     const forming = reduced ? 1 : Math.min(1, Math.max(0, (t - SWIRL_MS) / 1500));
     for (const p of particles) {
       if (burstAt) {
-        // Warp: outward, faster every frame, drawn as a streak.
         const dx = p.x - cx, dy = p.y - cy;
         const d = Math.hypot(dx, dy) || 1;
         p.vx += (dx / d) * 1.6 * k; p.vy += (dy / d) * 1.6 * k;
@@ -172,19 +143,15 @@ export function initSplash(done) {
         ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(p.x, p.y); ctx.stroke();
         continue;
       }
-      // Swirl: orbit the centre on a flat ellipse, the orbit slowly tightening.
       p.angle += p.spin * (1 - forming * 0.8) * k;
       p.radius *= Math.pow(0.9985, k);
       const sx = cx + Math.cos(p.angle) * p.radius, sy = cy + Math.sin(p.angle) * p.radius * 0.55;
-      // Form: ease from the orbit to the letter point; once formed, shimmer in place.
       const ease = forming * forming * (3 - 2 * forming);
       let gx = sx + (p.tx - sx) * ease, gy = sy + (p.ty - sy) * ease;
       if (forming >= 1) { gx += Math.sin(t / 380 + p.phase) * 0.6; gy += Math.cos(t / 420 + p.phase) * 0.6; }
-      // The cursor pushes particles away; they spring back.
       const mx = p.x - mouse.x, my = p.y - mouse.y;
       const md = mx * mx + my * my;
       if (md < 9000 && forming > 0.6) { const f = (9000 - md) / 9000 * 6; const d = Math.sqrt(md) || 1; p.vx += (mx / d) * f; p.vy += (my / d) * f; }
-      // Ease to the goal (stable at any frame rate); the mouse's push is a velocity that fades.
       p.vx *= damp; p.vy *= damp;
       p.x += (gx - p.x) * pull + p.vx * Math.min(k, 3);
       p.y += (gy - p.y) * pull + p.vy * Math.min(k, 3);

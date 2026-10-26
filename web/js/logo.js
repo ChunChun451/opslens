@@ -1,17 +1,5 @@
-// logo.js — the OpsLens mark: "OPS" written inside a big lens, and the O and the bowl of the P are
-// two eyes that blink and look around. "OpsLens by SoyaChaap" is the word mark.
-//
-// Why (24 Oct, the owner: "make a good OpsLens logo, OPS written inside a big lens with eyes
-// inside OPS, and write OpsLens by SoyaChaap, our team name"): the name says what the product
-// does (it looks at operations), so the letters themselves look. One drawing (120×120 grid) is
-// used everywhere: the side menu (when no festival doodle is on), the splash, and the browser tab
-// (web/favicon.svg is the same drawing, without motion). Motion is CSS (web/neon.css, "Logo").
-//
-// Example: logoSvg("lg-side", 44) → a 44-px lens whose O and P eyes blink every few seconds.
-
 export const TEAM = "SoyaChaap";
 
-// The drawing itself, without the outer <svg>; `id` keeps its gradient unique on the page.
 export function logoBody(id) {
   return `<defs>
       <linearGradient id="${id}-ring" x1="0" y1="0" x2="1" y2="1">

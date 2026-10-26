@@ -1,12 +1,5 @@
-# Judge Q&A
-
-Questions a sharp industry judge would ask, with model answers under 60 words.
-Every number must come from our results or code. "Attack" = a question meant to break us.
-Grouped by module; newest milestone at the bottom.
-
----
-
-## M1 — Privacy and the LLM layer
+# OpsLens answers
+## Privacy and the LLM layer
 
 **Q1. You send customer tickets to Google and Groq. Isn't that a privacy problem?**
 Every ticket passes through `mask_pii()` inside the LLM client before any network call.
@@ -18,7 +11,7 @@ never receives the raw phone number.
 True — names and free-text street names are not caught today, and we say so. Two things
 limit the risk: the LLM only sees the tickets our local model is unsure about, not
 all of them; and production would add a named-entity model (e.g. Presidio) before the regex
-step. That is in PRODUCTION.md.
+step.
 
 **Q3. What happens if Gemini's free tier runs out during your demo?**
 Nothing visible. Every reply is cached by a hash of the masked prompt, so the demo replays
@@ -35,9 +28,7 @@ We don't trust blogs. `make ping` lists the models our own key can see, sends on
 request to each provider, and warns if the configured model name is missing. Names and
 limits live in `config/providers.yaml`, so a change is a config edit, not a code change.
 
----
-
-## M2 — Generator, simulator, baselines
+## Generator, simulator, baselines
 
 **Q6. (Attack) Your data is fake. Why should we believe anything?**
 The operations layer is generated, and we say so: public data has no timestamps, agents or SLAs.
@@ -67,9 +58,7 @@ Our first version decided every 2 minutes. The Erlang-C test showed agents then 
 minute between tickets, which slows every policy and is not how a real floor works. Now every
 policy decides the moment a ticket arrives or an agent finishes — the same moments for all.
 
----
-
-## M3 — Ingest and classification
+## Ingest and classification
 
 **Q11. Why not send every ticket to the LLM? It's 2026.**
 We measured it. On 400 random test tickets Gemini alone was 90.0% right; our local model, which
@@ -92,9 +81,7 @@ Only masked text, in batches of 25, cached by a hash of the masked prompt. Answe
 validated (known category, every id present); missing ones are asked once more, then the local
 answer stays. Cluster names containing digits are rejected.
 
----
-
-## M4 — Patterns
+## Patterns
 
 **Q15. (Attack) You found 5 of 5 problems you planted yourself. Of course you did.**
 That is why we ran a blind test: 20 new datasets, each with 3 problems of random type, place and
@@ -116,9 +103,7 @@ Yes: "regional-language tickets on weekday mornings wait 2.3× longer". We check
 regional-language speakers start before 08:00. It replicated on the held-out days (2.0×).
 A second unplanted finding did not replicate (1.2×), and we count it as a false alarm.
 
----
-
-## M5 — Risk model
+## Risk model
 
 **Q19. (Attack) An AUC of 0.976 is too good to be true. Leakage?**
 Three checks. Features come only from a snapshot of what was known at time t, and a test changes
@@ -140,9 +125,7 @@ Milliseconds per score, exact SHAP reasons, free licence, and no GPU. TabPFN-3 (
 stronger on small tables in benchmarks, but its weights are for research use; our optional
 challenger arena compares it on the same split before anyone argues from benchmarks.
 
----
-
-## M6 — Forecast and staffing
+## Forecast and staffing
 
 **Q23. Your hourly WAPE is 0.305. That sounds bad.**
 Hourly counts per category are small, so even a perfect forecast would be off by chance: the
@@ -159,9 +142,7 @@ It is the call-centre standard, judges from operations know it, and our simulato
 (10.97 vs 10.79 minutes average wait). We use it with the upper 80% forecast so plans hold on
 busier-than-expected days, and we weight hours with real overload 3×.
 
----
-
-## M7 — Optimiser and the OpsLens policy
+## Optimiser and the OpsLens policy
 
 **Q26. What is the headline result?**
 On 14 held-out days, 5 seeds, same tickets and luck for every policy: SLA breaches 2.05% with
@@ -192,9 +173,7 @@ an agent to rescue a ticket outside their training (1.6× slower, more reopens),
 rescue value is at least 0.5. And late customers wait slightly longer than under FIFO (224 vs
 211 min late on average), the price of saving the tickets that can still make it.
 
----
-
-## M8 — Evaluation, ablations, stress tests
+## Evaluation, ablations, stress tests
 
 **Q31. (Attack) You changed the policy after seeing test results. Isn't that cheating?**
 We say it openly: the test days were run three times. v1 failed the +25% volume stress test
@@ -219,13 +198,11 @@ priority-first 28.9%, OpsLens 10.5%. With 10% of agents absent: 20.2%, 9.8% and 
 crisis OpsLens pauses its fairness guard to protect what can still be saved.
 
 **Q34. How do I know every number in your deck is real?**
-One command (`make eval`, ~20 minutes) regenerates eval/results.json and NUMBERS.md. The dashboard
+One command (`make eval`, ~20 minutes) regenerates eval/results.json and eval/NUMBERS.md. The dashboard
 reads only that file, every number on screen clicks through to its path in it, and `make demo`
 refuses to start on fixture data.
 
----
-
-## M9–M11 — Dashboard and live demos
+## Dashboard and live demos
 
 **Q35. Can I try it myself?**
 Yes. What-if re-runs any test day with more or fewer agents per team or more volume, for all
@@ -246,18 +223,14 @@ on the same data scores AUC 0.857 against 0.552 for the priority rule.
 No. Results, LLM answers (cached), data and Chart.js are local; What-if, Plant and Upload run
 on the laptop. `make demo` checks that real results exist before it starts.
 
----
-
-## Challenger arena (16 Oct)
+## Challenger arena
 
 **Q39. Did you try a 2025 foundation model for the forecast?**
 Yes, Chronos-2, zero-shot, same test hours and origins. Hourly WAPE 0.304 vs our LightGBM 0.305:
 0.4% better, below the 2% bar we wrote down before running it, so LightGBM stays. Its 80% range
 covered 76% of hours, ours 79%. Both sit near the Poisson floor (0.280): there is little left to win.
 
----
-
-## Fix-at-source playbooks (16 Oct)
+## Fix-at-source playbooks
 
 **Q40. You find that cluster 17 sends 2.5× the wrong items. Do you just route those tickets faster?**
 No. Each cause gets an action for the team that can remove it: partner ops gets a kitchen
@@ -286,9 +259,7 @@ It drafts the request to each owner team, from facts it can only cite by key, li
 never writes a digit; one draft that copied "cluster 17" was rejected and the template was used
 until we passed the cluster number as a key too.
 
----
-
-## How close to perfect (18 Oct)
+## How close to perfect
 
 **Q45. Is OpsLens the best possible? How would you even know?**
 We computed the physical floor: tickets that breach even with unlimited agents and perfect routing
@@ -321,9 +292,7 @@ Cross-skill work is 1.6× slower and reopens more (4.44% vs 3.93% for the baseli
 volume on validation days, already-late customers got later and the slowest 1% waited longer. On
 the test days the slowest 1% did not wait longer (728 min, as before). We report it rather than hide it.
 
----
-
-## Plan v3: real public data and a real plan (19 Oct)
+## Real public data and your plan
 
 **Q51. Why the UCI ServiceNow log as your public dataset?**
 It is the only public dataset we found with real teams, real agents, real hand-offs and a real SLA
@@ -477,7 +446,6 @@ such a column and checks it is dropped; the screen lists every column it learned
 It is refused, with the reason: it needs at least 500 rows, 7 days, 30 misses and 30 in time, and items that end after they
 start. A 100,000-row file takes 2.9 s.
 
-
 **Q89. I uploaded my own CSV. Is every screen really about my file?**
 Yes. Real data has two sources: the UCI example and your file. After *Analyse my file*, Overview, Shadow mode, Problems,
 Risks, Actions and Proof are all drawn from the report on your file, learned on your first 70% and scored once on the rest,
@@ -492,3 +460,78 @@ miss rate of your best column). Anything that needs a missing column says so by 
 Each day's forecast reads only counts from a week or more before it; it learns on the days before your later 30% and is
 scored on the four weeks after, against "same weekday last week", and the screen says which wins. On the real desk the
 learned team forecast does not win: 0.365 against 0.341 for same day last week, and we show that.
+
+## The basics
+
+**B1. What is OpsLens, in one sentence?**
+A decision engine for a support floor: it tells you which tickets will be late, why, and what to
+do about it, and it proves the plan works by replaying days it has never seen against the
+industry-standard routing. Every number on screen clicks through to its evidence.
+
+**B2. How does OpsLens work, step by step?**
+It reads each ticket's text (not the menu the customer clicked), finds recurring problems with
+evidence, forecasts the next 48 hours, scores every waiting ticket's risk of missing its promise,
+and assigns work with an optimiser that protects rare skills and rescues tickets about to be late.
+Then a fair simulator replays held-out days to measure it against every baseline.
+
+**B3. (Attack) Can it scale to millions of tickets a day?**
+Decisions are local: a free agent only needs the tickets it can serve, so the floor splits by
+language × skill group and each part runs its own loop. Our scale test assigned 5,000 waiting
+tickets to 500 agents in 0.04 seconds. Risk scoring is one LightGBM call every few minutes, and the
+LLM only sees the tickets the local model is unsure about.
+
+**B4. How would it plug into our helpdesk (Zendesk, Freshdesk, ServiceNow)?**
+It reads the helpdesk's ticket events (created, assigned, transferred, resolved) through its API or
+webhooks and writes assignments back through the assignment API; agents keep the final say. The
+ServiceNow adapter we built for the real public desk is the template. We would start in shadow
+mode: OpsLens watches for two weeks and only then is anything switched on.
+
+**B5. What does it cost to run?**
+No GPU and no paid licences: free libraries (LightGBM, OR-Tools, scikit-learn, FastAPI) and free LLM
+tiers. The LLM is called only when the local model is unsure, every reply is cached, and the whole
+demo runs with Wi-Fi off.
+
+**B6. (Attack) What is the business impact in rupees?**
+We do not invent a cost per missed promise. OpsLens measures what a manager can verify: missed
+promises, minutes late, waiting times and agent-hours, each against the industry standard on days
+it never saw. A company multiplies by its own cost per breach; on the real desk we show no money at
+all, because no such cost exists for it.
+
+**B7. Who built OpsLens?**
+Team SoyaChaap, for the Deviathon 2.0 finale (problem DEV_103). The engine, the simulator, the
+evaluation and this dashboard are our own; the public data sources and their licences are listed in
+data/SOURCES.md.
+
+**B8. What would you do in the first month at a real company?**
+Run it in shadow mode next to the current routing, log what it would have done, and compare in the
+simulator before switching anything on. Then measure missed promises, P90 resolution time, P99 wait,
+reopens and agent overrides weekly, retrain weekly with drift checks, and keep the stress tests as a
+release gate.
+
+**B9. (Attack) What can't OpsLens do?**
+The operations data of the food floor is generated, so the real public desk is the honest guide.
+On that real log OpsLens can only watch (a log cannot replay new decisions), its planted-problem
+detector is weak, and its forecast does not beat "same day last week". In random worlds under heavy
+overload, "least slack first" saves more promises in total. Every one of these is on screen.
+
+**B10. Isn't an AI chatbot enough for customer support now?**
+An AI first line resolves the routine chats. What still reaches people are the escalated,
+harder, deadline-critical tickets, and that human floor is what OpsLens runs: who takes which ticket,
+which ones will be late, and what to fix at the source.
+
+**B11. How does this bot work? Can it make up numbers?**
+No. It never writes a number itself. A customer complaint goes to our text classifier; a
+what-if or a ticket question goes to the engine, which computes the answer; a question about
+OpsLens gets the closest prepared answer, and every number in those answers is checked against the
+results file by a test. The LLM only helps pick which prepared answer fits.
+
+**B12. What is shadow mode?**
+A real day at a real company's IT desk, replayed: incidents arrive at their real times, OpsLens
+warns one hour after each opens, and the real outcome appears when it really happened. On the
+busiest day, of 102 missed deadlines OpsLens had warned about 53; the desk's own priority field
+about 16. Open it under IT service desk → Overview → Shadow mode.
+
+**B13. How is OpsLens different from the helpdesk tools we already have?**
+Helpdesk tools tell you a ticket is already late. OpsLens tells you which tickets will be late, why,
+and what to do, and it shows the effect before you act: on the held-out days the industry
+standard missed 5.51% of promises and OpsLens 2.05%, with the same tickets, agents and luck.

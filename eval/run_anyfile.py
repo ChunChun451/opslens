@@ -1,15 +1,3 @@
-"""OpsLens on your file, measured once on the real UCI log exported as an ordinary CSV.
-
-Why: the upload screen computes its report live, for whatever file a judge brings. The pitch
-and the Q&A may only quote numbers from eval/results.json, so this step runs the same report on
-the UCI incident log written as one row per incident (exactly what a judge's export looks like)
-with the suggested mapping, and stores it. It also times a 100,000-row file.
-
-Output: eval/parts/anyfile.json -> results["anyfile"] (eval/run_eval.py --assemble).
-Example: learn on the first 70% of 24,918 incidents, score the rest; on Thu 5 May 2016 OpsLens's
-flags catch 50 of 111 real misses, the priority field's 22.
-"""
-
 from __future__ import annotations
 
 import json
@@ -20,15 +8,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import pandas as pd  # noqa: E402
+import pandas as pd
 
-from opslens import anyfile as A  # noqa: E402
-from server.anyfile_jobs import EXAMPLE, json_safe, keep_example  # noqa: E402
-from tests.test_anyfile import delivery_file, mapping_for  # noqa: E402
+from opslens import anyfile as A
+from server.anyfile_jobs import EXAMPLE, json_safe, keep_example
+from tests.test_anyfile import delivery_file, mapping_for
 
 
 def main() -> int:
-    keep_example()  # writes cache/uci_one_row.csv once
+    keep_example()
     raw = pd.read_csv(EXAMPLE)
     peek = A.peek(raw)
     mapping = dict(peek["suggested"])

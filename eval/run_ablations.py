@@ -1,16 +1,3 @@
-"""M8: which part of OpsLens creates the gain, how sensitive it is, and whether it survives
-conditions it never saw. Test days 43-56, 5 seeds, same luck for every variant.
-
-Run:  .venv/Scripts/python.exe eval/run_ablations.py
-
-1. Ablations: full OpsLens, then one part switched off at a time — staffing plan, risk model,
-   optimiser (each agent greedily takes its best ticket), classifier (route by the customer's
-   menu choice), scarcity cost.
-2. Sensitivity: gold weight ×1 / ×1.5 / ×2 (overall breach % vs gold customers' breach %).
-3. Stress: +25% volume, 10% absenteeism — Baseline A, Baseline B and OpsLens each.
-Writes eval/parts/ablations.json.
-"""
-
 from __future__ import annotations
 
 import json
@@ -23,8 +10,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import PARTS, run_jobs  # noqa: E402
-from opslens.impact import mean_std, paired_ci  # noqa: E402
+from eval.run_opslens import PARTS, run_jobs
+from opslens.impact import mean_std, paired_ci
 
 SEEDS = [1, 2, 3, 4, 5]
 FIRST, LAST = 43, 56

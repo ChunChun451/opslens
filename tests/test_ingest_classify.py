@@ -1,5 +1,3 @@
-"""Ingest, UCI adapter, KPI tables, classification cascade and clusters (no network)."""
-
 import json
 
 import numpy as np
@@ -20,8 +18,6 @@ from opslens.llm.mock import MockProvider
 SLA = {"P1": 60, "P2": 240, "P3": 1440}
 
 
-# ---- Ingest ----------------------------------------------------------------------------------
-
 def test_timing_is_recomputed_from_timestamps() -> None:
     df = pd.DataFrame({
         "ticket_id": ["T1", "T2"], "priority": ["P1", "P2"],
@@ -32,7 +28,7 @@ def test_timing_is_recomputed_from_timestamps() -> None:
     out = add_timing(df, SLA)
     assert out["wait_min"].tolist() == [36.0, 5.0]
     assert out["resolution_min"].iloc[0] == 74.0
-    assert out["breached"].tolist() == [True, True]  # 74 > 60; never resolved = breached
+    assert out["breached"].tolist() == [True, True]
 
 
 def test_column_mapping_and_validation(tmp_path) -> None:
@@ -56,8 +52,6 @@ def test_mapping_to_missing_column_raises() -> None:
         apply_mapping(pd.DataFrame({"a": [1]}), {"ticket_id": "nope"})
 
 
-# ---- UCI adapter -----------------------------------------------------------------------------
-
 def test_uci_events_collapse_to_final_state() -> None:
     t = pd.to_datetime
     events = pd.DataFrame({
@@ -80,8 +74,6 @@ def test_uci_events_collapse_to_final_state() -> None:
     assert inc.loc["INC2", "priority"] == PRIORITY_MAP["1 - Critical"] == "P1"
 
 
-# ---- KPI table -------------------------------------------------------------------------------
-
 def test_kpi_table_groups_and_shares() -> None:
     df = pd.DataFrame({
         "language": ["hi", "hi", "en", "en"], "breached": [True, False, False, False],
@@ -93,18 +85,16 @@ def test_kpi_table_groups_and_shares() -> None:
     assert table.loc["en", "reopen_pct"] == 50.0 and table.loc["hi", "share_pct"] == 50.0
 
 
-# ---- Classification cascade ------------------------------------------------------------------
-
 def test_parse_batch_keeps_only_valid_items() -> None:
     data = {"results": [
         {"id": 1, "category": "refund", "root_cause": "refund after 7 days"},
-        {"id": 2, "category": "pizza"},            # unknown category → dropped
-        {"id": 9, "category": "refund"},           # unexpected id → dropped
+        {"id": 2, "category": "pizza"},
+        {"id": 9, "category": "refund"},
         "garbage",
     ]}
     found = _parse_batch(data, {1, 2})
     assert list(found) == [1]
-    assert found[1].category == "refund" and "7" not in found[1].root_cause  # digits stripped
+    assert found[1].category == "refund" and "7" not in found[1].root_cause
 
 
 def test_cascade_uses_llm_only_below_threshold() -> None:
@@ -123,13 +113,13 @@ def test_choose_threshold_respects_budget() -> None:
     truth = pd.Series(["refund", "account", "account", "account"])
     labels = {t: LLMLabel("account", "") for t in "bcd"}
     best, table = choose_threshold(local, truth, labels, [0.5, 0.7, 0.9], max_escalated_pct=60)
-    assert best == 0.7  # 0.9 would be perfect but escalates 75% > 60% budget
+    assert best == 0.7
     assert table.set_index("threshold").loc[0.7, "accuracy"] == 0.75
 
 
 def test_misrouting_counts_teams_not_categories() -> None:
     truth = pd.Series(["refund", "refund", "missing_item"])
-    pred = pd.Series(["payment_failure", "account", "wrong_item"])  # same team, other team, same team
+    pred = pd.Series(["payment_failure", "account", "wrong_item"])
     assert misrouted_per_100(pred, truth) == pytest.approx(100 / 3)
 
 
@@ -144,10 +134,8 @@ def test_llm_batch_masks_pii_and_retries_missing(tmp_path) -> None:
     assert labels["T1"].category == "refund" and labels["T2"].category == "app_bug"
     first_prompt = provider.sent[0][-1]["content"]
     assert "9876543210" not in first_prompt and "[PHONE]" in first_prompt
-    assert "1. " not in provider.sent[1][-1]["content"]  # retry only asks for the missing ticket
+    assert "1. " not in provider.sent[1][-1]["content"]
 
-
-# ---- Clusters --------------------------------------------------------------------------------
 
 def test_clusters_name_fallback_when_llm_writes_digits() -> None:
     texts = pd.Series(["refund not received after cancel"] * 20 + ["charged twice refund the extra"] * 20
@@ -156,5 +144,5 @@ def test_clusters_name_fallback_when_llm_writes_digits() -> None:
     provider = MockProvider(handler=lambda m: json.dumps({"name": "Refund 7 days late", "root_cause": "x"}))
     name_clusters(LLMClient([provider]), fitted)
     assert len(fitted.names) >= 3
-    assert all(not any(ch.isdigit() for ch in n) for n in fitted.names.values())  # fell back to top words
+    assert all(not any(ch.isdigit() for ch in n) for n in fitted.names.values())
     assert sum(fitted.sizes.values()) == 60

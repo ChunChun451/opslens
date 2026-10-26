@@ -1,17 +1,3 @@
-"""M8: one command reproduces every number → eval/results.json and docs/NUMBERS.md.
-
-Run:  mingw32-make eval            (or .venv/Scripts/python.exe eval/run_eval.py)
-      ... run_eval.py --assemble   (only rebuild results.json + NUMBERS.md from eval/parts/)
-      ... run_eval.py --blind      (also re-run the 35-minute blind recall test)
-      ... --assemble --keep-brief  (reuse the brief already in results.json, no LLM call)
-
-Steps (each writes eval/parts/<name>.json):
-  classification → patterns → risk → forecast → opslens (test-day comparison) → ablations
-  [→ blind]. Then everything is mapped into the schema of opslens/results_schema.py
-  (validated by pydantic) and NUMBERS.md is generated from results.json — never typed by hand.
-The LLM calls in classification come from the SQLite cache, so a re-run needs no network.
-"""
-
 from __future__ import annotations
 
 import json
@@ -27,23 +13,23 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens.config import load_config  # noqa: E402
-from opslens.ingest import load_history  # noqa: E402
-from opslens.optimize import Candidate, SolveStats, solve  # noqa: E402
-from opslens.results_schema import Results  # noqa: E402
+from opslens.config import load_config
+from opslens.ingest import load_history
+from opslens.optimize import Candidate, SolveStats, solve
+from opslens.results_schema import Results
 
 PARTS = ROOT / "eval" / "parts"
 STEPS = [("classification", "eval/run_classification.py"), ("patterns", "eval/run_patterns.py"),
          ("risk", "eval/run_risk.py"), ("forecast", "eval/run_forecast.py"),
          ("opslens", "eval/run_opslens.py"), ("ablations", "eval/run_ablations.py"),
-         ("concurrency", "eval/run_concurrency.py"),  # Plan v4 W2: agents with 2-3 chats at once
-         ("tracking", "eval/run_tracking.py"),  # 24 Oct: the test fortnight day by day (performance tracking)
+         ("concurrency", "eval/run_concurrency.py"),
+         ("tracking", "eval/run_tracking.py"),
          ("playbooks", "eval/run_playbooks.py"), ("baseline_c", "eval/run_baseline_c.py"),
          ("best_baselines", "eval/run_best_baselines.py"), ("floor", "eval/run_floor.py"),
          ("realdesk", "eval/run_realdesk.py"),
-         ("plan_items", "eval/run_plan_items.py"),  # needs forecast + playbooks (added 19 Oct)
-         ("w7", "eval/run_w7.py"),  # Plan v4: W7 risk model vs LR vs time-left rule (offline + in dispatch), bottleneck alerts scored (eval/run_w7.py)
-         ("w8", "eval/run_w8.py")]  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
+         ("plan_items", "eval/run_plan_items.py"),
+         ("w7", "eval/run_w7.py"),
+         ("w8", "eval/run_w8.py")]
 
 
 def run_steps(with_blind: bool) -> dict[str, float]:
@@ -62,7 +48,6 @@ def part(name: str) -> dict:
 
 
 def scale_test() -> dict:
-    """Optimiser on 5,000 waiting tickets × 500 free agents (top-30 tickets per agent)."""
     rng = np.random.default_rng(0)
     agents = [f"a{i}" for i in range(500)]
     cands = [Candidate(int(t), a, float(rng.uniform(0.05, 3)), False, "x", "")
@@ -74,8 +59,6 @@ def scale_test() -> dict:
 
 
 def delay_decomposition() -> dict:
-    """Where a ticket's time goes, per owning team (history days 1-42): waiting for the first
-    agent, being worked on, and everything after the first pickup (transfers, reopens, re-queues)."""
     from opslens.classify import TEAM_OF
     h = load_history()
     h = h[h["day"] <= load_config("calendar")["splits"]["validation_last_day"]]
@@ -89,7 +72,6 @@ def delay_decomposition() -> dict:
 
 
 def version_record(version: str, note: str) -> dict:
-    """Test-day results of an earlier OpsLens policy version, kept on purpose."""
     if not (PARTS / f"ablations_{version}.json").exists():
         return {}
     abl, sim = part(f"ablations_{version}"), part(f"sim_{version}")
@@ -176,9 +158,6 @@ def assemble(timings: dict[str, float]) -> dict:
             "ablations": abl["ablations"],
             "tuning": tuning,
             "weights": sim["weights"],
-            # The honest record: policy v1 failed the +25% volume stress test on the test days;
-            # v2 was then designed and chosen on validation days only (design_v2), and the test
-            # days were re-run once.
             "v1_record": version_record("v1", "aged tickets per hour; under +25% volume old lost tickets crowded out savable P1s."),
             "v2_record": version_record("v2", "aged tickets in SLA units but a lost ticket kept its full age value; still lost "
                                               "the +25% volume test on the test days (it lands on a sale day and a surge)."),
@@ -207,41 +186,36 @@ def assemble(timings: dict[str, float]) -> dict:
         results["playbooks"] = {k: pb[k] for k in ("test_days", "seeds", "playbooks", "all", "opslens_all_vs_baseline_b", "base")}
     if (PARTS / "baseline_c.json").exists():
         results["baseline_c"] = with_means(part("baseline_c"))
-    # Not a STEP: run once, after the freeze (eval/run_sealed_world.py); kept as a part file.
     if (PARTS / "sealed_world.json").exists():
         results["sealed_world"] = with_means(part("sealed_world"))
-    # The published scheduling rules and clairvoyant least slack (eval/run_best_baselines.py),
-    # and the sealed world run again with them (baselines added after the first sealed run).
     if (PARTS / "best_baselines.json").exists():
         results["best_baselines"] = with_perfect_info(with_means(part("best_baselines")))
-        if "rescue" in results["best_baselines"]:  # least slack + cross-skill rescue (nested)
+        if "rescue" in results["best_baselines"]:
             with_means(results["best_baselines"]["rescue"])
     if (PARTS / "sealed_world_rerun.json").exists():
         results["sealed_world_rerun"] = with_perfect_info(with_means(part("sealed_world_rerun")))
     if (PARTS / "floor.json").exists():
         results["floor"] = part("floor")
-    if (PARTS / "realdesk.json").exists():  # the real public service desk (UCI), deliverable 1
+    if (PARTS / "realdesk.json").exists():
         results["realdesk"] = part("realdesk")
-    # "Your plan" (eval/run_plan_items.py, added 19 Oct): each recommendation a manager can accept,
-    # measured alone on the test days against OpsLens with nothing accepted.
     if (PARTS / "plan_items.json").exists():
         results["plan"] = part("plan_items")
-    if (PARTS / "tracking.json").exists():  # 24 Oct: performance tracking, day by day and team by team
+    if (PARTS / "tracking.json").exists():
         results["tracking"] = part("tracking")
-    if (PARTS / "concurrency.json").exists():  # Plan v4 W2: agents with 2-3 chats at once
+    if (PARTS / "concurrency.json").exists():
         results["concurrency"] = part("concurrency")
-    if (PARTS / "w7.json").exists():  # Plan v4: W7 risk model vs LR vs time-left rule (offline + in dispatch), bottleneck alerts scored (eval/run_w7.py)
+    if (PARTS / "w7.json").exists():
         results["prediction_baselines"] = part("w7")
-    if (PARTS / "w8.json").exists():  # Plan v4: W8 explanations: deletion test, reasons vs the planted cause, runner-up agent (eval/run_w8.py)
+    if (PARTS / "w8.json").exists():
         results["faithfulness"] = part("w8")
-    if (PARTS / "roster_opt.json").exists():  # Plan v4: W5 CP-SAT roster vs greedy (eval/run_roster_opt.py, staged; not a STEP), not adopted
+    if (PARTS / "roster_opt.json").exists():
         results["staffing_opt"] = part("roster_opt")
-    if (PARTS / "llm_eval.json").exists():  # Plan v4 W6: NLP/LLM benchmark; not a STEP (LLM quota), run once
+    if (PARTS / "llm_eval.json").exists():
         results["nlp_bench"] = {"banking77": part("nlp_bench") if (PARTS / "nlp_bench.json").exists() else None,
-                                **part("llm_eval")}  # + routing (c), attribution (b)
-    if (PARTS / "worlds.json").exists():  # Plan v4 W1: 30 random worlds; not a STEP (hours), run once
+                                **part("llm_eval")}
+    if (PARTS / "worlds.json").exists():
         results["worlds"] = part("worlds")
-        if (PARTS / "worlds_diagnosis.json").exists():  # 23-24 Oct: who misses in the 11 losses (analysis)
+        if (PARTS / "worlds_diagnosis.json").exists():
             diag = part("worlds_diagnosis")
             seg = {"p1": "segment.p1_breach_pct", "gold": "segment.gold_breach_pct", "hindi": "segment.hindi_breach_pct",
                    "mean_minutes_late": "quality.mean_minutes_late"}
@@ -249,17 +223,16 @@ def assemble(timings: dict[str, float]) -> dict:
                 name: sum(r["mean"]["opslens"][key] < r["mean"]["least_slack"][key] for r in diag["worlds"])
                 for name, key in seg.items()}
             results["worlds"]["diagnosis"] = diag
-    if (PARTS / "anyfile.json").exists():  # OpsLens on your file, on the UCI log as a plain CSV (not a STEP)
+    if (PARTS / "anyfile.json").exists():
         results["anyfile"] = part("anyfile")
-    if (PARTS / "v6_adoption.json").exists():  # Plan v4 W13: v6 overload mode, adoption test run once (not adopted)
+    if (PARTS / "v6_adoption.json").exists():
         results["v6"] = part("v6_adoption")
-    if (PARTS / "sealed_world_new.json").exists():  # not a STEP: a new world, run once (corrected simulator)
+    if (PARTS / "sealed_world_new.json").exists():
         sealed = part("sealed_world_new")
         for key in ("test", "best_baselines_test", "rescue_test"):
             if sealed.get(key):
                 with_means({key: sealed[key]})
         results["sealed_world_new"] = sealed
-    # Challenger arena (CLAUDE.md 7.11): eval-only, run in .venv-challengers, so not a STEP.
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
     old = ROOT / "eval" / "results.json"
@@ -267,13 +240,11 @@ def assemble(timings: dict[str, float]) -> dict:
         results["brief"] = json.loads(old.read_text(encoding="utf-8"))["brief"]
     else:
         results["brief"] = make_brief(results)
-    Results.model_validate(results)  # fails loudly if anything drifted from the contract
+    Results.model_validate(results)
     return results
 
 
 def with_means(section: dict) -> dict:
-    """Add {policy: {kpi: mean over seeds}} next to each per_seed block, so the dashboard can
-    point every number at a path in results.json (click-to-evidence)."""
     for block in section.values():
         if isinstance(block, dict) and "per_seed" in block:
             block["means"] = {p: {k: sum(s[k] for s in runs) / len(runs) for k in runs[0]}
@@ -282,8 +253,6 @@ def with_means(section: dict) -> dict:
 
 
 def with_perfect_info(section: dict) -> dict:
-    """What perfect information buys a sorting rule: clairvoyant − least slack, paired by seed
-    (the two differ only in knowing the true category and handle time)."""
     from opslens.impact import paired_ci
 
     for block in section.values():
@@ -296,21 +265,17 @@ def with_perfect_info(section: dict) -> dict:
 
 
 def make_brief(r: dict) -> dict:
-    """LLM brief with number keys (opslens/brief.py); template if the LLM is unavailable."""
     from opslens.brief import write_brief
     from opslens.llm.client import build_client
 
     try:
-        # Stronger model first: the brief is written once here, never live (config/providers.yaml).
         client = build_client(["gemini_brief", "gemini", "groq"])
-    except Exception:  # no keys / no network: the template is always available
+    except Exception:
         client = None
     return write_brief(r, client)
 
 
 def template_brief(r: dict) -> dict:
-    """Template brief (the LLM version with number keys comes in M10). Numbers are filled from
-    the results by key, so the text can never contain a number we did not compute."""
     keys = {
         "a": "sim.policies.baseline_a.kpis.turnaround.breach_pct.mean",
         "b": "sim.policies.baseline_b.kpis.turnaround.breach_pct.mean",
@@ -330,9 +295,8 @@ def fmt(x: float, nd: int = 2) -> str:
 
 
 def numbers_md(r: dict) -> str:
-    """docs/NUMBERS.md — every headline number, generated from results.json."""
     pol = r["sim"]["policies"]
-    k = lambda p, name: pol[p]["kpis"][name]  # noqa: E731
+    k = lambda p, name: pol[p]["kpis"][name]
     ci = {(c["baseline"], c["kpi"]): c for c in r["sim"]["comparisons"]}
     lines = [
         "# OpsLens — the numbers", "",
@@ -435,7 +399,6 @@ def playbooks_md(r: dict) -> list[str]:
 
 
 def tracking_md(r: dict) -> list[str]:
-    """Performance tracking: each held-out day, OpsLens vs the industry standard (eval/run_tracking.py)."""
     t = r.get("tracking")
     if not t:
         return []
@@ -450,7 +413,6 @@ def tracking_md(r: dict) -> list[str]:
 
 
 def concurrency_md(r: dict) -> list[str]:
-    """Plan v4 W2: every policy when agents hold 2-3 chats at once (eval/run_concurrency.py)."""
     c = r.get("concurrency")
     if not c or c.get("smoke"):
         return []
@@ -473,7 +435,6 @@ def concurrency_md(r: dict) -> list[str]:
 
 
 def worlds_md(r: dict) -> list[str]:
-    """Plan v4 W1: 30 random worlds we did not design (eval/run_worlds.py)."""
     w = r.get("worlds")
     if not w or not w.get("worlds"):
         return []
@@ -504,7 +465,6 @@ def worlds_md(r: dict) -> list[str]:
 
 
 def v6_md(r: dict) -> list[str]:
-    """Plan v4 W13: the v6 overload mode's pre-registered adoption test (run once, not adopted)."""
     v = r.get("v6")
     if not v:
         return []
@@ -521,7 +481,6 @@ def v6_md(r: dict) -> list[str]:
 
 
 def plan_md(r: dict) -> list[str]:
-    """"Your plan": each item alone vs OpsLens with nothing accepted (eval/run_plan_items.py)."""
     plan = r.get("plan")
     if not plan:
         return []
@@ -544,7 +503,6 @@ def plan_md(r: dict) -> list[str]:
 
 
 def baseline_c_md(r: dict) -> list[str]:
-    """Baseline C ("SLA due") and lateness, test days. Empty if eval/run_baseline_c.py has not run."""
     c = r.get("baseline_c")
     if not c:
         return []
@@ -581,7 +539,6 @@ BEST_ROWS = [("turnaround.breach_pct", "SLA breach %"), ("segment.p1_breach_pct"
 
 
 def best_table(block: dict, names: dict) -> list[str]:
-    """KPI rows (means over seeds) for the policies in `names`, plus OpsLens − each (breach %)."""
     names = {k: v for k, v in names.items() if k in block["means"]}
     lines = ["| KPI | " + " | ".join(names.values()) + " |", "|" + "---|" * (len(names) + 1)]
     for key, label in BEST_ROWS:
@@ -594,7 +551,6 @@ def ci_text(d: dict, nd: int = 2) -> str:
 
 
 def best_baselines_md(r: dict) -> list[str]:
-    """The strongest published rules and clairvoyant least slack (eval/run_best_baselines.py)."""
     b = r.get("best_baselines")
     if not b or "test" not in b:
         return []
@@ -624,7 +580,6 @@ RESCUE_NAMES = {"least_slack": "Least slack first", "least_slack_rescue": "Least
 
 
 def rescue_md(rescue: dict | None) -> list[str]:
-    """Least slack with a rule-based cross-skill rescue: the freedom OpsLens has (added 18 Oct)."""
     if not rescue or "test" not in rescue:
         return []
     v, t = rescue["validation"], rescue["test"]
@@ -651,7 +606,6 @@ def rescue_md(rescue: dict | None) -> list[str]:
 
 
 def sealed_rerun_md(r: dict) -> list[str]:
-    """The sealed world run again with Baseline D and the published rules."""
     s = r.get("sealed_world_rerun")
     if not s or not s.get("best_baselines_test"):
         return []
@@ -683,7 +637,6 @@ def sealed_rerun_md(r: dict) -> list[str]:
 
 
 def sealed_world_md(r: dict) -> list[str]:
-    """The world generated after the freeze, evaluated once (eval/run_sealed_world.py)."""
     s = r.get("sealed_world")
     if not s:
         return []
@@ -705,7 +658,6 @@ def sealed_world_md(r: dict) -> list[str]:
 
 
 def realdesk_md(r: dict) -> list[str]:
-    """The real public service desk (eval/run_realdesk.py): every comparison on the test months."""
     d = r.get("realdesk")
     if not d:
         return []
@@ -728,7 +680,6 @@ def realdesk_md(r: dict) -> list[str]:
 
 
 def realdesk_v4_md(d: dict) -> list[str]:
-    """Plan v4 on the real desk (W3, W4, W7, W9): an outcome, findings that last, plants, alerts."""
     ft, rep, bp, al = d.get("fasttrack"), d.get("replication"), d.get("blind_plants"), d.get("alerts")
     if not ft:
         return []
@@ -755,7 +706,6 @@ def realdesk_v4_md(d: dict) -> list[str]:
 
 
 def floor_md(r: dict) -> list[str]:
-    """The physical floor and the share of the possible improvement captured (eval/run_floor.py)."""
     f = r.get("floor")
     if not f:
         return []
@@ -768,7 +718,6 @@ def floor_md(r: dict) -> list[str]:
 
 
 def sealed_new_md(r: dict) -> list[str]:
-    """A new world under the corrected simulator, run once (eval/run_sealed_world.py --new)."""
     s = r.get("sealed_world_new")
     if not s:
         return []
@@ -800,7 +749,7 @@ def challengers_md(r: dict) -> list[str]:
         lines.append(f"- Risk: TabPFN-3 AUC {fmt(k['scores']['tabpfn3']['auc'], 4)} vs LightGBM {fmt(k['scores']['lightgbm_shipped']['auc'], 4)} "
                      f"({k['relative_gain_pct']:+.2f}%), 300-ticket refresh {fmt(k['refresh_300_s']['tabpfn3'], 2)} s → **{k['verdict']}**.")
     else:
-        lines.append("- Risk: TabPFN-3 not run yet (needs the owner's TabPFN licence key).")
+        lines.append("- Risk: TabPFN-3 not run yet (needs a TabPFN licence key).")
     return lines if ch else []
 
 
@@ -814,8 +763,8 @@ def main() -> int:
         (PARTS / "timings.json").write_text(json.dumps(timings, indent=1), encoding="utf-8")
     results = assemble(timings)
     (ROOT / "eval" / "results.json").write_text(json.dumps(results, indent=1, default=str), encoding="utf-8")
-    (ROOT / "docs" / "NUMBERS.md").write_text(numbers_md(results), encoding="utf-8")
-    print("wrote eval/results.json and docs/NUMBERS.md")
+    (ROOT / "eval" / "NUMBERS.md").write_text(numbers_md(results), encoding="utf-8")
+    print("wrote eval/results.json and eval/NUMBERS.md")
     return 0
 
 

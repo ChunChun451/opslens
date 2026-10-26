@@ -1,25 +1,3 @@
-"""Your plan, measured: what each recommendation the manager can accept changes on the test days.
-
-Run:  .venv/Scripts/python.exe eval/run_plan_items.py
-
-- Plan items (opslens/plan.py): the staffing moves of the weekly plans made on days 42 and 49
-  (data/generated/staffing_plan.json, M6) and the fix-at-source playbooks found on history days
-  (eval/parts/playbooks.json). Needs the forecast and playbooks steps first.
-- "Without" = the shipped OpsLens policy on the published roster with nothing accepted.
-  Each item alone, then all items together, is replayed on test days 43-56 (day 42 warm-up),
-  seeds 1-5: same tickets, same luck, same policy, same weights. Paired 95% CI per KPI.
-- Why not reuse the playbook effects in results.playbooks? Those are measured against OpsLens WITH
-  every staffing move already in place and keep only breaches, tickets, transfers, agent-hours and
-  P90. The plan needs one "nothing accepted" starting point and all three headings, so the
-  playbooks are replayed here too (30 runs). The status banner reacts to the same live alerts.
-- Nothing is tuned here: the policy and its weights are frozen; this only measures.
-Writes eval/parts/plan_items.json (→ results.plan).
-
-Example: item "pb_F2" (cross-train A09 and D11 on refunds and payments) is run with seeds 1-5;
-seed 3 with the item is compared with seed 3 without it, and the five differences give the mean
-change in customers who missed the SLA and its confidence interval.
-"""
-
 from __future__ import annotations
 
 import json
@@ -33,13 +11,13 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import risk  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.impact import mean_std, summarize  # noqa: E402
-from opslens.plan import apply_items, effect_by_kpi, kpi_info, plan_kpis, playbook_items, staffing_items  # noqa: E402
-from opslens.policies import OpsLensPolicy, OpsLensSettings  # noqa: E402
-from opslens.simulate import simulate  # noqa: E402
-from opslens.world import build_world, day_bounds, load_agents  # noqa: E402
+from opslens import risk
+from opslens.config import load_config
+from opslens.impact import mean_std, summarize
+from opslens.plan import apply_items, effect_by_kpi, kpi_info, plan_kpis, playbook_items, staffing_items
+from opslens.policies import OpsLensPolicy, OpsLensSettings
+from opslens.simulate import simulate
+from opslens.world import build_world, day_bounds, load_agents
 
 GENERATED = ROOT / "data" / "generated"
 PARTS = ROOT / "eval" / "parts"
@@ -48,9 +26,6 @@ SEEDS = [1, 2, 3, 4, 5]
 
 
 def run_job(job: dict) -> dict:
-    """One 14-day OpsLens run with some plan items in place (runs in a worker process). The setup
-    is the same as eval/run_opslens.py::run_one, so with no items it is the M8 "without staffing
-    plan" ablation run."""
     tickets = pd.read_csv(GENERATED / "world_tickets.csv")
     preds = pd.read_csv(GENERATED / "predictions.csv", usecols=["ticket_id", "pred_final"])
     weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
@@ -66,7 +41,6 @@ def run_job(job: dict) -> dict:
 
 
 def catalogue() -> tuple[list[dict], list[dict]]:
-    """Every plan item in a fixed order (staffing week 1, week 2, then playbooks) + the live alerts."""
     plans = json.loads((GENERATED / "staffing_plan.json").read_text(encoding="utf-8"))
     books = json.loads((PARTS / "playbooks.json").read_text(encoding="utf-8"))
     items = staffing_items(plans, load_agents()) + playbook_items(books["playbooks"], (FIRST, LAST))

@@ -1,18 +1,10 @@
-// motion.js — headline numbers count up when a page opens.
-//
-// Why: a number that arrives draws the eye to it, and the projector audience sees which number
-// matters. The animation only changes how the text gets there: it ends on exactly the text the
-// page rendered from results.json (same digits, same unit), so nothing new is ever shown.
-//
-// Example: "2.2%" counts 0.0% → 2.2% in 0.9 s; "−4.6 pts" counts −0.0 → −4.6 pts; "10,788" keeps its comma.
-
 const SELECTOR = ".stat-value .ev, .proof-a .ev, .cbar-value .ev, .fact b .ev, .fix-number .ev, .lv-o .ev";
 const DURATION_MS = 900;
 const NUMBER = /[−-]?\d[\d,]*(?:\.\d+)?/;
 
 export function initMotion() {
   document.addEventListener("tab-shown", (event) => {
-    const panel = document.getElementById("view-" + event.detail); // the view just shown (router.js)
+    const panel = document.getElementById("view-" + event.detail);
     if (panel) countUp(panel);
   });
 }
@@ -44,7 +36,6 @@ export function countUp(root) {
   });
 }
 
-// Range sliders: paint the part left of the thumb (CSS reads --fill; see theme.css).
 export function initSliderFill() {
   const paint = (input) => {
     const min = Number(input.min || 0);

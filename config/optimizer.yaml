@@ -1,48 +1,22 @@
-# OpsLens optimiser weights (opslens/optimize.py).
-# Chosen on VALIDATION days 36-42 (seeds 1-3) by simulated breaches (eval/run_opslens.py --tune,
-# results in eval/parts/tuning.json): OpsLens 3.75% vs Baseline B 5.94%, P99 wait 331 vs 735 min;
-# never tuned on test days. Sensitivity of the main ones is reported in M8.
-
-urgency_weight: {P1: 3.0, P2: 1.5, P3: 1.0}   # how much a breach of each priority matters
-gold_weight: 1.5                               # gold customers count 1.5x (sensitivity: 1 / 1.5 / 2)
-order_value_weight: 0.1                        # + 0.1 x log(1 + value / 350)
-rescue_floor: 0.2                              # every ticket has at least this much value
-aging_per_hour: 1.0                            # value for time already waited (fairness; tuned 0.25-2.0)
-mismatch_penalty: 2.0                          # cost of a deliberate cross-skill job (1.6x slower)
-cross_skill_min_rescue: 0.5                     # ...and only to rescue a ticket in real danger
-scarcity_weight: 0.3                           # cost of using a rare skill pair on common work
-max_wait_min: 240                              # starvation guard: older than this = served next
+urgency_weight: {P1: 3.0, P2: 1.5, P3: 1.0}
+gold_weight: 1.5
+order_value_weight: 0.1
+rescue_floor: 0.2
+aging_per_hour: 1.0
+mismatch_penalty: 2.0
+cross_skill_min_rescue: 0.5
+scarcity_weight: 0.3
+max_wait_min: 240
 starvation_bonus: 50.0
-risk_refresh_min: 3                            # recompute risk scores every 3 simulated minutes
-new_ticket_rescue: 0.3                         # rescue value of a ticket that arrived since the last scoring
-top_k_per_agent: 30                            # only the 30 best tickets per agent enter the solver
-time_budget_s: 1.0                             # solver time limit, then greedy fallback (logged)
-# v2 aging (chosen in M8 on validation days 36-42, normal volume AND +25% volume; see
-# eval/parts/design_v2.json): v1 aged per hour and failed the +25% stress test on the test days.
-# v2 aging 3.0 per SLA: validation 2.22% breaches (B 5.94%), +25% volume 12.82% (B 16.55%).
+risk_refresh_min: 3
+new_ticket_rescue: 0.3
+top_k_per_agent: 30
+time_budget_s: 1.0
 aging_in_sla_units: true
 aging_per_sla: 3.0
 aging_cap: 1.0
 max_late_min: 480
-# v3 (chosen in M8 on validation days 36-42 at normal, +25% and +40% volume; see
-# eval/parts/design_v3.json). v2 still lost the +25% stress test on the test days because a
-# ticket past its SLA kept its full age value. v3: past its SLA a ticket is worth a small fixed
-# amount until the guard serves it (480 min late), and the guard pauses while more than 150
-# tickets wait ("crisis mode": protect what can still be saved).
-# Validation: normal 2.13% (B 5.94%), +25% 6.17% (B 16.55%), +40% 15.07% (B 32.23%).
 aging_lost: 0.2
 guard_queue_limit: 150
-# v4 (tested 18 Oct, NOT adopted): price a cross-skill job in breach-probability units scaled like the
-# ticket's value (mismatch_cost) instead of the flat mismatch_penalty. Under the corrected simulator
-# (work draws no longer shifted by transfers) validation days 36-42, seeds 1-5 gave 2.03% -> 1.95%,
-# paired 95% CI [-0.21, +0.05]: not clearly better, so the pre-registered rule keeps v3
-# (eval/run_design_v4.py, eval/parts/design_v4.json). Set mismatch_cost: 0.8 to run v4.
 mismatch_cost: null
-# v5 (roster-aware cross-skill rescue, SHIPPED 18 Oct): when nobody trained on the ticket's category
-# who speaks its language is on shift and the published schedule brings none before
-# deadline - roster_margin_min, a cross-skill job is the only rescue, so it is not charged the
-# mismatch penalty. Design run (eval/run_design_v5.py, seeds 1-5) chose margin 10 but could not
-# separate it from luck; a pre-registered confirmation on 20 fresh seeds (eval/run_confirm_v5.py,
-# validation days 36-42) gave breach -0.17 [-0.20, -0.13], Hindi -0.69, late min/100 -57;
-# at +25% volume breach -0.08 [-0.16, -0.00] but late min/100 +173 and P99 wait +74 min (the cost).
 roster_margin_min: 10

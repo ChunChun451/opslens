@@ -1,5 +1,3 @@
-"""Upload CSV: column mapping, priority ranking, dates, breach from an SLA flag."""
-
 import io
 import json
 

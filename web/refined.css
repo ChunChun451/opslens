@@ -1,26 +1,3 @@
-/*
-  OpsLens "Neon, refined" (25 Oct, owner: "I like 8002, but remove the AI-slop tells; keep the
-  animations"). The last style layer over neon.css. It changes colour, shape and type only:
-  every screen, feature and animation stays exactly as it is.
-
-  The tells it removes (owner's checklist):
-  1. Indigo-to-violet gradients and glowing mesh backgrounds -> a neutral near-black stage, solid
-     panels, ONE accent (cyan = OpsLens / promise kept). Red-coral is kept for "promise missed"
-     (a meaning, not decoration). Amber marks the one rescue state on the floor.
-  2. Gradient text and shimmering titles -> solid type.
-  3. Pill buttons and pill tabs everywhere -> small radii (6-8 px), sharper edges.
-  4. Left-border and top-border accent cards -> hairline borders; the tag says the type.
-  5. Rainbow category colours -> one look; the label carries the meaning.
-  6. Generic type -> Bricolage Grotesque (bundled) for big, tight display headings, Inter for
-     reading, tabular numbers.
-  Motion is untouched (floor tiles breathing, the live sweep, the border light, the mascots, the
-  scenes, the splash); only its colours follow the palette above.
-
-  Example: the Live now hero keeps its travelling border light, now one cyan stroke instead of a
-  cyan-violet glow; "7 more customers helped" stays the big cyan number.
-*/
-
-/* ---- 1. Palette ---------------------------------------------------------------------------- */
 html[data-theme="neon"] {
   --bg: #09090b;
   --surface: #111113;
@@ -34,11 +11,11 @@ html[data-theme="neon"] {
   --text: var(--ink);
   --blue: #22d3ee;
   --blue-soft: rgba(34, 211, 238, 0.1);
-  --violet: #f5b83d;          /* the floor's "rescue from another team" (was violet) */
+  --violet: #f5b83d;
   --magenta: #f5b83d;
   --good: #34d399;
   --good-soft: rgba(52, 211, 153, 0.1);
-  --bad: #ff5a5f;             /* promise missed (was neon pink) */
+  --bad: #ff5a5f;
   --bad-soft: rgba(255, 90, 95, 0.1);
   --warn: #fbbf24;
   --warn-soft: rgba(251, 191, 36, 0.08);
@@ -64,12 +41,10 @@ html[data-theme="neon"] {
   --font-display: "Bricolage Grotesque", "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
-/* ---- 2. The stage: no mesh glow, no drifting aurora ------------------------------------------ */
 html[data-theme="neon"] body { background: var(--bg) !important; }
 html[data-theme="neon"] body::before { content: none !important; animation: none !important; }
 html[data-theme="neon"] ::selection { background: rgba(34, 211, 238, 0.25); }
 
-/* ---- 3. Frame ------------------------------------------------------------------------------ */
 html[data-theme="neon"] .sidebar,
 html[data-theme="neon"] .topbar { background: var(--bg) !important; backdrop-filter: none !important; border-color: var(--border) !important; }
 html[data-theme="neon"] .brand-logo { filter: none !important; }
@@ -99,7 +74,6 @@ html[data-theme="neon"] .live-ticker {
 html[data-theme="neon"] .lt-theirs { color: var(--bad) !important; }
 html[data-theme="neon"] .intro-replay { border-radius: 8px !important; }
 
-/* ---- 4. Panels: solid, a hairline edge, no glass, no violet glow on hover ------------------- */
 html[data-theme="neon"] :is(.card, .stat-card, .proof, .challenge, .playbook, .week, .stepper, .live-volume, .fold, .fact, .lv-lane, .lv-feed) {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
@@ -112,7 +86,6 @@ html[data-theme="neon"] .fold[open] { border-color: var(--border-strong) !import
 html[data-theme="neon"] .fold > summary:hover { background: var(--surface-2) !important; }
 html[data-theme="neon"] .fact b, html[data-theme="neon"] .fact b .ev { text-shadow: none !important; }
 
-/* No left-border or top-border accent cards: the hairline edge is enough, the tag names the type. */
 html[data-theme="neon"] .challenge, .challenge { border-left: 1px solid var(--border) !important; }
 .proof::before { content: none !important; }
 .second-look { border-left: 0 !important; border-radius: 8px !important; box-shadow: inset 0 0 0 1px var(--border); background: var(--surface-2) !important; }
@@ -124,7 +97,6 @@ html[data-theme="neon"] .challenge, .challenge { border-left: 1px solid var(--bo
 .ft-assume, .sh-honest { border: 1px solid var(--border) !important; background: var(--surface-2) !important; border-radius: 8px !important; }
 .ft-assume b { color: var(--warn) !important; }
 
-/* ---- 5. Type: big, tight display headings; quiet body; no gradient text ---------------------- */
 html[data-theme="neon"] .page-title {
   background: none !important;
   -webkit-background-clip: border-box !important;
@@ -148,7 +120,6 @@ html[data-theme="neon"] :is(.stat-value, .lv-big, .tw-big b, .wd-got b, .sh-cloc
 }
 html[data-theme="neon"] :is(.stat-value .ev, .proof-a .ev) { text-shadow: none !important; }
 
-/* Clickable numbers: quiet ink with a dotted underline; the accent appears on hover. */
 html[data-theme="neon"] .ev {
   color: inherit !important;
   text-decoration: underline dotted rgba(141, 141, 148, 0.6);
@@ -156,7 +127,6 @@ html[data-theme="neon"] .ev {
 }
 html[data-theme="neon"] .ev:hover, html[data-theme="neon"] .ev:focus-visible { color: var(--blue) !important; background: var(--blue-soft) !important; }
 
-/* ---- 6. Buttons, chips, tabs: solid, small radii, no gradient, no shimmer ------------------- */
 html[data-theme="neon"] .btn {
   background: var(--surface) !important;
   background-image: none !important;
@@ -196,14 +166,12 @@ html[data-theme="neon"] input[type="range"]::-webkit-slider-thumb { background: 
 html[data-theme="neon"] input[type="range"]::-moz-range-thumb { background: var(--bg) !important; box-shadow: none !important; }
 html[data-theme="neon"] :is(input[type="text"], input[type="number"], select, textarea) { border-radius: 8px; }
 
-/* ---- 7. Bars and meters: one solid colour each ------------------------------------------------ */
 html[data-theme="neon"] .reason-bar { background: var(--blue) !important; box-shadow: none !important; }
 html[data-theme="neon"] .cbar.is-ours .cbar-fill { box-shadow: none !important; }
 html[data-theme="neon"] :is(.cbar-track, .queue-track, .share-bar) { background: var(--surface-3) !important; }
 html[data-theme="neon"] .live-progress i, .sh-progress i { background: var(--blue) !important; box-shadow: none !important; }
 html[data-theme="neon"] :is(.lv-bar.ours i, .lv-bar.theirs i) { box-shadow: none !important; }
 
-/* ---- 8. Floating panels ---------------------------------------------------------------------- */
 html[data-theme="neon"] :is(.evidence-popover, .ask-panel, .plan-panel, .story-card) {
   background: var(--surface) !important;
   border: 1px solid var(--border-strong) !important;
@@ -215,12 +183,10 @@ html[data-theme="neon"] .story-target {
   box-shadow: 0 0 0 4px var(--blue-soft) !important;
 }
 
-/* ---- 9. The bands (Live now hero, replay, ledger tally): solid, no colour wash ------------------ */
 html[data-theme="neon"] :is(.mission, .ledger-tally, .lv-hero) {
   background: var(--surface) !important;
   box-shadow: 0 0 0 1px var(--border) !important;
 }
-/* The travelling light on the Live hero's border stays: one cyan stroke, no violet, no halo. */
 html[data-theme="neon"] .lv-hero::before {
   background: conic-gradient(from var(--spin), transparent 0deg, #22d3ee 50deg, transparent 110deg, transparent 360deg) !important;
   filter: none !important;
@@ -236,7 +202,6 @@ html[data-theme="neon"] .lv-lane.is-ours { border-color: rgba(34, 211, 238, 0.4)
 html[data-theme="neon"] .lv-scene,
 html[data-theme="neon"] .sc { background: var(--surface) !important; }
 
-/* ---- 10. The floor: the breathing stays, the halo shrinks; rescues are amber ---------------- */
 html[data-theme="neon"] .tile.busy { box-shadow: 0 0 6px rgba(34, 211, 238, 0.35); }
 html[data-theme="neon"] .tile.cross { background: var(--violet) !important; box-shadow: none !important; }
 html[data-theme="neon"] .tile.wrong { background: var(--bad) !important; box-shadow: none !important; }
@@ -250,14 +215,12 @@ html[data-theme="neon"] .floor-team { background: var(--surface-2) !important; b
   }
 }
 
-/* ---- 11. Ledger -------------------------------------------------------------------------------- */
 html[data-theme="neon"] .ledger::before { background: var(--border-strong) !important; }
 html[data-theme="neon"] .ledger-entry.is-kept::before { box-shadow: none !important; }
 html[data-theme="neon"] .ledger-entry.is-missed::before { box-shadow: none !important; }
 html[data-theme="neon"] .ledger-when a { color: var(--blue) !important; }
 html[data-theme="neon"] :is(.is-kept, .is-missed) .ledger-stamp { box-shadow: none !important; }
 
-/* ---- 12. Problems: one look for every cause; the bad segment is red-coral ------------------- */
 .finding-card, .finding-card[class*="cause-"] { --cause: var(--bad) !important; border-top: 1px solid var(--border) !important; }
 .cause-tag { color: var(--ink-2) !important; background: var(--surface-3) !important; font-weight: 600 !important; }
 html[data-theme="neon"] :is(.finding-card:hover, .fix-card:hover, .risk-cards .ticket:hover) {
@@ -267,7 +230,6 @@ html[data-theme="neon"] :is(.finding-card:hover, .fix-card:hover, .risk-cards .t
 html[data-theme="neon"] .cbar-fill.is-bad { box-shadow: none !important; }
 html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-number .ev) { text-shadow: none !important; }
 
-/* ---- 13. Story cards, worlds, real desk, Shadow mode: the same palette ------------------------- */
 .tw-chip[aria-pressed="true"], .jr-chip[aria-pressed="true"] { background: var(--bad) !important; border-color: var(--bad) !important; }
 .tw-chip.is-ours[aria-pressed="true"] { background: var(--blue) !important; border-color: var(--blue) !important; color: #04141a !important; }
 .tw-big b { color: var(--bad) !important; text-shadow: none !important; }
@@ -291,7 +253,6 @@ html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-
 .sh-wall i.is-caught, .sh-legend .d-caught { background: var(--bad) !important; box-shadow: 0 0 0 2px var(--blue) !important; transform: none; }
 .sh-final p { border-radius: 8px !important; }
 
-/* ---- 14. The assistant: a solid cyan button; the mascot keeps moving --------------------------- */
 .bot-launch, html[data-theme="light"] .bot-launch {
   background: var(--blue) !important;
   background-image: none !important;
@@ -320,7 +281,6 @@ html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-
 .bt-tag.is-cat { background: var(--bad-soft) !important; color: var(--bad) !important; }
 .bt-tag.is-team { background: var(--blue-soft) !important; color: var(--blue) !important; }
 
-/* ---- 15. Splash: deep black, no violet halo; the particle word stays ---------------------- */
 .splash { background: #050506 !important; }
 .sp-mark, .sp-logo { filter: none !important; }
 .splash .sp-by, .sp-by { background: none !important; box-shadow: none !important; color: #8d8d94 !important; padding: 0 !important; }
@@ -328,13 +288,11 @@ html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-
 .sp-live { background: #ff5a5f !important; }
 .sp-pill { border-radius: 8px !important; border-color: rgba(255, 255, 255, 0.1) !important; }
 
-/* ---- 16. Results: the headline tile leads, the other two follow (not three equal cards) ------ */
 @media (min-width: 1000px) {
   .proof-strip { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) !important; }
 }
 .chr svg, .mascot svg, .biryani-plate { filter: none !important; }
 
-/* ---- 17. Claude 2's boxes (web/boxes.css, 25 Oct): keep the boxes, in this palette -------------- */
 html[data-theme="neon"] :is(.page-head, .lv-scene, .lv-whatif, .lv-custom, .lv-key, .lead, .card-foot) {
   background: var(--surface) !important;
   backdrop-filter: none !important;

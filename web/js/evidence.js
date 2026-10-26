@@ -1,23 +1,8 @@
-// evidence.js — click any number to see where it came from.
-//
-// Why: our second moat is trust. Every number on screen is drawn by ev() (or evText() for
-// text that contains numbers). ev() reads the value from the JSON itself, so a call site can
-// never pass in a made-up number, and it stamps the JSON path on the element. One click
-// listener opens a popover with the path, the value, its spread or CI, and a definition.
-//
-// Example:
-//   ev("sim.policies.opslens.kpis.turnaround.breach_pct.mean", "pct")
-//   -> <button class="ev" data-path="sim.policies.opslens.kpis.turnaround.breach_pct.mean"
-//              data-unit="pct">4.1%</button>
-//   Clicking it shows "± 0.3 pts" and "OpsLens − Baseline A: −8.9 pts (95% CI −9.7 to −8.1)".
-
 import { lookup, state, policyLabel, liveSource, LIVE_SOURCES } from "./data.js";
 import {
   fmt, fmtSigned, spreadUnit, escapeHtml, definitionFor, kpiInfo, prettyKey, tidyDash,
 } from "./format.js";
 
-// HTML for one clickable number.
-// options.signed shows "+0.8" / "−8.9"; options.bare drops the unit (the header names it).
 export function ev(path, unit = "num", options = {}) {
   const value = lookup(path);
   if (value === undefined || value === null) {
@@ -29,11 +14,6 @@ export function ev(path, unit = "num", options = {}) {
   return `<button type="button" class="ev" data-path="${escapeHtml(path)}" data-unit="${unit}">${escapeHtml(text)}</button>`;
 }
 
-// HTML for a text value from the JSON (titles, ticket texts, times). Also clickable, because
-// many of these texts contain numbers ("wait 302 min vs 47 min").
-// `display` replaces the shown text (e.g. "Yes" for true); the popover still shows the raw value.
-// A <span role="button"> (not a <button>) so long texts wrap inside a sentence like normal
-// text; tabindex + the Enter key handler in initEvidence keep it usable from the keyboard.
 export function evText(path, display) {
   const value = lookup(path);
   if (value === undefined || value === null || value === "") {
@@ -58,7 +38,6 @@ export function closeEvidence() {
   popover().hidden = true;
 }
 
-// One listener for the whole page (event delegation), so tabs never wire up their own.
 export function initEvidence() {
   document.addEventListener("click", (event) => {
     const target = event.target.closest("[data-path]");
@@ -66,34 +45,27 @@ export function initEvidence() {
       openEvidence(target.dataset.path, target.dataset.unit, target.getBoundingClientRect());
       return;
     }
-    // Clicks on charts are handled by the chart itself (charts.js); clicks inside the
-    // popover keep it open; anything else closes it.
     if (event.target.closest("canvas") || event.target.closest("#evidence-popover")) {
       if (event.target.closest(".pop-close")) closeEvidence();
       return;
     }
     closeEvidence();
   });
-  // Esc closes the popover first. stopImmediatePropagation keeps story mode (which also
-  // listens for Esc, and is set up after this) from closing on the same key press.
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && isEvidenceOpen()) {
       closeEvidence();
       event.stopImmediatePropagation();
     }
-    // Text values are spans, so Enter does not "click" them by itself.
     if (event.key === "Enter" && event.target.matches("span[data-path]")) {
       const target = event.target;
       openEvidence(target.dataset.path, target.dataset.unit, target.getBoundingClientRect());
     }
   });
-  // The popover is placed once; close it instead of letting it drift away from its number.
   document.getElementById("tab-panels").addEventListener("scroll", closeEvidence);
   window.addEventListener("resize", closeEvidence);
   document.addEventListener("tab-shown", closeEvidence);
 }
 
-// Open the popover for a chart point clicked at screen position (x, y).
 export function openEvidenceAt(path, unit, x, y) {
   openEvidence(path, unit, { left: x, right: x, top: y, bottom: y });
 }
@@ -114,7 +86,6 @@ function evidenceHtml(path, unit, value) {
   } else {
     valueText = String(value);
   }
-  // The unrounded value, cut to 6 significant digits when it is very long (2.3791…).
   let rawText = String(value);
   if (typeof value === "number" && rawText.length > 10) rawText = value.toPrecision(6) + "…";
   const raw = typeof value === "number" && String(value) !== valueText
@@ -134,8 +105,6 @@ function evidenceHtml(path, unit, value) {
     <div class="pop-source">Source: ${escapeHtml(sourceFor(path))}${fixtureTag}</div>`;
 }
 
-// A readable name for a path ("SLA breach rate · OpsLens"), used as the popover title
-// and wherever a list of paths is shown (the brief's numbers).
 export function labelFor(path) {
   return titleFor(path);
 }
@@ -171,8 +140,6 @@ function sourceFor(path) {
   return state.source;
 }
 
-// Extra lines under the value: spread across seeds, paired CIs, forecast interval, action effect.
-// Every value here is read from the JSON too.
 function spreadLines(path, unit) {
   const lines = [];
   const r = state.results;
@@ -207,7 +174,6 @@ function spreadLines(path, unit) {
     lines.push(`80% interval ${fmt(p.lo80, "hours")} to ${fmt(p.hi80, "hours")}; capacity ${fmt(p.capacity_hours, "hours")}`);
   }
 
-  // Stress rows: OpsLens − Baseline B with its 95% CI, from the same row.
   const stress = path.match(/^stress\[(\d+)\]\./);
   if (stress) {
     const row = r.stress[Number(stress[1])];
@@ -217,7 +183,6 @@ function spreadLines(path, unit) {
     }
   }
 
-  // Ablation rows with CIs (details.ablations): the effect of removing one part.
   const ablation = path.match(/^details\.ablations\[(\d+)\]\./);
   if (ablation && r.details) {
     const row = r.details.ablations[Number(ablation[1])];
@@ -243,8 +208,6 @@ function ciLine(c, unit) {
     + `${fmtSigned(c.ci_high, unit)}, n = ${c.n} seeds)`;
 }
 
-// Put the popover under its number, or above it when there is more room there.
-// It never goes under the FIXTURE banner (the banner must stay visible) or off screen.
 function place(el, rect) {
   const margin = 12;
   const width = el.offsetWidth;

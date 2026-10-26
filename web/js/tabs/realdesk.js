@@ -1,22 +1,3 @@
-// tabs/realdesk.js — the real public service desk (UCI ServiceNow log): the same five questions.
-//
-// Why (Plan v3, 19 Oct): deliverable 1 asks for "a working prototype using a provided or publicly
-// available dataset". This is that prototype on real data nobody generated: a company's IT service
-// desk, 24,918 incidents. Every number is read from results.realdesk (eval/run_realdesk.py),
-// learned on the first months and scored on later ones. We also show what OpsLens does NOT do
-// better on this data (the forecast, picking the team), so the screen stays honest.
-//
-// Plan v4 (issue #16): each screen now leads with an outcome, not a score. Overview: if the desk
-// fast-tracked a fifth of each day's new incidents, how many missed deadlines would each picker
-// save (W3, with its assumption always visible; the rule did not pass, so the screen says who
-// saved most, never that OpsLens picks best). Problems: "still true on later months" (W4a).
-// Risks: week-ahead overload alerts vs a calendar rule (W7). Proof: the fast-track table, the two
-// second looks, the blind plants (weak, shown as weak), the three impact headings (W9) and the
-// failed twin (not shown). Shapes: docs/explain/realdesk.md.
-//
-// Example: the riskiest 20% of incidents by OpsLens's score hold about half of all SLA misses,
-// against about a quarter for the desk's own priority field.
-
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, stat, fold } from "../ui.js";
@@ -36,8 +17,6 @@ function sourceLine() {
     ${evText(`${R}.summary.learning_period[0]`)} to ${evText(`${R}.summary.learning_period[1]`)};
     every comparison is scored on later incidents (${ev(`${R}.summary.test_incidents`, "int")}).`;
 }
-
-// ---- Overview: what is happening? -------------------------------------------------------------
 
 export const overview = { render(section) {
   const d = state.results[R];
@@ -66,8 +45,6 @@ export const overview = { render(section) {
       <button type="button" class="btn" data-goto-tab="risks">See the incidents at risk</button>` })}`;
 } };
 
-// ---- Problems: why does it go wrong? ----------------------------------------------------------
-
 export const problems = { render(section) {
   const d = state.results[R];
   if (!d) return missingData(section);
@@ -91,8 +68,6 @@ function problemCard(c, i) {
       <div class="table-wrap"><table><thead><tr><th>Example</th><th>Category</th><th>Team</th><th>Priority</th><th>SLA</th><th class="num">Resolved in</th></tr></thead>
         <tbody>${rows}</tbody></table></div>` });
 }
-
-// ---- Risks: what will go wrong next? ----------------------------------------------------------
 
 export const risks = { render(section) {
   const d = state.results[R];
@@ -125,10 +100,6 @@ export const risks = { render(section) {
         : `<p class="muted">No team is forecast above its usual closures next week.</p>` })}`;
 } };
 
-// ---- Actions: what should we do? -------------------------------------------------------------
-
-// The real desk's recommendations as plan items (web/js/plan.js). Also registered at start-up
-// (app.js), so Your plan can describe them before the Actions screen has been opened.
 export function realPlanItems() {
   const d = state.results[R];
   if (!d) return [];
@@ -162,8 +133,6 @@ export const actions = { render(section) {
       often than the real desk when it is very sure, and even then the gain is tiny (see Proof).</div>`;
 } };
 
-// ---- Proof: does it beat what the desk did? --------------------------------------------------
-
 export const proof = { render(section) {
   const d = state.results[R];
   if (!d) return missingData(section);
@@ -192,11 +161,8 @@ export const proof = { render(section) {
       use (${evText(`${R}.twin.status`)}), so no twin number appears anywhere. See Rules we wrote first.</div>` : ""}`;
 } };
 
-// ---- Plan v4 pieces (issue #16) ------------------------------------------------------------------
-
 const FT = `${R}.fasttrack`;
 
-// "a tie" when the 95% interval holds zero, else who is ahead (read from the numbers, never typed).
 function tieWords(path) {
   const lo = lookup(path + ".ci_low"), hi = lookup(path + ".ci_high");
   if (typeof lo !== "number" || typeof hi !== "number") return "";
@@ -210,7 +176,6 @@ function pickerLabel(d, id) {
   return p ? p.label : id;
 }
 
-// Overview (real): the outcome first. Bars are a picture of the saved counts next to them.
 function fastTrackLead(d) {
   const ft = d.fasttrack;
   const at20 = ft.results["20"];
@@ -235,7 +200,6 @@ function fastTrackLead(d) {
         <a class="btn" href="#proof/rd-proof">The full table</a></div>` });
 }
 
-// Problems (real): is this finding still true on the later months?
 function replicationLine(c) {
   const rep = lookup(`${R}.replication.cards`);
   if (!rep) return "";
@@ -248,7 +212,6 @@ function replicationLine(c) {
     (gap ${ev(b + ".test.gap", "pts", { signed: true })} ${ciSpan(b + ".test", "pts")}).</p>`;
 }
 
-// Risks (real): a week ahead, which teams will get more incidents than they usually close?
 function alertsCard(d) {
   const a = `${R}.alerts`;
   const order = ["learned", "same_day_last_week", "average", "every_weekday"].filter((k) => d.alerts.scores[k]);
@@ -267,7 +230,6 @@ function alertsCard(d) {
       <tbody>${rows}</tbody></table></div>` });
 }
 
-// Proof (real): the whole fast-track table, the rule, one real example, and the second look.
 function fastTrackProof(d) {
   const ft = d.fasttrack;
   const order = ft.pickers.map((x) => x.id);
@@ -296,7 +258,6 @@ function fastTrackProof(d) {
       ${second}` });
 }
 
-// Proof (real): the problem statement's three headings, honestly (no productivity claim, no money).
 function impactCard(d) {
   const im = `${R}.impact`;
   return card({ id: "rd-impact", title: "Turnaround, productivity, service quality",
@@ -311,7 +272,6 @@ function impactCard(d) {
     <p class="small muted">Money: ${evText(`${im}.money.why`)}</p>` });
 }
 
-// Proof (real): problems planted at random in the real later weeks. Weak, and shown as weak.
 function plantsCard(d) {
   const bp = `${R}.blind_plants`;
   const types = Object.keys(d.blind_plants.by_type).map((t) => `<li><b>${escapeHtml(t)}</b>

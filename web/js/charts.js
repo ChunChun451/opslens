@@ -1,27 +1,10 @@
-// charts.js — shared chart settings, colours and two small drawing plugins.
-//
-// Why: every chart should look the same and be readable on a projector. Colours are the
-// first three slots of a palette checked for colour-blind safety (blue, orange, aqua), and
-// each policy also gets its own line style, so colour is never the only clue.
-// Every chart point is clickable: makeChart() maps the clicked point to its JSON path and
-// opens the same evidence popover as the numbers in the text.
-//
-// Example:
-//   makeChart(canvas, config, (datasetIndex, index) =>
-//     ({ path: `sim.replay.series.opslens.waiting[${index}]`, unit: "int" }));
-
 import { openEvidenceAt, closeEvidence } from "./evidence.js";
 
-// Ink colours for text, axes and grid (text never wears a series colour).
-// Chart ink (error bars, reference lines): light on the dark theme, or it would vanish.
 export const INK = document.documentElement.dataset.theme === "neon" ? "#dfe3f7" : "#0f172a";
 export const INK_SOFT = "#5b6b80";
 export const GRID = "#edf1f5";
-export const ALERT = "#c22b33"; // used only for the "bottleneck" label on the forecast
+export const ALERT = "#c22b33";
 
-// One colour + line style per policy. The colour follows the policy everywhere.
-// Design v2: OpsLens is the only vivid colour; baselines step back but stay distinguishable
-// (and keep their dash patterns, so colour is never the only cue).
 export const POLICY_STYLE = {
   opslens: { color: "#3d5afe", dash: [] },
   baseline_a: { color: "#f08a4b", dash: [10, 6] },
@@ -35,13 +18,8 @@ export function policyStyle(key) {
   return POLICY_STYLE[key] || OTHER_STYLE;
 }
 
-// Categorical slots, in fixed order, for charts that are not about policies.
 export const SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"];
 
-// Calm defaults that match the cards: light grid, no axis borders, muted ticks, round
-// legend markers. Chart is the global from vendor/chart.umd.js.
-// Neon theme (web/neon.css): light ink on dark glass, neon policy colours. Read once at start;
-// the theme switch reloads the page, so every chart is drawn in the right colours.
 const NEON = document.documentElement.dataset.theme === "neon";
 if (NEON) {
   Object.assign(POLICY_STYLE.opslens, { color: "#22d3ee" });
@@ -52,7 +30,7 @@ if (NEON) {
 }
 
 export function setChartDefaults() {
-  Chart.defaults.font.family = '"Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif'; // Inter: web/theme.css
+  Chart.defaults.font.family = '"Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif';
   Chart.defaults.font.size = 14;
   Chart.defaults.color = NEON ? "#8d8d94" : INK_SOFT;
   Chart.defaults.borderColor = NEON ? "#232327" : GRID;
@@ -76,8 +54,6 @@ export function setChartDefaults() {
   Chart.defaults.plugins.tooltip.usePointStyle = true;
 }
 
-// Create a chart (replacing any old one on the same canvas) and make its points clickable.
-// `evidenceFor(datasetIndex, index)` returns { path, unit } for the clicked point, or null.
 export function makeChart(canvas, config, evidenceFor) {
   const old = Chart.getChart(canvas);
   if (old) {
@@ -101,10 +77,6 @@ export function makeChart(canvas, config, evidenceFor) {
   return new Chart(canvas, config);
 }
 
-// Plugin: whiskers on bar charts. A dataset opts in with either
-//   errors: [std, ...]          -> whisker from mean − std to mean + std
-//   ranges: [[low, high], ...]  -> whisker from low to high (a 95% CI)
-// Works for vertical bars and for horizontal bars (indexAxis: "y").
 export const errorBarsPlugin = {
   id: "errorBars",
   afterDatasetsDraw(chart) {
@@ -154,10 +126,6 @@ export const errorBarsPlugin = {
   },
 };
 
-// Plugin maker: shade ranges of x positions behind the data (bottleneck hours on the forecast).
-// shadeRanges([{ from: 3, to: 5, label: "over capacity", color: "rgba(...)" }])
-// The ranges are passed in directly, not through Chart.js options: Chart.js runs its options
-// through a resolver that fills in defaults for known names, which would change our values.
 export function shadeRanges(ranges) {
   return {
     id: "shadeRanges",
@@ -175,7 +143,7 @@ export function shadeRanges(ranges) {
         if (range.label) {
           ctx.fillStyle = ALERT;
           ctx.font = '600 13px "Segoe UI", system-ui, sans-serif';
-          ctx.fillText(range.label, left + 4, chartArea.bottom - 8); // bottom: clear of the data points
+          ctx.fillText(range.label, left + 4, chartArea.bottom - 8);
         }
       });
       ctx.restore();

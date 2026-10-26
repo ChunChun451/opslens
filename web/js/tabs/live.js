@@ -1,30 +1,15 @@
-// tabs/live.js — "Live now": today's support day, simulated on this laptop, at the real clock.
-//
-// Why (24 Oct, the owner asked for "everything running live", then for less clutter): this is the
-// first screen a judge sees, so it is built as one command centre that fits a 1366x768 projector:
-// one big result (customers helped in time today), the two floors side by side, one-click "What
-// if…" scenarios, and two short live feeds. Details open on demand instead of filling the page.
-// Data: GET /api/live answers "the floor at this minute" from a day the engine simulated once on
-// this laptop (industry standard and OpsLens, same customers, same luck). The customers are the
-// practice company's tickets for the test day with today's weekday (a day OpsLens never studied).
-// Every number is a live answer, clickable like the others ("live.…").
-//
-// Example (Saturday 14:39): "3 more customers helped in time today" — industry standard 12 missed
-// so far, OpsLens 9; "Team C loses 2 agents" re-simulates today in about half a minute.
-
 import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey, tidyDash } from "../format.js";
 import { mascotHtml, customerHtml, biryaniHtml, cheer, setMood } from "../mascot.js";
 
-const BUSY_WAITING = 60; // customers waiting on the OpsLens floor above which Lenny sweats (a look, not a result)
-const POLL_MS = 5000; // ask the engine for the floor every 5 s; the clock ticks every second
-const WAIT_MS = 2500; // while a day is being simulated
+const BUSY_WAITING = 60;
+const POLL_MS = 5000;
+const WAIT_MS = 2500;
 const LANGUAGE = { hi: "Hindi", en: "English", other: "Regional" };
 const TEAMS = { A: "Live orders", B: "Payments & refunds", C: "Order accuracy", D: "Account & app" };
 const NORMAL = { agents: { A: 0, B: 0, C: 0, D: 0 }, volume: 100 };
-// One-click scenarios (a layout choice; the engine computes their effect live).
 const PRESETS = [
   { id: "normal", label: "Normal day", s: NORMAL },
   { id: "c-2", label: "Team C loses 2 agents", s: { agents: { A: 0, B: 0, C: -2, D: 0 }, volume: 100 } },
@@ -35,19 +20,19 @@ const PRESETS = [
 let seed = 1;
 let tick = null;
 let poll = null;
-let speed = 1; // 1 = real time; fast = 3 simulated minutes per second, from 17:00
+let speed = 1;
 let fastMinute = null;
 let listening = false;
 let applied = clone(NORMAL);
 let draft = clone(NORMAL);
 let waitingSince = null;
 let seenDecisions = new Set();
-let lastGap = null; // the live gap last drawn (for the mascot's cheer)
-const JOKE = "Dosa ke jagah biryani de diya!"; // the owner's line; the others are real masked tickets
+let lastGap = null;
+const JOKE = "Dosa ke jagah biryani de diya!";
 let lines = [JOKE];
 let lineIndex = 0;
 let talk = null;
-let lastRun = ""; // decisions already shown, so new ones can light up
+let lastRun = "";
 
 export function render(section) {
   section.innerHTML = `
@@ -135,7 +120,6 @@ export function render(section) {
   }));
   section.querySelector("#lv-volume").addEventListener("input", (e) => { draft.volume = Number(e.target.value); showDraft(); });
   section.querySelector("#lv-apply").addEventListener("click", () => { applied = clone(draft); showDraft(); refresh(); });
-  // The danger cards open to show every reason.
   section.querySelector("#lv-danger").addEventListener("click", (e) => {
     const card = e.target.closest(".lv-card");
     if (card && !e.target.closest(".ev")) card.classList.toggle("open");
@@ -160,7 +144,6 @@ function same(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-// Steppers show the draft; the preset chip that matches what is running is lit.
 function showDraft() {
   Object.keys(TEAMS).forEach((team) => {
     const out = document.getElementById(`lv-a-${team}`);
@@ -223,7 +206,7 @@ function toggleSpeed() {
     fastMinute = null;
     button.textContent = "▶ Play the evening";
   } else {
-    speed = 180; // one real second = three simulated minutes: 17:00-24:00 in about 2.5 minutes
+    speed = 180;
     fastMinute = 17 * 60;
     button.textContent = "■ Back to real time";
   }
@@ -256,7 +239,7 @@ function showProgress() {
 
 async function refresh() {
   clearTimeout(poll);
-  const weekday = (new Date().getDay() + 6) % 7; // JavaScript: 0 = Sunday; the engine: 0 = Monday
+  const weekday = (new Date().getDay() + 6) % 7;
   const status = document.getElementById("lv-status");
   if (!status) return;
   if (state.staticServer) {
@@ -302,12 +285,10 @@ function draw(d) {
   document.getElementById("lv-bar-theirs").style.width = `${(100 * theirs.missed) / top}%`;
   document.getElementById("lv-bar-ours").style.width = `${(100 * ours.missed) / top}%`;
   const diff = theirs.missed - ours.missed;
-  // The mascot cheers when the gap grows (same scenario and luck; a new run starts fresh).
   const runKey = query();
   if (lastGap !== null && lastRun === runKey && diff > lastGap) cheer("lv-mascot", `+${diff - lastGap} helped!`);
   lastGap = diff;
   lastRun = runKey;
-  // Lenny's mood follows the floor: tired (sweating, wiping) when many customers wait.
   const waiting = ours.waiting;
   setMood("lv-mascot", waiting >= BUSY_WAITING ? "tired" : "idle");
   const status = document.getElementById("lv-scene-status");
@@ -325,7 +306,6 @@ function draw(d) {
   drawDecisions(d);
 }
 
-// "By midnight": the end of today's simulated day for the scenario that is running.
 let midnightKey = "";
 async function loadMidnight() {
   const key = query();
@@ -346,7 +326,6 @@ async function loadMidnight() {
   }
 }
 
-// Three cards: risk, who, one reason; click a card to see every reason.
 function drawDanger(d) {
   const box = document.getElementById("lv-danger");
   const open = new Set([...box.querySelectorAll(".lv-card.open")].map((c) => c.dataset.id));
@@ -368,7 +347,6 @@ function drawDanger(d) {
         Press “Play the evening” for the dinner rush.</p></div>`;
 }
 
-// One line per decision with a short tag; decisions not seen before light up.
 function drawDecisions(d) {
   const list = document.getElementById("lv-decisions");
   list.innerHTML = d.decisions.length ? d.decisions.slice(0, 5).map((x) => {
@@ -384,7 +362,6 @@ function drawDecisions(d) {
   if (seenDecisions.size > 400) seenDecisions = new Set([...seenDecisions].slice(-200));
 }
 
-// A short tag from the engine's reason line (the full line is the tooltip).
 function tagOf(reason) {
   const risk = reason.match(/breach risk ([\d.]+) -> ([\d.]+)/);
   if (/cross-skill/.test(reason)) return ["rescue", "cross-team rescue"];
@@ -399,7 +376,7 @@ function bump(id, html) {
   const before = el.textContent;
   el.innerHTML = html;
   if (before === "…") {
-    countUp(el, "0", el.textContent); // the first value rolls up from 0
+    countUp(el, "0", el.textContent);
     return;
   }
   if (before !== el.textContent) {
@@ -410,7 +387,6 @@ function bump(id, html) {
   }
 }
 
-// The customer's next line, with a little pop.
 function nextLine() {
   const say = document.getElementById("lv-say");
   if (!say || !lines.length) return;
@@ -422,14 +398,12 @@ function nextLine() {
   say.classList.add("pop");
 }
 
-// Roll a whole number from its old value to its new one (~0.7 s, easing out). The final text is
-// the formatted value, so the screen always ends on the exact number.
 function countUp(el, beforeText, afterText) {
   const from = parseInt(beforeText.replace(/[^\d-]/g, ""), 10);
   const to = parseInt(afterText.replace(/[^\d-]/g, ""), 10);
   if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) return;
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const holder = el.querySelector(".ev") || el; // the number's own text, inside its evidence button
+  const holder = el.querySelector(".ev") || el;
   const finalText = holder.textContent;
   const started = performance.now();
   const step = (now) => {

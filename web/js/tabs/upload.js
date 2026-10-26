@@ -1,31 +1,9 @@
-// tabs/upload.js — the upload card: drop a CSV, read what OpsLens will do with it, watch it work.
-//
-// Why (26 Oct, the owner: "no friction, nothing weird"): a first-time judge must get from a file to
-// results in two clicks without reading anything. One card, three moments:
-//   1. DROP: one drop zone ("Drop a CSV of tickets, incidents or orders"), Choose file, and
-//      "or try the UCI example". Nothing else.
-//   2. CONFIRM: OpsLens guesses everything (POST /api/anyfile/peek: which column starts and ends an
-//      item, what a miss is, the groups; when the file has no on-time column, a promise from its
-//      median, rounded up) and says each decision as one plain sentence, with a 3-row preview where
-//      those columns are lit. Each bold value is a small dropdown; every other setting waits behind
-//      "Adjust". A question appears only when OpsLens truly cannot guess (the start, or the end),
-//      with the likely columns as buttons. Any change is checked at once (POST /api/anyfile/check,
-//      nothing learned yet), so the sentences always say what will happen.
-//   3. WATCH: four plain steps with ticks, a bar and the seconds (GET /api/anyfile/job/<id>); then
-//      every Real data screen switches to the file (web/js/source.js).
-// Errors are one sentence and one fix. Every number on the card is read from the server's answer
-// (state.uploadpeek) through ev(), so it is clickable like every other number.
-//
-// Example (the Kaggle delivery export): "Each row is one item. It starts at Order_Date +
-// Time_Orderd. It ends Time_taken (min) minutes later. A miss = taking longer than [30] minutes."
-
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { backendMissing, postJson } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 const POLL_MS = 500;
-// The engine's steps (opslens/anyfile.py, analyse) in four plain phases for the person watching.
 const PHASES = [
   ["Reading your file", ["Reading the file and the column mapping", "Checking the file can be learned from"]],
   ["Learning from the first 70%", ["Building what was known when each item opened", "Learning on the first 70% of items"]],
@@ -33,7 +11,6 @@ const PHASES = [
   ["Building your screens", ["Finding recurring problems, then checking them on later items", "Forecasting each team's workload a week ahead"]],
 ];
 const ENGINE_STEPS = PHASES.reduce((n, [, steps]) => n + steps.length, 0);
-// Every part a column can play, in plain words, for the Adjust panel: [part, label, kind of column].
 const PARTS = [
   ["created_at", "Starts (a date, or a date and time)", "time"],
   ["created_time", "Start time, if it is in its own column", "time"],
@@ -47,21 +24,20 @@ const PARTS = [
   ["breached", "Says if it missed (yes or no)", "any"],
   ["due_at", "Due by (a date and time)", "time"],
 ];
-// The word above a lit column in the preview.
 const PART_WORD = { created_at: "starts", created_time: "starts", resolved_at: "ends", duration_min: "ends", sla_met: "miss",
                     breached: "miss", due_at: "due", team: "group", category: "group", priority: "priority", id: "id" };
 const MISS_PARTS = ["sla_met", "breached", "due_at"];
 
-let box = null; // the element the card draws into (#upload-card, inside the source bar)
-let hooks = {}; // {done(result, meta), refused(name, sentence), closed()} from source.js
-let file = ""; // the file's name
-let peeked = null; // the server's first read: token, columns, suggested parts, preview, questions
-let parts = {}; // which column plays which part (and `features`, the columns it learns from)
-let target = null; // the promised minutes in the box, when a miss is a promised time
-let typed = false; // true once the person typed a promise: then it is theirs, not OpsLens's guess
-let asking = []; // questions still to answer
-let adjusting = false; // the Adjust panel is open
-let shown = false; // the card is open: a closed card is not drawn again by a late answer
+let box = null;
+let hooks = {};
+let file = "";
+let peeked = null;
+let parts = {};
+let target = null;
+let typed = false;
+let asking = [];
+let adjusting = false;
+let shown = false;
 
 export function openUpload(container, callbacks) {
   box = container;
@@ -75,7 +51,6 @@ export function openUpload(container, callbacks) {
   drawDrop();
 }
 
-// Closing hides the card; a file being analysed still finishes and arrives (source.js).
 export function closeUpload() {
   shown = false;
   if (box) box.innerHTML = "";
@@ -112,8 +87,6 @@ function onChange(event) {
     recheck();
   }
 }
-
-// ---- 1. DROP -------------------------------------------------------------------------------------
 
 function closeButton() {
   return `<button type="button" class="up-close" data-up-close aria-label="Close the upload card">×</button>`;
@@ -188,8 +161,6 @@ async function send(form, name) {
   else drawConfirm();
 }
 
-// ---- a question, only when OpsLens cannot guess ------------------------------------------------------
-
 function usedColumns() {
   return new Set(Object.entries(parts).filter(([key, value]) => key !== "features" && value).map(([, value]) => value));
 }
@@ -223,9 +194,6 @@ function answer(role, column) {
   else recheck();
 }
 
-// ---- 2. CONFIRM ----------------------------------------------------------------------------------
-
-// Ask the server what will happen with the parts as they are now (nothing is learned yet).
 async function recheck() {
   try {
     const plan = await postJson("/api/anyfile/check", { token: peeked.token, mapping: cleanParts(), target_min: typed ? target : null });
@@ -251,11 +219,10 @@ function setPart(part, column) {
   if (column && part === "resolved_at") delete parts.duration_min;
   if (column && part === "duration_min") delete parts.resolved_at;
   if (column && MISS_PARTS.includes(part)) MISS_PARTS.filter((p) => p !== part).forEach((p) => delete parts[p]);
-  parts.features = (parts.features || []).filter((f) => f !== column); // a column with a part is not also learned from
+  parts.features = (parts.features || []).filter((f) => f !== column);
   recheck();
 }
 
-// The miss dropdown: the same kind of column, another one, or "none" (then a promised time).
 function setMiss(value) {
   const [part, column] = value.split("|");
   MISS_PARTS.forEach((p) => delete parts[p]);
@@ -288,7 +255,6 @@ function toggleAdjust(toLearn) {
   if (toLearn) box.querySelector("#up-learn").scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
-// One plain sentence per decision OpsLens made. Numbers are the server's (uploadpeek.plan.*).
 function sentences(plan) {
   const P = "uploadpeek.plan";
   const rows = plan.rows !== plan.items ? ` (${ev(`${P}.items`, "int")} of your ${ev(`${P}.rows`, "int")} rows can be read)` : "";
@@ -301,14 +267,12 @@ function sentences(plan) {
       <li>${learnSentence(plan)}</li>`;
 }
 
-// Columns free for `part`: of the right kind and not playing another part, plus its own current one.
 function freeColumns(part, kinds) {
   const current = parts[part] || "";
   const taken = new Set(Object.entries(parts).filter(([key, value]) => key !== "features" && key !== part && value).map(([, value]) => value));
   return peeked.columns.filter((c) => c.name === current || (kinds.includes(c.kind) && !taken.has(c.name)));
 }
 
-// A small dropdown that shows the chosen column in bold; closed until clicked.
 function pick(part, kinds, optional = false) {
   const current = parts[part] || "";
   const columns = freeColumns(part, kinds);
@@ -324,7 +288,6 @@ function partLabel(part) {
 
 function endSentence() {
   const current = parts.duration_min ? `duration_min|${parts.duration_min}` : `resolved_at|${parts.resolved_at || ""}`;
-  // The current end column is always offered: "(min) 24" reads as minutes although it is text.
   const option = (part, c) => `<option value="${escapeHtml(`${part}|${c.name}`)}" ${`${part}|${c.name}` === current ? "selected" : ""}>${escapeHtml(c.name)}</option>`;
   const times = freeColumns("resolved_at", ["time"]).filter((c) => c.name !== parts.duration_min).map((c) => option("resolved_at", c));
   const minutes = freeColumns("duration_min", ["number"]).filter((c) => c.name !== parts.resolved_at).map((c) => option("duration_min", c));
@@ -368,7 +331,6 @@ function learnSentence(plan) {
     ${ev(`${P}.test_items`, "int")}, which it never sees while learning.`;
 }
 
-// The first rows of the file, with the columns OpsLens uses lit and named.
 function previewHtml() {
   const lit = {};
   Object.entries(parts).forEach(([part, column]) => { if (PART_WORD[part] && column && !lit[column]) lit[column] = PART_WORD[part]; });
@@ -380,7 +342,6 @@ function previewHtml() {
       <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 
-// Every part as a dropdown, and the columns it learns from as ticks.
 function adjustHtml() {
   const selects = PARTS.map(([part, label, kind]) => {
     const current = parts[part] || "";
@@ -399,8 +360,6 @@ function adjustHtml() {
       <div class="up-checks">${ticks || `<p class="small muted">No other column of your file can be learned from.</p>`}</div></div>`;
 }
 
-// ---- 3. WATCH ------------------------------------------------------------------------------------
-
 async function run() {
   const plan = state.uploadpeek.plan;
   const promise = plan.miss.rule === "promise";
@@ -415,7 +374,6 @@ async function run() {
   }
 }
 
-// Poll the job and redraw the steps until it finishes.
 async function follow(job) {
   for (;;) {
     const response = await fetch(`/api/anyfile/job/${encodeURIComponent(job)}`, { cache: "no-store" });
@@ -436,14 +394,11 @@ function drawWatch(seen, current, elapsed) {
     const mark = done ? "✓" : now ? `<span class="spinner" aria-hidden="true"></span>` : "";
     return `<li class="up-step ${done ? "is-done" : ""} ${now ? "is-now" : ""}"><span class="up-mark">${mark}</span>${escapeHtml(name)}</li>`;
   }).join("");
-  // The seconds are a clock (time waited so far), not a result.
   paint(`<section class="card up-card up-watch" role="status" aria-live="polite">${headHtml(false)}
       <ol class="up-steps">${rows}</ol>
       <div class="up-bar" aria-hidden="true"><i style="width: ${(share * 100).toFixed(0)}%"></i></div>
       <div class="small muted up-clock">${Number(elapsed || 0).toFixed(1)} s</div></section>`);
 }
-
-// ---- small pieces ----------------------------------------------------------------------------------
 
 function headHtml(withClose = true) {
   return `<header class="up-head"><span class="up-file">${escapeHtml(file)}</span>${withClose ? closeButton() : ""}</header>`;
@@ -453,13 +408,11 @@ function problemHtml(sentence) {
   return `<div class="up-problem" role="alert">${escapeHtml(sentence)}</div>`;
 }
 
-// The server's sentence without the transport words ("HTTP 400: ").
 function cleanError(message) {
   const text = String(message).replace(/^HTTP \d+:?\s*/, "");
   return text || "OpsLens could not analyse this file. Try another file.";
 }
 
-// Tell the source bar (one sentence, or "" to clear it).
 function refuse(sentence) {
   if (hooks.refused) hooks.refused(file, sentence);
 }

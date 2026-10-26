@@ -1,19 +1,5 @@
-// chase.js — the "industry wants OpsLens" scene for screens that are empty until you act.
-//
-// Why (24 Oct, the owner: "in empty pages, industry is happy to have OpsLens and chasing it, and
-// throwing the other industry standards in the dustbin"): an empty panel is the moment the
-// audience waits, so it gets a little story instead of a blank box. A happy manager throws the
-// old ways of working (the baselines' names: First come, first served; Urgent first; Industry
-// standard) into a dustbin, one after another, while three happy managers run after the OpsLens
-// badge with hearts popping. It carries no numbers and makes no claim; it is a cartoon. Pure
-// HTML/SVG + CSS (web/neon.css, "Chase").
-//
-// Example: What-if before the first run → the scene, then "No simulation yet" under it.
-
-// The old ways thrown away: the same names the baselines carry everywhere else on the dashboard.
 const OLD_WAYS = ["First come, first served", "Urgent first", "Industry standard"];
 
-// One cartoon manager (40×72). Legs and arms swing from the hip and shoulders when running.
 function person(cls, { suit, skin, hair, tie, bun = false }) {
   return `<svg class="ind ${cls}" viewBox="0 0 40 72" width="40" height="72" aria-hidden="true">
       <g class="leg leg-b"><path d="M22 44 l2 22" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/></g>

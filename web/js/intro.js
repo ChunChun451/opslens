@@ -1,21 +1,7 @@
-// intro.js — the cold open: one Saturday night, two support floors, about twelve seconds.
-//
-// Why: the first moment decides whether a judge leans in. Instead of a dashboard full of
-// numbers, the page opens on the thing a non-technical person understands at once: customers
-// waiting, and promises being missed. Every dot is a customer waiting in that 5-minute frame of
-// the recorded replay (sim.replay.floor: queues per team, "can still be helped in time" vs
-// "already late"); the two counters are the replay's own missed-promise series
-// (sim.replay.series.*.breached_cum). Nothing here is drawn from invented data.
-//
-// It plays once per browser session on the Overview, any key or click on "Skip" ends it, and
-// "Replay the night" in the side menu plays it again. Reduced-motion users get the end card only.
-//
-// Example (official results, 17 Oct): industry standard 21 missed promises, OpsLens 7.
-
 import { state } from "./data.js";
 import { escapeHtml } from "./format.js";
 
-const FRAME_MS = 95; // 73 five-minute frames ≈ 7 s for the whole evening
+const FRAME_MS = 95;
 const SEEN_KEY = "opslens.introSeen";
 const MAX_DOTS = 160;
 let timer = null;
@@ -30,12 +16,11 @@ export function initIntro() {
     button.addEventListener("click", () => play(true));
   }
   let seen = false;
-  try { seen = sessionStorage.getItem(SEEN_KEY) === "1"; } catch { /* private mode: play it */ }
+  try { seen = sessionStorage.getItem(SEEN_KEY) === "1"; } catch {   }
   const onOverview = !location.hash || location.hash === "#overview";
-  if (!seen && onOverview && state.world === "food") play(false); // the cold open is the food floor
+  if (!seen && onOverview && state.world === "food") play(false);
 }
 
-// The strongest baseline with a recorded floor, and its plain name.
 function rival() {
   const floor = state.results.sim.replay.floor;
   const key = ["baseline_d", "baseline_c", "baseline_b", "baseline_a"].find((k) => floor[k]);
@@ -50,8 +35,7 @@ function play(fromButton) {
   const lastIdx = replay.series.opslens.breached_cum.length - 1;
   const theirsEnd = replay.series[theirs].breached_cum[lastIdx];
   const oursEnd = replay.series.opslens.breached_cum[lastIdx];
-  // Only the weekday: this is a recorded test day, not today (Live now shows today's date).
-  const day = escapeHtml(replay.title.split(",")[0].split(" ")[0]); // "Saturday"
+  const day = escapeHtml(replay.title.split(",")[0].split(" ")[0]);
 
   overlay.innerHTML = `
     <button type="button" class="intro-skip" id="intro-skip">Skip</button>
@@ -120,14 +104,12 @@ function runNight(theirs) {
   }, FRAME_MS);
 }
 
-// A fixed field of dot positions (same layout every time, so dots appear and fade in place).
 function makeSky(id, seed) {
   const svg = document.getElementById(id);
   let x = seed;
   const rand = () => { x = (x * 9301 + 49297) % 233280; return x / 233280; };
   const dots = [];
   for (let k = 0; k < MAX_DOTS; k++) {
-    // Fill from the bottom up, like a queue piling up.
     const row = Math.floor(k / 16);
     const cx = 20 + (k % 16) * 24 + (rand() - 0.5) * 10;
     const cy = 240 - row * 22 + (rand() - 0.5) * 10;
@@ -142,7 +124,6 @@ function makeSky(id, seed) {
   return dots;
 }
 
-// Show one dot per waiting customer: late ones first (chilli), then those still in time.
 function paint(dots, queues) {
   let late = 0;
   let inTime = 0;
@@ -173,7 +154,7 @@ function close() {
   const overlay = document.getElementById("intro");
   overlay.classList.add("leaving");
   document.removeEventListener("keydown", keyClose);
-  try { sessionStorage.setItem(SEEN_KEY, "1"); } catch { /* fine */ }
+  try { sessionStorage.setItem(SEEN_KEY, "1"); } catch {   }
   setTimeout(() => {
     overlay.hidden = true;
     overlay.classList.remove("leaving");

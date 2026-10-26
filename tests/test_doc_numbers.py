@@ -1,44 +1,14 @@
-"""Every number we say out loud must exist in the CURRENT results (CLAUDE.md: "never show a
-number we did not compute").
-
-What it checks: each decimal number (2.20, 0.976, −3.31) and each number with a thousands
-separator (1,007) in the rehearsal documents must match a value in eval/results.json at the
-precision written, or the same value ×100 (fractions written as percents). Results stored per
-seed count as their mean. Limit: a wrong number can still match some other value by chance
-(measured: 45% of random one-decimal and 25% of three-decimal numbers do), so this is a
-safety net, not a proof.
-
-Why this design: Claude 2 found on 17 Oct that JUDGE_QA still quoted policy v1 (5.08%, P99 474
-min) after v3 shipped — numbers that still exist in results.json, but only in the history
-record of v1. So the history records of earlier versions are NOT accepted as a source. Whole
-small numbers (5 seeds, 14 days) are not checked: they are counts, not results.
-
-Example: "OpsLens 2.20% vs 6.82%" passes (sim.policies.*.kpis.turnaround.breach_pct rounds to
-2.20 and 6.82); "FIFO breaches 53.6%" failed, because the stress result 53.5456 rounds to 53.5.
-"""
-
 import json
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = ["docs/JUDGE_QA.md", "docs/DEMO_SCRIPT.md", "README.md", "docs/OWNER_CHEATSHEET.md", "docs/GUIDE.md",
-        "docs/BOT_QA.md"]  # BOT_QA: the bot's extra answers
-# Records of earlier policy versions: true numbers, but not ones to quote as current.
+DOCS = ["server/answers.md", "README.md"]
 HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2")
-# Bulk data nobody quotes (single seeds, replay frames, chart points). Leaving them out matters:
-# with all ~7,600 values, 199 of 200 random one-decimal numbers matched something by chance;
-# with these out, 55% of random one-decimal numbers are caught.
 BULK = re.compile(r"per_seed|replay|horizon|series|confusion|assignments|alerts_used|step_seconds|"
                   r"sensitivity|bottlenecks|clusters|examples|shown_days\[\d+\]\.incidents|"
-                  # 24 Oct: detail nobody quotes: each random world's generator settings, the per-world
-                  # diagnosis rows, the twin's calibration grid, day-by-day team rows. Measured limit after
-                  # this (24 Oct, ~5,800 distinct values): a made-up two-decimal number is caught 76% of the
-                  # time, a one-decimal one only 12% (almost every x.y exists somewhere). So quote two
-                  # decimals where it matters, and read new docs against results.json by eye as well.
                   r"worlds\[\d+\]\.params|diagnosis\.worlds|twin\.validation\.grid|\.teams\.|next_week")
-NAMES_A_VERSION = re.compile(r"\bv[12]\b")  # a line about v1 or v2 may quote their history records
-# Numbers that come from somewhere other than results.json, each with its source.
+NAMES_A_VERSION = re.compile(r"\bv[12]\b")
 OTHER_SOURCES = {
     "24,918": "size of the UCI incident log (data/SOURCES.md)",
     "10.97": "Erlang-C check, simulator average wait (tests/test_simulate.py)",
@@ -58,7 +28,7 @@ def result_values(with_history: bool = False) -> list[float]:
         if path.startswith(HISTORY) and not with_history:
             return
         if path.endswith("per_seed") and isinstance(node, dict):
-            add_means(node)  # results kept per seed are quoted as their mean over seeds
+            add_means(node)
         if BULK.search(path):
             return
         if isinstance(node, dict):

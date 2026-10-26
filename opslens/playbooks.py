@@ -1,23 +1,3 @@
-"""Fix-at-source playbooks: from "route this ticket faster" to "stop this ticket from existing".
-
-What it does: every evidence card (patterns.py) names a cause. This module turns each cause
-into an upstream action for a team OUTSIDE support (partner ops, product, training) plus a
-scenario spec, and `apply_scenario` changes the tickets or the roster the way that action
-would. eval/run_playbooks.py then replays the held-out test days with the change in place, so
-each playbook comes with a measured effect: tickets prevented, breaches avoided, agent-hours freed.
-
-Why this design: the review of 16 Oct was right that a support engine which only reshuffles
-tickets treats symptoms. But a playbook claim like "saves 65 tickets a day" is a promise unless
-it is measured — so every playbook is a counterfactual run in the same fair simulator, and every
-business guess (how many customers read a status banner?) is a labelled ASSUMPTION in
-config/playbooks.yaml with a low and high value.
-
-Example (real card): "Restaurant cluster 17: 24.5% of its tickets are wrong items vs 9.6%
-elsewhere" → partner playbook "kitchen order-check for cluster 17". On the test days the cluster
-has 370 tickets, 96 of them wrong items; at the normal 9.6% it would have about 66 fewer, so
-the scenario removes 66 wrong-item tickets of cluster 17 and replays the floor.
-"""
-
 from __future__ import annotations
 
 import dataclasses
@@ -41,22 +21,19 @@ class Playbook:
     card_id: str
     cause_type: str
     title: str
-    owner: str        # the team outside support that acts
-    action: str       # what to do, with the card's own numbers
-    scenario: dict    # what apply_scenario changes
+    owner: str
+    action: str
+    scenario: dict
     assumptions: list[str] = field(default_factory=list)
-    facts: dict = field(default_factory=dict)  # key -> (value text, meaning) for the LLM message
+    facts: dict = field(default_factory=dict)
 
 
 def nice(category: str) -> str:
     return category.replace("_", " ")
 
 
-# ---- From evidence cards to playbooks ---------------------------------------------------------
-
 def playbooks_from_cards(cards: list[dict], agents: list[Agent], team_skills: dict[str, list[str]],
                          cfg: dict) -> list[Playbook]:
-    """One playbook per card whose cause has an upstream fix (cards of type 'other' get none)."""
     out = []
     for card in cards:
         maker = MAKERS.get(card["cause_type"])
@@ -68,21 +45,18 @@ def playbooks_from_cards(cards: list[dict], agents: list[Agent], team_skills: di
 
 
 def card_facts(card: dict) -> dict[str, tuple[str, str]]:
-    """Facts the LLM may cite, as key -> (value WITH its unit, meaning). The unit travels with the
-    value, so a sentence like "phone tickets are transferred {{issue_value}}" reads correctly."""
-    issue = re.sub(r"\s+", " ", re.sub(r"[\d.]+\s*×?", "", card["title"])).strip()  # title without numbers
+    issue = re.sub(r"\s+", " ", re.sub(r"[\d.]+\s*×?", "", card["title"])).strip()
     metric = card["metric"]
-    # Any number inside the metric name goes into the value text: the LLM may not write digits.
     if "(min)" in metric:
-        unit, name = " min", re.sub(r"\s*\(.*\)", "", metric)        # mean wait (min)
+        unit, name = " min", re.sub(r"\s*\(.*\)", "", metric)
     elif metric.startswith("share"):
         unit, name = "%", metric
     elif "per 100" in metric:
-        unit, name = " " + metric, metric.split(" per 100")[0]       # "13.0 transfers per 100 tickets"
+        unit, name = " " + metric, metric.split(" per 100")[0]
     elif metric == "tickets per day":
-        unit, name = " tickets a day", "daily volume"                 # "254 tickets a day"
+        unit, name = " tickets a day", "daily volume"
     elif "rho" in metric:
-        unit, name = "× the agent-time on shift", "work"            # work ÷ agent-time (rho)
+        unit, name = "× the agent-time on shift", "work"
     else:
         unit, name = "", metric
 
@@ -101,7 +75,7 @@ def process_playbook(card: dict, agents, team_skills, cfg) -> Playbook | None:
     if card["segment"].get("channel") is None or card["value"] <= 0:
         return None
     channel = card["segment"]["channel"]
-    keep = min(1.0, card["comparison_value"] / card["value"])  # error rate falls to other channels' level
+    keep = min(1.0, card["comparison_value"] / card["value"])
     return Playbook(
         id=f"pb_{card['id']}", card_id=card["id"], cause_type="process",
         title="Fix the phone menu (IVR)" if channel == "call" else f"Fix the {channel} intake form",
@@ -191,8 +165,6 @@ MAKERS = {"process": process_playbook, "partner_issue": partner_playbook, "skill
 
 
 def week_hours(agent: Agent) -> set[int]:
-    """Hours of the week (0 = Monday 00:00) the agent is on shift. A night shift belongs to the
-    day it starts, as in the roster."""
     hours = set()
     for day in range(7):
         if day in agent.days_off:
@@ -203,8 +175,6 @@ def week_hours(agent: Agent) -> set[int]:
 
 
 def pick_cross_trainees(agents: list[Agent], language: str, skills: frozenset[str], k: int) -> list[str]:
-    """Agents who speak the language but lack the skills, chosen one by one for the most shift-hours
-    that no capable agent (language + skills) covers yet."""
     covered: set[int] = set()
     for a in agents:
         if language in a.languages and skills <= a.skills:
@@ -221,16 +191,9 @@ def pick_cross_trainees(agents: list[Agent], language: str, skills: frozenset[st
     return chosen
 
 
-# ---- Scenario: change the world the way the playbook would -----------------------------------
-
 def apply_scenario(tickets: pd.DataFrame, preds: pd.DataFrame, agents: list[Agent], spec: dict,
                    first_day: int, last_day: int, first_weekday: int, alerts: list[dict] | None = None,
                    seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame, list[Agent], dict]:
-    """Return changed copies of (tickets, predictions, agents) and what changed.
-
-    Only tickets of days first_day..last_day are touched. The same tickets are removed or fixed
-    for every policy and every seed (fixed `seed`), so the comparison stays paired.
-    """
     rng = np.random.default_rng(seed)
     tickets, preds = tickets.copy(), preds.copy()
     window = tickets["day"].between(first_day, last_day)
@@ -242,7 +205,6 @@ def apply_scenario(tickets: pd.DataFrame, preds: pd.DataFrame, agents: list[Agen
         wrong = window & (tickets["channel"] == spec["channel"]) & (tickets["selected_category"] != tickets["category"])
         fixed = pick(rng, wrong, 1.0 - spec["keep_error_share"])
         tickets.loc[fixed, "selected_category"] = tickets.loc[fixed, "category"]
-        # A fixed menu is as trustworthy as chat's, so the classifier would follow it.
         new_pred = dict(zip(tickets.loc[fixed, "ticket_id"], tickets.loc[fixed, "category"]))
         preds["pred_final"] = preds["ticket_id"].map(new_pred).fillna(preds["pred_final"])
         info["changed"] = int(fixed.sum())
@@ -250,7 +212,7 @@ def apply_scenario(tickets: pd.DataFrame, preds: pd.DataFrame, agents: list[Agen
         cluster = window & (tickets["restaurant_cluster_id"] == spec["restaurant_cluster_id"])
         bad = cluster & (tickets["category"] == spec["category"])
         n, w, s = int(cluster.sum()), int(bad.sum()), spec["normal_share"]
-        excess = max(0.0, (w - s * n) / (1.0 - s)) * spec["fix_share"]  # (w − x) / (n − x) = s
+        excess = max(0.0, (w - s * n) / (1.0 - s)) * spec["fix_share"]
         remove = pick(rng, bad, excess / w if w else 0.0)
     elif kind == "cross_train":
         extra = frozenset(spec["skills"])
@@ -280,7 +242,6 @@ def apply_scenario(tickets: pd.DataFrame, preds: pd.DataFrame, agents: list[Agen
 
 
 def pick(rng: np.random.Generator, mask: pd.Series, share: float) -> pd.Series:
-    """A random `share` of the rows where mask is True (rounded to whole tickets)."""
     rows = np.flatnonzero(mask.to_numpy())
     n = int(round(min(max(share, 0.0), 1.0) * len(rows)))
     chosen = rng.choice(rows, size=n, replace=False) if n else np.array([], dtype=int)
@@ -290,7 +251,6 @@ def pick(rng: np.random.Generator, mask: pd.Series, share: float) -> pd.Series:
 
 
 def in_window(tickets: pd.DataFrame, when: str, first_weekday: int) -> pd.Series:
-    """Tickets created in a window like 'weekend dinner' (same labels as patterns.py)."""
     day_type, band = when.split(" ", 1)
     low, high = next((lo, hi) for lo, hi, name in HOUR_BANDS if name == band)
     minute_of_day = tickets["created_min"] % MINUTES_PER_DAY
@@ -300,8 +260,6 @@ def in_window(tickets: pd.DataFrame, when: str, first_weekday: int) -> pd.Series
     right_day = weekend if day_type == "weekend" else ~weekend
     return right_day & hour.between(low, high)
 
-
-# ---- The message to the owner team (LLM, no digits) ------------------------------------------
 
 SYSTEM = (
     "You write a short message from the head of a food-delivery support floor to another team, "
@@ -316,12 +274,11 @@ SYSTEM = (
 
 
 def draft_message(pb: Playbook, client: LLMClient | None) -> dict:
-    """LLM-written request to the owner team; any digit or unknown key → the template action."""
-    from opslens.brief import check_and_fill  # same rule as the daily brief
+    from opslens.brief import check_and_fill
 
     facts = {k: (v, desc, "") for k, (v, desc) in pb.facts.items()}
     if client is not None:
-        title = re.sub(r"\s+", " ", re.sub(r"\d+", "", pb.title)).strip()  # numbers only via keys
+        title = re.sub(r"\s+", " ", re.sub(r"\d+", "", pb.title)).strip()
         prompt = (f"To: {pb.owner}\nAction: {title}\nCause type: {pb.cause_type.replace('_', ' ')}\n"
                   "Facts:\n" + "\n".join(f"- {{{{{k}}}}}: {desc}" for k, (_, desc, _) in facts.items()))
         try:

@@ -1,22 +1,3 @@
-"""Live Plant-a-problem: the judge hides a problem in fresh data, OpsLens has to find it.
-
-What it does: turns the judge's choice (category, language, effect, day) into a planted problem,
-generates 21 fresh days on a CLEAN floor (the main planted problems removed) with only that
-problem hidden in it, runs Baseline A to make the history, runs the SAME pattern finder that the
-rest of OpsLens uses — which is not told what was planted — and scores the answer with the SAME
-matcher as the 20-set blind test (eval/recall.py). About 20 seconds.
-
-Effects:
-- "volume":    the category gets 4× its tickets for 5 hours on one day (a spike)
-- "wait":      a skill gap — only 2 agents (1 for a regional language) of the team keep it
-               (Hindi if the judge picks English or "any", since everyone speaks English)
-- "transfers": the category's menu choice is wrong 30% of the time (a process problem)
-
-Example request: {"category": "refund", "language": "", "effect": "volume", "day": 47}
-→ spike planted on day 13 of the fresh data (the judge's day 47 mapped into the 21-day window),
-answer: found = true, diagnosed = true, the matching evidence card, and the seconds it took.
-"""
-
 from __future__ import annotations
 
 import time
@@ -28,7 +9,7 @@ from opslens.classify import CATEGORIES, TEAM_OF
 from opslens.config import load_config
 
 FRESH_DAYS = 21
-FIRST_SPIKE_DAY = 9  # the spike scan needs a week of normal days before the spike
+FIRST_SPIKE_DAY = 9
 
 
 def plant_spec(request: dict) -> dict:

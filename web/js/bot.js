@@ -1,18 +1,3 @@
-// bot.js — the OpsLens assistant: an animated AI bot in the side menu that answers whatever the
-// jury, a manager or a customer asks.
-//
-// Why (24 Oct, the owner: "remove the festival layer, it feels festive not professional; put an
-// animated AI bot there that resolves customers' queries, so capable that if the jury asks any
-// problem we can ask the bot directly"): during Q&A the team should be able to type the judge's
-// question and show a tested answer at once. The server (server/bot.py, POST /api/bot) picks one
-// of four answers: a customer complaint → triage by our text classifier; a what-if or ticket
-// question → the engine (Ask OpsLens); a question about OpsLens → the closest prepared answer
-// (docs/JUDGE_QA.md, docs/BOT_QA.md: every number in them is checked against results.json by a
-// test); "show me ..." → this file opens the screen. The bot never writes a number of its own.
-//
-// Example: "Isn't this data leakage?" → Q19 with its tested answer and two related questions;
-// "dosa ke jagah biryani de diya" → Wrong item, Hindi / Hinglish, Team C (Order accuracy).
-
 import { characterHtml } from "./characters.js";
 import { escapeHtml } from "./format.js";
 import { factsTable } from "./ask.js";
@@ -27,8 +12,6 @@ const STARTERS = [
   ["Show me", ["Show me Shadow mode", "Show me the 30 random worlds", "Show me the rules we wrote first"]],
 ];
 
-// "Show me X" → a screen. [pattern, hash, world, real source]. Shadow mode opens on whatever Real
-// data shows (your file's busiest day once you uploaded one); "the service desk" is the UCI example.
 const PLACES = [
   [/shadow/i, "#overview/rd-shadow", "real"],
   [/real (it )?desk|it desk|service desk|servicenow/i, "#overview/rd-overview", "real", "uci"],
@@ -43,7 +26,7 @@ const PLACES = [
   [/forecast|48|next week/i, "#risks/next48", "food"],
   [/risk|late tickets|at risk/i, "#risks/atrisk", "food"],
   [/action|fix|recommend/i, "#actions", "food"],
-  [/upload|your data|csv|my file|own file/i, "#upload", "real"], // Real data with the upload card open
+  [/upload|your data|csv|my file|own file/i, "#upload", "real"],
 ];
 const SHOW = /^\s*(show( me)?|open|go to|take me to|dikhao|dikha do|le chalo)\b/i;
 
@@ -110,7 +93,7 @@ function open() {
   document.getElementById("bot-input").focus();
   if (!warmed) {
     warmed = true;
-    fetch("/api/bot/warm").catch(() => {}); // the classifier loads (or trains once) in the background
+    fetch("/api/bot/warm").catch(() => {});
   }
 }
 function close() {
@@ -130,12 +113,9 @@ function goTo(hash, world, card) {
   if (window.matchMedia("(max-width: 900px)").matches) close();
 }
 
-// ---- one question ---------------------------------------------------------------------------------
-
 async function ask(question) {
   if (busy) return;
   addMessage("user", `<p>${escapeHtml(question)}</p>`);
-  // "Show me ..." is answered here: open the screen.
   if (SHOW.test(question)) {
     const place = PLACES.find(([re]) => re.test(question));
     if (place) {
@@ -176,7 +156,6 @@ function render(d) {
     <div class="bs-chips">${(d.suggestions || []).map((s) => `<button type="button" class="bot-chip" data-q="${escapeHtml(s.question)}">${escapeHtml(s.question)}</button>`).join("")}</div>`;
 }
 
-// Markdown-light: paragraphs, **bold**, `code`. The text is escaped first.
 function formatAnswer(text) {
   return text.split(/\n\s*\n/).map((para) => {
     let html = escapeHtml(para.replace(/\n/g, " "));

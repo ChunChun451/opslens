@@ -1,9 +1,3 @@
-# SLA = maximum resolution (turnaround) time per priority, in minutes.
-# Food-delivery realism (docs/PLAN.md change 3): a live-order problem must be fixed while
-# the order is still live, so P1 is 1 hour, not 2.
-#   P1 = live order: late delivery, payment debited but no order, item missing at the door
-#   P2 = needs action today: refund status, wrong item after delivery
-#   P3 = can wait: account changes, general feedback (mostly email)
 sla_minutes:
   P1: 60
   P2: 240

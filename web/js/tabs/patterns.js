@@ -1,21 +1,9 @@
-// tabs/patterns.js — recurring problems found in the history, each with its evidence;
-// where the time goes per team; ticket clusters; and the "Plant a problem" button.
-//
-// Why: the problem statement asks us to "identify patterns". A pattern is only useful with
-// evidence, so each finding shows the metric against its comparison, the affected volume and
-// a suggested action up front; the segment, "why it is not a known event" and three real
-// (masked) example tickets sit behind "Show evidence" so the page stays readable.
-//
-// Example (real results): "phone (IVR) tickets are transferred 5.1× more" — 13.01 vs 2.56
-// transfers per 100 tickets, 10,788 tickets (20.2% of all), cause: process.
-
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, SLOTS } from "../charts.js";
 import { pageHeader, card, missing, backendMissing, postJson, showWaiting, fold, onFirstOpen, factLine } from "../ui.js";
 import { escapeHtml, prettyKey, CATEGORIES } from "../format.js";
 
-// Plain-language names for the cause types in the schema.
 export const CAUSE_LABELS = {
   capacity: "Capacity",
   skill_gap: "Skill gap",
@@ -25,9 +13,8 @@ export const CAUSE_LABELS = {
   other: "Other",
 };
 
-// How many clusters to show before "Show all" (a layout choice, not a result).
-const CLUSTERS_SHOWN = 6; // shown first inside the clusters fold
-const PLANT_TIMEOUT_MS = 120000; // fresh data + detection takes 20-40 s; give up after 2 minutes
+const CLUSTERS_SHOWN = 6;
+const PLANT_TIMEOUT_MS = 120000;
 
 export function render(section) {
   const p = state.results.patterns;
@@ -47,7 +34,6 @@ export function render(section) {
 
   if (hasDelay) onFirstOpen("fold-delay", () => drawDecomposition(p.delay_decomposition));
   wirePlantDialog(section);
-  // A card opens its evidence when clicked anywhere (except on a number, which opens its source).
   section.querySelectorAll(".finding-card").forEach((cardEl) => cardEl.addEventListener("click", (event) => {
     if (event.target.closest(".ev, .ev-text, summary, a, button, table")) return;
     const details = cardEl.querySelector("details");
@@ -55,7 +41,6 @@ export function render(section) {
   }));
 }
 
-// How well pattern finding works, as one line of facts (details are on the Proof screen).
 function summaryStats(p) {
   const b = p.blind_recall;
   return factLine([
@@ -66,7 +51,6 @@ function summaryStats(p) {
   ]);
 }
 
-// Findings with a named cause lead; "other" (no clear cause) sits in a fold (review #13, item 10).
 function findings(p, other) {
   return p.cards
     .map((c, index) => ({ c, index }))
@@ -76,10 +60,8 @@ function findings(p, other) {
     .join("");
 }
 
-// One finding as a compact card: what, how much worse than normal, what to do; proof on click.
 function findingCard(c, i) {
   const base = `patterns.cards[${i}]`;
-  // The two bars are a picture of value vs comparison (scaled to the larger), not new numbers.
   const top = Math.max(Math.abs(c.value), Math.abs(c.comparison_value)) || 1;
   const width = (v) => Math.round((Math.abs(v) / top) * 100);
   const chips = Object.keys(c.segment).map((key) =>
@@ -137,7 +119,6 @@ function decompositionCard() {
     <div class="chart sm"><canvas id="delay-chart" aria-label="Delay decomposition per team"></canvas></div>`;
 }
 
-// Horizontal stacked bars: one bar per team, one segment per stage.
 function drawDecomposition(decomposition) {
   const teams = Object.keys(decomposition).sort();
   const stages = Object.keys(decomposition[teams[0]]);
@@ -146,7 +127,7 @@ function drawDecomposition(decomposition) {
     data: teams.map((team) => decomposition[team][stage]),
     backgroundColor: SLOTS[s % SLOTS.length],
     borderColor: "#ffffff",
-    borderWidth: 2, // a thin white gap between stacked segments
+    borderWidth: 2,
     borderRadius: 4,
     barThickness: 22,
   }));
@@ -167,7 +148,6 @@ function drawDecomposition(decomposition) {
   }));
 }
 
-// The biggest ticket clusters (named by the LLM); the rest behind "Show all clusters".
 function clustersCard() {
   const c = state.results.classification;
   if (!c || !c.clusters.length) {
@@ -190,8 +170,6 @@ function clustersCard() {
       each group named by the LLM from masked samples.</p>
       <ul class="list">${first}${rest}</ul>`, { id: "clusters-panel", hint: `${order.length} groups` });
 }
-
-// ---- Plant a problem (backend arrives in M11) ----------------------------------------------
 
 function plantDialog() {
   const meta = state.results.meta;
@@ -227,10 +205,6 @@ function plantDialog() {
     </dialog>`;
 }
 
-// The live answer from POST /api/plant. It is computed for this request only (not part of
-// results.json); it is kept in state.plant so its numbers are clickable ("plant.*" paths).
-// Example answer: { planted: { description: "hi x Team B skill gap", cause_type: "skill_gap",
-//   fresh_days: 21 }, found: true, diagnosed: true, card: {...}, other_cards: [...], seconds: 16.4 }
 function plantAnswerHtml(answer) {
   if (!answer || answer.error) {
     return `<div class="callout warn">${escapeHtml((answer && answer.error) || "No answer from the server.")}</div>`;

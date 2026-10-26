@@ -1,6 +1,3 @@
-# OpsLens tasks. On Windows run with:  mingw32-make <target>   (or `make` if installed)
-# Every target is one plain command, so you can also copy it and run it by hand.
-
 ifeq ($(OS),Windows_NT)
 PY := .venv/Scripts/python.exe
 else
@@ -14,10 +11,10 @@ help:
 	@echo data   - download public datasets (Bitext, UCI) into data/public
 	@echo ping   - send one small JSON request to each LLM provider
 	@echo test   - run all tests
-	@echo gen    - generate the 56-day operations dataset (M2)
-	@echo eval   - reproduce every number into eval/results.json (M8)
-	@echo serve  - run the dashboard server (M9)
-	@echo demo   - serve from cached results, no network (M11)
+	@echo gen    - generate the 56-day operations dataset
+	@echo eval   - reproduce every number into eval/results.json
+	@echo serve  - run the dashboard server
+	@echo demo   - serve from cached results, no network
 
 setup:
 	python -m venv .venv

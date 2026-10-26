@@ -1,23 +1,3 @@
-"""CP-SAT weekly roster: every day agent's start hour and days off, chosen together (Plan v4 W5).
-
-What it does: for one planning week, picks for each day agent ONE option — a start hour within
-±2 h of today's (06:00-16:00) and two consecutive days off — so that the team-by-hour coverage
-matches the forecast need as closely as possible. Same people, same 9-hour shifts, same 5 working
-days, so the budget does not change. Night agents (22:00) stay as they are.
-
-Objective (agent-hours over day hours 07:00-24:00, the same measure as staffing.plan_moves):
-    Σ max(0, need − coverage) + 3 × Σ max(0, load − coverage) + change_penalty × changed agents
-with at most `max_changes_per_team` changed agents per team. CP-SAT works in integers, so every
-quantity is ×100.
-
-Why: the greedy planner tries one move at a time; two half-useful moves that only pay together
-are never found. CP-SAT searches all combinations and says when its answer is proven optimal.
-
-Example: Team C is short at weekend dinner. Greedy moves C05's day off; CP-SAT may move C05 AND
-start C07 two hours later, because together they cover Sat-Sun 19-23 without opening a gap on
-Tuesday. Design and pre-registered test: docs/explain/roster_opt.md.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -31,14 +11,13 @@ NIGHT_START = 22
 
 
 def options_for(s: Shift) -> list[Shift]:
-    """Every allowed week for one agent (the current one included)."""
     if s.start_hour == NIGHT_START:
         return [s]
     starts = [h for h in range(s.start_hour - 2, s.start_hour + 3) if 6 <= h <= 16] or [s.start_hour]
     n_off = len(s.days_off)
     offs = [frozenset((d + k) % 7 for k in range(n_off)) for d in range(7)] if n_off else [frozenset()]
     if s.days_off not in offs:
-        offs.append(s.days_off)  # today's pattern is always allowed, even if not consecutive
+        offs.append(s.days_off)
     return [Shift(s.agent_id, s.team, h, s.hours, off) for h in starts for off in offs]
 
 
@@ -55,7 +34,6 @@ def describe(old: Shift, new: Shift) -> str:
 def plan_roster(shifts: list[Shift], need: pd.DataFrame, first_day: int, n_days: int, first_weekday: int,
                 load: pd.DataFrame | None = None, max_changes_per_team: int = 2, change_penalty: float = 1.0,
                 time_limit_s: float = 30.0, workers: int = 8) -> tuple[list[Shift], list[dict], dict]:
-    """Returns (new shifts, changes in plan_moves' format, solver info)."""
     teams = list(need.columns)
     hours = n_days * 24
     day_rows = np.nonzero(np.isin(np.arange(hours) % 24, list(DAY_HOURS)))[0]
@@ -119,7 +97,6 @@ def plan_roster(shifts: list[Shift], need: pd.DataFrame, first_day: int, n_days:
 
 def weighted_shortage(shifts: list[Shift], need: pd.DataFrame, first_day: int, n_days: int, first_weekday: int,
                       load: pd.DataFrame | None = None) -> float:
-    """The objective without the change penalty, for any roster (to compare planners fairly)."""
     teams = list(need.columns)
     hours = n_days * 24
     day = np.isin(np.arange(hours) % 24, list(DAY_HOURS))[:, None]

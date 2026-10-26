@@ -1,32 +1,3 @@
-"""Watch the real service desk day by day: spikes, slow teams and bouncing categories (UCI log).
-
-What it does: every day, three detectors look at what the desk knows by the end of that day and
-raise an alert when today is clearly unusual for one category or one team:
-- spike     a category's new incidents today vs its usual day;
-- slowdown  a team's incidents opened yesterday that were still open 24 h later (share);
-- bounce    a category's incidents opened yesterday that were passed to another team within
-            24 h of opening (share).
-It is the food world's spike scan (patterns.scan_spikes, robust z, CLAUDE.md section 4) carried
-over to the real log's columns, plus two share detectors for things a log shows and a ticket
-count does not. The food world's code is not changed.
-
-Why this design: the detectors must work on a real company's export without knowing anything
-about the problems planted into it (only eval/realdesk_plants.py knows those). So the rules are
-fixed and plain, and were committed before the blind test ran:
-- "usual" = the median of the same kind of day (weekday or weekend) in the 28 days before;
-- alert when the robust z-score is at least 3.5 (the food world's threshold) AND the excess is
-  big enough to matter (spike: 5 incidents above usual; share: 3 incidents above what the usual
-  share predicts, on a day with at least 8 incidents);
-- for a share, the spread is never taken as smaller than chance alone (binomial) for today's
-  count, so a small team cannot raise an alert on two unlucky incidents.
-Only information known at the end of the alert day is used: a share is known one day after the
-incidents opened (their 24 hours must have passed).
-
-Example (real, clean test weeks): Category 42 on Mon 2 May 2016 had 101 new incidents; its usual
-weekday in the 4 weeks before is 54.5 (MAD 6) → robust z = 0.6745 × (101 − 54.5) ÷ 6 = 5.2 and
-46.5 above usual → "spike" alert that evening. A day with 80 would give z = 2.9 → no alert.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -34,26 +5,18 @@ import pandas as pd
 
 from opslens.patterns import robust_z
 
-Z = 3.5                   # alert threshold (same as the food world's spike scan)
-WINDOW_DAYS = 28          # "usual" = days of the same kind in the 4 weeks before
-MIN_HISTORY_DAYS = 5      # need at least this many comparable days to judge
-MIN_USUAL_COUNT = 3.0     # spike: skip categories whose usual day has fewer incidents
-MIN_EXCESS_COUNT = 5      # spike: at least this many incidents above usual
-MIN_DAY_COUNT = 8         # share: today's share needs at least this many incidents
-MIN_HISTORY_COUNT = 3     # share: a past day counts as comparable with at least this many incidents
-MIN_EXCESS_SHARE = 3      # share: at least this many incidents above what the usual share predicts
-MIN_SHARE_FLOOR = 0.02    # share: chance spread uses p at least 2% (p = 0 would give no spread)
+Z = 3.5
+WINDOW_DAYS = 28
+MIN_HISTORY_DAYS = 5
+MIN_USUAL_COUNT = 3.0
+MIN_EXCESS_COUNT = 5
+MIN_DAY_COUNT = 8
+MIN_HISTORY_COUNT = 3
+MIN_EXCESS_SHARE = 3
+MIN_SHARE_FLOOR = 0.02
 
 
 def as_of_table(incidents: pd.DataFrame, events: pd.DataFrame, hours: float = 24.0) -> pd.DataFrame:
-    """One row per incident with what the desk knows `hours` after it opened.
-
-    category = the category at opening (first event), team = the first team it was sent to,
-    open_24h = still not resolved 24 h after opening (never resolved counts as open),
-    bounced_24h = passed to another team at least once within 24 h of opening.
-    Example: INC0000047 opened 04:40, reassigned at 05:10, resolved 2 days later →
-    open_24h True, bounced_24h True.
-    """
     snap = incidents.set_index("ticket_id")["created_at"] + pd.Timedelta(hours=hours)
     ev = events[["number", "sys_updated_at", "reassignment_count"]].merge(snap.rename("snap"), left_on="number", right_index=True)
     known = ev[ev["sys_updated_at"] <= ev["snap"]]
@@ -66,18 +29,13 @@ def as_of_table(incidents: pd.DataFrame, events: pd.DataFrame, hours: float = 24
     out["category"] = first["category"].reindex(out.index)
     out["team"] = inc["first_team"]
     out["resolution_h"] = inc["resolution_min"] / 60.0
-    out["open_24h"] = ~(out["resolution_h"] <= hours)  # NaN (never resolved) → still open
-    out["open_2h"] = ~(out["resolution_h"] <= 2.0)     # v2 candidate signal: not closed within 2 h
+    out["open_24h"] = ~(out["resolution_h"] <= hours)
+    out["open_2h"] = ~(out["resolution_h"] <= 2.0)
     out["bounced_24h"] = reassigned.reindex(out.index).fillna(0).to_numpy() >= 1
     return out.reset_index().rename(columns={"index": "ticket_id"})
 
 
 def share_z(k: int, n: int, past_shares: np.ndarray) -> float:
-    """Robust z of today's share k/n against past daily shares, with a chance floor.
-
-    Example: usual share 0.30 (MAD 0.05), today 9 of 12 = 0.75. Chance spread for 12 incidents:
-    sqrt(0.3 × 0.7 / 12) = 0.13 → MAD floor 0.6745 × 0.13 = 0.089 → z = 0.6745 × 0.45 ÷ 0.089 = 3.4.
-    """
     p = float(np.median(past_shares))
     mad = float(np.median(np.abs(past_shares - p)))
     q = max(p, MIN_SHARE_FLOOR)
@@ -86,7 +44,6 @@ def share_z(k: int, n: int, past_shares: np.ndarray) -> float:
 
 
 def comparable_days(dates: pd.DatetimeIndex, day: pd.Timestamp) -> np.ndarray:
-    """Positions of the days of the same kind (weekday / weekend) in the 28 days before `day`."""
     weekend = day.weekday() >= 5
     lo = day - pd.Timedelta(days=WINDOW_DAYS)
     ok = (dates >= lo) & (dates < day) & ((dates.weekday >= 5) == weekend)
@@ -94,7 +51,6 @@ def comparable_days(dates: pd.DatetimeIndex, day: pd.Timestamp) -> np.ndarray:
 
 
 def spike_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, z_alert: float = Z) -> list[dict]:
-    """Spike detector: a category's new incidents on a day vs its usual day (known that evening)."""
     counts = table.groupby(["category", "date"]).size().unstack(fill_value=0)
     all_dates = pd.date_range(days[0] - pd.Timedelta(days=WINDOW_DAYS), days[-1])
     counts = counts.reindex(columns=all_dates, fill_value=0)
@@ -119,10 +75,6 @@ def spike_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, z_alert: float = Z
 
 
 def pooled_windows(all_dates: pd.DatetimeIndex, opened: pd.Timestamp, pool_days: int) -> tuple[np.ndarray, np.ndarray]:
-    """Positions of today's window (the last `pool_days` days of the same kind up to `opened`) and of
-    every comparable past window that ends in the 28 days before and does not overlap today's.
-    Example: pool 3, opened Wed → today = Mon, Tue, Wed; a past window = e.g. Wed, Thu, Fri a week earlier.
-    With pool 1 this is exactly v1: today = the opened day, past = comparable_days()."""
     weekend = opened.weekday() >= 5
     same = np.flatnonzero((all_dates <= opened) & ((all_dates.weekday >= 5) == weekend))
     today = same[-pool_days:]
@@ -136,9 +88,6 @@ def pooled_windows(all_dates: pd.DatetimeIndex, opened: pd.Timestamp, pool_days:
 
 def share_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, by: str, flag: str, kind: str,
                  z_alert: float = Z, pool_days: int = 1) -> list[dict]:
-    """Share detector: incidents opened on a day with `flag` true, per `by` (known the next day).
-    `days` are the days the alert can be raised on; the incidents opened the day before.
-    `pool_days` > 1 pools the last few days of the same kind (v2 candidates; v1 uses 1)."""
     n = table.groupby([by, "date"]).size().unstack(fill_value=0)
     k = table[table[flag]].groupby([by, "date"]).size().unstack(fill_value=0)
     all_dates = pd.date_range(days[0] - pd.Timedelta(days=WINDOW_DAYS + 1 + 7 * pool_days), days[-1])
@@ -170,17 +119,12 @@ def share_alerts(table: pd.DataFrame, days: pd.DatetimeIndex, by: str, flag: str
     return alerts
 
 
-# Detector settings. v1 is what ran on 19 Oct. The v2 candidates (pre-registered 23 Oct, before any
-# of them ran) change three things the v1 result pointed at: the slowdown signal ("not resolved
-# within 2 h" moves when a team that usually closes incidents in minutes slows down; "still open
-# after 24 h" barely does), pooling 3 days for the share detectors, and the threshold.
 V1 = {"name": "v1", "slow_flag": "open_24h", "pool_days": 1, "z": 3.5}
 V2_CANDIDATES = [{"name": f"{flag}_pool{pool}_z{z}", "slow_flag": flag, "pool_days": pool, "z": z}
                  for flag in ("open_24h", "open_2h") for pool in (1, 3) for z in (3.5, 3.0)]
 
 
 def watch(table: pd.DataFrame, first_day: str, last_day: str, settings: dict | None = None) -> pd.DataFrame:
-    """All three detectors over the days first_day..last_day (alerts raised on these days)."""
     s = settings or V1
     days = pd.date_range(first_day, last_day)
     alerts = spike_alerts(table, days, s["z"])

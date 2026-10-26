@@ -1,5 +1,3 @@
-# OpsLens runtime + test dependencies (CLAUDE.md section 3).
-# Exact versions that were tested are frozen in requirements.lock.txt.
 fastapi>=0.115
 uvicorn>=0.30
 pydantic>=2.8
@@ -12,4 +10,4 @@ openai>=1.40
 pyyaml>=6.0
 pytest>=8.0
 httpx>=0.27
-python-multipart>=0.0.9   # FastAPI form/file uploads (part of fastapi[standard])
+python-multipart>=0.0.9

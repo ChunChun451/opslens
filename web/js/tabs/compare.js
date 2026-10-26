@@ -1,13 +1,3 @@
-// tabs/compare.js — Baseline A vs Baseline B vs OpsLens on the held-out test days.
-//
-// Why: this is moat number one, "proof, not promises". Every KPI is shown under the problem
-// statement's three headings (turnaround, productivity, service quality) as mean ± std over
-// seeds, with the paired 95% CI wherever the engine computed one. Then the replay.
-//
-// Example (real results, 16 Oct): SLA breach rate 13.1 ± 2.2 / 6.8 ± 1.3 / 2.4 ± 0.5 (%);
-// OpsLens − Baseline A = −10.7 pts, CI [−12.9, −8.5]. A CI that includes zero (P99 wait vs
-// Baseline A: −84 [−276, +107]) is shown in grey: no clear difference.
-
 import { state, policyKeys } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle } from "../charts.js";
@@ -23,8 +13,6 @@ export function render(section) {
     section.innerHTML = head + missing("The simulator comparison", "M7");
     return;
   }
-  // The replay comes first: watching the same evening on three floors is the most convincing
-  // (and most memorable) view; the averages below back it up.
   section.innerHTML = `${head}
     ${sim.replay ? replayHtml() : card({ body: `<p class="muted">No replay in the results file yet.</p>` })}
     <div class="grid cols-2 stretch" style="margin-top: 20px">
@@ -45,7 +33,6 @@ export function render(section) {
 
 function kpiTable(sim) {
   const keys = policyKeys();
-  // KPIs in the order the engine wrote them, grouped by the part before the first dot.
   const kpiKeys = Object.keys(sim.policies[keys[0]].kpis);
   const groups = [];
   kpiKeys.forEach((kpi) => {
@@ -57,7 +44,6 @@ function kpiTable(sim) {
     }
     entry.kpis.push(kpi);
   });
-  // One difference column per (policy, baseline) pair found in the comparisons.
   const pairs = [];
   sim.comparisons.forEach((c) => {
     if (!pairs.some((p) => p.policy === c.policy && p.baseline === c.baseline)) {
@@ -95,7 +81,6 @@ function kpiRow(sim, kpi, keys, pairs) {
     const base = `sim.comparisons[${i}]`;
     const unit = spreadUnit(info.unit);
     const c = sim.comparisons[i];
-    // A CI that includes zero means "no clear difference": shown quietly, not hidden.
     const unclear = c.ci_low <= 0 && c.ci_high >= 0;
     return `<td class="num ${unclear ? "ci-unclear" : ""}">${deltaPill(base, unit, info.better)}
         <span class="pm">[${ev(base + ".ci_low", unit, { signed: true, bare: true })}, ${ev(base + ".ci_high", unit, { signed: true, bare: true })}]</span></td>`;
@@ -108,7 +93,6 @@ function kpiRow(sim, kpi, keys, pairs) {
     </tr>`;
 }
 
-// Which policy has the best mean on this KPI (a comparison only; no new number is shown).
 function bestPolicy(sim, kpi, keys, better) {
   if (!better) return null;
   let bestKey = null;
@@ -123,12 +107,10 @@ function bestPolicy(sim, kpi, keys, better) {
   return bestKey;
 }
 
-// Bars = mean per policy, whiskers = ± std over seeds.
 function kpiBarChart(canvasId, kpi) {
   const sim = state.results.sim;
   const keys = policyKeys().filter((k) => sim.policies[k].kpis[kpi]);
   const unit = kpiInfo(kpi).unit;
-  // Leave room above the tallest whisker (mean + std) so it is not cut off.
   let top = 0;
   keys.forEach((k) => { top = Math.max(top, sim.policies[k].kpis[kpi].mean + sim.policies[k].kpis[kpi].std); });
   makeChart(document.getElementById(canvasId), {

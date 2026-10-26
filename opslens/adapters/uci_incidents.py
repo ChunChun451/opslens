@@ -1,26 +1,3 @@
-"""Adapter for the UCI "Incident management process enriched event log" (real ServiceNow data).
-
-What it does: the file has one row per *event* (141,712 events: state changes, reassignments)
-for 24,918 incidents. We build
-- `incidents`: one row per incident in OpsLens's canonical columns, plus the real SLA flag;
-- `events`: the time-stamped history of each incident, so features can be computed "as of
-  time t" without looking into the future (used by the risk model in M5).
-
-Why this design: it is the same code path as our own data after this point, so a judge can
-see the pattern finder and the risk model run on real operations data we did not make.
-
-Mapping (real column → OpsLens):
-    number → ticket_id, opened_at → created_at, contact_type → channel,
-    category → final_category, assignment_group (last) → resolved_by_team,
-    reassignment_count (last) → transfers, reopen_count (last) → reopens,
-    priority "1 - Critical"/"2 - High" → P1, "3 - Moderate" → P2, "4 - Low" → P3,
-    breached = NOT made_sla (the company's own SLA flag on the final event).
-
-Example: INC0000045 — opened 29/2/2016 01:16, resolved 29/2/2016 11:29, "3 - Moderate",
-Group 56, made_sla True → P2, resolution 613 min, breached False.
-Licence: CC BY 4.0 (data/SOURCES.md).
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -36,16 +13,13 @@ PRIORITY_MAP = {"1 - Critical": "P1", "2 - High": "P1", "3 - Moderate": "P2", "4
 
 
 def load_events(path: Path = RAW_PATH) -> pd.DataFrame:
-    """Raw event log with parsed dates; '?' means unknown in this dataset."""
     events = pd.read_csv(path, na_values=["?"], low_memory=False)
     for col in ("opened_at", "resolved_at", "closed_at", "sys_updated_at", "sys_created_at"):
         events[col] = pd.to_datetime(events[col], format=DATE_FORMAT, errors="coerce")
-    # Events of one incident in time order (sys_mod_count breaks ties).
     return events.sort_values(["number", "sys_updated_at", "sys_mod_count"], kind="stable").reset_index(drop=True)
 
 
 def to_incidents(events: pd.DataFrame) -> pd.DataFrame:
-    """One canonical row per incident (the final state of each incident)."""
     last = events.groupby("number", sort=False).tail(1).set_index("number")
     first = events.groupby("number", sort=False).head(1).set_index("number")
     resolved = events.dropna(subset=["resolved_at"]).groupby("number")["resolved_at"].last()
@@ -80,8 +54,6 @@ def to_incidents(events: pd.DataFrame) -> pd.DataFrame:
 
 
 def chronological_split(incidents: pd.DataFrame, train_share: float = 0.7) -> pd.Series:
-    """'train' for the first 70% of incidents by opening time, 'test' after — no shuffling,
-    so the model is always tested on later incidents than it learned from."""
     cutoff = incidents["created_at"].quantile(train_share)
     return pd.Series(np.where(incidents["created_at"] <= cutoff, "train", "test"), index=incidents.index)
 
@@ -94,12 +66,6 @@ def load_uci() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def risk_features(incidents: pd.DataFrame, events: pd.DataFrame, hours_after_open: float = 1.0) -> pd.DataFrame:
-    """Features for each incident as of `hours_after_open` after it was opened, using only events
-    recorded up to that moment (no peeking at later reassignments or the final SLA flag).
-
-    Example: INC0000047 opened 04:40 → snapshot 05:40; by then 1 reassignment, 2 updates,
-    state "Active", Group 24 holding it, 31 other incidents open in Group 24.
-    """
     snap_time = incidents.set_index("ticket_id")["created_at"] + pd.Timedelta(hours=hours_after_open)
     ev = events.merge(snap_time.rename("snap_time"), left_on="number", right_index=True)
     known = ev[ev["sys_updated_at"] <= ev["snap_time"]]
@@ -120,8 +86,6 @@ def risk_features(incidents: pd.DataFrame, events: pd.DataFrame, hours_after_ope
     out["knowledge"] = first["knowledge"].reindex(out.index).astype(float)
     out["hour"] = inc["created_at"].dt.hour
     out["weekday"] = inc["created_at"].dt.weekday
-    # Queue: incidents of the same first team opened in the 24 h before this one and not yet
-    # resolved at its snapshot time (resolution times before the snapshot are known then).
     opened = inc["created_at"].to_numpy()
     resolved = inc["resolved_at"].to_numpy()
     team = out["first_team"].to_numpy()

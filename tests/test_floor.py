@@ -1,10 +1,3 @@
-"""The physical floor is a true lower bound: no policy, however clever or random, avoids it.
-
-opslens/floor.py proves it; this test attacks the proof on random small worlds. Every policy we
-have, plus a policy that makes random legal choices, must breach every ticket the floor marks as
-unavoidable. A single counterexample would break the theorem.
-"""
-
 import numpy as np
 import pytest
 
@@ -19,9 +12,6 @@ CATS = ["refund", "late_delivery", "app_bug"]
 
 
 class RandomLegalPolicy:
-    """Gives waiting tickets to random free agents who speak the language, sometimes on purpose
-    outside their skills, sometimes misrouted (a believed category that is wrong)."""
-
     name = "random legal"
 
     def __init__(self, seed: int) -> None:
@@ -32,7 +22,7 @@ class RandomLegalPolicy:
         out = []
         for t in state.waiting_tickets():
             ok = [a for a in free if t.language in a.languages]
-            if not ok or self.rng.random() < 0.3:  # sometimes leave it waiting on purpose
+            if not ok or self.rng.random() < 0.3:
                 continue
             a = ok[self.rng.integers(len(ok))]
             free.remove(a)
@@ -80,7 +70,6 @@ def test_no_policy_beats_the_floor(seed: int) -> None:
 
 
 def test_earliest_start_on_a_hand_example() -> None:
-    # On shift 0-480 and 600-1080 (merged per group). At 100 → now; at 500 → next shift at 600; at 2000 → never.
     cover = merge([(600.0, 1080.0), (0.0, 480.0), (300.0, 400.0)])
     assert cover == ([0.0, 600.0], [480.0, 1080.0])
     assert earliest_start(cover, 100.0) == 100.0
@@ -89,8 +78,6 @@ def test_earliest_start_on_a_hand_example() -> None:
 
 
 def test_cross_skill_saves_a_night_ticket_in_the_floor() -> None:
-    # The docstring example: Hindi refund at 23:30 (minute 1410), work 20 min, SLA 240. Nobody trained
-    # on refunds speaks Hindi until 09:00 next day, but a Hindi app agent is on shift → savable.
     trained = Agent("t", "t", "B", frozenset({"refund"}), frozenset({"refund"}), frozenset({"en", "hi"}),
                     shift_start_min=540, shift_minutes=480, days_off=frozenset())
     night = Agent("n", "n", "D", frozenset({"app_bug"}), frozenset({"app_bug"}), frozenset({"en", "hi"}),
@@ -98,4 +85,4 @@ def test_cross_skill_saves_a_night_ticket_in_the_floor() -> None:
     world = make_world([1410.0], [20.0], [trained, night], language=["hi"], true_cat=["refund"], sla=240.0)
     assert unavoidable(world, 0.0, 0.0, 2880.0) == set()
     world_without_night = make_world([1410.0], [20.0], [trained], language=["hi"], true_cat=["refund"], sla=240.0)
-    assert unavoidable(world_without_night, 0.0, 0.0, 2880.0) == {0}  # 23:30 → 09:00 + 20 min = 590 > 240
+    assert unavoidable(world_without_night, 0.0, 0.0, 2880.0) == {0}

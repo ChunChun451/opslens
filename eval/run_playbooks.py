@@ -1,22 +1,3 @@
-"""Fix-at-source playbooks, measured: replay the held-out test days with each playbook in place.
-
-Run:  .venv/Scripts/python.exe eval/run_playbooks.py
-
-- The playbooks come from the evidence cards found on HISTORY days (eval/parts/patterns.json)
-  and the roster; the status banner reacts to the live spike alerts OpsLens raised on the test
-  days (the same alerts reported in M4, false alerts included). Nothing reads data/planted.json.
-- Each playbook is applied alone, then all together, on test days 43-56 with day 42 as warm-up,
-  under Baseline B (today's practice) and OpsLens, seeds 1-5, same tickets and luck as M7.
-  Removed tickets are the same for every policy and seed, so differences stay paired.
-- Main measures: breaches (count of customers who missed the SLA), tickets prevented, transfers,
-  agent-hours of work; paired 95% CI against the same policy without the playbook.
-- Every ASSUMPTION in config/playbooks.yaml is re-run at its low and high value (3 seeds).
-Writes eval/parts/playbooks.json.
-
-Example: "kitchen order-check for cluster 17" removes 67 wrong-item tickets on the test days;
-the run shows how many breaches and agent-hours that saves under each policy.
-"""
-
 from __future__ import annotations
 
 import dataclasses
@@ -31,11 +12,11 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "eval"))
 
-from opslens.config import load_config  # noqa: E402
-from opslens.impact import mean_std, paired_ci  # noqa: E402
-from opslens.playbooks import draft_message, playbooks_from_cards  # noqa: E402
-from opslens.world import load_agents  # noqa: E402
-from run_opslens import run_jobs  # noqa: E402
+from opslens.config import load_config
+from opslens.impact import mean_std, paired_ci
+from opslens.playbooks import draft_message, playbooks_from_cards
+from opslens.world import load_agents
+from run_opslens import run_jobs
 
 FIRST, LAST = 43, 56
 SEEDS = [1, 2, 3, 4, 5]
@@ -45,7 +26,6 @@ ASSUMPTION_KEY = {"partner_fix": "fix_share", "status_banner": "deflect_share", 
 
 
 def counts(k: dict) -> dict:
-    """Per-run totals from the KPI percentages."""
     n = k["tickets"]
     return {"tickets": n, "breaches": k["turnaround.breach_pct"] * n / 100.0,
             "transfers": k["productivity.transfers_per_100"] * n / 100.0,
@@ -59,7 +39,6 @@ def job(policy: str, seed: int, scenarios: list[dict], alerts: list[dict], tag: 
 
 
 def summarise(runs: list[dict], base: dict[tuple, dict]) -> dict:
-    """Mean ± std of totals, and paired differences vs the same policy without playbooks."""
     out = {}
     for policy in POLICIES:
         rs = sorted([r for r in runs if r["job"]["policy"] == policy], key=lambda r: r["job"]["seed"])
@@ -78,13 +57,12 @@ def summarise(runs: list[dict], base: dict[tuple, dict]) -> dict:
 def llm_client():
     try:
         from opslens.llm.client import build_client
-        return build_client(["gemini_brief", "gemini", "groq"])  # stronger model first: drafts are written once, never live
-    except Exception:  # no keys / no network: the template text is always there
+        return build_client(["gemini_brief", "gemini", "groq"])
+    except Exception:
         return None
 
 
 def redraft_messages() -> int:
-    """`--messages`: re-write only the LLM messages (no simulation), e.g. after a prompt change."""
     path = ROOT / "eval" / "parts" / "playbooks.json"
     data = json.loads(path.read_text(encoding="utf-8"))
     books, _ = make_playbooks()
@@ -151,7 +129,6 @@ def main() -> int:
                   f"[{d['breaches']['ci_low']:+.1f}, {d['breaches']['ci_high']:+.1f}]  transfers {d['transfers']['mean_diff']:+6.0f}  "
                   f"agent-hours {d['agent_hours']['mean_diff']:+6.1f}")
     combined = summarise(by_tag["all"], base)
-    # Today's floor (Baseline B, no playbooks) vs OpsLens with every playbook.
     ops_all = sorted(by_tag["all"], key=lambda r: r["job"]["seed"])
     ops_all = [counts(r["kpis"]) for r in ops_all if r["job"]["policy"] == "opslens"]
     b_today = [counts(base[("baseline_b", s)]) for s in SEEDS]

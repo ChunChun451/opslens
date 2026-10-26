@@ -1,39 +1,19 @@
-// format.js — how numbers look, what each KPI is called, and what each metric means.
-//
-// Why one file: the same value must look the same on every tab, and the evidence popover
-// needs a one-line definition for every metric. Definitions follow CLAUDE.md section 4.
-// This file holds NO result numbers — only words and formatting rules.
-//
-// Example:
-//   fmt(13.0, "pct")        -> "13.0%"
-//   fmt(0.92, "frac_pct")   -> "92%"
-//   fmtSigned(-8.9, "pts")  -> "−8.9 pts"
+const MINUS = "−";
 
-const MINUS = "−"; // a real minus sign reads better on a projector than "-"
-
-// Units used by ev() and the charts:
-//   pct      value is already a percent (13.0 -> "13.0%")
-//   pts      percentage points, for differences and spreads of a pct (1.04 -> "1.0 pts")
-//   frac_pct a fraction shown as a percent (0.92 -> "92%")
-//   min      minutes; int count; num plain number; ratio two decimals (rho, AUC)
-//   hours    agent-hours; sec seconds; ms milliseconds; text a string
-//   dur      minutes, shown as min, h or days depending on size (long IT incidents)
-// scale multiplies the value; minDigits/maxDigits are decimal places; suffix is the unit text.
 const UNIT_RULES = {
   pct: { scale: 1, minDigits: 1, maxDigits: 1, suffix: "%" },
   pts: { scale: 1, minDigits: 1, maxDigits: 1, suffix: " pts" },
   frac_pct: { scale: 100, minDigits: 0, maxDigits: 1, suffix: "%" },
   min: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " min" },
   int: { scale: 1, minDigits: 0, maxDigits: 0, suffix: "" },
-  count: { scale: 1, minDigits: 1, maxDigits: 1, suffix: "" }, // a mean count over seeds: "23.7", "15.0"
+  count: { scale: 1, minDigits: 1, maxDigits: 1, suffix: "" },
   ratio: { scale: 1, minDigits: 2, maxDigits: 2, suffix: "" },
   hours: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " h" },
   sec: { scale: 1, minDigits: 0, maxDigits: 1, suffix: " s" },
-  ms: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " ms" }, // optimiser steps can be 0.07 ms
+  ms: { scale: 1, minDigits: 0, maxDigits: 2, suffix: " ms" },
   num: { scale: 1, minDigits: 0, maxDigits: 2, suffix: "" },
 };
 
-// `bare` drops the unit text, for table cells whose header already names the unit.
 export function fmt(value, unit = "num", bare = false) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
@@ -41,7 +21,6 @@ export function fmt(value, unit = "num", bare = false) {
   if (typeof value !== "number") {
     return String(value);
   }
-  // "dur": minutes shown in the most readable unit (95 min, 6.4 h, 7.4 days).
   if (unit === "dur") {
     if (Math.abs(value) < 120) return fmt(value, "min", bare);
     if (Math.abs(value) < 2880) return num(value / 60, 0, 1) + (bare ? "" : " h");
@@ -49,31 +28,27 @@ export function fmt(value, unit = "num", bare = false) {
   }
   const rule = UNIT_RULES[unit] || UNIT_RULES.num;
   const scaled = value * rule.scale;
-  // Minutes above 100 need no decimals ("816 min", not "816.0 min").
   const maxDigits = unit === "min" && Math.abs(scaled) >= 100 ? 0 : rule.maxDigits;
   const text = num(scaled, Math.min(rule.minDigits, maxDigits), maxDigits);
   return bare ? text : text + rule.suffix;
 }
 
-// Like fmt, but always shows the sign: "+0.8 pts", "−8.9 pts".
 export function fmtSigned(value, unit = "num", bare = false) {
   if (typeof value !== "number") {
     return fmt(value, unit, bare);
   }
   const text = fmt(Math.abs(value), unit, bare);
-  if (!/[1-9]/.test(text)) return text; // rounds to zero: "0", never "−0"
+  if (!/[1-9]/.test(text)) return text;
   if (value > 0) return "+" + text;
   if (value < 0) return MINUS + text;
   return text;
 }
 
-// The unit text for a table header: "%" for pct, "min" for min, "" when there is none.
 export function unitSuffix(unit) {
   const rule = UNIT_RULES[unit] || UNIT_RULES.num;
   return rule.suffix.trim();
 }
 
-// The unit of a value found at `path`, for places that render arbitrary paths (the brief).
 export function unitForPath(path) {
   const kpi = path.match(/kpis\.(.+)\.(mean|std)$/);
   if (kpi) {
@@ -83,19 +58,16 @@ export function unitForPath(path) {
   return unitForKey(parts[parts.length - 1]);
 }
 
-// The unit for a spread or difference of a value in `unit` (a spread of 13.0% is "1.0 pts").
 export function spreadUnit(unit) {
   return unit === "pct" ? "pts" : unit;
 }
 
-// "2026-10-16T00:22:40" -> "16 Oct 2026, 00:22" (only the look changes; the popover keeps the raw value).
 export function fmtDateTime(iso) {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return String(iso);
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + ", " + String(iso).slice(11, 16);
 }
 
-// Indian digit grouping (1,00,000) because the judges are in India.
 function num(value, minDigits, maxDigits) {
   return value.toLocaleString("en-IN", {
     minimumFractionDigits: minDigits,
@@ -103,7 +75,6 @@ function num(value, minDigits, maxDigits) {
   });
 }
 
-// Guess a unit from a key name, for generic tables (sensitivity, stress, speed).
 export function unitForKey(key) {
   if (/_pct$/.test(key)) return "pct";
   if (/_min$|_wait$/.test(key)) return "min";
@@ -113,17 +84,11 @@ export function unitForKey(key) {
   return "num";
 }
 
-// "gold_breach_pct" -> "Gold breach %"
 export function prettyKey(key) {
   const words = key.replace(/_pct$/, " %").replace(/_min$/, " (min)").replace(/_/g, " ");
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
-// Every text we put into innerHTML goes through this, because ticket texts are user input.
-// Engine text such as "113 min left of 240 min SLA — 23% of the push" reads better on screen as
-// "113 min left of 240 min SLA (23% of the push)"; any other spaced em dash becomes a comma.
-// Display only: the results file keeps its text. Example: tidyDash("a — 40% of the push") ->
-// "a (40% of the push)".
 export function tidyDash(value) {
   return String(value)
     .replace(/\s+—\s+(\d+% of the push)/g, " ($1)")
@@ -139,8 +104,6 @@ export function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-// The KPI groups, in the words of the problem statement:
-// "turnaround time, productivity, and service quality".
 export const KPI_GROUPS = {
   turnaround: "Turnaround",
   productivity: "Productivity",
@@ -148,8 +111,6 @@ export const KPI_GROUPS = {
   segment: "Customer segments (who is protected)",
 };
 
-// Label, unit and direction for each simulator KPI. A KPI that is missing here still shows,
-// with a label made from its key (see kpiInfo), so a new KPI from the engine never vanishes.
 export const KPIS = {
   "turnaround.breach_pct": { label: "Missed promises (SLA breach rate)", unit: "pct", better: "lower" },
   "turnaround.mean_resolution_min": { label: "Average time to solve", unit: "min", better: "lower" },
@@ -158,7 +119,7 @@ export const KPIS = {
   "turnaround.max_backlog": { label: "Longest queue (tickets)", unit: "int", better: "lower" },
   "productivity.tickets_per_agent_hour": { label: "Tickets per agent-hour", unit: "num", better: "higher" },
   "productivity.transfers_per_100": { label: "Sent to the wrong team, per 100 tickets", unit: "num", better: "lower" },
-  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: null }, // more or less is not clearly better
+  "productivity.busy_agent_hours": { label: "Busy agent-hours", unit: "int", better: null },
   "quality.reopen_rate_pct": { label: "Customers who came back (reopen rate)", unit: "pct", better: "lower" },
   "quality.p99_wait_min": { label: "Wait of the unluckiest 1 in 100 (P99)", unit: "min", better: "lower" },
   "quality.late_minutes_per_100": { label: "Minutes past the promise, per 100 tickets", unit: "int", better: "lower" },
@@ -181,8 +142,6 @@ export function kpiInfo(kpiKey) {
   return { label: prettyKey(short), unit: unitForKey(short), better: null };
 }
 
-// One-line definitions for the evidence popover, keyed by the last part of a path.
-// Wording from CLAUDE.md section 4. No result numbers here — only definitions.
 export const DEFINITIONS = {
   breach_pct: "SLA breach = resolution time longer than the SLA for the ticket's priority. This is the share of tickets that breached.",
   gold_breach_pct: "Breach rate for gold-tier customers only.",
@@ -300,7 +259,6 @@ export const DEFINITIONS = {
   numbers_used: "Paths of the numbers the brief refers to. Code fills them in; the LLM never writes a digit.",
 };
 
-// Real data on your file (upload.* and uploadpeek.* paths): what each number means, in words.
 const FILE_DEFINITIONS = {
   caught_pct: "Share of the real misses on your later items that this picker had flagged as they opened. Every picker flags the same share of each day's items.",
   auc: "How well the score ranks: the chance a real miss is scored above an item that was in time. A coin flip scores one half.",
@@ -330,7 +288,6 @@ const FILE_DEFINITIONS = {
   test_items: "Items OpsLens is tested on: the later part, which it never sees while learning.",
   seconds: "Time the server took to analyse your file.",
 };
-// The same keys mean something else on a problem group (upload.cards[i].*).
 const GROUP_DEFINITIONS = {
   learn_pct: "Share of this group's items that missed, on the first part of your file (where the group was found).",
   learn_rest_pct: "Share of all other items that missed, on the first part of your file.",
@@ -349,8 +306,6 @@ function fileDefinition(rest) {
   return FILE_DEFINITIONS[key] || "";
 }
 
-// Find the definition for a path: walk its parts from the end and take the first match.
-// "sim.policies.opslens.kpis.turnaround.breach_pct.mean" -> DEFINITIONS.breach_pct
 export function definitionFor(path) {
   if (path.startsWith("whatif.")) {
     return "Simulated live for your settings. " + definitionFor(path.slice("whatif.".length));
@@ -392,7 +347,6 @@ export function definitionFor(path) {
   return "A value from the results file.";
 }
 
-// Food-delivery ticket categories (CLAUDE.md section 5.3). Words only, used by input forms.
 export const CATEGORIES = [
   "late_delivery", "missing_item", "wrong_item", "refund",
   "payment_failure", "app_bug", "account", "restaurant_partner",

@@ -1,7 +1,3 @@
-"""The OpsLens assistant (server/bot.py): it must route each kind of question to the right source
-and never answer from anywhere else. Offline here (no LLM client), so the word matcher decides.
-"""
-
 from server import bot
 
 
@@ -9,8 +5,8 @@ def test_every_prepared_answer_is_parsed_once():
     entries = bot.qa_index().entries
     ids = [e["id"] for e in entries]
     assert len(ids) == len(set(ids)), "duplicate question ids"
-    assert sum(i.startswith("Q") for i in ids) >= 80  # docs/JUDGE_QA.md
-    assert sum(i.startswith("B") for i in ids) >= 10  # docs/BOT_QA.md
+    assert sum(i.startswith("Q") for i in ids) >= 80
+    assert sum(i.startswith("B") for i in ids) >= 10
     assert all(e["question"] and e["answer"] for e in entries)
     attack = next(e for e in entries if e["id"] == "Q2")
     assert attack["attack"] and not attack["question"].lower().startswith("(attack)")

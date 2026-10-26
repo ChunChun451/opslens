@@ -1,18 +1,3 @@
-// characters.js — one small cartoon character per screen, so no two screens look alike.
-//
-// Why (24 Oct, the owner: "every page has same type animation"): Lenny the lens stays on Live
-// now; every other screen gets a character that IS its job: a trophy that dances (Results),
-// turning gears and a hammer (Problems), a sweating hourglass (Tickets at risk), a weather cloud (Next 48 hours),
-// a rocket (Actions), a delivery box on wheels (Side by side), a robot (What-if), a ledger book
-// (Rules), a flask (How we tested), a folder catching a file (Your data), a computer (the real
-// desk) and a balance scale (real-desk proof). Each shares the same face parts as Lenny
-// (mascot-eye, mascot-smile, mascot-closed, ...), so moods, blinking, the click hop and the nap
-// from js/mascot.js work on all of them. Pure SVG + CSS (web/neon.css, "Characters").
-//
-// Example: characterHtml("sc-atrisk", "hourglass", "worried") → an hourglass whose sand runs out
-// while it frowns and sweats.
-
-// The shared face at (cx, cy). ink = colour of the eyes and mouth (light on dark screens).
 function face(cx, cy, ink = "#0d1428") {
   return `<g class="mascot-eyes">
       <ellipse class="mascot-eye" cx="${cx - 6}" cy="${cy}" rx="3" ry="3.8" fill="${ink}"/>

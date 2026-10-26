@@ -1,18 +1,3 @@
-"""Keep each provider under its free-tier limits: requests per minute and per day.
-
-Why this design:
-- Per minute: a sliding window. We remember the time of each call in the last 60 s; if the
-  window is full, we sleep until the oldest call is 60 s old. Simple and exact.
-- Per day: a counter in SQLite, so the budget survives restarts (the eval can run many
-  times a day). Days are counted in UTC. Google resets at midnight Pacific time, so our
-  day boundary is off by some hours; the configured budgets sit well below the real
-  limits, which covers that gap.
-- `now_fn` and `sleep_fn` can be replaced in tests, so tests never really sleep.
-
-Example (limit 2 per minute):
-    t=0 s call, t=1 s call, t=2 s → must wait until t=60 s for the third call.
-"""
-
 from __future__ import annotations
 
 import sqlite3
@@ -24,8 +9,6 @@ from typing import Callable
 
 
 class RateLimiter:
-    """Tracks calls per provider and blocks until a call is allowed."""
-
     def __init__(
         self,
         db_path: Path,
@@ -62,10 +45,8 @@ class RateLimiter:
         return self.calls_today(provider) < requests_per_day
 
     def wait_for_slot(self, provider: str, requests_per_minute: int) -> float:
-        """Sleep until one more call fits in the last-60-seconds window. Returns seconds slept."""
         window = self._recent.setdefault(provider, deque())
         now = self._now()
-        # Forget calls older than 60 s.
         while window and now - window[0] >= 60.0:
             window.popleft()
         slept = 0.0
@@ -78,7 +59,6 @@ class RateLimiter:
         return slept
 
     def record_call(self, provider: str) -> None:
-        """Remember a call for both the minute window and the daily counter."""
         self._recent.setdefault(provider, deque()).append(self._now())
         self._conn.execute(
             """

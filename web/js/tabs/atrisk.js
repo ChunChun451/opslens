@@ -1,18 +1,9 @@
-// tabs/atrisk.js — open tickets ranked by breach risk, with reasons and a fix.
-//
-// Why: an agent lead needs to know which tickets will be late before they are late, why
-// (TreeSHAP reasons from LightGBM), and what would help ("what would reduce this risk").
-// Model quality numbers sit on top so nobody has to trust the ranking blindly.
-//
-// Example (real results): T060825, P1 app bug, 99.7% risk, 44 min to SLA. Top reason
-// "44 min left of 60 min SLA". Assign now to a free agent who handles app bugs -> 8.9%.
-
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, missing, fold, factLine } from "../ui.js";
 import { escapeHtml, prettyKey } from "../format.js";
 
-const SHOWN = 5; // tickets shown before the fold (a layout choice)
+const SHOWN = 5;
 
 export function render(section) {
   const risk = state.results.risk;
@@ -22,7 +13,6 @@ export function render(section) {
     section.innerHTML = head + missing("The risk model", "M5");
     return;
   }
-  // 24 Oct, "less clutter": model quality as one line of facts; the judge questions fold away.
   const quality = factLine([
     [ev("risk.top10_precision", "frac_pct"), "of the 10% flagged riskiest really were late"],
     [ev("risk.auc", "ratio"), "ranking score (AUC, 1 = perfect)"],
@@ -44,8 +34,6 @@ export function render(section) {
   });
 }
 
-// The two questions a sharp judge asks about this screen, answered from Plan v4 W7 and W8
-// (shown only when those results are in the file).
 function challengeStrip() {
   const r = state.results;
   const items = [];
@@ -70,8 +58,6 @@ function challengeStrip() {
   return items.length ? `<div class="grid cols-${items.length} stretch challenge-strip">${items.join("")}</div>` : "";
 }
 
-// Calibrated probabilities saturate near 1, and "100%" reads as a certainty no model has.
-// The button still opens the exact value.
 function riskText(path, p) {
   if (p < 0.995) return ev(path, "frac_pct");
   return `<button type="button" class="ev" data-path="${escapeHtml(path)}" data-unit="frac_pct">≥ 99%</button>`;
@@ -81,11 +67,9 @@ function ticketsHtml(risk) {
   if (!risk.at_risk.length) {
     return card({ body: `<p class="muted">No open tickets at risk.</p>` });
   }
-  // Rank by probability, keeping each ticket's index in the JSON for its paths.
   const order = risk.at_risk
     .map((ticket, index) => ({ ticket, index }))
     .sort((a, b) => b.ticket.probability - a.ticket.probability);
-  // Reason bars are scaled to the biggest contribution on screen (a picture, not a number).
   let biggest = 0;
   risk.at_risk.forEach((t) => t.reasons.forEach((r) => { biggest = Math.max(biggest, Math.abs(r.contribution)); }));
   const html = order.map(({ ticket, index }) => ticketHtml(ticket, index, biggest));
@@ -95,7 +79,7 @@ function ticketsHtml(risk) {
 
 function ticketHtml(t, i, biggest) {
   const base = `risk.at_risk[${i}]`;
-  const percent = Math.round(t.probability * 100); // only for the ring's fill, not shown as text
+  const percent = Math.round(t.probability * 100);
   const reasons = t.reasons.map((r, j) => {
     const width = biggest > 0 ? Math.round((Math.abs(r.contribution) / biggest) * 100) : 0;
     return `<div class="reason">
@@ -103,9 +87,6 @@ function ticketHtml(t, i, biggest) {
         <div>${evText(`${base}.reasons[${j}].text`)}</div>
       </div>`;
   }).join("");
-  // When nobody who can serve the ticket is on shift, "assign now to a capable agent" is not an
-  // action a lead can take: say so, show the number as what it is (a what-if), and say what
-  // OpsLens does instead (v5: a cross-skill rescue when no capable agent arrives in time).
   const nobody = t.reasons.some((r) => r.feature === "capable_on_shift" && /^no agent/.test(r.text));
   const after = typeof t.probability_after_action === "number"
     ? ` → <strong>${ev(base + ".probability_after_action", "frac_pct")}</strong>` : "";

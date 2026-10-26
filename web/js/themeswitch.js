@@ -1,11 +1,3 @@
-// themeswitch.js — the Neon / Light button in the top bar.
-//
-// Why: the neon look (web/neon.css) is the default, but a weak projector can wash dark pages out,
-// so one click brings back the light design. The choice is remembered in this browser, and the
-// page reloads so the charts are drawn again in the matching colours.
-//
-// Example: on Neon the button reads "Light"; click → light colours, the button reads "Neon".
-
 import { store } from "./data.js";
 
 export function initThemeSwitch() {

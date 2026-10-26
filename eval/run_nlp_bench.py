@@ -1,20 +1,3 @@
-"""W6 (a): the classification cascade on BANKING77, real customer queries we did not write.
-
-Run:  python eval/run_nlp_bench.py [--no-llm]
-Needs: python scripts/download_banking77.py. Design (pre-registered): docs/explain/nlp_bench.md.
-
-For each setting (Full, 10-shot):
-1. Split: validation = stratified 20% of train (Full) or 5 more per intent (10-shot), seed 77.
-2. Local model = the product's text features (word + char TF-IDF → logistic regression, isotonic)
-   trained without the validation part; the LLM labels every validation query the local model is
-   unsure about (conf < the highest candidate); the threshold is picked on validation with the
-   product's rule (opslens.classify.choose_threshold, ≤ 30% escalated).
-3. Refit the local model on the whole training part; score local and cascade ONCE on the test set.
-Plus LLM-only on 400 random test queries (seed 77). Every LLM call goes through LLMClient (PII
-masking, cache, rate limits), so a re-run costs nothing and gives the same answers.
-Writes eval/parts/nlp_bench.json.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -33,30 +16,26 @@ from sklearn.pipeline import FeatureUnion, Pipeline
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens.classify import BATCH_SIZE, LLMLabel, cascade, choose_threshold  # noqa: E402
-from opslens.llm.base import LLMUnavailable  # noqa: E402
-from opslens.llm.client import build_client  # noqa: E402
-from opslens.privacy import mask_pii  # noqa: E402
+from opslens.classify import BATCH_SIZE, LLMLabel, cascade, choose_threshold
+from opslens.llm.base import LLMUnavailable
+from opslens.llm.client import build_client
+from opslens.privacy import mask_pii
 
 DATA = ROOT / "data" / "public" / "banking77"
 SEED = 77
 CANDIDATES = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 MAX_ESCALATED_PCT = 30.0
-LLM_ONLY_SAMPLE = 500  # Claude 1, issue #8 (was 400 in the first design; changed before it ran)
+LLM_ONLY_SAMPLE = 500
 BOOT = 2000
 PROVIDER = "gemini"
 RETRY_WAITS_S = [20, 40, 60, 120, 240, 300]
-# Gemini 3.1 Flash-Lite paid "Standard" list price, ai.google.dev/gemini-api/docs/pricing, read 22 Oct 2026.
-# The free tier (what we use) costs nothing; the paid price is what a company would pay at scale.
 USD_PER_M_INPUT, USD_PER_M_OUTPUT = 0.25, 1.50
-PUBLISHED = {  # Casanueva et al. 2020, Table 3, BANKING77 accuracy (%)
+PUBLISHED = {
     "source": "Casanueva et al. (2020), Efficient Intent Detection with Dual Sentence Encoders, Table 3",
     "full": {"BERT-fixed": 87.19, "BERT-tuned": 93.66, "USE": 92.81, "ConveRT": 93.01, "USE+ConveRT": 93.36},
     "10-shot": {"BERT-fixed": 67.55, "BERT-tuned": 83.42, "USE": 84.23, "ConveRT": 83.32, "USE+ConveRT": 85.19},
 }
 
-
-# ---- Local model (the product's text features) -------------------------------------------------
 
 def local_model() -> CalibratedClassifierCV:
     features = FeatureUnion([
@@ -73,7 +52,6 @@ def clean_text(texts: pd.Series) -> list[str]:
 
 
 def fit_predict(train: pd.DataFrame, score: pd.DataFrame) -> tuple[pd.DataFrame, float]:
-    """Local predictions for `score` and the local latency in ms per query."""
     model = local_model().fit(clean_text(train["text"]), train["category"])
     started = time.perf_counter()
     proba = model.predict_proba(clean_text(score["text"]))
@@ -82,8 +60,6 @@ def fit_predict(train: pd.DataFrame, score: pd.DataFrame) -> tuple[pd.DataFrame,
     return pd.DataFrame({"ticket_id": score["ticket_id"].to_numpy(), "pred_local": model.classes_[best],
                          "conf_local": proba[np.arange(len(score)), best]}), ms
 
-
-# ---- LLM tier ----------------------------------------------------------------------------------
 
 def system_prompt(intents: list[str]) -> str:
     return ("You classify customer messages sent to an online bank's support chat into exactly one of these "
@@ -104,7 +80,6 @@ class LLMStats:
 
 
 def llm_label(client, intents: list[str], df: pd.DataFrame, stats: LLMStats) -> dict[str, LLMLabel]:
-    """{ticket_id: LLMLabel} for the rows of df; one retry for missing ids, as in the product."""
     system = system_prompt(intents)
     known = set(intents)
     labels: dict[str, LLMLabel] = {}
@@ -116,7 +91,7 @@ def llm_label(client, intents: list[str], df: pd.DataFrame, stats: LLMStats) -> 
                 break
             user = "Messages:\n" + "\n".join(f"{i}. {r.text}" for i, r in pending.items())
             result = None
-            for wait in RETRY_WAITS_S:  # "high demand" 503s pass; a batch that never gets an answer stays local
+            for wait in RETRY_WAITS_S:
                 try:
                     result = client.ask_json("bench_banking77", system, user)
                     break
@@ -144,8 +119,6 @@ def llm_label(client, intents: list[str], df: pd.DataFrame, stats: LLMStats) -> 
     return labels
 
 
-# ---- Statistics --------------------------------------------------------------------------------
-
 def ci(correct: np.ndarray, rng: np.random.Generator) -> dict:
     idx = rng.integers(0, len(correct), size=(BOOT, len(correct)))
     means = correct[idx].mean(axis=1) * 100
@@ -154,7 +127,6 @@ def ci(correct: np.ndarray, rng: np.random.Generator) -> dict:
 
 
 def paired(a: np.ndarray, b: np.ndarray, rng: np.random.Generator) -> dict:
-    """a − b in accuracy points, paired bootstrap over the same queries."""
     diff = a.astype(float) - b.astype(float)
     idx = rng.integers(0, len(diff), size=(BOOT, len(diff)))
     means = diff[idx].mean(axis=1) * 100
@@ -163,8 +135,6 @@ def paired(a: np.ndarray, b: np.ndarray, rng: np.random.Generator) -> dict:
             "excludes_zero": bool(lo > 0 or hi < 0)}
 
 
-# ---- One setting -------------------------------------------------------------------------------
-
 def run_setting(name: str, train_all: pd.DataFrame, test: pd.DataFrame, intents: list[str], client,
                 stats: LLMStats, rng_ci: np.random.Generator) -> dict:
     if name == "full":
@@ -172,17 +142,14 @@ def run_setting(name: str, train_all: pd.DataFrame, test: pd.DataFrame, intents:
                    .apply(lambda g: g.sample(frac=0.2, random_state=SEED)).index)
         train = train_all.drop(index=val_idx)
         val = train_all.loc[val_idx]
-    else:  # 10-shot: 10 per intent to learn, 5 more per intent to choose the threshold
+    else:
         shuffled = train_all.sample(frac=1.0, random_state=SEED)
         ranks = shuffled.groupby("category").cumcount()
         train = shuffled[ranks < 10]
         val = shuffled[(ranks >= 10) & (ranks < 15)]
     print(f"[{name}] learn {len(train)}, validation {len(val)}, test {len(test)}", flush=True)
 
-    # Threshold on validation.
     local_val, _ = fit_predict(train, val)
-    # Only thresholds within the escalation budget can be chosen, so the LLM labels just the
-    # queries below the highest such threshold (saves free quota; the choice is the same).
     conf_val = local_val["conf_local"].to_numpy()
     allowed = [t for t in CANDIDATES if 100.0 * (conf_val < t).mean() <= MAX_ESCALATED_PCT] or [min(CANDIDATES)]
     unsure_val = val[conf_val < max(allowed)]
@@ -193,7 +160,6 @@ def run_setting(name: str, train_all: pd.DataFrame, test: pd.DataFrame, intents:
         threshold = float("nan")
     print(f"[{name}] threshold {threshold} (validation)\n{table.to_string(index=False)}", flush=True)
 
-    # Final: refit on all learning data (train + validation for Full; the 10 for 10-shot), test once.
     learn = train_all if name == "full" else train
     local_test, ms = fit_predict(learn, test)
     truth = test["category"].to_numpy()
@@ -215,7 +181,7 @@ def run_setting(name: str, train_all: pd.DataFrame, test: pd.DataFrame, intents:
         "llm_answered_pct": round(100 * float(llm_answered.mean()), 2),
         "cascade": ci(cas_ok, rng_ci),
         "cascade_minus_local": paired(cas_ok, local_ok, rng_ci),
-        "on_escalated": {  # the queries the local model was unsure about
+        "on_escalated": {
             "n": int(esc.sum()),
             "local_pct": round(100 * float(local_ok[esc].mean()), 2) if esc.any() else None,
             "cascade_pct": round(100 * float(cas_ok[esc].mean()), 2) if esc.any() else None,
@@ -278,8 +244,6 @@ def main() -> int:
            "settings": settings, "llm_only": llm_only, "llm": llm, "published": PUBLISHED,
            "no_llm": bool(args.no_llm), "seconds": round(time.perf_counter() - started, 1)}
     if stats.failed_batches:
-        # A batch with no LLM answer would silently stay local and bias the test against the LLM.
-        # Answers are cached, so a re-run only asks for the missing batches.
         print(f"{stats.failed_batches} LLM batches unanswered (provider down?): NOT written; run again later")
         return 1
     path = ROOT / "eval" / "parts" / "nlp_bench.json"

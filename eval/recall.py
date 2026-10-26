@@ -1,23 +1,9 @@
-"""Score the pattern finder against the planted problems. Only eval/ may read planted.json.
-
-A finding FINDS a planted problem when, for every key in the planted segment, the finding
-covers that key with an overlapping value. Labels are expanded first, so that
-"team B" also means categories {refund, payment_failure}, and "weekend dinner" means
-weekdays {5, 6} and hours {19..22}.
-A finding DIAGNOSES it when it finds it AND names the same cause type.
-
-Example: planted P1 = {language: hi, category: [refund, payment_failure]}, cause skill_gap.
-Finding {language: hi, team: B}, cause skill_gap → team B expands to {refund, payment_failure}
-→ language overlaps, category overlaps → found and diagnosed.
-"""
-
 from __future__ import annotations
 
 from opslens.patterns import HOUR_BANDS
 
 
 def expand(segment: dict, team_skills: dict[str, list[str]]) -> dict[str, set]:
-    """Turn a finding's labels into sets of comparable values."""
     out: dict[str, set] = {}
     owner = {c: t for t, cats in team_skills.items() for c in cats}
     for key, value in segment.items():
@@ -48,7 +34,6 @@ def finds(card: dict, planted: dict, team_skills: dict[str, list[str]]) -> bool:
 
 
 def score(cards: list[dict], planted: list[dict], team_skills: dict[str, list[str]]) -> dict:
-    """Recall (found / diagnosed) per planted problem and the cards that match nothing."""
     details = []
     matched_cards: set[str] = set()
     for p in planted:

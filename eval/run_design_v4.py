@@ -1,26 +1,3 @@
-"""Design check v4 (validation days only): what should a cross-skill job cost?
-
-Why this file exists: a breach diagnosis on validation days 36-42 (seeds 1-3) found that of
-OpsLens v3's 2.13% breaches, 1.36 points happen even with unlimited agents and perfect routing
-(the work alone is longer than the SLA, or the customer reopens too late). Of the 0.77 points
-left, the largest group is Hindi and regional-language P2 tickets at night: they waited a median
-682 minutes and were never given to an agent who speaks the language but is not trained on the
-category, although that would have saved most of them. Cause: v3 subtracts a FLAT mismatch
-penalty (2.0, tuned for v1's value scale) after multiplying by urgency, so a cross-skill job costs
-a P2 about 1.2 breach-probability units — more than any P2 can be worth — but a P1 only 0.6.
-v4 prices it in breach-probability units scaled like the ticket's value (`mismatch_cost`).
-
-PRE-REGISTERED (written before the first run):
-- Grid: mismatch_cost 0.2 / 0.4 / 0.6 / 0.8 / 1.0, against v3; validation days 36-42, seeds 1-5,
-  normal volume and +25% volume (the stress that v1 and v2 failed).
-- Pick the cost with the lowest normal-volume breach % among those that are (a) not worse than v3
-  at +25% volume and (b) not worse than v3 on minutes past SLA per 100 tickets (normal volume).
-- Adopt v4 only if its normal-volume breach % beats v3 with a paired 95% CI entirely below 0.
-  Otherwise v3 stays. If adopted: test days run once, then a new sealed world; both reported.
-
-Run:  .venv/Scripts/python.exe eval/run_design_v4.py   → eval/parts/design_v4.json
-"""
-
 from __future__ import annotations
 
 import json
@@ -33,8 +10,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import PARTS, run_jobs  # noqa: E402
-from opslens.impact import paired_ci  # noqa: E402
+from eval.run_opslens import PARTS, run_jobs
+from opslens.impact import paired_ci
 
 SEEDS = [1, 2, 3, 4, 5]
 FIRST, LAST = 36, 42

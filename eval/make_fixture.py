@@ -1,14 +1,3 @@
-"""Write eval/fixture_results.json (invented numbers, same shape as results.json) and
-eval/results.schema.json (the JSON Schema of results.json).
-
-Why: the dashboard is built in parallel with the engine. It needs data of the right shape
-before the real numbers exist. Every number here is INVENTED; the file says so in
-`meta.fixture = true`, the UI shows a red FIXTURE banner, and `make demo` refuses it.
-Example tickets are real rows from data/generated/history.csv (texts masked).
-
-Run:  .venv/Scripts/python.exe eval/make_fixture.py
-"""
-
 from __future__ import annotations
 
 import json
@@ -22,8 +11,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens.privacy import mask_pii  # noqa: E402
-from opslens.results_schema import Results  # noqa: E402
+from opslens.privacy import mask_pii
+from opslens.results_schema import Results
 
 KPI_NAMES = [
     "turnaround.breach_pct", "turnaround.mean_resolution_min", "turnaround.p90_resolution_min",
@@ -60,7 +49,7 @@ def build(history: pd.DataFrame) -> dict:
         for base, kpi, d in [("baseline_a", "turnaround.breach_pct", -8.9), ("baseline_b", "turnaround.breach_pct", -2.7),
                              ("baseline_a", "turnaround.p90_resolution_min", -45.0), ("baseline_b", "turnaround.p90_resolution_min", -58.0)]
     ]
-    steps = 24  # 18:00-23:45 every 15 min
+    steps = 24
     times = [f"{18 + i // 4:02d}:{(i % 4) * 15:02d}" for i in range(steps)]
     curve = np.sin(np.linspace(0, np.pi, steps))
     replay = {
@@ -177,7 +166,7 @@ def build(history: pd.DataFrame) -> dict:
 def main() -> int:
     history = pd.read_csv(ROOT / "data" / "generated" / "history.csv")
     data = build(history)
-    Results.model_validate(data)  # fails loudly if the fixture drifts from the schema
+    Results.model_validate(data)
     (ROOT / "eval" / "fixture_results.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
     schema = Results.model_json_schema()
     (ROOT / "eval" / "results.schema.json").write_text(json.dumps(schema, indent=1), encoding="utf-8")

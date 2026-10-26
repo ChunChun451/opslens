@@ -1,28 +1,3 @@
-# The support floor: 40 agents in 4 teams. Every agent is listed, so a judge can see exactly
-# who works when. All names are fictional.
-#
-# start    = shift start hour (shifts last `shift_hours`; a 22:00 start ends 07:00 next day)
-# days_off = weekly days off (0 = Mon ... 6 = Sun). A night shift belongs to the day it starts.
-# langs    = languages the agent can serve (en, hi, other)
-# extra_skills = categories the agent is trained for ON TOP of the team's categories.
-#          Status-quo agents work their team's queue first and help with extra skills only
-#          when their own queue is empty. A ticket outside an agent's skills can still be
-#          handled, but 1.6x slower (generator.yaml: skill_mismatch_factor) and with more reopens.
-#          "all" = trained for every category.
-#
-# How the roster was made: start hours and days off were chosen with a small search that
-# keeps each team's load (rho) as flat as possible across the 168 hours of the week —
-# a reasonable status quo, not a strawman. Then two problems were planted on purpose:
-#
-# Planted problem 1 (skill gap): only 3 agents on the whole floor have Hindi + refund/payment
-#   skills (Kavita B01, Arjun B02, Pooja B05), none at night. Hindi payment and refund tickets
-#   therefore wait much longer than English ones.
-#   (Night agents A09 and D11 speak Hindi but are not trained on refunds/payments.)
-# Planted problem 2 (capacity): two of Team C's evening agents (C05, C07) are off every
-#   Saturday and Sunday, while weekend-dinner volume of missing/wrong items is 1.35x.
-#   Team D has 3 evening agents cross-trained on missing/wrong items (D06, D07, D09) —
-#   the staffing fix OpsLens should find.
-
 shift_hours: 9
 max_concurrent: 1
 
@@ -33,7 +8,6 @@ teams:
   D: {name: "Account, app & partners", skills: [account, app_bug, restaurant_partner]}
 
 agents:
-  # ---- Team A: Live orders (9) ----
   - {id: A01, name: "Rohit M.",   team: A, start: 7,  days_off: [6, 0], langs: [en, hi],    extra_skills: [missing_item]}
   - {id: A02, name: "Sana K.",    team: A, start: 8,  days_off: [2, 3], langs: [en, other], extra_skills: [missing_item]}
   - {id: A03, name: "Vikram P.",  team: A, start: 8,  days_off: [4, 5], langs: [en, hi],    extra_skills: [missing_item]}
@@ -45,7 +19,6 @@ agents:
   - {id: A09, name: "Nisha B.",   team: A, start: 22, days_off: [0, 1], langs: [en, hi, other],
      extra_skills: [missing_item, wrong_item, app_bug, account, restaurant_partner]}
 
-  # ---- Team B: Payments & refunds (11) — only Kavita, Arjun and Pooja speak Hindi ----
   - {id: B01, name: "Kavita D.",  team: B, start: 10, days_off: [1, 2], langs: [en, hi]}
   - {id: B02, name: "Arjun N.",   team: B, start: 14, days_off: [4, 5], langs: [en, hi]}
   - {id: B03, name: "Ritu S.",    team: B, start: 7,  days_off: [1, 2], langs: [en, other]}
@@ -58,7 +31,6 @@ agents:
   - {id: B10, name: "Rahul E.",   team: B, start: 16, days_off: [6, 0], langs: [en, other]}
   - {id: B11, name: "Varun H.",   team: B, start: 22, days_off: [2, 3], langs: [en, other], extra_skills: all}
 
-  # ---- Team C: Order accuracy (9) — C05 and C07 are off every weekend ----
   - {id: C01, name: "Anjali F.",  team: C, start: 7,  days_off: [5, 6], langs: [en]}
   - {id: C02, name: "Deepak W.",  team: C, start: 8,  days_off: [0, 1], langs: [en, hi]}
   - {id: C03, name: "Sneh Y.",    team: C, start: 8,  days_off: [3, 4], langs: [en, other]}
@@ -69,7 +41,6 @@ agents:
   - {id: C08, name: "Yash X.",    team: C, start: 16, days_off: [0, 1], langs: [en, hi]}
   - {id: C09, name: "Ruchi P.",   team: C, start: 16, days_off: [3, 4], langs: [en, other]}
 
-  # ---- Team D: Account, app & partners (11) — D06, D07, D09 cross-trained on missing/wrong ----
   - {id: D01, name: "Prakash M.", team: D, start: 7,  days_off: [1, 2], langs: [en, hi]}
   - {id: D02, name: "Swati N.",   team: D, start: 7,  days_off: [3, 4], langs: [en, other]}
   - {id: D03, name: "Zoya R.",    team: D, start: 7,  days_off: [6, 0], langs: [en]}

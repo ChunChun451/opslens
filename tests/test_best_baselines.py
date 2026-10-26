@@ -1,6 +1,3 @@
-"""The published rules (least slack first, generalized c-mu) and clairvoyant least slack.
-Tiny hand-computed cases: one agent busy with T0 until minute 30, the rest wait."""
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -14,9 +11,6 @@ HANDLE = {"refund": 10.0, "missing_item": 10.0}
 
 
 def test_least_slack_defers_a_ticket_that_cannot_make_it() -> None:
-    # At 30: T1 due 41, expected 10 → slack 1 (savable). T2 due 36 → slack −4 (hopeless).
-    # T3 due 101 → slack 61. Least slack: T1 30-40 (made it), T3 40-50, T2 50-60 → 1 breach.
-    # EDF (Baseline C) serves T2 first (36 < 41): T2 ends 40, T1 ends 50 → both late.
     world = make_world([0, 1, 1, 1], [30, 10, 10, 10], [agent("X", "B", {"refund"})])
     world.sla_min = np.array([600.0, 40.0, 35.0, 100.0])
     lsf = by_id(simulate(world, LeastSlackPolicy(world, {}, HANDLE), 0, 200, decide_every_min=1))
@@ -27,8 +21,6 @@ def test_least_slack_defers_a_ticket_that_cannot_make_it() -> None:
 
 
 def test_least_slack_uses_the_expected_handle_time() -> None:
-    # Same deadline (due 61) for both; at 30 the missing-item ticket expects 25 min (slack 6),
-    # the refund 10 min (slack 21): the one with less slack goes first.
     world = make_world([0, 1, 1], [30, 10, 25], [agent("X", "B", {"refund", "missing_item"})],
                        true_cat=["refund", "refund", "missing_item"])
     world.sla_min = np.array([600.0, 60.0, 60.0])
@@ -39,12 +31,6 @@ def test_least_slack_uses_the_expected_handle_time() -> None:
 
 
 def test_rescue_sends_a_savable_ticket_to_a_free_cross_skill_agent() -> None:
-    # X (refund) is busy with T0 until 30; Y (late_delivery) is free. At minute 1, threshold 30:
-    # T2 due 13: slack 2 (in danger) but the slow way 12 − 16 < 0 → not rescued.
-    # T1 due 36: slack 25 < 30 and slow way 35 − 16 = 19 ≥ 0 → Y rescues it, 1-17 (10 × 1.6).
-    # T3 due 601: slack 590, not in danger → waits for X.
-    # At 30 X serves T3 (savable) 30-40, then T2 (hopeless) 40-50. One breach: T2.
-    # Plain least slack: T3 30-40, then the hopeless ones most-late first: T2 40-50, T1 50-60.
     world = make_world([0, 1, 1, 1], [30, 10, 10, 10],
                        [agent("X", "B", {"refund"}), agent("Y", "A", {"late_delivery"})])
     world.sla_min = np.array([600.0, 35.0, 12.0, 600.0])
@@ -56,23 +42,18 @@ def test_rescue_sends_a_savable_ticket_to_a_free_cross_skill_agent() -> None:
     assert rescue["breached"].sum() == 1
     assert lsf["resolved_min"].tolist() == [30, 60, 50, 40]
     assert lsf["breached"].sum() == 2
-    # Threshold 20: at minute 1 T1's slack 25 is not below it. The rule waits until minute 7
-    # (slack 36 − 7 − 10 = 19 < 20, slow way 29 − 16 = 13 ≥ 0): Y rescues it 7-23.
     strict = by_id(simulate(world, LeastSlackRescuePolicy(world, {}, HANDLE, threshold_min=20), 0, 200,
                             decide_every_min=1))
     assert strict["resolved_min"].tolist() == [30, 23, 50, 40]
 
 
 def test_rescue_never_beats_a_free_skilled_agent_or_the_language() -> None:
-    # Y (late_delivery) has been idle longest, but Z (refund) is free too: Z takes the refund,
-    # skilled, even though it is in danger (slack 5).
     world = make_world([0], [10], [agent("Y", "A", {"late_delivery"}), agent("Z", "B", {"refund"})])
     world.sla_min = np.array([15.0])
     out = by_id(simulate(world, LeastSlackRescuePolicy(world, {}, HANDLE, threshold_min=30), 0, 200,
                          decide_every_min=1))
     assert out["resolved_min"].tolist() == [10]
     assert out["mismatch_used"].tolist() == [False]
-    # A Hindi refund in danger while X (refund, Hindi) is busy: Y speaks only English, so no rescue.
     world = make_world([0, 1], [30, 10], [agent("X", "B", {"refund"}, langs={"en", "hi"}),
                                           agent("Y", "A", {"late_delivery"})], language=["en", "hi"])
     world.sla_min = np.array([600.0, 35.0])
@@ -95,9 +76,6 @@ def test_cmu_index_matches_the_docstring_example() -> None:
 
 
 def test_cmu_serves_the_late_ticket_and_then_the_short_one() -> None:
-    # At 30: T1 (SLA 20) is 9 min late, T2 and T3 (SLA 60) still have time. c-mu: T1 first, the
-    # opposite of least slack. Between T2 and T3 (same age and SLA) the shorter job wins:
-    # T3 (missing_item, expected 5) before T2 (refund, expected 20).
     world = make_world([0, 1, 1, 1], [30, 10, 10, 5], [agent("X", "B", {"refund", "missing_item"})],
                        true_cat=["refund", "refund", "refund", "missing_item"])
     world.sla_min = np.array([600.0, 20.0, 60.0, 60.0])
@@ -109,10 +87,6 @@ def test_cmu_serves_the_late_ticket_and_then_the_short_one() -> None:
 
 
 def test_clairvoyant_knows_the_true_handle_time_and_category() -> None:
-    # At 30: T1 due 41 but its true handle time is 14 → slack −3, hopeless; T2 due 50, true 4 →
-    # slack 16. Clairvoyant: T2 30-34, then T1 34-48. Least slack (expects 10 for both) takes
-    # T1 first (slack 1 < 10) and then T2 ends at 48: 1 breach either way, but the clairvoyant
-    # one is the hopeless ticket and T2 is done 14 min sooner.
     world = make_world([0, 1, 1], [30, 14, 4], [agent("X", "B", {"refund"})])
     world.sla_min = np.array([600.0, 40.0, 49.0])
     clair = by_id(simulate(world, ClairvoyantSlackPolicy(world), 0, 200, decide_every_min=1))
@@ -120,8 +94,6 @@ def test_clairvoyant_knows_the_true_handle_time_and_category() -> None:
     assert clair["resolved_min"].tolist() == [30, 48, 34]
     assert lsf["resolved_min"].tolist() == [30, 44, 48]
 
-    # The customer picked "refund" but it is a missing item: the clairvoyant sends it straight
-    # to Y (missing_item) — no transfer. Least slack trusts the (empty) prediction → menu → X.
     world = make_world([0], [10], [agent("X", "B", {"refund"}), agent("Y", "C", {"missing_item"})],
                        true_cat=["missing_item"], selected=["refund"])
     assert by_id(simulate(world, ClairvoyantSlackPolicy(world), 0, 200, decide_every_min=1))["transfers"].tolist() == [0]
@@ -135,5 +107,4 @@ def test_expected_handle_uses_training_days_and_first_attempts_only() -> None:
         "handled_min": [8.0, 30.0, 6.0, 99.0], "reopens": [0, 1, 0, 0], "resolution_min": [20.0] * 4,
     })
     out = expected_handle_minutes(history, "2026-08-31", last_day=35)
-    # Row 2 was reopened, row 4 is day 41 (validation): neither counts.
     assert out == {("refund", "chat"): 8.0, ("refund", "email"): 6.0, "refund": 7.0}

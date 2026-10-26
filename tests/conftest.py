@@ -1,5 +1,3 @@
-"""Make the project root importable in tests (so `import opslens` works without installing)."""
-
 import sys
 from pathlib import Path
 

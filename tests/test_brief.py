@@ -1,5 +1,3 @@
-"""The LLM can never put a number of its own on screen."""
-
 import json
 
 from opslens.brief import check_and_fill, write_brief
@@ -24,7 +22,7 @@ def test_unknown_keys_are_rejected() -> None:
 
 
 def results_stub() -> dict:
-    k = lambda v: {"mean": v, "std": 0.1}  # noqa: E731
+    k = lambda v: {"mean": v, "std": 0.1}
     pol = {p: {"kpis": {"turnaround.breach_pct": k(b), "turnaround.p90_resolution_min": k(t)}}
            for p, b, t in (("opslens", 5.08, 130.2), ("baseline_b", 6.82, 198.4), ("baseline_a", 13.11, 184.8))}
     return {"sim": {"policies": pol}, "patterns": {"cards": [{"title": "Hindi x Team B wait 5.1x longer", "affected_tickets": 2871,
@@ -37,11 +35,9 @@ def test_llm_brief_or_template_fallback() -> None:
     assert out["source"] == "llm" and out["text"] == "OpsLens kept breaches at 5.1%."
     bad = MockProvider(replies=[json.dumps({"brief": "Breaches were 4% lower."})])
     out = write_brief(results_stub(), LLMClient([bad]))
-    # The decision brief (24 Oct) compares with the lead baseline only: the industry standard when the
-    # results have it, else urgent-first (6.8% in this stub), not first-come.
     assert out["source"] == "template" and "5.1%" in out["text"] and "6.8%" in out["text"]
 
 
 def test_numbers_in_words_are_rejected() -> None:
     assert check_and_fill("Ninety percent of tickets closed fast at {{opslens_breach}}.", FACTS) is None
-    assert check_and_fill("Breaches doubled to {{opslens_breach}}.", FACTS) is not None  # "doubled" is not a number word
+    assert check_and_fill("Breaches doubled to {{opslens_breach}}.", FACTS) is not None

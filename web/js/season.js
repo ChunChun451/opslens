@@ -1,19 +1,5 @@
-// season.js — the OpsLens logo dresses up for the season, the way Google's logo does.
-//
-// Why (24 Oct, the owner: "change the OpsLens logo according to season, like Google does on
-// Diwali, cricket and FIFA days"): a logo that knows today's date makes the product feel alive,
-// and the finale (29–31 Oct 2026) falls in Diwali season. The season comes from the calendar on
-// this laptop, and ?doodle=cricket in the address picks one. Since 24 Oct (the owner) the season
-// shows on the splash only (js/splash.js reads currentSeason()); the side menu always shows the
-// OpsLens mark (js/logo.js: OPS inside a lens, with eyes) and "Every ticket is a promise".
-// Pure SVG + CSS (web/neon.css, "Doodles").
-//
-// Example: 24 Oct 2026 → "diwali": the splash opens on fireworks and diyas; the side menu keeps the mark.
-
 import { logoBody } from "./logo.js";
 
-// The seasons, in priority order. "from"/"to" are month-day; "years" pins festivals that move.
-// Diwali 2026 is on 8 Nov (Lakshmi Puja); the window covers the festive shopping weeks.
 const SEASONS = [
   { id: "newyear", name: "New Year", tag: "Happy New Year · keep every promise", from: "12-31", to: "01-02" },
   { id: "tricolour", name: "Republic Day", tag: "Happy Republic Day", from: "01-24", to: "01-27" },
@@ -30,10 +16,9 @@ function mmdd(date) {
   return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 function inWindow(day, from, to) {
-  return from <= to ? day >= from && day <= to : day >= from || day <= to; // New Year wraps
+  return from <= to ? day >= from && day <= to : day >= from || day <= to;
 }
 
-// The season for a date (today by default), or the classic logo.
 export function seasonFor(date = new Date()) {
   const day = mmdd(date);
   for (const s of SEASONS) {
@@ -47,7 +32,6 @@ function byId(id) {
   return SEASONS.find((s) => s.id === id) || CLASSIC;
 }
 
-// The season shown now: the address (?doodle=), else the calendar.
 export function currentSeason() {
   const asked = new URLSearchParams(location.search).get("doodle");
   return asked ? byId(asked) : seasonFor();
@@ -60,7 +44,6 @@ const LENS = `<circle cx="18" cy="18" r="13" fill="none" stroke="url(#lens-g)" s
     <path d="M28 28l7 7" stroke="url(#lens-g)" stroke-width="3.6" stroke-linecap="round"/>`;
 const SPARK = (x, y, c, cls = "") => `<path class="spark ${cls}" d="M${x} ${y - 4} l1 3 l3 1 l-3 1 l-1 3 l-1 -3 l-3 -1 l3 -1z" fill="${c}"/>`;
 
-// One SVG body (40×40) per doodle. Each keeps the lens idea: a ring and a handle.
 const DOODLES = {
   classic: () => `<svg x="0" y="0" width="40" height="40" viewBox="0 0 120 120">${logoBody("lg-side")}</svg>`,
   diwali: () => `
@@ -117,8 +100,6 @@ function apply(season) {
   document.documentElement.dataset.season = season.id;
 }
 
-// The side menu always shows the OpsLens mark (OPS inside the lens, with eyes) and "Every ticket is
-// a promise" (owner, 24 Oct): the season lives on the splash only. ?doodle=<id> still shows a doodle.
 export function initSeason() {
   const asked = new URLSearchParams(location.search).get("doodle");
   apply(asked ? byId(asked) : CLASSIC);

@@ -1,5 +1,3 @@
-"""Plan v4 W8 (c): the runner-up agent in the reason text — words only, never a different decision."""
-
 from pathlib import Path
 
 import pandas as pd
@@ -22,7 +20,6 @@ def test_runner_up_names_the_next_agent_and_keeps_the_picks() -> None:
     candidates = [a, b, cand(1, "B02", 0.7), cand(1, "B03", 1.2)]
     out = with_runner_up([a, b], candidates, ticket_name=lambda i: f"T{i:06d}")
     assert [(c.ticket_idx, c.agent_id, c.value) for c in out] == [(1, "B01", 1.0), (2, "B03", 0.9)]
-    # B03 valued ticket 1 more, but the optimiser gave it ticket 2: the reason says so.
     assert out[0].reason == "P2 refund; B03 valued it 0.20 higher but took T000002"
     assert out[1].reason == "P2 refund; no other free agent could take it now"
     assert with_runner_up([cand(1, "B02", 0.7)], candidates)[0].reason.endswith("B03 valued it 0.50 higher "
@@ -32,7 +29,6 @@ def test_runner_up_names_the_next_agent_and_keeps_the_picks() -> None:
 
 @pytest.mark.skipif(not (GENERATED / "models" / "risk_booster.txt").exists(), reason="needs make gen + the risk model")
 def test_runner_up_text_changes_no_assignment(monkeypatch) -> None:
-    """Six busy hours of a real test day, frozen risk model: identical pickups with and without the text."""
     from opslens import risk
     from opslens.config import load_config
     from opslens.simulate import MINUTES_PER_DAY, simulate
@@ -42,7 +38,7 @@ def test_runner_up_text_changes_no_assignment(monkeypatch) -> None:
     preds = pd.read_csv(GENERATED / "predictions.csv", usecols=["ticket_id", "pred_final"])
     predicted = dict(zip(preds.ticket_id, preds.pred_final))
     model = risk.load(GENERATED / "models")
-    start = 47 * MINUTES_PER_DAY + 17 * 60  # Saturday 17 Oct (day 48), 17:00-23:00: the busiest stretch
+    start = 47 * MINUTES_PER_DAY + 17 * 60
 
     def run():
         world = build_world(tickets, seed=1, agents=load_agents(), gen_cfg=load_config("generator"))

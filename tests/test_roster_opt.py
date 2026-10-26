@@ -1,12 +1,10 @@
-"""Plan v4 W5: the CP-SAT roster keeps the budget, respects its limits and never loses to greedy."""
-
 import numpy as np
 import pandas as pd
 
 from opslens.roster_opt import options_for, plan_roster, weighted_shortage
 from opslens.staffing import Shift, plan_moves
 
-FIRST_WEEKDAY = 0  # day 1 = Monday
+FIRST_WEEKDAY = 0
 
 
 def test_options_keep_hours_and_two_consecutive_days_off() -> None:
@@ -26,7 +24,7 @@ def small_case():
     need = np.zeros(hours)
     for day in range(7):
         need[day * 24 + 9: day * 24 + 17] = 1.5
-        if day in (5, 6):  # weekend dinner peak
+        if day in (5, 6):
             need[day * 24 + 18: day * 24 + 23] = 4
     need_df = pd.DataFrame({"C": need})
     return shifts, need_df, need_df * 0.8
@@ -43,5 +41,4 @@ def test_change_limit_and_never_worse_than_greedy() -> None:
     assert sorted(s.agent_id for s in new) == sorted(s.agent_id for s in shifts)
     after = weighted_shortage(new, need, 1, 7, FIRST_WEEKDAY, load)
     assert after < before
-    # Same limit of 2 changes: the exact search is at least as good as greedy (+ its change penalty).
     assert after + len(changes) <= weighted_shortage(greedy, need, 1, 7, FIRST_WEEKDAY, load) + 2 + 1e-6

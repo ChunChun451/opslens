@@ -1,12 +1,3 @@
-"""M2 check: Baseline A vs Baseline B on the held-out test days (43-56), 5 seeds.
-
-Run:  .venv/Scripts/python.exe eval/run_baselines.py
-
-Each seed = one set of luck draws (handle times, reopens, absences), shared by both
-policies (common random numbers). Day 42 is a warm-up day: both policies start from an
-empty floor at day 42 00:00, and only tickets created on days 43-56 are counted.
-"""
-
 from __future__ import annotations
 
 import sys
@@ -18,11 +9,11 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens.config import load_config  # noqa: E402
-from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
-from opslens.policies import baseline_a, baseline_b  # noqa: E402
-from opslens.simulate import simulate  # noqa: E402
-from opslens.world import build_world, day_bounds  # noqa: E402
+from opslens.config import load_config
+from opslens.impact import mean_std, paired_ci, summarize
+from opslens.policies import baseline_a, baseline_b
+from opslens.simulate import simulate
+from opslens.world import build_world, day_bounds
 
 SEEDS = [1, 2, 3, 4, 5]
 SHOW = [

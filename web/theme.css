@@ -1,15 +1,3 @@
-/*
-  OpsLens design v2 (Claude 2, 17 Oct) — loaded AFTER styles.css, so everything here wins.
-
-  Why a separate file: styles.css is the component library; this file is the "skin". Reverting
-  the look is one line in index.html, and a reviewer sees the whole redesign in one place.
-
-  Direction: premium light UI (projectors wash out dark pages, CLAUDE.md §8), with ONE dark
-  "mission control" band on the Overview for the live floor. Inter type (vendored, works with
-  Wi-Fi off), quiet greys, one confident accent for OpsLens, soft layered depth, motion that
-  explains (staggered page entry, count-up numbers), never decorates.
-*/
-
 @font-face {
   font-family: "Inter";
   src: url("vendor/fonts/InterVariable.woff2") format("woff2");
@@ -63,7 +51,7 @@ html {
 }
 
 body {
-  font-feature-settings: "cv11", "ss01", "ss03"; /* Inter: straight 1, open digits — easier on a projector */
+  font-feature-settings: "cv11", "ss01", "ss03";
   letter-spacing: -0.006em;
   background:
     radial-gradient(1200px 500px at 70% -200px, rgba(61, 90, 254, 0.07), transparent 70%),
@@ -73,8 +61,6 @@ body {
 ::selection {
   background: rgba(61, 90, 254, 0.18);
 }
-
-/* ---- Frame: light sidebar, glass top bar ------------------------------------------------- */
 
 .sidebar {
   background: var(--nav-bg);
@@ -148,8 +134,6 @@ body {
   border-bottom: 1px solid rgba(10, 12, 16, 0.06);
 }
 
-/* ---- Type --------------------------------------------------------------------------------- */
-
 .page-title {
   font-size: 2.1rem;
   font-weight: 750;
@@ -182,8 +166,6 @@ body {
   font-size: 0.68rem;
 }
 
-/* ---- Cards: soft depth, gentle lift ------------------------------------------------------- */
-
 .card {
   border-color: var(--border);
   box-shadow: var(--shadow);
@@ -198,8 +180,6 @@ body {
 .grid {
   gap: 18px;
 }
-
-/* ---- Buttons, pills, tables --------------------------------------------------------------- */
 
 .btn {
   border-radius: 10px;
@@ -242,7 +222,6 @@ table tbody tr:hover {
   background: var(--surface-2);
 }
 
-/* Clickable evidence numbers: quiet until hovered. */
 .ev {
   border-radius: 6px;
   transition: background-color 0.15s, box-shadow 0.15s;
@@ -252,8 +231,6 @@ table tbody tr:hover {
   background: var(--blue-soft);
   box-shadow: 0 0 0 3px var(--blue-soft);
 }
-
-/* ---- Motion: each page enters in a short stagger ------------------------------------------ */
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(10px); }
@@ -275,8 +252,6 @@ table tbody tr:hover {
   .card, .btn { transition: none; }
 }
 
-/* ---- Ask OpsLens: the command bar is the centre of the top bar ----------------------------- */
-
 .ask-form {
   height: 42px;
   background: rgba(255, 255, 255, 0.9);
@@ -295,8 +270,6 @@ table tbody tr:hover {
   box-shadow: var(--shadow-lg);
   animation: rise 0.25s var(--ease) both;
 }
-
-/* ---- Proof strip -------------------------------------------------------------------------- */
 
 .proof {
   position: relative;
@@ -318,8 +291,6 @@ table tbody tr:hover {
   letter-spacing: -0.045em;
 }
 
-/* ---- Mission control: the dark live-floor band on the Overview (tabs/overview.js) ---------- */
-
 .mission {
   position: relative;
   overflow: hidden;
@@ -338,7 +309,6 @@ table tbody tr:hover {
 }
 
 .mission::after {
-  /* faint grid, like an ops console */
   content: "";
   position: absolute;
   inset: 0;
@@ -539,13 +509,10 @@ table tbody tr:hover {
   }
 }
 
-/* Tiles and dots ease in instead of blinking between frames. */
 .tile,
 .dot {
   transition: background-color 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s;
 }
-
-/* ---- Form controls: no raw browser defaults on stage ------------------------------------- */
 
 select,
 input[type="text"],
@@ -617,7 +584,6 @@ input[type="range"]::-moz-range-thumb {
   border: 2px solid var(--blue);
 }
 
-/* Bars in charts-as-HTML (cbar) get a soft track and rounded ends. */
 .cbar-track {
   background: var(--surface-3);
   border-radius: 999px;
@@ -629,7 +595,6 @@ input[type="range"]::-moz-range-thumb {
   transition: width 0.8s var(--ease);
 }
 
-/* OpsLens row in comparison tables. */
 tr.is-ours td {
   background: var(--blue-soft);
 }
@@ -637,14 +602,6 @@ tr.is-ours td {
 tr.is-ours td:first-child {
   box-shadow: inset 3px 0 0 var(--blue);
 }
-
-/* =============================================================================================
-   Design v3 — "Every ticket is a promise" (Claude 2, 17 Oct, with the frontend-design guide).
-   Palette from the subject: indigo night (the dinner rush), saffron (promises kept / attention),
-   chilli (missed promises), electric indigo (OpsLens). Bricolage Grotesque for headlines,
-   Inter for reading and numbers. One bold moment (the cold open, js/intro.js); everything
-   else calm. This block overrides v2 above where they differ.
-   ============================================================================================= */
 
 @font-face {
   font-family: "Bricolage Grotesque";
@@ -669,7 +626,6 @@ tr.is-ours td:first-child {
   --bad-soft: #fde9ec;
 }
 
-/* Headlines carry the personality; body stays quiet. */
 .page-title,
 .card-title,
 .mission h2 {
@@ -683,8 +639,6 @@ tr.is-ours td:first-child {
   letter-spacing: -0.035em;
 }
 
-/* Restraint: the cold open is the one orchestrated moment, so pages no longer stagger in and
-   cards no longer lift on hover (both read as generated defaults). */
 .tab-panel:not([hidden]) > * {
   animation: none;
 }
@@ -694,7 +648,6 @@ tr.is-ours td:first-child {
   border-color: var(--border);
 }
 
-/* Labels in sentence case, no tracking: they inform, they do not shout. */
 .section-label,
 table th {
   text-transform: none;
@@ -708,7 +661,6 @@ table th {
   font-size: 0.82rem;
 }
 
-/* The OpsLens hero band: indigo night instead of generic near-black. */
 .mission {
   background:
     radial-gradient(800px 340px at 90% -30%, rgba(75, 75, 245, 0.55), transparent 70%),
@@ -733,8 +685,6 @@ table th {
 .proof::before {
   background: var(--saffron);
 }
-
-/* ---- Side menu: replay the cold open ------------------------------------------------------ */
 
 .intro-replay {
   margin: 0 12px 12px;
@@ -761,8 +711,6 @@ table th {
 .intro-replay:hover {
   border-color: var(--saffron);
 }
-
-/* ---- The cold open (js/intro.js) ---------------------------------------------------------- */
 
 .intro {
   position: fixed;
@@ -987,13 +935,11 @@ body.intro-open {
   }
 }
 
-/* Visible keyboard focus everywhere (the dashboard is driven live on stage). */
 :focus-visible {
   outline: 3px solid var(--saffron);
   outline-offset: 2px;
 }
 
-/* Cold open: the end card sits centred over the dimmed night, whatever the screen size. */
 .intro-stage {
   position: relative;
 }
@@ -1024,8 +970,6 @@ body.intro-open {
     transform: none;
   }
 }
-
-/* ---- Plan v3 (19 Oct): world switch, sub-tabs, Your plan, real-desk views ----------------- */
 
 .world-switch {
   display: inline-flex;
@@ -1082,7 +1026,7 @@ body[data-world="real"] .intro-replay { display: none; }
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(560px, 100vw); /* wide enough for a 4-column without / with / change table */
+  width: min(560px, 100vw);
   overflow-y: auto;
   background: var(--surface);
   border-left: 1px solid var(--border);
@@ -1140,18 +1084,14 @@ tr.hot td { background: var(--bad-soft); }
   .world-switch button span { display: none; }
 }
 
-/* Plan v3: keep the top bar on one line — the status gives way first, then the switch labels. */
 .topbar { min-width: 0; gap: 12px; }
 .topbar .ask-form { flex: 1 1 160px; min-width: 120px; }
 .topbar .topbar-actions { flex-shrink: 0; display: flex; gap: 8px; }
 @media (max-width: 1400px) { .topbar .status { display: none; } }
-/* 24 Oct: on a 1024-px projector Story mode stays, as an icon (it was hidden, and the guided
-   tour is the judges' way in); below 900 px the theme switch steps aside so the bar fits. */
 @media (max-width: 1100px) { #story-button .story-label { display: none; } #story-button { padding-left: 12px; padding-right: 12px; } }
 @media (max-width: 900px) { .topbar .theme-switch, .topbar #theme-button { display: none; } }
 .stat-card { padding: 18px 20px; }
 
-/* Projector width (1366 px): put each interval under its number so wide tables fit their cards. */
 .kpi-table .pm,
 .playbook td.num .small {
   display: block;
@@ -1171,7 +1111,6 @@ tr.hot td { background: var(--bad-soft); }
   padding-right: 8px;
 }
 
-/* Your plan: the day picker and the coloured change column (only when every seed agrees). */
 .plan-sim { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
 .plan-sim select { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: inherit; }
 .plan-table td.delta-good .ev { color: var(--good); font-weight: 700; }
@@ -1179,15 +1118,8 @@ tr.hot td { background: var(--bad-soft); }
 .plan-table th, .plan-table td { padding: 7px 8px; }
 .plan-table td:first-child { width: 42%; }
 
-/* =============================================================================================
-   Ledger of rules (Claude 2, 23 Oct) — Proof → "Rules we wrote first" (js/tabs/ledger.js).
-   The one bold element of this pass: a record of sealed rules with rubber stamps. Kept uses
-   saffron (a promise kept), missed uses chilli (a promise missed), reported stays neutral. The
-   stamps press in once, in order; nothing else on the view moves.
-   ============================================================================================= */
-
 :root {
-  --kept: #b67800;      /* saffron, darkened to read on white */
+  --kept: #b67800;
   --missed: var(--chilli);
   --reported: #7a7f96;
 }
@@ -1230,9 +1162,8 @@ tr.hot td { background: var(--bad-soft); }
   margin: 0;
   padding: 0;
   position: relative;
-  overflow-x: clip; /* a stamp starts large (it presses in): never let it widen the page */
+  overflow-x: clip;
 }
-/* The rail: one thin line through every entry's dot. */
 .ledger::before {
   content: "";
   position: absolute;
@@ -1253,7 +1184,6 @@ tr.hot td { background: var(--bad-soft); }
   position: relative;
 }
 .ledger-entry:last-child { border-bottom: 0; }
-/* The dot on the rail, coloured by the verdict. */
 .ledger-entry::before {
   content: "";
   position: absolute;
@@ -1312,7 +1242,6 @@ tr.hot td { background: var(--bad-soft); }
 .ledger-measured .ev { font-weight: 700; }
 .ledger-measured .ci { display: inline; color: var(--muted); font-size: 0.9em; margin-left: 2px; }
 
-/* The stamp: a double ring, slightly turned, like ink pressed by hand. */
 .ledger-stamp {
   justify-self: center;
   width: 104px;
@@ -1355,7 +1284,6 @@ tr.hot td { background: var(--bad-soft); }
   .ledger-tally { padding: 22px 20px; }
 }
 
-/* Risks: the two questions a judge asks, answered on the screen (Plan v4 W7/W8). */
 .challenge-strip { margin-bottom: 4px; }
 .challenge {
   background: var(--surface);
@@ -1369,20 +1297,13 @@ tr.hot td { background: var(--bad-soft); }
 .challenge .ev { font-weight: 700; }
 .ticket .action.warn { background: var(--saffron-soft); border-color: transparent; }
 
-/* Actions: moves without a clear effect are folded; the note says why staffing is a small lever. */
 .moves-unclear { margin-top: 8px; }
 .moves-unclear summary { cursor: pointer; color: var(--muted); font-size: 0.92rem; padding: 6px 0; }
 .staffing-note { margin: 14px 2px 0; max-width: 90ch; line-height: 1.5; }
 
-/* Next 48 hours: how often such alerts came true (Plan v4 W7). */
 .alert-score { margin: 0 0 14px; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--blue-soft); color: var(--ink-2); line-height: 1.5; max-width: 110ch; }
 .alert-score .ev { font-weight: 700; }
 
-/* =============================================================================================
-   Phone width (Claude 2, 23 Oct). The dashboard is built for a 1366 px projector, but judges
-   open links on phones. Below 760 px: the side menu becomes a scrolling row on top, the top bar
-   wraps, sub-tabs scroll sideways instead of breaking word by word, every grid is one column.
-   ============================================================================================= */
 @media (max-width: 760px) {
   body { height: auto; min-height: 100vh; overflow: auto; }
   .app { display: flex; flex-direction: column; }
@@ -1411,10 +1332,6 @@ tr.hot td { background: var(--bad-soft); }
   .table-wrap { overflow-x: auto; }
 }
 
-/* =============================================================================================
-   Live now (Claude 2, 24 Oct) — Overview → "Live now" (js/tabs/live.js). Reuses the mission band
-   (dark night, two floors); the one new thing is the real clock, ticking.
-   ============================================================================================= */
 .live-band { margin-bottom: 20px; }
 .live-clock {
   font-family: var(--font-display);
@@ -1446,7 +1363,6 @@ tr.hot td { background: var(--bad-soft); }
 .live-when { font-variant-numeric: tabular-nums; color: var(--muted); margin-right: 8px; }
 @media (max-width: 760px) { .live-ticket { grid-template-columns: 56px minmax(0, 1fr); } }
 
-/* Live now, interactive (Claude 2, 24 Oct): change today, watch it run. */
 .live-saved { margin: 12px 0 2px; color: #d9d7ff; font-size: 1.02rem; min-height: 1.4em; }
 .live-saved b { color: var(--saffron); font-family: var(--font-display); font-size: 1.35rem; }
 .live-progress { height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); margin-top: 8px; overflow: hidden; }
@@ -1480,7 +1396,6 @@ tr.hot td { background: var(--bad-soft); }
 .live-controls-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
 #lv-apply.is-ready { box-shadow: 0 0 0 3px var(--saffron-soft), 0 0 0 5px var(--saffron); }
 
-/* The live panel in the side menu, on every screen. */
 .live-ticker {
   display: flex;
   flex-direction: column;
@@ -1508,11 +1423,6 @@ tr.hot td { background: var(--bad-soft); }
   .live-ticker { display: none; }
 }
 
-/* =============================================================================================
-   Live now as a command centre (Claude 2, 24 Oct, "less cluttered"): one big result, two floors,
-   one-click scenarios, two short feeds. Fits a 1366x768 projector with almost no scrolling.
-   Ours uses --saffron (cyan in the neon theme), theirs uses --chilli.
-   ============================================================================================= */
 .lv { display: flex; flex-direction: column; gap: 14px; }
 .lv-hero {
   display: grid;
@@ -1608,7 +1518,6 @@ tr.hot td { background: var(--bad-soft); }
 .lv-tag.turn { background: color-mix(in srgb, var(--muted) 16%, transparent); color: var(--muted); }
 .lv-empty { padding: 10px 4px; }
 
-/* Less chrome: no duplicate live box on Live now; the cold-open replay lives on the Results view. */
 body.on-live .live-ticker { display: none; }
 .intro-replay { display: none !important; }
 @media (max-width: 1500px) { .world-switch button span { display: none; } }
@@ -1630,16 +1539,9 @@ body.on-live .live-ticker { display: none; }
   .lv .bumped, .lv-decisions li.fresh { animation: none; }
 }
 
-/* The lens logo sits where the old dot was. */
 .brand-logo { flex-shrink: 0; }
 .brand { align-items: center; }
 
-/* =============================================================================================
-   Calm, uncluttered screens (Claude 2, 24 Oct). Each screen shows its main answer; the rest sits
-   in folds. Motion only answers an action: a fold opening, a card opening, a hover.
-   ============================================================================================= */
-
-/* ---- Folds: one line that opens -------------------------------------------------------------- */
 .fold {
   margin: 14px 0 0;
   border: 1px solid var(--border);
@@ -1674,7 +1576,6 @@ body.on-live .live-ticker { display: none; }
 @keyframes fold-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .fold-body > .card { box-shadow: none; }
 
-/* ---- Fact lines: small facts instead of a row of big boxes ------------------------------------ */
 .facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
 .fact {
   display: inline-flex; align-items: baseline; gap: 8px;
@@ -1684,7 +1585,6 @@ body.on-live .live-ticker { display: none; }
 }
 .fact b, .fact b .ev { font-family: var(--font-display); font-size: 1.1rem; color: var(--ink); }
 
-/* ---- Problems: a grid of finding cards, coloured by cause ------------------------------------ */
 .finding-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .finding-card {
   --cause: var(--blue);
@@ -1716,14 +1616,12 @@ body.on-live .live-ticker { display: none; }
 }
 .finding-card .disclosure { margin-top: 8px; }
 
-/* ---- Risks: compact cards that open ---------------------------------------------------------- */
 .risk-cards { display: grid; gap: 12px; }
 .risk-cards .ticket { cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
 .risk-cards .ticket .ticket-reasons .reason:not(:first-child) { display: none; }
 .risk-cards .ticket.open .ticket-reasons .reason { display: grid; }
 .risk-cards .ticket:not(.open) .ticket-reasons::after { content: "Click for every reason"; display: block; font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
 
-/* ---- Actions: the top fixes as big cards ----------------------------------------------------- */
 .fix-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .fix-card { display: flex; flex-direction: column; gap: 10px; transition: transform 0.2s var(--ease), box-shadow 0.2s; }
 .fix-card:hover { transform: translateY(-2px); }
@@ -1735,10 +1633,8 @@ body.on-live .live-ticker { display: none; }
 .fix-message { font-size: 0.92rem; color: var(--ink-2); margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .fix-card .plan-decision, .fix-card .btn-row { margin-top: auto; }
 
-/* ---- Results: segments inside their fold ----------------------------------------------------- */
 .segments-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 
-/* ---- Calm hover on every card you can open --------------------------------------------------- */
 .lv-card:focus-visible, .finding-card:focus-visible, .risk-cards .ticket:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
 @media (max-width: 1150px) {
@@ -1750,7 +1646,6 @@ body.on-live .live-ticker { display: none; }
 }
 .finding-do .ev-text { min-width: 0; }
 
-/* Live now hero: today so far (live) next to the 14-day result (Claude 2, 24 Oct). */
 .lv-hero { grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.25fr) minmax(0, 1fr) auto; }
 .lv-col-title { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 650; color: #b9b7e6; margin-bottom: 6px; }
 .lv-big { font-size: clamp(3rem, 6vw, 4.8rem); }
@@ -1779,7 +1674,6 @@ html[data-theme="neon"] .lv-o.ours, html[data-theme="neon"] .lv-o.ours .ev { tex
 }
 @media (max-width: 760px) { .lv-hero { grid-template-columns: minmax(0, 1fr); } }
 
-/* Hero in three columns: clock + buttons | today so far | 14 days (fits 1366 px with the menu). */
 .lv-hero {
   grid-template-columns: minmax(230px, 0.85fr) minmax(0, 1.1fr) minmax(0, 1fr);
   grid-template-areas: "when today overall" "acts today overall";
@@ -1801,6 +1695,5 @@ html[data-theme="neon"] .lv-o.ours, html[data-theme="neon"] .lv-o.ours .ev { tex
   .lv-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "when" "acts" "today" "overall"; }
 }
 
-/* Live now without the 14-day column (owner, 24 Oct): clock + buttons | today so far. */
 .lv-hero { grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.6fr); grid-template-areas: "when today" "acts today"; }
 @media (max-width: 760px) { .lv-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "when" "acts" "today"; } }

@@ -1,21 +1,3 @@
-// tabs/shadow.js — Shadow mode: a real day at a real IT desk, replayed, with OpsLens watching.
-//
-// Why (issue #16, the owner's addition): Live now shows OpsLens deciding on the simulated food
-// floor. The real desk cannot be re-run with different decisions (a log is a log), but it can be
-// replayed: incidents arrive at their real times, OpsLens's warning appears one hour after each
-// opens (next to the desk's own priority field), and the real outcome appears when it really
-// happened. The running tally counts real misses that each one warned about in time. Data:
-// results.realdesk.shadow (frozen models, test months only; docs/explain/realdesk.md section 8).
-// The running counts are the incident rows counted as the clock passes them; at the end they
-// equal the day's summary, which is shown beside them as clickable numbers.
-// Your file (26 Oct): with Real data on an uploaded CSV, the same replay runs on the file's busiest
-// later day (upload.shadow.timeline, opslens/anyfile.py). There OpsLens flags an item the moment it
-// opens (the file's own columns, nothing from the event log), next to the file's priority field or,
-// without one, a rule of thumb.
-//
-// Example (Thu 5 May 2016, 403 incidents): of the 102 deadlines the desk missed, OpsLens's top 20%
-// at the 1-hour mark had warned about 53; the priority field's top 20% about 16.
-
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, fold } from "../ui.js";
@@ -24,15 +6,14 @@ import { plainReason, rivalWords } from "./yourfile.js";
 
 const S = "realdesk.shadow";
 const F = "upload.shadow";
-const DAY_SHARE = 0.72; // share of the replay spent on the day itself; the rest fast-forwards the weeks after
-const BASE_MS = 52000; // one full replay at 1× speed
+const DAY_SHARE = 0.72;
+const BASE_MS = 52000;
 const FEED_MAX = 9;
 
 let timer = null;
-let replay = null; // { dayIndex, events, cursor, t, end, playing, speed, counts }
+let replay = null;
 let listening = false;
 
-// True when Real data shows an uploaded file: the replay is that file's busiest later day.
 function onFile() {
   return state.world === "real" && state.realSource === "upload" && Boolean(state.upload && state.upload.shadow);
 }
@@ -98,15 +79,13 @@ function wireControls(section) {
   section.querySelector("#sh-speed").addEventListener("click", cycleSpeed);
   section.querySelector("#sh-end").addEventListener("click", () => { if (replay) { replay.t = replay.end; step(0); } });
   if (!listening) {
-    listening = true; // once per page: the view can be drawn again after a world switch
+    listening = true;
     document.addEventListener("tab-shown", (event) => {
       if (event.detail !== "rd-shadow" && event.detail !== "up-shadow") pause();
       else if (replay && replay.wasPlaying) play();
     });
   }
 }
-
-// ---- your file: the same stage, the file's busiest later day ----------------------------------------
 
 function renderFile(section) {
   const r = state.upload;
@@ -155,7 +134,6 @@ function renderFile(section) {
   start(0);
 }
 
-// The file's day in the shape the replay reads (the UCI incident fields), reasons in plain words.
 function fileDay() {
   const r = state.upload;
   const rival = r.warning.vs.rival;
@@ -165,7 +143,6 @@ function fileDay() {
     risk: x.risk, reasons: (x.reasons || []).map((reason) => ({ text: plainReason(reason.text), share: reason.share })) })) };
 }
 
-// The day's totals from the file's report, as clickable numbers (the tally ends on the same counts).
 function fileFinal() {
   const rival = state.upload.warning.vs.rival;
   return `<p>Once every item of that day had ended: <b>${ev(F + ".misses", "int")}</b> of its ${ev(F + ".items", "int")} items really missed.
@@ -178,7 +155,6 @@ function prettyDate(iso) {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
-// The day's summary numbers and the fast-track counts, as clickable paths.
 function finalHtml(i) {
   const s = `${S}.shown_days[${i}].summary`;
   return `<p>By the end of the log: the desk missed <b>${ev(s + ".actual_misses_benchmark", "int")}</b> deadlines among
@@ -210,13 +186,11 @@ function daysTable(sh) {
     <tbody>${rows}</tbody></table></div>`;
 }
 
-// ---- the replay ----------------------------------------------------------------------------------
-
 function start(dayIndex) {
   pause();
   const file = onFile();
   const day = file ? fileDay() : state.results.realdesk.shadow.shown_days[dayIndex];
-  const flagAt = file ? 0 : 60; // the real desk warns one hour after opening; on a file, as the item opens
+  const flagAt = file ? 0 : 60;
   const last = Math.max(1440, ...day.incidents.map((x) => (x.resolved_at === null ? 0 : x.resolved_at)));
   const events = [];
   day.incidents.forEach((x, i) => {
@@ -225,7 +199,6 @@ function start(dayIndex) {
     events.push({ t: x.resolved_at === null ? last : x.resolved_at, kind: "end", i });
   });
   events.sort((a, b) => a.t - b.t || "ofe".indexOf(a.kind[0]) - "ofe".indexOf(b.kind[0]));
-  // A file whose items all end within the day replays the day only; otherwise the weeks after fast-forward.
   replay = { dayIndex, day, events, cursor: 0, t: 0, p: 0, end: last, playing: false, speed: replay ? replay.speed : 1,
              counts: { missed: 0, ours: 0, theirs: 0 }, file, dayShare: file && last <= 1500 ? 1 : DAY_SHARE,
              theirs: file ? rivalWords(state.upload) : "the priority field" };
@@ -242,7 +215,6 @@ function start(dayIndex) {
   play();
 }
 
-// Progress p (0..1) → minutes: the day runs linearly, the weeks after on a log scale.
 function minutesAt(p) {
   const share = replay.dayShare;
   if (p <= share) return (p / share) * 1440;
@@ -302,14 +274,13 @@ function step(dp) {
   }
 }
 
-// One event: update the incident's dot and the tally; return a feed line for the notable ones.
 function apply(e) {
   const x = replay.day.incidents[e.i];
   const dot = document.querySelector(`#sh-wall i[data-i="${e.i}"]`);
   const when = clock(e.t);
   if (e.kind === "open") {
     if (dot) dot.classList.add("is-open");
-    return x.in_benchmark && replay.t < 1440 && e.i % 6 === 0 // every sixth arrival, so the feed stays readable
+    return x.in_benchmark && replay.t < 1440 && e.i % 6 === 0
       ? `<li><time>${when}</time> ${escapeHtml(x.ticket_id)} opened${x.priority ? ` · ${escapeHtml(x.priority)}` : ""}</li>` : "";
   }
   if (e.kind === "flag") {
@@ -318,7 +289,6 @@ function apply(e) {
     const why = x.reasons && x.reasons[0] ? escapeHtml(tidyDash(x.reasons[0].text)) : "";
     return `<li class="f-flag"><time>${when}</time> ${replay.file ? "OpsLens flags" : "OpsLens warns"}: <b>${escapeHtml(x.ticket_id)}</b> ${Math.round(x.risk * 100)}% risk${why ? ` · ${why}` : ""}${x.top20_priority ? ` · ${replay.theirs} agrees` : ""}</li>`;
   }
-  // The real outcome.
   const missed = x.made_sla === false;
   if (dot) dot.classList.add(missed ? (x.top20_opslens ? "is-caught" : "is-miss") : "is-made");
   if (!x.in_benchmark || !missed) return "";
@@ -346,7 +316,6 @@ function drawCounts() {
   document.getElementById("sh-theirs-of").textContent = pct(c.theirs);
 }
 
-// "Thu 5 May · 14:32" during the day; "+3 days" after it.
 function clock(t) {
   if (t < 1440) {
     const h = Math.floor(t / 60), m = Math.floor(t % 60);

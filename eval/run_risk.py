@@ -1,17 +1,3 @@
-"""M5: train and test the breach-risk model; same method on real ServiceNow data.
-
-Run:  .venv/Scripts/python.exe eval/run_risk.py
-
-1. Snapshots every 30 min: days 1-35 train, 36-42 validation (early stopping + calibration),
-   43-56 test. Only tickets waiting for their first pickup are scored.
-2. Test metrics on all snapshot rows and "at arrival" (each ticket's first snapshot, the
-   early-warning case), next to simple rules: least time left to SLA, and priority.
-3. The 10 riskiest tickets at a busy test-day moment, with top-3 reasons and the
-   "assign now" counterfactual (for the dashboard).
-4. UCI incidents: features as of 1 hour after opening, chronological 70/30 split, AUC.
-Writes eval/parts/risk.json and saves the frozen model to data/generated/models/.
-"""
-
 from __future__ import annotations
 
 import json
@@ -27,13 +13,13 @@ from sklearn.metrics import roc_auc_score
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import risk  # noqa: E402
-from opslens.adapters.uci_incidents import load_uci, risk_features  # noqa: E402
-from opslens.classify import TEAM_OF  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.features import snapshots_from_history  # noqa: E402
-from opslens.ingest import load_history  # noqa: E402
-from opslens.privacy import mask_pii  # noqa: E402
+from opslens import risk
+from opslens.adapters.uci_incidents import load_uci, risk_features
+from opslens.classify import TEAM_OF
+from opslens.config import load_config
+from opslens.features import snapshots_from_history
+from opslens.ingest import load_history
+from opslens.privacy import mask_pii
 
 MODELS = ROOT / "data" / "generated" / "models"
 PRIORITY_SCORE = {"P1": 3, "P2": 2, "P3": 1}
@@ -54,7 +40,6 @@ def uci_check() -> dict:
     for c in cat_cols:
         X[c] = X[c].astype("category")
     train, test = feats["split"] == "train", feats["split"] == "test"
-    # The last 20% of the training period (by time) is used for early stopping.
     cut = feats.loc[train, "created_at"].quantile(0.8)
     fit, stop = train & (feats["created_at"] <= cut), train & (feats["created_at"] > cut)
     dfit = lgb.Dataset(X[fit], feats.loc[fit, "breached"], categorical_feature=cat_cols)
@@ -62,7 +47,7 @@ def uci_check() -> dict:
     booster = lgb.train(risk.PARAMS, dfit, 2000, valid_sets=[dstop], callbacks=[lgb.early_stopping(50, verbose=False)])
     p = booster.predict(X[test])
     y = feats.loc[test, "breached"].to_numpy()
-    rule = roc_auc_score(y, -feats.loc[test, "priority_raw"].str[0].astype(float))  # 1-Critical = most urgent
+    rule = roc_auc_score(y, -feats.loc[test, "priority_raw"].str[0].astype(float))
     out = risk.evaluate(y, p)
     print(f"UCI real data: {test.sum():,} test incidents, breach rate {y.mean():.3f}, "
           f"AUC {out['auc']:.3f} (priority rule {rule:.3f}), PR-AUC {out['pr_auc']:.3f}, top-10% precision {out['top10_precision']:.3f}")
@@ -115,7 +100,7 @@ def main() -> int:
     p = model.predict(test_f)
     y = test_f["breached"].to_numpy()
     all_rows = risk.evaluate(y, p)
-    first = ~test_f.duplicated("ticket_id")  # each ticket's first snapshot after it arrived
+    first = ~test_f.duplicated("ticket_id")
     at_arrival = risk.evaluate(y[first.to_numpy()], p[first.to_numpy()])
     rules = {
         "time_left_auc": float(roc_auc_score(y, -test_f["time_left_min"])),
@@ -129,7 +114,6 @@ def main() -> int:
     importance = pd.Series(model.booster.feature_importance("gain"), index=model.booster.feature_name())
     print("top features by gain:", (importance / importance.sum()).sort_values(ascending=False).head(6).round(3).to_dict())
 
-    # Demo moment: the busiest test-day snapshot on a Saturday evening.
     sat_evening = test_f[(test_f["is_weekend"] == 1) & (test_f["hour"].between(19, 22))]
     t_demo = sat_evening.groupby("t").size().idxmax()
     at_risk = demo_at_risk(model, test_f, h, float(t_demo))

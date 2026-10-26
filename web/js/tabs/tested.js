@@ -1,22 +1,9 @@
-// tabs/tested.js — every evaluation number in one place, what failed, and our limitations.
-//
-// Why: a sharp judge will ask "how do you know?". This tab answers with the evaluation from
-// CLAUDE.md section 7: recall on planted problems (also blind, by type), classification,
-// forecast (with its noise floor), risk (with real-data AUC and simple rules to beat),
-// ablations with 95% CIs, stress tests, sensitivity, speed, and how the weights were chosen.
-// It also shows, on purpose, what failed: policy v1 lost a stress test, and v2 was then
-// designed on validation days only. Each number clicks through to its JSON path.
-//
-// Example (real results, 16 Oct): removing the risk scores raises breaches by +2.8 pts
-// (paired 95% CI +1.7 to +3.9) versus full OpsLens.
-
 import { state, policyLabel, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS } from "../charts.js";
 import { pageHeader, missing, fold, onFirstOpen } from "../ui.js";
 import { escapeHtml, prettyKey, unitForKey } from "../format.js";
 
-// The sections of this tab, for the jump bar at the top (id, label).
 const SECTIONS = [
   ["what-failed", "What failed"],
   ["t-baselines", "Baselines"],
@@ -34,8 +21,6 @@ const SECTIONS = [
 
 export function render(section) {
   const r = state.results;
-  // 24 Oct, "less clutter": what failed and the baselines stay open (they answer "can we trust
-  // this?"); every other section is a fold, and its charts are drawn the first time it opens.
   const sections = [
     ["t-setup", "How the test is set up", setupPanel()],
     ["t-recall", "Finding hidden problems", r.patterns ? recallPanel() : missing("Pattern recall", "M4")],
@@ -67,7 +52,6 @@ export function render(section) {
   };
   Object.entries(draw).forEach(([id, fn]) => onFirstOpen(`fold-${id}`, fn));
 
-  // The jump bar (kept for SECTIONS) opens the matching fold and scrolls to it.
   section.querySelectorAll("[data-jump]").forEach((button) => {
     button.addEventListener("click", () => {
       const target = document.getElementById(button.dataset.jump);
@@ -78,9 +62,6 @@ export function render(section) {
   });
 }
 
-// "Does the AI earn its place?" (Plan v4 W6, issue #16): the three LLM tests, each against what we
-// would use without it, on data we did not make (BANKING77) or questions labelled before the run.
-// Where the LLM ties the rules (naming a cause) we say so and keep it only for the sentence.
 const NB = "nlp_bench";
 function pctCi(path) {
   return `${ev(path + ".pct", "pct")} <span class="ci">[${ev(path + ".ci95[0]", "pct", { bare: true })}, ${ev(path + ".ci95[1]", "pct", { bare: true })}]</span>`;
@@ -130,9 +111,6 @@ function aiPanel() {
     </section>`;
 }
 
-// Every baseline we compared against, weakest to strongest, and the sealed second world
-// (Claude 2 review, 17 Oct). One line says what each baseline does, so a judge can check the
-// comparison is fair; every number clicks through to results.json.
 const BASELINES = [
   ["baseline_a", "First come, first served", "Each team's oldest ticket first; routed by the customer's menu choice."],
   ["baseline_b", "Urgent first", "P1 before P2 before P3, then oldest; same team queues."],
@@ -165,14 +143,10 @@ function baselinesPanel() {
     </section>`;
 }
 
-// The free-form `details` object (or an empty one, so `details().x` never crashes).
 function details() {
   return state.results.details || {};
 }
 
-// A two-column table: label | clickable value. rows = [[label, path, unit, options], ...]
-// unit "text" shows the raw value; unit "range" shows a [first, last] list as "first–last".
-// Rows whose value is not in the results file are left out.
 function metricTable(rows) {
   const body = rows.map(([label, path, unit, options]) => {
     const first = unit === "range" ? path + "[0]" : path;
@@ -199,21 +173,12 @@ function hasValue(path) {
   return node !== undefined && node !== null;
 }
 
-// "OpsLens better" / "OpsLens worse" / "no clear difference", from the sign of a 95% CI of
-// (OpsLens − baseline). Lower breach is better. A comparison only: no new number is shown.
 function verdict(ciLow, ciHigh) {
   if (ciHigh < 0) return `<span class="verdict good">OpsLens better</span>`;
   if (ciLow > 0) return `<span class="verdict bad">OpsLens worse</span>`;
   return `<span class="verdict">no clear difference</span>`;
 }
 
-// ---- What failed, and what we changed ----------------------------------------------------
-
-// The policy versions, oldest first. Each was designed and chosen on validation days only; the
-// test days were run once per version and every result is kept (details.test_runs_note).
-// A kept version has a record: { test_breach_pct, stress, ablations, note }. The current
-// version reads the main results (sim + stress). Names and short titles are our words;
-// every number is read by path.
 function versions() {
   const d = details();
   const kept = [];
@@ -234,7 +199,6 @@ function versions() {
   return kept.concat([current]).map((v, i) => ({ ...v, name: "v" + (i + 1) }));
 }
 
-// Paths for one version: its normal-day breach rates and its stress rows.
 function versionPaths(v) {
   if (v.current) {
     return {
@@ -246,7 +210,6 @@ function versionPaths(v) {
   return { ours: `${v.base}.test_breach_pct.opslens`, baseB: `${v.base}.test_breach_pct.baseline_b`, stress: `${v.base}.stress` };
 }
 
-// Index of the "+25% volume" stress row (the test that decided v1 -> v2 -> v3), else the first.
 function volumeRow(rows) {
   const i = rows.findIndex((row) => /^\+\s*25/.test(String(row.scenario)));
   return i >= 0 ? i : 0;
@@ -254,7 +217,6 @@ function volumeRow(rows) {
 
 function honestPanel() {
   const list = versions();
-  // The strip: one tile per version with its +25% volume result and verdict.
   const tiles = list.map((v) => {
     const paths = versionPaths(v);
     const rows = lookup(paths.stress) || [];
@@ -269,7 +231,6 @@ function honestPanel() {
       </div>`;
   }).join("");
 
-  // The steps: what each version did on the test days, why it changed, and the designs tried.
   const steps = list.map((v) => {
     const paths = versionPaths(v);
     const rows = lookup(paths.stress) || [];
@@ -310,7 +271,6 @@ function honestPanel() {
     </section>`;
 }
 
-// One line per stress scenario: OpsLens − Baseline B with its CI and a plain verdict.
 function stressVerdicts(base, rows) {
   if (!Array.isArray(rows) || !rows.length) return "";
   const items = rows.map((row, i) => {
@@ -326,7 +286,6 @@ function stressVerdicts(base, rows) {
   return `<ul class="verdicts">${items}</ul>`;
 }
 
-// A validation-day design table: one row per candidate, breach columns only (to fit).
 function designTable(base) {
   const design = lookup(base);
   const columns = Object.keys(design.rows[0]).filter((k) => k !== "variant" && /breach_pct$/.test(k));
@@ -339,15 +298,12 @@ function designTable(base) {
       <thead><tr><th>Design</th>${header}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
-// "+25% volume p1_breach_pct" -> "+25% volume: P1 breach %"
 function designHeader(key) {
   const space = key.lastIndexOf(" ");
   const scenario = key.slice(0, space);
   const metric = key.slice(space + 1).replace(/^p1_/, "P1 ").replace(/_pct$/, " %").replace(/_/g, " ");
   return `${scenario}: ${metric}`;
 }
-
-// ---- Data, recall, classification, forecast, risk -----------------------------------------
 
 function setupPanel() {
   const rows = [
@@ -382,7 +338,6 @@ function recallPanel() {
     </section>`;
 }
 
-// Each planted problem: found? right cause? which evidence card?
 function recallDetails(recall) {
   const rows = recall.details.map((item, i) => {
     const base = `patterns.recall.details[${i}]`;
@@ -398,7 +353,6 @@ function recallDetails(recall) {
       <tbody>${rows}</tbody></table></div>`;
 }
 
-// Blind recall: random plants the team never saw, plus the same numbers per cause type.
 function blindTable() {
   const labels = {
     sets: ["Random plant sets", "int"],
@@ -528,7 +482,6 @@ function drawCalibration() {
   }, (datasetIndex, index) => (datasetIndex === 0 ? { path: `risk.calibration[${index}].observed`, unit: "frac_pct" } : null));
 }
 
-// The 8 features with the most LightGBM gain: what the risk model mostly relies on.
 function drawFeatureGain() {
   const gain = details().risk.feature_gain;
   const top = Object.keys(gain).sort((a, b) => gain[b] - gain[a]).slice(0, 8);
@@ -546,9 +499,6 @@ function drawFeatureGain() {
   }, (datasetIndex, index) => ({ path: `details.risk.feature_gain.${top[index]}`, unit: "frac_pct" }));
 }
 
-// ---- Ablations, stress, sensitivity, speed, tuning ---------------------------------------
-
-// Ablation rows with CIs (details.ablations) when present, else the plain rows.
 function ablationRows() {
   const d = details();
   if (Array.isArray(d.ablations) && d.ablations.length) {
@@ -585,13 +535,11 @@ function ablationsPanel() {
 }
 
 function drawAblations() {
-  // Leave out the full system itself (its difference is zero by definition).
   const rows = ablationRows().filter(({ row }) => row.key !== "full");
   const hasCi = rows.length && typeof rows[0].row.ci_low === "number";
   makeChart(document.getElementById("ablation-chart"), {
     type: "bar",
     data: {
-      // "without classifier (menu choice routing)" -> two lines, so the axis label is not cut off
       labels: rows.map(({ row }) => row.label.replace(" (", "\n(").split("\n")),
       datasets: [{
         label: "Breach vs full (pts)",
@@ -610,7 +558,6 @@ function drawAblations() {
   }, (datasetIndex, index) => ({ path: `${rows[index].path}.delta_breach_vs_full`, unit: "pts" }));
 }
 
-// Stress rows: breach % and P99 wait per policy, then OpsLens − Baseline B with its CI.
 function stressPanel() {
   const rows = state.results.stress;
   const policies = ["baseline_a", "baseline_b", "opslens"].filter((k) => typeof rows[0][k] === "number");
@@ -620,7 +567,6 @@ function stressPanel() {
       <th class="num" colspan="${policies.length}">Breach rate (%)</th>
       ${hasWait ? `<th class="num" colspan="${policies.length}">P99 wait (min)</th>` : ""}
       ${hasCi ? `<th class="num" colspan="2">OpsLens − ${escapeHtml(policyLabel("baseline_b"))}</th>` : ""}</tr>`;
-  // Short names ("Baseline A") so nine columns fit on a 1366-px screen.
   const short = (k) => escapeHtml(policyLabel(k).replace(/\s*\(.*\)$/, ""));
   const header = `<tr><th>Scenario</th>
       ${policies.map((k) => `<th class="num">${short(k)}</th>`).join("")}
@@ -656,7 +602,7 @@ function drawStress() {
         data: rows.map((row) => row[k]),
         backgroundColor: policyStyle(k).color,
         borderColor: "#ffffff",
-        borderWidth: 2, // white gap between neighbouring bars
+        borderWidth: 2,
         borderRadius: 4,
       })),
     },
@@ -667,8 +613,6 @@ function drawStress() {
   }, (datasetIndex, index) => ({ path: `stress[${index}].${policies[datasetIndex]}`, unit: "pct" }));
 }
 
-// A table for a list of flat rows (sensitivity). Columns = keys of the first row.
-// Policy keys get their policy label as the header.
 function genericTable(listName) {
   const list = state.results[listName];
   const columns = Object.keys(list[0]);
@@ -704,7 +648,6 @@ function speedPanel() {
       <div class="card-sub">Optimiser time per decision, and one big scale test</div></div></div>${metricTable(rows)}</section>`;
 }
 
-// How the optimiser weights were chosen: one weight at a time, on validation days only.
 function tuningPanel() {
   const t = details().tuning;
   const chosen = t.chosen ? Object.keys(t.chosen).map((key) =>
@@ -728,7 +671,6 @@ function tuningPanel() {
       </details></section>`;
 }
 
-// Written by us, in words only. These are the honest limits we say out loud in the pitch.
 function limitationsPanel() {
   return `<section class="card" id="limitations"><div class="card-head"><div><h3 class="card-title">Limitations</h3>
       <div class="card-sub">What we say out loud in the pitch</div></div></div>

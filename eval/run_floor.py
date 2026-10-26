@@ -1,22 +1,3 @@
-"""The physical floor on the test days, and how much of the possible improvement OpsLens captures.
-
-What it does: for each seed, builds the test-day world twice (the base roster, and the roster with
-the staffing plan that OpsLens uses) and computes, with opslens/floor.py, the tickets that breach
-under ANY policy — exactly, ticket by ticket, not by simulation. A ticket counts as unavoidable only
-if it is unavoidable under both rosters, so one floor bounds every policy in our comparison.
-
-Why: "how good is OpsLens?" needs a ceiling, not only baselines. opslens/floor.py proves the bound
-(and tests/test_floor.py attacks the proof on random worlds with every policy we have). The floor is
-a bound, not a choice — nothing is tuned on it — so computing it on test days is fair. It turns the
-result into "share of the possible improvement captured": (D − OpsLens) / (D − floor), per seed,
-where D is the industry-standard baseline (same tickets and luck).
-
-Example (validation days, seeds 1-3, 18 Oct diagnosis with the older 4-simulation estimate):
-floor 1.36%, OpsLens v3 2.13%, industry standard 4.56% → (4.56 − 2.13) / (4.56 − 1.36) = 76% captured.
-
-Run:  .venv/Scripts/python.exe eval/run_floor.py   → eval/parts/floor.json  (after run_baseline_c.py)
-"""
-
 from __future__ import annotations
 
 import json
@@ -30,18 +11,17 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.run_opslens import GENERATED, PARTS  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.floor import unavoidable  # noqa: E402
-from opslens.impact import mean_std  # noqa: E402
-from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
+from eval.run_opslens import GENERATED, PARTS
+from opslens.config import load_config
+from opslens.floor import unavoidable
+from opslens.impact import mean_std
+from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents
 
 FIRST, LAST = 43, 56
 SEEDS = [1, 2, 3, 4, 5]
 
 
 def floor_pct(seed: int, tickets: pd.DataFrame) -> tuple[float, int]:
-    """Unavoidable breach % for one seed (unavoidable under both rosters), and the ticket count."""
     plan = json.loads((GENERATED / "staffing_plan.json").read_text(encoding="utf-8"))
     warm, _ = day_bounds(FIRST - 1, FIRST - 1)
     start, end = day_bounds(FIRST, LAST)

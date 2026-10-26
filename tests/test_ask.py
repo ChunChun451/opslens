@@ -1,5 +1,3 @@
-"""Ask OpsLens: the LLM may route a question, never invent a number; offline rules still work."""
-
 import json
 
 from opslens.ask import answer, check_route, rules_route, understand, whatif_request
@@ -20,7 +18,6 @@ def test_grounded_route_is_accepted() -> None:
 
 
 def test_a_number_the_user_never_typed_is_rejected() -> None:
-    # 5 agents and 35% appear nowhere in the question: the LLM made them up.
     assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": -5}}}, Q) is None
     assert check_route({"tool": "whatif", "args": {"volume_change_pct": 35}}, Q) is None
 
@@ -39,7 +36,6 @@ def test_offline_rules_cover_the_demo_questions() -> None:
 
 
 def test_weekday_maps_to_the_first_test_day_with_that_weekday() -> None:
-    # Day 1 is a Monday (first_weekday 0); test days 43-56 → day 43 is a Monday, day 48 a Saturday.
     req = whatif_request({"weekday": "saturday", "volume_change_pct": 20, "agents_delta": {"c": -2}}, (43, 56), 0)
     assert req == {"day": 48, "policy": "opslens", "volume_factor": 1.2, "agents_delta": {"C": -2}}
 
@@ -52,26 +48,19 @@ def test_answer_numbers_come_from_the_tool() -> None:
                                                      "baseline_a": {**k, "turnaround.breach_pct": 15.0}}}
     out = answer(Q, None, {"whatif": fake_whatif}, {}, (43, 56), 0)
     text = " ".join(out["lines"])
-    assert "4.2%" in text and "9.8%" in text and "+5.5 points" in text  # no baseline_d here → urgent-first
+    assert "4.2%" in text and "9.8%" in text and "+5.5 points" in text
 
 
 def test_numbers_written_as_words_ground_the_route() -> None:
-    # Found 22 Oct (W6 routing test, question 6): "Two" did not ground the LLM's 2.
     route = {"tool": "whatif", "args": {"weekday": "wednesday", "agents_delta": {"D": -2}}}
     assert check_route(route, "Two agents from team D are on leave Wednesday. Impact?") == route
     assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": -2}}}, "Team C mein do log kam ho gaye") is not None
     assert check_route({"tool": "whatif", "args": {"volume_change_pct": 20}}, "volume up twenty percent") is not None
-    # Still strict: "do" as an English verb grounds nothing, and an unrelated number is still rejected.
     assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": 2}}}, "do breaches fall on friday?") is None
     assert check_route({"tool": "whatif", "args": {"agents_delta": {"C": 3}}}, "Two agents leave team C") is None
 
 
-
-# ---- Forecast and at-risk questions (added 24 Oct) ----------------------------------------------
-
 def tiny_results() -> dict:
-    """A hand-made results dict: two forecast hours for Team B, one day and one night bottleneck,
-    and two at-risk tickets (one where acting helps, one where time has run out)."""
     hour = {"team": "B", "lo80": 1.0, "demand_hours": 2.0, "actual_hours": 2.0}
     return {
         "forecast": {"horizon": [{**hour, "time": "2026-10-24T19:00", "hi80": 3.0, "capacity_hours": 2.0},
@@ -95,7 +84,7 @@ def test_forecast_and_risk_questions_route_offline() -> None:
     assert rules_route("How busy is tomorrow night?")["tool"] == "forecast"
     assert rules_route("Which customers will miss their deadline?") == {"tool": "at_risk", "args": {}}
     assert rules_route("kaun late hone wala hai, hindi wale?") == {"tool": "at_risk", "args": {"language": "hi"}}
-    assert check_route({"tool": "forecast", "args": {"team": "Z"}}, "team Z?") is None  # no such team
+    assert check_route({"tool": "forecast", "args": {"team": "Z"}}, "team Z?") is None
 
 
 def test_forecast_answer_skips_night_and_reads_the_band() -> None:
@@ -103,12 +92,12 @@ def test_forecast_answer_skips_night_and_reads_the_band() -> None:
     out = forecast_text(tiny_results(), {"category": "refund"})
     text = " ".join(out["lines"])
     assert "Sat 24 Oct 20:00" in text and "6.5 agent-hours" in text and "2.4 on shift" in text
-    assert "short by up to 5.2" in text and "night" not in text  # the night pool covers 00:00-07:00
+    assert "short by up to 5.2" in text and "night" not in text
 
 
 def test_at_risk_answer_points_to_where_acting_helps() -> None:
     from opslens.ask import at_risk_text
     out = at_risk_text(tiny_results(), {})
     text = " ".join(out["lines"])
-    assert "T000001" in text and "from 99% to 29%" in text  # acting helps here, not on T000002 (5 min left)
+    assert "T000001" in text and "from 99% to 29%" in text
     assert at_risk_text(tiny_results(), {"language": "other"})["lines"] == []

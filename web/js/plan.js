@@ -1,41 +1,20 @@
-// plan.js — "Your plan": the recommendations the manager accepted or overrode, and what they change.
-//
-// Why (Plan v3, 19 Oct): the problem statement asks for "a dashboard showing the expected impact
-// of these interventions". A recommendation is only useful if a manager can say yes or no to it
-// and see what yes would change. Accept puts it in the plan with its measured effect (every number
-// is a path in results.json, so it is clickable); "Simulate" replays a day with every accepted item
-// together (food world: POST /api/plan/impact, the simulator). Override records why — a manager's
-// "no" is information too. The plan is kept in this browser only (a demo, no accounts).
-//
-// Real data on your file (26 Oct): the file's items carry `source: "upload:<token>"`, so each file
-// has its own plan, apart from the UCI example's; they show measured facts only and no Simulate
-// (a log cannot be replayed under different decisions), which the panel says in one line.
-//
-// Example: Accept "Cross-train 2 Hindi-speaking agents" → the plan shows its effect on missed SLAs
-// over the two held-out weeks (playbooks.playbooks[1].effect.opslens.vs_without.breaches) → Simulate.
-
 import { state, store, lookup } from "./data.js";
 import { ev, evText } from "./evidence.js";
 import { escapeHtml } from "./format.js";
 
-const items = {}; // id -> {id, world, title, owner, effects: [{label, path, unit}], note, simulable}
-const choosing = new Set(); // items whose Override reason is being picked
+const items = {};
+const choosing = new Set();
 const REASONS = ["Not now", "We disagree", "Already done"];
-// Units of the plan data (opslens/plan.py PLAN_KPIS) -> units of ev(). Counts are means over seeds,
-// so they keep one decimal: "−7.6 [−15.0, −0.2]" is clearly below zero, "−8 [−15, 0]" would hide it.
 const UNITS = { tickets: "count", "%": "pct", min: "min", h: "hours", "tickets/h": "ratio" };
-// What the plan panel shows for each accepted item, one per heading of the problem statement.
 const ITEM_KPIS = ["breaches", "busy_agent_hours", "late_minutes_per_100"];
-const warmed = new Set(); // days whose "without" runs the server already has
+const warmed = new Set();
 const HEADINGS = { turnaround: "Turnaround", productivity: "Productivity", quality: "Service quality" };
-let simDay = null; // the test day picked in the panel; default: the replay Saturday
+let simDay = null;
 
-// Each view registers the recommendations it shows, so the plan panel can describe them.
 export function registerItem(item) {
   items[item.id] = item;
 }
 
-// Where results.plan measured item `id` on its own (eval/run_plan_items.py), or -1.
 export function planIndex(id) {
   const plan = state.results.plan;
   return plan && Array.isArray(plan.items) ? plan.items.findIndex((it) => it.id === id) : -1;
@@ -45,8 +24,6 @@ function evUnit(key) {
   return UNITS[(state.results.plan.units || {})[key]] || "num";
 }
 
-// One measured change with its 95% interval: "−8 [−15, −0]", plus "no clear effect" when the
-// interval contains 0 (then the honest answer is "we cannot tell", whatever the sign).
 export function measured(base, key, verdict = true) {
   const unit = evUnit(key);
   const diffUnit = unit === "pct" ? "pts" : unit;
@@ -57,7 +34,6 @@ export function measured(base, key, verdict = true) {
     ${ev(base + ".ci_high", diffUnit, { signed: true })}]${verdict && unclear ? " · no clear effect" : ""}</span>`;
 }
 
-// The item's own measured effect, from results.plan: "customers who missed the SLA −27 [−39, −15]".
 export function planEffectHtml(id, keys = ITEM_KPIS) {
   const j = planIndex(id);
   if (j < 0) return "";
@@ -70,7 +46,6 @@ function capital(text) {
   return text ? text[0].toUpperCase() + text.slice(1) : text;
 }
 
-// The Accept / Override control for one recommendation.
 export function planButtons(id) {
   return `<div class="plan-decision" data-plan-item="${escapeHtml(id)}">${decisionHtml(id)}</div>`;
 }
@@ -90,8 +65,6 @@ function decisionHtml(id) {
   return `${label}<button type="button" class="link-btn" data-plan-act="undo">Undo</button>`;
 }
 
-// What the plan knows about item `id`: what a screen registered, else the food plan catalogue
-// (results.plan.items), so the panel works whichever screen was opened first.
 function itemInfo(id) {
   if (items[id]) return items[id];
   const j = planIndex(id);
@@ -102,7 +75,6 @@ function itemInfo(id) {
 
 export function initPlan(startItems = []) {
   startItems.forEach(registerItem);
-  // Plans saved before 19 Oct used "move-<i>" ids for staffing moves; the server does not know them.
   const stale = Object.keys(state.plan).filter((id) => id.startsWith("move-"));
   stale.forEach((id) => delete state.plan[id]);
   if (stale.length) store("opslens-plan", state.plan);
@@ -112,7 +84,6 @@ export function initPlan(startItems = []) {
   refreshCount();
 }
 
-// Which plan is shown: "" for the food floor and the UCI example, "upload:<token>" for your file.
 function sourceKey() {
   const meta = state.uploadMeta;
   return state.world === "real" && state.realSource === "upload" && state.upload && meta ? `upload:${meta.token}` : "";
@@ -139,7 +110,7 @@ function onClick(event) {
     delete state.plan[id];
   }
   store("opslens-plan", state.plan);
-  if (act !== "override") state.planimpact = null; // an old simulation belongs to a different plan
+  if (act !== "override") state.planimpact = null;
   document.querySelectorAll(`[data-plan-item="${CSS.escape(id)}"]`).forEach((el) => { el.innerHTML = decisionHtml(id); });
   refreshCount();
   if (panelOpen()) renderPanel();
@@ -211,8 +182,6 @@ function renderPanel() {
   }
 }
 
-// Ask the server for the day's "without" runs in the background (an empty plan): it starts the
-// simulation workers and caches those runs, so the real Simulate click takes ~18 s, not ~30 s.
 function warmUp(day) {
   if (!day || warmed.has(day)) return;
   warmed.add(day);
@@ -220,7 +189,6 @@ function warmUp(day) {
     body: JSON.stringify({ day, items: [] }) }).catch(() => warmed.delete(day));
 }
 
-// The held-out test days (meta.test_days), named by weekday and date from meta.start_date.
 function testDays() {
   const meta = state.results.meta || {};
   if (!Array.isArray(meta.test_days) || !meta.start_date) return [];
@@ -253,7 +221,6 @@ function acceptedHtml(id) {
       ${effectsHtml(info)}</div>`;
 }
 
-// Replay one day with all accepted items together, with and without them (the simulator).
 async function simulate(ids, day) {
   const out = document.getElementById("plan-result");
   const button = document.getElementById("plan-simulate");
@@ -278,9 +245,6 @@ async function simulate(ids, day) {
   }
 }
 
-// The answer of POST /api/plan/impact (docs/explain/plan.md): which accepted items change that day,
-// then without / with / delta per KPI under turnaround, productivity and quality (means over seeds).
-// A change is coloured only when every seed agrees on its direction.
 function impactHtml(data) {
   const all = data.items || [];
   const idle = all.filter((it) => !it.in_effect);
@@ -299,7 +263,6 @@ function impactHtml(data) {
   return head + tables + `<p class="small muted">${evText("planimpact.note")} Simulated in ${ev("planimpact.seconds", "sec")}.</p>`;
 }
 
-// "good" / "bad" when every seed moved the same way, "" when the seeds disagree or nothing moved.
 function tone(better, seeds) {
   if (!better || !Array.isArray(seeds) || !seeds.length) return "";
   const down = seeds.every((d) => d < 0);

@@ -1,17 +1,3 @@
-"""The real-desk digital twin (Plan v4 W14): calibrate, gate, and only then compare.
-
-Run:  .venv/Scripts/python.exe eval/run_realdesk_twin.py   -> eval/parts/realdesk_twin.json
-(eval/run_realdesk.py puts it into results.realdesk.twin.) Every rule is in
-docs/explain/realdesk_twin.md, committed before the first run (e53d623).
-
-Steps: 1. calibrate share and k on the LEARNING months (desk policy, 20 runs);
-2. the gate on the CHECK months; if it fails, stop: nothing runs on the test months;
-3. (gate passed) choose OpsLens's form on the check months, compare on the test months once,
-   sensitivity, hours equivalent.
-Result (24 Oct): the gate FAILED (missed 27.9% vs 22.4% real, median pickup 0.00 h vs 0.13 h), so the
-twin is reported as "built, did not match reality" and steps 3-5 were not run.
-"""
-
 from __future__ import annotations
 
 import json
@@ -24,19 +10,18 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import realdesk as R  # noqa: E402
-from opslens import realdesk_twin as T  # noqa: E402
-from opslens.adapters.uci_incidents import load_uci  # noqa: E402
+from opslens import realdesk as R
+from opslens import realdesk_twin as T
+from opslens.adapters.uci_incidents import load_uci
 
 PARTS = ROOT / "eval" / "parts"
 SHARES = [0.1, 0.25, 0.5, 0.75, 1.0]
 SLOTS = [1, 2, 3, 5]
 GATE = {"missed_points": 3.0, "median_pickup_ratio": 0.25, "within_1h_points": 5.0}
-LIMITS = {"3 - Moderate": 91.0, "4 - Low": 325.0}   # the W3 rule (results.realdesk.fasttrack.deadline_rule)
+LIMITS = {"3 - Moderate": 91.0, "4 - Low": 325.0}
 
 
 def loss(twin: dict, real: dict) -> float:
-    """The pre-registered calibration loss (each term in units of its gate tolerance)."""
     ratio = max(twin["median_pickup_h"], 1e-6) / max(real["median_pickup_h"], 1e-6)
     return (abs(twin["missed_pct"] - real["missed_pct"]) / GATE["missed_points"]
             + abs(np.log(ratio)) / np.log(1 + GATE["median_pickup_ratio"])
@@ -88,8 +73,6 @@ def main() -> int:
     if not g["passed"]:
         out["status"] = "built, did not match reality: not shown, nothing ran on the test months"
     else:
-        # Steps 3-5 (OpsLens form chosen on check, test once, sensitivity, hours) are written only
-        # if a twin passes the gate; this one did not (24 Oct), so they were never built or run.
         raise SystemExit("gate passed: build the pre-registered comparison before going on")
     out["seconds"] = time.perf_counter() - started
     (PARTS / "realdesk_twin.json").write_text(json.dumps(out, indent=1, default=str), encoding="utf-8")

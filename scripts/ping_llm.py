@@ -1,14 +1,3 @@
-"""Day-1 check: can we reach each free LLM provider, and which models does our key see?
-
-Run:  mingw32-make ping     (or  .venv/Scripts/python.exe scripts/ping_llm.py)
-
-For each provider in config/providers.yaml (except mock) it:
-1. lists the model IDs our key can use (to confirm the configured model name exists),
-2. sends one tiny classification request with a phone number in it,
-3. prints the reply, whether it is valid JSON, the latency, and what PII was masked.
-Nothing is cached, so this always makes a real call (2 requests of our daily budget).
-"""
-
 from __future__ import annotations
 
 import sys
@@ -16,8 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from opslens.config import load_config  # noqa: E402
-from opslens.llm.client import LLMClient, build_provider  # noqa: E402
+from opslens.config import load_config
+from opslens.llm.client import LLMClient, build_provider
 
 SYSTEM = (
     "You classify food-delivery support tickets. Reply with JSON only: "
@@ -41,7 +30,7 @@ def ping(name: str) -> bool:
         print(f"[{name}] {len(models)} models visible; relevant: {shown[:15]}")
         if not any(m.endswith(provider.config.model) for m in models):
             print(f"[{name}] WARNING: configured model not in the list - update config/providers.yaml")
-    except Exception as exc:  # listing is a nice-to-have; the chat call is what matters
+    except Exception as exc:
         print(f"[{name}] could not list models: {exc}")
 
     client = LLMClient([provider], cache=None, limiter=None)

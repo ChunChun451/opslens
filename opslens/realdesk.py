@@ -1,29 +1,3 @@
-"""The real public service desk: OpsLens on the UCI ServiceNow incident log (CC BY 4.0).
-
-What it does: the same five questions as on the food-delivery floor, answered on a real company's
-IT service desk (24,918 incidents, 72 teams, 220 agents, a real SLA flag):
-- What is happening?   summary of the desk;
-- Why does it go wrong? evidence cards on the causes of delay, measured from the event log;
-- What will go wrong?  incidents likely to miss their SLA (scored 1 h after opening) and next
-                        week's workload per team;
-- What should we do?    actions with their evidence;
-- Does it work?         each prediction against what the desk itself used, on later months.
-
-Why this design: deliverable 1 asks for "a working prototype using a provided or publicly available
-dataset". Nothing here is generated. Every model learns on the first 70% of incidents (by opening
-time) and is scored only on the last 30%; every choice (thresholds, stopping) uses the last 20% of
-the learning period. We report what OpsLens does NOT do better, too: picking the final team at
-opening time is worse than the real desk overall, so OpsLens only suggests a team when it is sure.
-
-Plan v4 adds proof on the same split: replicate_cards (each card re-measured on the test months),
-forecast_candidates (three forecasts, the check weeks pick one) and bottleneck_alerts (overload
-alerts scored on test team-days). The fast-track benchmark is in realdesk_fasttrack.py, the daily
-detectors in realdesk_watch.py. Exact JSON shapes: docs/explain/realdesk.md.
-
-Example (from the 19 Oct check): incidents that wait on the user, a vendor or a problem record miss
-their SLA 71% of the time, against 26% for incidents that never wait.
-"""
-
 from __future__ import annotations
 
 import lightgbm as lgb
@@ -46,18 +20,13 @@ STATE_GROUP = {"New": "waiting to be picked up", "Active": "being worked on", "A
 
 
 def masks(incidents: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """learn (first 80% of the training period), check (last 20% of it, for every choice), test."""
     train = (incidents["split"] == "train").to_numpy()
     cut = incidents.loc[train, "created_at"].quantile(0.8)
     learn = train & (incidents["created_at"] <= cut).to_numpy()
     return learn, train & ~learn, (incidents["split"] == "test").to_numpy()
 
 
-# ---- Why does it go wrong? -------------------------------------------------------------------
-
 def time_in_states(events: pd.DataFrame) -> pd.DataFrame:
-    """Hours each incident spent in each state group before it was resolved (from the event log).
-    Example: New 2 h → Active 5 h → Awaiting User Info 20 h → Resolved: waiting for the user 20 h."""
     ev = events[["number", "incident_state", "sys_updated_at"]].copy()
     ev["hours"] = (ev.groupby("number")["sys_updated_at"].shift(-1) - ev["sys_updated_at"]).dt.total_seconds() / 3600
     ev["group"] = ev["incident_state"].map(STATE_GROUP)
@@ -66,7 +35,6 @@ def time_in_states(events: pd.DataFrame) -> pd.DataFrame:
 
 
 def problem_cards(incidents: pd.DataFrame, states: pd.DataFrame, history: np.ndarray) -> list[dict]:
-    """Evidence cards on the history (learning period only), in the same shape as the food world's."""
     h = incidents[history].set_index("ticket_id")
     st = states.reindex(h.index).fillna(0.0)
     cards = []
@@ -113,8 +81,6 @@ def card(cid, title, cause, metric, value, comparison, comparison_text, affected
 
 
 def card_groups(h: pd.DataFrame, st: pd.DataFrame, r3_category: str) -> dict[str, tuple[pd.Series, pd.Series]]:
-    """For each card R1-R3: (incidents in the finding, incidents it is compared with). The same
-    definitions as problem_cards; R3's category is the one problem_cards found on the learning months."""
     waited = (st.get("waiting for the user", 0) + st.get("waiting for a vendor", 0) + st.get("waiting for another fix", 0)) > 0
     picked_late = st.get("waiting to be picked up", 0) > 8
     seg = h["final_category"] == r3_category
@@ -123,8 +89,6 @@ def card_groups(h: pd.DataFrame, st: pd.DataFrame, r3_category: str) -> dict[str
 
 
 def bootstrap_gap(weeks: np.ndarray, missed: np.ndarray, group: np.ndarray, other: np.ndarray, seed: int = 0) -> tuple[float, float]:
-    """95% CI of (miss % in group − miss % in other) with whole weeks resampled.
-    Example: one week with group 6 of 10 missed and other 2 of 10 → gap 40 points."""
     totals = week_totals(weeks, {"n_g": group, "m_g": missed & group, "n_o": other, "m_o": missed & other})
     n_weeks = len(totals["n_g"])
     draws = np.random.default_rng(seed).integers(0, n_weeks, size=(N_BOOT, n_weeks))
@@ -135,9 +99,6 @@ def bootstrap_gap(weeks: np.ndarray, missed: np.ndarray, group: np.ndarray, othe
 
 def replicate_cards(incidents: pd.DataFrame, states: pd.DataFrame, cards: list[dict], history: np.ndarray,
                     test: np.ndarray) -> dict:
-    """Out-of-time replication: each card was found on the learning months; is it still true on
-    the test months? 'Replicates' only if the gap (miss % in the finding − miss % in its comparison)
-    keeps its sign on the test months with a 95% CI (whole test weeks resampled) excluding 0."""
     r3 = cards[2]["segment"]["category"]
     out = []
     for c in cards:
@@ -164,16 +125,12 @@ def replicate_cards(incidents: pd.DataFrame, states: pd.DataFrame, cards: list[d
                     "with a 95% CI (whole test weeks resampled) excluding 0."}
 
 
-# ---- What will go wrong? ---------------------------------------------------------------------
-
 def train_early_warning(incidents: pd.DataFrame, events: pd.DataFrame) -> dict:
-    """The early-warning model: LightGBM on the as-of-1-hour features, learned on `learn`, stopped
-    on `check`. Returned with its features so the fast-track benchmark scores the same model."""
     feats = risk_features(incidents, events)
     X = feats[RISK_CATS + RISK_NUMS].copy()
     for c in RISK_CATS:
         X[c] = X[c].astype("category")
-    learn, check, test = masks(incidents)  # feats rows are in the same order as incidents
+    learn, check, test = masks(incidents)
     y = feats["breached"].to_numpy()
     booster = lgb.train({**risk.PARAMS, "num_threads": 4}, lgb.Dataset(X[learn], y[learn], categorical_feature=RISK_CATS), 2000,
                         valid_sets=[lgb.Dataset(X[check], y[check], categorical_feature=RISK_CATS)],
@@ -183,18 +140,15 @@ def train_early_warning(incidents: pd.DataFrame, events: pd.DataFrame) -> dict:
 
 
 def early_warning(incidents: pd.DataFrame, events: pd.DataFrame, model: dict | None = None) -> dict:
-    """SLA-miss risk scored 1 h after opening; compared with the desk's own priority field.
-    'Caught in the top 20%': of all incidents that missed their SLA, how many the score had put in
-    its riskiest 20% (the desk can only look closely at a few)."""
     model = model or train_early_warning(incidents, events)
     feats, X, y, booster, test = model["feats"], model["X"], model["y"], model["booster"], model["test"]
     p = booster.predict(X[test])
-    prio = -feats.loc[test, "priority_raw"].str[0].astype(float).to_numpy()  # 1 - Critical = most urgent
+    prio = -feats.loc[test, "priority_raw"].str[0].astype(float).to_numpy()
     yt = y[test]
     k = int(0.2 * len(yt))
-    caught = lambda score: float(yt[np.argsort(-score, kind="stable")[:k]].sum() / max(1, yt.sum()))  # noqa: E731
+    caught = lambda score: float(yt[np.argsort(-score, kind="stable")[:k]].sum() / max(1, yt.sum()))
     rng = np.random.default_rng(0)
-    prio_tiebreak = prio + rng.uniform(0, 1e-6, len(prio))  # the field has 4 levels: break ties at random
+    prio_tiebreak = prio + rng.uniform(0, 1e-6, len(prio))
     out = {"n_test": int(test.sum()), "missed_pct": float(yt.mean() * 100),
            "auc_opslens": float(roc_auc_score(yt, p)), "auc_priority": float(roc_auc_score(yt, prio)),
            "caught_top20_opslens_pct": caught(p) * 100, "caught_top20_priority_pct": caught(prio_tiebreak) * 100}
@@ -211,7 +165,6 @@ REASON = {"team_now": lambda v: f"now held by {v}", "first_team": lambda v: f"fi
 
 
 def at_risk_examples(booster, X: pd.DataFrame, feats: pd.DataFrame, p: np.ndarray, k: int = 8) -> list[dict]:
-    """The riskiest test incidents with their top reasons (TreeSHAP, as share of the upward push)."""
     top = np.argsort(-p)[:k]
     contrib = booster.predict(X.iloc[top], pred_contrib=True)[:, :-1]
     names = list(X.columns)
@@ -226,10 +179,6 @@ def at_risk_examples(booster, X: pd.DataFrame, feats: pd.DataFrame, p: np.ndarra
 
 
 def team_daily(incidents: pd.DataFrame, teams: int = 8) -> dict:
-    """Daily new incidents per team (the 8 busiest first teams) on the check and test weeks, with
-    the learned forecast (LightGBM Poisson on hourly counts, lags of 1-4 weeks) and "same day last
-    week", plus each team's usual closures per day (median of the 4 weeks before the test period).
-    Every input of either forecast is at least a week old, so both are week-ahead forecasts."""
     inc = incidents[incidents["created_at"] < "2016-06-01"].copy()
     start = inc["created_at"].min().normalize()
     inc["minute_of_run"] = (inc["created_at"] - start).dt.total_seconds() / 60
@@ -240,7 +189,7 @@ def team_daily(incidents: pd.DataFrame, teams: int = 8) -> dict:
     learn, check, test = masks(incidents)
     test_start = incidents.loc[test, "created_at"].min()
     check_start = incidents.loc[check, "created_at"].min()
-    day_of = lambda ts: int((ts - start).total_seconds() // 86400) + 1  # noqa: E731
+    day_of = lambda ts: int((ts - start).total_seconds() // 86400) + 1
     tr = rows[(rows["day"] >= 29) & (rows["day"] < day_of(check_start))]
     va = rows[(rows["day"] >= day_of(check_start)) & (rows["day"] < day_of(test_start))]
     te = rows[rows["day"] >= day_of(test_start)].copy()
@@ -256,14 +205,8 @@ def team_daily(incidents: pd.DataFrame, teams: int = 8) -> dict:
 
 
 def team_forecast(incidents: pd.DataFrame, teams: int = 8, daily: dict | None = None) -> dict:
-    """Daily new incidents per team for the test weeks: OpsLens's forecaster (LightGBM Poisson on
-    hourly counts, lags of 1-4 weeks) vs 'same day last week'. A team-day is a bottleneck when the
-    forecast exceeds what the team usually closes in a day (median of its last 4 learning weeks)."""
     d = daily or team_daily(incidents, teams)
     top, start, va_daily, te, capacity = d["top"], d["start"], d["va_daily"], d["te"].copy(), d["capacity"]
-    # Model choice on the check weeks only: the learned forecast or "same day last week"? On the
-    # first run the learned one lost on the TEST weeks (0.365 vs 0.341), so we let the check weeks
-    # decide between the two, honestly, and report the test result of whichever they pick.
     use_model = F.wape(va_daily["actual"].to_numpy(), va_daily["forecast"].to_numpy()) < \
         F.wape(va_daily["actual"].to_numpy(), va_daily["naive"].to_numpy())
     te["forecast"] = te["model"] if use_model else te["lag_168"]
@@ -287,7 +230,6 @@ CANDIDATES = {"same_day_last_week": "Same day last week", "learned": "Learned (L
 
 
 def candidate_frames(d: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Check and test team-days with the three candidate forecasts side by side."""
     va = d["va_daily"].reset_index().rename(columns={"forecast": "learned", "naive": "same_day_last_week"})
     te = d["te"].groupby(["category", "day"], observed=True).agg(actual=("count", "sum"), learned=("model", "sum"),
                                                                 same_day_last_week=("lag_168", "sum")).reset_index()
@@ -299,9 +241,6 @@ def candidate_frames(d: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def forecast_candidates(d: dict) -> dict:
-    """Three forecasts of each team's daily new incidents; the check weeks pick one (lowest WAPE);
-    the test weeks report all three once. Example: a team-day with same day last week 240 and
-    learned 218 has the average 229."""
     va, te = candidate_frames(d)
     check = {c: F.wape(va["actual"].to_numpy(), va[c].to_numpy()) for c in CANDIDATES}
     test = {c: F.wape(te["actual"].to_numpy(), te[c].to_numpy()) for c in CANDIDATES}
@@ -314,16 +253,12 @@ def forecast_candidates(d: dict) -> dict:
 
 
 def score_alerts(predicted: np.ndarray, actual: np.ndarray) -> dict:
-    """Precision and recall of overload alerts. Example: 10 alerts, 7 of them real, 14 real
-    overloads in all → precision 70%, recall 50%."""
     tp = int((predicted & actual).sum())
     return {"alerts": int(predicted.sum()), "overloaded": int(actual.sum()), "hits": tp,
             "precision_pct": 100.0 * tp / max(int(predicted.sum()), 1), "recall_pct": 100.0 * tp / max(int(actual.sum()), 1)}
 
 
 def bottleneck_alerts(d: dict, chosen: str) -> dict:
-    """Score 'this team will get more new incidents than it usually closes' on every test team-day,
-    for each candidate forecast and for a calendar rule that alerts on every weekday."""
     _, te = candidate_frames(d)
     actual = (te["actual"] > te["capacity"]).to_numpy()
     scores = {c: score_alerts((te[c] > te["capacity"]).to_numpy(), actual) for c in CANDIDATES}
@@ -339,13 +274,7 @@ def bottleneck_alerts(d: dict, chosen: str) -> dict:
             "labels": {**CANDIDATES, "every_weekday": "Calendar rule: alert on every weekday"}}
 
 
-# ---- What should we do? ----------------------------------------------------------------------
-
 def routing_hints(incidents: pd.DataFrame, events: pd.DataFrame) -> dict:
-    """Suggest the team that will finally resolve an incident, at the moment it opens — but only
-    when OpsLens is sure. The confidence threshold is chosen on the check period (most incidents
-    fixed minus incidents it would have sent wrong); everything reported is on the test months.
-    Baseline: the team the real desk sent it to first."""
     first = events.groupby("number").head(1).set_index("number")
     X = first[ROUTE_COLS].reindex(incidents["ticket_id"]).reset_index(drop=True)
     for c in ROUTE_COLS:

@@ -1,15 +1,4 @@
 <!doctype html>
-<!--
-  OpsLens dashboard — the one page the judges see.
-
-  Why it is built this way:
-  - Plain HTML + vanilla JS + CSS, no build step, so the owner can read every line.
-  - Everything is local (Chart.js is in web/vendor/, no web fonts), because the demo
-    runs on a projector with Wi-Fi off.
-  - This file is only the frame: side menu, top bar, empty content area. app.js loads the
-    results JSON and fills each tab. Every number on screen comes from that JSON
-    (CLAUDE.md rule 1.5).
--->
 <html lang="en" data-theme="neon">
 <head>
   <meta charset="utf-8">
@@ -17,27 +6,18 @@
   <title>OpsLens</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
-  <!-- Design v2 skin (Claude 2): Inter, refined palette, motion, the Overview's live floor. -->
   <link rel="stylesheet" href="theme.css">
-  <!-- Neon skin (24 Oct): dark glass, cyan and violet. Applies only while <html data-theme="neon">;
-       the Neon/Light switch in the top bar flips it and remembers the choice in this browser. -->
   <link rel="stylesheet" href="neon.css">
-  <!-- Boxes (Claude 2, 25 Oct, the owner's reference UI kit): every block in a rounded box, sub-menus
-       as one segmented box, calmer motion. -->
   <link rel="stylesheet" href="boxes.css">
-  <!-- Neon, refined (25 Oct): loaded last, so the boxes keep the de-slopped look: no violet gradients
-       or glow wash, solid panels, small radii, one accent (cyan). -->
   <link rel="stylesheet" href="refined.css">
   <script>
     try { if (JSON.parse(localStorage.getItem("opslens-theme")) === "light") document.documentElement.removeAttribute("data-theme"); }
-    catch (error) { /* storage blocked: stay on the default */ }
+    catch (error) {}
   </script>
-  <!-- Chart.js 4.5.0, downloaded once and kept in the repo (works offline). -->
   <script src="vendor/chart.umd.js"></script>
   <script type="module" src="app.js"></script>
 </head>
 <body>
-  <!-- Shown only when meta.fixture is true. Fixed to the top so it is on every screenshot. -->
   <div id="fixture-banner" class="fixture-banner" hidden>
     FIXTURE DATA. Numbers are invented. Not real results.
   </div>
@@ -58,7 +38,6 @@
         </div>
       </div>
       <nav id="tab-nav" class="nav" aria-label="Dashboard sections"></nav>
-      <!-- Today's live run, on every screen (web/js/liveticker.js); opens Overview -> Live now. -->
       <a class="live-ticker" id="live-ticker" href="#overview/live" hidden aria-label="Live today: open Live now"></a>
       <button type="button" class="intro-replay" id="intro-replay" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Replay the night
@@ -68,15 +47,11 @@
 
     <div class="main">
       <header class="topbar">
-        <!-- Which data (Plan v3; 26 Oct): the simulated food-delivery floor, or real data: the public
-             UCI service desk example or the judge's own CSV (the bar at the top of each real screen). -->
         <div class="world-switch" role="group" aria-label="Which data to show">
           <button type="button" data-world="food">Food delivery <span>simulated</span></button>
           <button type="button" data-world="real">Real data <span>UCI or your CSV</span></button>
         </div>
         <div id="data-source" class="status"></div>
-        <!-- Ask OpsLens lives in the assistant now ("Ask OpsLens AI" in the side menu, js/bot.js),
-             which answers the same questions; the top-bar box is gone (owner, 25 Oct). -->
         <div class="topbar-actions">
           <button id="theme-button" class="btn theme-switch" type="button" aria-label="Switch between neon and light colours">
             <span class="swatch" aria-hidden="true"></span><span id="theme-label">Light</span>
@@ -96,19 +71,14 @@
     </div>
   </div>
 
-  <!-- Click-to-evidence popover. evidence.js fills and positions it. -->
   <div id="evidence-popover" class="evidence-popover" role="dialog" aria-label="Evidence" hidden></div>
 
-  <!-- Cold open: one Saturday night on two floors (web/js/intro.js). -->
   <div id="intro" class="intro" role="dialog" aria-label="Introduction: one Saturday night" hidden></div>
 
-  <!-- Ask OpsLens answer panel. ask.js fills it. -->
   <div id="ask-panel" class="ask-panel" role="dialog" aria-label="Ask OpsLens answer" hidden></div>
 
-  <!-- Your plan: accepted / overridden recommendations and their impact (web/js/plan.js). -->
   <aside id="plan-panel" class="plan-panel" aria-label="Your plan" hidden></aside>
 
-  <!-- Story mode card. story.js fills it. -->
   <div id="story-card" class="story-card" role="dialog" aria-label="Story mode" hidden></div>
 </body>
 </html>

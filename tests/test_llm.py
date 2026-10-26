@@ -1,5 +1,3 @@
-"""LLM layer: masking before send, cache, fallback, JSON repair, rate limits. No network."""
-
 from pathlib import Path
 
 import pytest
@@ -21,8 +19,6 @@ def make_client(tmp_path: Path, *providers: MockProvider) -> LLMClient:
     return LLMClient(list(providers), cache=LLMCache(db), limiter=RateLimiter(db, sleep_fn=lambda s: None))
 
 
-# ---- JSON parsing -----------------------------------------------------------------------
-
 @pytest.mark.parametrize(
     "text, expected",
     [
@@ -41,8 +37,6 @@ def test_parse_json_reply_rejects_prose() -> None:
         parse_json_reply("I cannot help with that.")
 
 
-# ---- Client behaviour -------------------------------------------------------------------
-
 def test_pii_is_masked_before_the_provider_sees_it(tmp_path) -> None:
     provider = mock("main")
     client = make_client(tmp_path, provider)
@@ -60,7 +54,7 @@ def test_second_identical_request_comes_from_cache(tmp_path) -> None:
     second = client.ask_json("t", "sys", "hello")
     assert first.data == second.data == {"n": 1}
     assert not first.from_cache and second.from_cache
-    assert len(provider.sent) == 1  # paid once
+    assert len(provider.sent) == 1
 
 
 def test_falls_back_when_main_provider_is_down(tmp_path) -> None:
@@ -90,7 +84,7 @@ def test_daily_budget_is_respected(tmp_path) -> None:
     backup = mock("backup", replies=['{"b": 1}'])
     client = make_client(tmp_path, main, backup)
     assert client.ask_json("t", "sys", "first").provider == "main"
-    assert client.ask_json("t", "sys", "second").provider == "backup"  # main used its 1 call
+    assert client.ask_json("t", "sys", "second").provider == "backup"
 
 
 def test_all_providers_failing_raises(tmp_path) -> None:
@@ -103,8 +97,6 @@ def test_build_client_with_mock_from_config(tmp_path) -> None:
     client = build_client(["mock"], use_cache=False, db_path=tmp_path / "llm.sqlite")
     assert client.ask_json("t", "sys", "hi").data == {"mock": True, "chars": 2}
 
-
-# ---- Rate limiter -----------------------------------------------------------------------
 
 def test_minute_window_makes_third_call_wait(tmp_path) -> None:
     clock = {"t": 1_000_000.0}
@@ -119,7 +111,6 @@ def test_minute_window_makes_third_call_wait(tmp_path) -> None:
         limiter.wait_for_slot("p", requests_per_minute=2)
         limiter.record_call("p")
         clock["t"] += 1.0
-    # Two calls at t=0 and t=1; now t=2. The third must wait until t=60 → 58 s.
     waited = limiter.wait_for_slot("p", requests_per_minute=2)
     assert waited == pytest.approx(58.0)
     assert limiter.calls_today("p") == 2

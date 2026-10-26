@@ -1,5 +1,3 @@
-"""Plan v4 W7: the rival risk models and the alert-block scoring."""
-
 import numpy as np
 import pandas as pd
 
@@ -23,10 +21,8 @@ def test_rivals_have_the_policy_interface_and_learn_time_left() -> None:
     for model in (lr, rule):
         p = model.predict(test)
         assert p.shape == (500,) and ((p >= 0) & (p <= 1)).all()
-    # Less time left must never look safer to the rule (isotonic, decreasing).
     order = np.argsort(test["time_left_min"].to_numpy())
     assert (np.diff(rule.predict(test)[order]) <= 1e-12).all()
-    # The logistic regression finds the same signal.
     assert np.corrcoef(lr.predict(test), -test["time_left_min"])[0, 1] > 0.5
 
 

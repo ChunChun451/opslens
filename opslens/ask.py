@@ -1,28 +1,3 @@
-"""Ask OpsLens: a manager types a question in plain words; the engine answers it.
-
-What it does: the LLM reads the question and picks ONE engine tool plus its arguments (JSON).
-Our code checks that choice, runs the real tool (simulator, plant test, risk reasons, playbooks)
-and writes the answer from the tool's output. So the LLM is the *ears*, the engine is the
-*brain*, and every number on screen still comes from code (CLAUDE.md rule "the LLM never writes
-a digit").
-
-Why this design:
-- A free-form chatbot would sound clever and invent numbers. Here the LLM's only job is
-  understanding, which is what it is good at (Hinglish, vague wording, "Saturday night").
-- Grounding check: every number in the tool arguments must appear in the question. The LLM may
-  copy "2 agents" or "20%", never make up a day, a percentage or a headcount. Days are passed
-  as weekday names and mapped to a test day by code.
-- If the LLM is unavailable (Wi-Fi off) or its choice fails the checks, simple keyword rules
-  try the same job, and the answer says which one understood the question.
-
-Example: "What if Team C loses 2 agents on Saturday and volume goes up 20%?"
-→ LLM: {"tool": "whatif", "args": {"weekday": "saturday", "agents_delta": {"C": -2},
-        "volume_change_pct": 20}}
-→ check: numbers 2 and 20 are in the question ✓ → day 48 (Sat 17 Oct), volume ×1.2, Team C −2
-→ simulator runs the day for each policy → "OpsLens: 4.1% breaches vs 9.8% priority-first..."
-  (numbers from the simulator at request time).
-"""
-
 from __future__ import annotations
 
 import re
@@ -36,10 +11,8 @@ TEAMS = {"A": "Live orders (late delivery)", "B": "Payments & refunds", "C": "Or
 CATEGORIES = ("late_delivery", "refund", "payment_failure", "missing_item", "wrong_item", "account", "app_bug",
               "restaurant_partner")
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
-# Which team handles which category (as in opslens/classify.py), so "refund" questions find Team B.
 TEAM_OF_CATEGORY = {"late_delivery": "A", "refund": "B", "payment_failure": "B", "missing_item": "C",
                     "wrong_item": "C", "account": "D", "app_bug": "D", "restaurant_partner": "D"}
-# Plain and Hinglish words for a category, for the keyword rules (the LLM understands far more).
 CATEGORY_WORDS = {"refund": ("refund", "paisa", "paise", "money back"), "payment_failure": ("payment", "upi", "debit"),
                   "late_delivery": ("late delivery", "delivery late", "khana late", "order late", "rider"),
                   "missing_item": ("missing", "nahi aaya"), "wrong_item": ("wrong item", "galat"),
@@ -51,10 +24,6 @@ FUTURE_WORDS = ("forecast", "next 48", "next two days", "tomorrow", "tonight", "
 RISK_WORDS = ("at risk", "risk", "miss", "late honge", "late hoga", "will be late", "breach next", "danger",
               "khatre", "kaun", "who will", "which tickets", "which customers")
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
-# Numbers written as words count as typed: "Two agents" grounds a 2 (found 22 Oct: the LLM answered
-# {"D": -2} correctly, the check rejected it, and the keyword rules then simulated the day WITHOUT
-# the change). English and common Hinglish words. "do" (Hindi 2) is also an English word, so it
-# counts only right before a people word ("do log", "do agents").
 NUMBER_WORDS = {
     "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
     "ten": 10, "eleven": 11, "twelve": 12, "fifteen": 15, "twenty": 20, "thirty": 30, "forty": 40,
@@ -65,7 +34,6 @@ HINDI_DO = re.compile(r"\bdo\s+(?:log|logon|agents?|bande|banda|aur|people)\b")
 
 
 def typed_numbers(question: str) -> set[float]:
-    """Every number the user wrote, as digits or as a word."""
     q = question.lower()
     typed = {float(m) for m in NUMBER.findall(q)}
     typed |= {float(NUMBER_WORDS[w]) for w in re.findall(r"[a-z]+", q) if w in NUMBER_WORDS}
@@ -96,10 +64,7 @@ SYSTEM = (
 )
 
 
-# ---- Understanding the question ----------------------------------------------------------------
-
 def numbers_in(value: Any) -> list[float]:
-    """Every number inside the tool arguments (recursively)."""
     if isinstance(value, bool):
         return []
     if isinstance(value, (int, float)):
@@ -114,7 +79,6 @@ def numbers_in(value: Any) -> list[float]:
 
 
 def check_route(route: Any, question: str) -> dict | None:
-    """The route if it is legal and grounded in the question, else None."""
     if not isinstance(route, dict) or route.get("tool") not in TOOLS:
         return None
     args = route.get("args") or {}
@@ -122,7 +86,7 @@ def check_route(route: Any, question: str) -> dict | None:
         return None
     typed = typed_numbers(question)
     if any(n not in typed for n in numbers_in(args)):
-        return None  # the LLM added a number the user never wrote
+        return None
     tool = route["tool"]
     if tool == "whatif":
         if args.get("weekday") and str(args["weekday"]).lower() not in WEEKDAYS:
@@ -145,7 +109,6 @@ def check_route(route: Any, question: str) -> dict | None:
 
 
 def rules_route(question: str) -> dict | None:
-    """Keyword rules: the offline fallback. Handles the common phrasings, nothing clever."""
     q = question.lower()
     ticket = re.search(r"\bt\d{6}\b", q)
     if ticket:
@@ -173,9 +136,9 @@ def rules_route(question: str) -> dict | None:
             args["agents_delta"] = delta
         return {"tool": "whatif", "args": args}
     category = next((c for c, words in CATEGORY_WORDS.items() if any(w in q for w in words)), None)
-    if any(w in q for w in FUTURE_WORDS):  # about what is coming: the forecast answers it
+    if any(w in q for w in FUTURE_WORDS):
         return {"tool": "forecast", "args": {"category": category} if category else {}}
-    if any(w in q for w in RISK_WORDS):  # about who is in danger now
+    if any(w in q for w in RISK_WORDS):
         args = {"category": category} if category else {}
         if "hindi" in q:
             args["language"] = "hi"
@@ -190,7 +153,6 @@ def rules_route(question: str) -> dict | None:
 
 
 def understand(question: str, client) -> dict:
-    """{"tool", "args", "understood_by"}: LLM first, keyword rules if it is unavailable or fails."""
     if client is not None:
         try:
             reply = client.ask_json("ask_route", SYSTEM, question)
@@ -205,13 +167,7 @@ def understand(question: str, client) -> dict:
     return {"tool": "none", "args": {}, "understood_by": "nobody"}
 
 
-# ---- Turning a route into an engine request ----------------------------------------------------
-
 def whatif_request(args: dict, test_days: tuple[int, int], first_weekday: int) -> dict:
-    """Map weekday names and percentages to the What-if request (opslens/whatif.py).
-
-    Example: weekday "saturday", test days 43-56, day 1 a Monday → day 48 (the first test Saturday).
-    """
     day = test_days[0]
     if args.get("weekday"):
         wanted = WEEKDAYS.index(str(args["weekday"]).lower())
@@ -223,7 +179,6 @@ def whatif_request(args: dict, test_days: tuple[int, int], first_weekday: int) -
 
 def answer(question: str, client, tools: dict[str, Callable[..., dict]], results: dict,
            test_days: tuple[int, int], first_weekday: int) -> dict:
-    """The whole loop: understand → run one tool → write the answer from its output."""
     route = understand(question, client)
     trace = [f"Understood by {route['understood_by']}: tool {route['tool']}, arguments {route['args']}"]
     tool, args = route["tool"], route["args"]
@@ -258,8 +213,6 @@ def answer(question: str, client, tools: dict[str, Callable[..., dict]], results
                       "“Plant a refund spike”, “What should we fix first?”"], "facts": []}
 
 
-# ---- Answers (all numbers come from tool output) -----------------------------------------------
-
 POLICY_NAMES = {"baseline_a": "First come, first served", "baseline_b": "Urgent first (priority)",
                 "baseline_d": "Industry standard (skills routing)", "opslens": "OpsLens"}
 
@@ -271,15 +224,13 @@ def whatif_text(out: dict) -> dict:
         change.append(f"volume ×{req['volume_factor']:g}")
     change += [f"Team {t} {d:+d} agents" for t, d in req["agents_delta"].items() if d]
     o = pol["opslens"]
-    other = "baseline_d" if "baseline_d" in pol else "baseline_b"  # compare with the strongest baseline
+    other = "baseline_d" if "baseline_d" in pol else "baseline_b"
     b, b_name = pol[other], POLICY_NAMES[other]
     lines = [f"Day {req['day']} with {', '.join(change) or 'no change'}: {o['tickets']:.0f} tickets.",
              f"OpsLens: {o['turnaround.breach_pct']:.1f}% SLA breaches, P90 resolution {o['turnaround.p90_resolution_min']:.0f} min.",
              f"{b_name} on the same day: {b['turnaround.breach_pct']:.1f}% breaches "
              f"({b['turnaround.breach_pct'] - o['turnaround.breach_pct']:+.1f} points vs OpsLens)."]
     if "quality.late_minutes_per_100" in o:
-        # Under heavy load OpsLens saves the tickets that can still make it, so P90 can rise while
-        # breaches fall; minutes past SLA (all customers) is the fair way to show that trade-off.
         lines.append(f"Minutes past SLA per 100 tickets: OpsLens {o['quality.late_minutes_per_100']:,.0f}, "
                      f"{b_name.lower()} {b['quality.late_minutes_per_100']:,.0f}.")
         late_worse = o["quality.late_minutes_per_100"] > b["quality.late_minutes_per_100"]
@@ -339,7 +290,6 @@ def problems_text(results: dict) -> dict:
 
 
 def headline_text(results: dict) -> dict:
-    """The held-out result against the industry standard first (the lead comparison), then the 30 worlds."""
     pol = results["sim"]["policies"]
     b = {k: pol[k]["kpis"]["turnaround.breach_pct"]["mean"] for k in pol}
     days = results["meta"]["test_days"][1] - results["meta"]["test_days"][0] + 1
@@ -362,14 +312,10 @@ def headline_text(results: dict) -> dict:
 
 
 def forecast_text(results: dict, args: dict) -> dict:
-    """The next 48 hours from the forecast: the busiest hours against capacity, and named bottlenecks."""
     f = results.get("forecast") or {}
     team = str(args.get("team") or TEAM_OF_CATEGORY.get(args.get("category") or "", "")).upper() or None
     hours = [h for h in f.get("horizon", []) if team is None or h["team"] == team]
     window = (min(h["time"] for h in hours), max(h["time"] for h in hours)) if hours else ("", "")
-    # The bottleneck list covers the whole test fortnight; keep the ones inside these 48 hours.
-    # Night hours (before 07:00) are covered by the cross-trained night pool (opslens/staffing.py), so a
-    # night "shortage" is not a bottleneck by our own staffing rule.
     blocks = [b for b in f.get("bottlenecks", []) if (team is None or b["team"] == team)
               and b["end"] >= window[0] and b["start"] <= window[1] and int(b["start"][11:13]) >= 7]
     if not hours:
@@ -389,7 +335,6 @@ def forecast_text(results: dict, args: dict) -> dict:
 
 
 def at_risk_text(results: dict, args: dict) -> dict:
-    """The waiting customers most likely to miss their deadline, from the risk model's list."""
     rows = (results.get("risk") or {}).get("at_risk") or []
     if args.get("category"):
         rows = [r for r in rows if r["category"] == args["category"]]
@@ -402,7 +347,6 @@ def at_risk_text(results: dict, args: dict) -> dict:
         risk = "≥99%" if r["probability"] >= 0.995 else f"{100 * r['probability']:.0f}%"
         lines.append(f"• {r['ticket_id']} ({r['priority']} {r['category'].replace('_', ' ')}, {r['language']}): "
                      f"{risk} chance to miss, {r['minutes_to_sla']:.0f} min left. Main reason: {r['reasons'][0]['text']}.")
-    # Where an action changes the most (not always the riskiest: with 7 minutes left nothing helps).
     best = max(rows, key=lambda r: r["probability"] - r["probability_after_action"])
     drop = best["probability"] - best["probability_after_action"]
     if drop >= 0.05:
@@ -416,7 +360,6 @@ def at_risk_text(results: dict, args: dict) -> dict:
 
 
 def nice_time(stamp: str) -> str:
-    """'2026-10-24T20:00' -> 'Sat 24 Oct 20:00'."""
     from datetime import datetime
     t = datetime.fromisoformat(stamp)
     return f"{t.strftime('%a')} {t.day} {t.strftime('%b')} {t.strftime('%H:%M')}"

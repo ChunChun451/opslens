@@ -1,20 +1,3 @@
-"""The daily ops brief: the LLM writes the words, our code writes every number.
-
-What it does: offers the LLM a menu of facts, each with a key ("opslens_breach" → 4.2%),
-and asks for a short brief that refers to numbers ONLY as {{key}}. Our code then checks the
-reply and fills in the values from results.json.
-
-The check (CLAUDE.md rule "the LLM never writes a digit"):
-- any digit outside a {{key}} → rejected,
-- any {{key}} that is not on the menu → rejected,
-- rejected or no LLM available → a plain template brief built from the same facts.
-So a made-up number cannot reach the screen, by construction (the idea of "proof-carrying
-numbers": every number carries a pointer to where it was computed).
-
-Example: LLM reply "Breaches fell to {{opslens_breach}} against {{priority_breach}} for
-priority routing." → "Breaches fell to 4.2% against 6.8% for priority routing."
-"""
-
 from __future__ import annotations
 
 import re
@@ -23,7 +6,6 @@ from opslens.llm.base import LLMUnavailable
 from opslens.llm.client import LLMClient
 
 KEY = re.compile(r"\{\{\s*([a-z0-9_]+)\s*\}\}")
-# Numbers written as words would slip past a digit check ("ninety percent"), so they are refused too.
 NUMBER_WORDS = re.compile(
     r"\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|"
     r"sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|"
@@ -40,8 +22,6 @@ SYSTEM = (
 
 
 def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
-    """key → (formatted value, plain description, results.json path). A decision brief (24 Oct): the
-    proof against the industry standard, the next bottleneck, the top problem, the best measured fix."""
     pol = r["sim"]["policies"]
 
     def kpi(policy: str, name: str) -> float:
@@ -71,7 +51,6 @@ def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
     horizon = (r.get("forecast") or {}).get("horizon") or []
     if all_blocks and horizon:
         first, last = min(h["time"] for h in horizon), max(h["time"] for h in horizon)
-        # Day hours only: the cross-trained night pool covers the night (opslens/staffing.py).
         ahead = [k for k, b in enumerate(all_blocks)
                  if int(b["start"][11:13]) >= 7 and b["end"] >= first and b["start"] <= last]
         if ahead:
@@ -81,10 +60,8 @@ def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
     cards = r["patterns"]["cards"]
     if cards:
         top = cards[0]
-        issue = re.sub(r"\s+", " ", re.sub(r"[\d.]+\s*×?", "", top["title"])).strip()  # the title without its numbers
+        issue = re.sub(r"\s+", " ", re.sub(r"[\d.]+\s*×?", "", top["title"])).strip()
         facts["top_issue"] = (issue, "the biggest recurring problem found in the history", "patterns.cards[0].title")
-        # The unit travels with the value, and descriptions never contain digits (a digit in the menu
-        # invites the LLM to copy it, and the check then rejects the whole brief).
         facts["top_issue_value"] = (f"{top['value']:.1f} {top['metric']}", "that problem's rate (the value carries its unit)",
                                     "patterns.cards[0].value")
         facts["top_issue_normal"] = (f"{top['comparison_value']:.1f} {top['metric']}",
@@ -102,26 +79,23 @@ def facts_from_results(r: dict) -> dict[str, tuple[str, str, str]]:
 
 
 def menu_text(facts: dict[str, tuple[str, str, str]]) -> str:
-    """The facts as the LLM sees them: key and meaning, never the value itself."""
     return "\n".join(f"- {{{{{key}}}}}: {desc}" for key, (_, desc, _) in facts.items())
 
 
 def check_and_fill(text: str, facts: dict[str, tuple[str, str, str]]) -> str | None:
-    """Return the filled brief, or None if the reply breaks the rules."""
     keys = KEY.findall(text)
     if any(k not in facts for k in keys):
         return None
     rest = KEY.sub("", text)
     if re.search(r"\d", rest) or NUMBER_WORDS.search(rest):
-        return None  # a number outside {{...}}: the LLM wrote a number itself
+        return None
     return KEY.sub(lambda m: facts[m.group(1)][0], text)
 
 
 def template_brief(facts: dict[str, tuple[str, str, str]]) -> str:
-    """The same four parts in fixed words, used when no LLM reply passes the checks."""
     v = {k: val for k, (val, _, _) in facts.items()}
     text = f"On the held-out days OpsLens missed {v['opslens_breach']} of deadlines against {v['industry_breach']} for the industry standard"
-    text += f" ({v['difference']})" if "difference" in v else ""  # value: "-3.46 points, 95% interval ..."
+    text += f" ({v['difference']})" if "difference" in v else ""
     text += f", and it was lower on {v['days_won']}." if "days_won" in v else "."
     if "bottleneck" in v:
         text += f" Watch next: {v['bottleneck']}."
@@ -133,7 +107,6 @@ def template_brief(facts: dict[str, tuple[str, str, str]]) -> str:
 
 
 def write_brief(results: dict, client: LLMClient | None) -> dict:
-    """Brief for the dashboard: {"text", "source", "numbers_used"} (numbers_used = result paths)."""
     facts = facts_from_results(results)
     if client is not None:
         try:

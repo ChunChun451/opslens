@@ -1,24 +1,11 @@
-// tabs/recommendations.js — what to do: fixes at the source, staffing changes, and the automatic
-// ticket-by-ticket dispatch.
-//
-// Why (Plan v3, 19 Oct): the manager decides the big things and the engine does the small ones.
-// Fixes and staffing changes have Accept / Override (web/js/plan.js): accepting puts them in
-// "Your plan" with their measured effect and lets the manager simulate the plan. Who takes which
-// ticket is automatic (a manager cannot approve 1,100 tickets a day), so it is only explained.
-//
-// Example (real results): ticket T060574 -> Neha G. (A04), "P2 late delivery, English,
-// waiting 12 min; low risk - served in turn". Staffing, days 43-49: six shift changes with the
-// same people and hours cut the forecast shortage from 654.2 to 635.9 agent-hours.
-
 import { state, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, missing, initials, fold } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
 import { planButtons, registerItem, planIndex, measured } from "../plan.js";
 
-// Assignments shown before "Show all" (a layout choice, not a result).
 const ASSIGNMENTS_SHOWN = 8;
-const TOP_FIXES = 3; // fixes shown before the fold (a layout choice)
+const TOP_FIXES = 3;
 
 export function render(section) {
   const rec = state.results.recommendations;
@@ -35,8 +22,6 @@ export function render(section) {
     ${fold("Who takes which ticket (automatic, with a reason each)", assignmentsCard(rec), { hint: "Saturday evening" })}`;
 }
 
-// The whole plan in one line: every recommendation accepted together, replayed on the held-out days
-// (its own run, not a sum of the single effects).
 function planLead() {
   const plan = state.results.plan;
   if (!plan || !plan.all_items) return "";
@@ -46,8 +31,6 @@ function planLead() {
     you can see which ones pay off and which do not.</p>`;
 }
 
-// Fix-at-source playbooks (added 16 Oct): an upstream action per evidence card, each replayed
-// on the test days in the simulator. Every number is a paired difference from results.json.
 function playbooksCard() {
   const pbs = state.results.playbooks;
   if (!pbs || !pbs.playbooks.length) return "";
@@ -56,8 +39,6 @@ function playbooksCard() {
   const item = (pb, i) => {
     const base = `playbooks.playbooks[${i}]`;
     const fx = (policy, kpi) => `${base}.effect.${policy}.vs_without.${kpi}`;
-    // OpsLens column: this fix alone on today's roster (results.plan), the same footing as the
-    // priority-first column and the same number Your plan shows. Older results: the playbook run.
     const j = planIndex(pb.id);
     const ops = (kpi, key, unit) => (j >= 0 ? measured(`plan.items[${j}].effect.${key}`, key, false) : diff(fx("opslens", kpi), unit));
     registerItem({ id: pb.id, world: "food", title: pb.title, owner: pb.owner, simulable: true,
@@ -135,7 +116,6 @@ function assignmentsCard(rec) {
         <div class="table-wrap"><table>${head}<tbody>${rest}</tbody></table></div></details>` : ""}</div>`;
 }
 
-// Playbook indexes, most missed SLAs saved with OpsLens first (results.plan; JSON order if absent).
 function byOpsLensEffect(playbooks) {
   const saved = (pb) => {
     const j = planIndex(pb.id);
@@ -145,18 +125,15 @@ function byOpsLensEffect(playbooks) {
   return playbooks.map((pb, i) => i).sort((a, b) => saved(playbooks[a]) - saved(playbooks[b]));
 }
 
-// A staffing move whose own replay shows a clear effect (its 95% interval excludes 0).
 function moveIsClear(m, i) {
   const id = movePlanId(m, i);
   const j = id ? planIndex(id) : -1;
-  if (j < 0) return true; // nothing measured: show it
+  if (j < 0) return true;
   const low = lookup(`plan.items[${j}].effect.breaches.ci_low`);
   const high = lookup(`plan.items[${j}].effect.breaches.ci_high`);
   return !(typeof low === "number" && low <= 0 && high >= 0);
 }
 
-// Moves listed in full when they have a clear effect; the rest folded under one line, so the
-// screen recommends what pays and still shows everything it tried.
 function movesHtml(rec, indexes) {
   const clear = indexes.filter((i) => moveIsClear(rec.staffing_moves[i], i));
   const unclear = indexes.filter((i) => !clear.includes(i));
@@ -166,7 +143,6 @@ function movesHtml(rec, indexes) {
         ${unclear.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")}</details>` : "");
 }
 
-// Why staffing is a small lever here, from the CP-SAT experiment (Plan v4 W5), if it is in the file.
 function staffingNote() {
   const so = state.results.staffing_opt;
   if (!so || !so.test) return "";
@@ -185,7 +161,6 @@ function staffingCard(rec) {
   const plans = weeklyPlans(rec);
   let body;
   if (plans) {
-    // One block per week: the week's shortage before and after, then that week's moves.
     body = `<div class="grid cols-2">${plans.map(({ p, moveIndexes }) => `
       <div class="week">
         <div class="week-head">
@@ -203,8 +178,6 @@ function staffingCard(rec) {
     earlier or later, or a day off moves to a quieter day.</p>${body}</div>`;
 }
 
-// Group the moves by week using details.forecast.plans (the engine lists the moves in plan
-// order). Returns null when the plans are missing or do not line up, and we show a flat list.
 function weeklyPlans(rec) {
   const d = state.results.details;
   if (!d || !d.forecast || !Array.isArray(d.forecast.plans)) return null;
@@ -224,8 +197,6 @@ function weeklyPlans(rec) {
   return k === rec.staffing_moves.length ? groups : null;
 }
 
-// results.plan lists the staffing moves first, in the same order as staffing_moves (same agent, same
-// week); the server only knows those ids ("staff_43_C02"), so a move without one cannot be planned.
 function movePlanId(m, i) {
   const plan = state.results.plan;
   const it = plan && plan.items && plan.items[i];

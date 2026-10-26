@@ -1,35 +1,3 @@
-"""Find recurring problems in the ticket history and back each one with evidence.
-
-What it does: scans the history (days 1-42) for groups of tickets that are clearly worse than
-comparable tickets, decides the likely cause, and writes an evidence card with the numbers,
-three example tickets and a recommended action. It also finds unusual days (volume spikes)
-and, in the live period, raises alerts within the hour.
-
-How it works:
-1. Every ticket gets simple labels: category, language, channel, team, priority, tier, and
-   "when" (weekday/weekend × night/morning/lunch/afternoon/dinner/late).
-2. **Interaction scan.** For every pair of labels (e.g. language=hi × team=B) we compare the
-   mean wait with BOTH "parents": Hindi tickets of other teams, and Team B tickets in other
-   languages. A pair is a finding only if it is ≥ 2× worse than both, with a large z-score.
-   That separates "Hindi Team-B tickets are slow" from "Team B is slow" or "Hindi is slow".
-3. **Process scan.** Groups whose transfers per 100 tickets are ≥ 3× the rest.
-4. **Partner scan.** Restaurant clusters whose share of one category is ≥ 2× the others'.
-5. **Spike scan.** Daily count per category vs its usual level on days of the same type
-   (weekday or weekend) with a robust z-score (median and MAD, CLAUDE.md section 4).
-   Known sale days are explained, not alarms.
-6. **Capacity scan.** For every team × time window: work arriving (handle minutes) ÷ the
-   team's agent-minutes on shift. ρ ≥ 1.2 while the team is staffed = overloaded window.
-7. **Cause type** by plain rules: transfers → process; restaurant cluster → partner issue;
-   unusual day → volume spike; overloaded window → capacity; a time window with almost no
-   capable agent on shift → capacity (coverage); language × skill with few capable agents
-   → skill gap.
-8. Overlapping findings about the same tickets are merged (the stronger one is kept).
-
-Example (our history): Hindi × Team B tickets wait 302 min on average; Hindi tickets of other
-teams wait 37 min and Team B tickets in other languages 50 min → ratio vs the worse parent
-6.0×, z = 31 → finding, cause "skill gap" because only 3 agents speak Hindi and handle refunds.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -54,8 +22,6 @@ WEEKEND = (5, 6)
 
 @dataclass
 class Finding:
-    """One problem with its evidence. Turned into an EvidenceCard for results.json."""
-
     title: str
     cause_type: str
     metric: str
@@ -63,14 +29,12 @@ class Finding:
     comparison_value: float
     comparison_text: str
     segment: dict
-    mask: np.ndarray  # which history tickets are affected
+    mask: np.ndarray
     strength: float
     not_explained_by: str = ""
     recommendation: str = ""
     examples: list[dict] = field(default_factory=list)
 
-
-# ---- Labels ----------------------------------------------------------------------------------
 
 def hour_band(hour: int) -> str:
     for low, high, name in HOUR_BANDS:
@@ -80,11 +44,6 @@ def hour_band(hour: int) -> str:
 
 
 def label_frame(history: pd.DataFrame, team_skills: dict[str, list[str]]) -> pd.DataFrame:
-    """Add the labels the scans group by.
-
-    "team" is the team that OWNS the ticket's category (its queue), not the team that happened
-    to resolve it: overflow work picked up by helpers would otherwise hide a team's problem.
-    """
     df = history.copy()
     df["category"] = df["final_category"].astype(str)
     owner = {c: team for team, cats in team_skills.items() for c in cats}
@@ -95,10 +54,7 @@ def label_frame(history: pd.DataFrame, team_skills: dict[str, list[str]]) -> pd.
     return df
 
 
-# ---- Statistics ------------------------------------------------------------------------------
-
 def welch_z(a: pd.Series, b: pd.Series) -> float:
-    """How many standard errors apart two means are (large = not chance)."""
     a, b = a.dropna(), b.dropna()
     if len(a) < 2 or len(b) < 2:
         return 0.0
@@ -107,18 +63,13 @@ def welch_z(a: pd.Series, b: pd.Series) -> float:
 
 
 def robust_z(x: float, history: np.ndarray) -> float:
-    """0.6745 × (x − median) ÷ MAD (CLAUDE.md section 4). MAD 0 → use a Poisson-like floor."""
     median = float(np.median(history))
     mad = float(np.median(np.abs(history - median)))
     mad = max(mad, np.sqrt(max(median, 1.0)) / 1.4826)
     return 0.6745 * (x - median) / mad
 
 
-# ---- Scans -----------------------------------------------------------------------------------
-
 def scan_interactions(df: pd.DataFrame, metric: str = "wait_min", dims: list[str] | None = None) -> list[Finding]:
-    """Pairs of labels whose wait is ≥ 2× both parents (see module docstring, step 2).
-    `metric` can be another time column (an upload without pickup times uses resolution time)."""
     findings: list[Finding] = []
     wait = df[metric]
     word = "wait" if metric == "wait_min" else "resolution time"
@@ -153,7 +104,6 @@ def scan_interactions(df: pd.DataFrame, metric: str = "wait_min", dims: list[str
 
 
 def scan_transfers(df: pd.DataFrame) -> list[Finding]:
-    """Single labels whose transfers per 100 tickets are ≥ 3× the rest (process problems)."""
     findings: list[Finding] = []
     for dim in ("channel", "category", "language", "tier"):
         for value, n in df[dim].value_counts().items():
@@ -174,7 +124,6 @@ def scan_transfers(df: pd.DataFrame) -> list[Finding]:
 
 
 def scan_partners(df: pd.DataFrame, min_tickets: int = 50) -> list[Finding]:
-    """Restaurant clusters that send ≥ 2× the usual share of one category."""
     findings: list[Finding] = []
     if "restaurant_cluster_id" not in df:
         return findings
@@ -190,7 +139,7 @@ def scan_partners(df: pd.DataFrame, min_tickets: int = 50) -> list[Finding]:
             share, share_rest = n_cat / n_cluster, others_cat / others_all
             if share_rest <= 0 or share / share_rest < PARTNER_RATIO:
                 continue
-            p = (n_cat + others_cat) / len(df)  # two-proportion z-test
+            p = (n_cat + others_cat) / len(df)
             z = (share - share_rest) / np.sqrt(p * (1 - p) * (1 / n_cluster + 1 / others_all))
             if z < MIN_Z:
                 continue
@@ -209,13 +158,9 @@ def scan_partners(df: pd.DataFrame, min_tickets: int = 50) -> list[Finding]:
 
 def scan_spikes(df: pd.DataFrame, known_event_days: set[int], dates: dict[int, str],
                 window_days: int | None = None, min_usual: float = 0.0) -> tuple[list[Finding], list[dict]]:
-    """Unusual days per category (robust z on daily counts). Known sale days are explained.
-    `window_days`: compare only with days at most this far away (for long, uneven exports);
-    `min_usual`: skip categories whose usual day has fewer tickets than this."""
     findings: list[Finding] = []
     explained: list[dict] = []
     daily = df.groupby(["category", "day"]).size().unstack(fill_value=0)
-    # Compare a day only with days of the same type: weekends are busier by design.
     day_is_weekend = df.groupby("day")["weekday"].first().isin(WEEKEND)
     for category, counts in daily.iterrows():
         values = counts.to_numpy(dtype=float)
@@ -250,7 +195,6 @@ def scan_spikes(df: pd.DataFrame, known_event_days: set[int], dates: dict[int, s
 
 
 def next_band(when: str) -> str:
-    """'weekend dinner' → 'weekend late' (the window where a backlog spills over)."""
     day_type, band = when.split(" ", 1)
     names = [name for _, _, name in HOUR_BANDS]
     return f"{day_type} {names[(names.index(band) + 1) % len(names)]}"
@@ -258,8 +202,6 @@ def next_band(when: str) -> str:
 
 def scan_capacity(df: pd.DataFrame, agents: pd.DataFrame, team_skills: dict[str, list[str]],
                   first_weekday: int, min_rho: float = 1.2, min_agents: float = 2.0) -> list[Finding]:
-    """Team × time windows with more work than agent-time (rho ≥ 1.2) while the team is staffed.
-    The evidence covers the window and the next one, where the backlog spills over."""
     findings: list[Finding] = []
     for team, categories in team_skills.items():
         own = df["team"] == team
@@ -287,22 +229,17 @@ def scan_capacity(df: pd.DataFrame, agents: pd.DataFrame, team_skills: dict[str,
     return findings
 
 
-# ---- Cause rules -----------------------------------------------------------------------------
-
 def capable_agents(agents: pd.DataFrame, language: str | None, categories: list[str]) -> list[str]:
-    """Agents who speak `language` (if given) and are trained on any of `categories`."""
     ok = pd.Series(True, index=agents.index)
     if language:
         ok &= agents["languages"].str.split("|").map(lambda langs: language in langs)
-    if categories:  # no category given = any skill will do
+    if categories:
         ok &= agents["skills"].str.split("|").map(lambda skills: any(c in skills for c in categories))
     return agents.loc[ok, "agent_id"].tolist()
 
 
 def team_rho(df: pd.DataFrame, agents: pd.DataFrame, team: str, when: str, team_categories: list[str],
              first_weekday_of_day1: int) -> tuple[float, float]:
-    """Work arriving for a team's categories in a time window ÷ the team's minutes on shift then.
-    Also returns how many of the team's own agents are on shift on average in that window."""
     in_window = df["when"] == when
     work = df.loc[in_window & df["category"].isin(team_categories), "handled_min"].sum()
     weekend = when.startswith("weekend")
@@ -320,12 +257,12 @@ def team_rho(df: pd.DataFrame, agents: pd.DataFrame, team: str, when: str, team_
             weekday = (first_weekday_of_day1 + day - 1) % 7
             if (weekday in WEEKEND) != weekend:
                 continue
-            for h in hours:  # is the agent on shift during hour h of this day?
+            for h in hours:
                 on_today = weekday not in off and start <= h < start + length
                 yesterday = (weekday - 1) % 7
                 on_from_yesterday = yesterday not in off and h < start + length - 24
                 if on_today or on_from_yesterday:
-                    capacity += 60.0 * 0.95  # 5% absence on average
+                    capacity += 60.0 * 0.95
     rho = float(work / capacity) if capacity else float("inf")
     avg_agents = capacity / (60.0 * 0.95 * slot_hours) if slot_hours else 0.0
     return rho, avg_agents
@@ -333,7 +270,6 @@ def team_rho(df: pd.DataFrame, agents: pd.DataFrame, team: str, when: str, team_
 
 def mean_capable_on_shift(agents: pd.DataFrame, when: str, language: str | None, categories: list[str],
                           first_weekday: int, days: list[int]) -> float:
-    """Average number of agents on shift per hour of the window who could serve the segment."""
     capable = agents[agents["agent_id"].isin(capable_agents(agents, language, categories))]
     weekend = when.startswith("weekend")
     band = when.split(" ", 1)[1]
@@ -357,7 +293,6 @@ def mean_capable_on_shift(agents: pd.DataFrame, when: str, language: str | None,
 
 def classify_cause(f: Finding, df: pd.DataFrame, agents: pd.DataFrame, team_skills: dict[str, list[str]],
                    first_weekday: int) -> None:
-    """Fill cause_type, the 'why' line and a recommendation for interaction findings."""
     seg = f.segment
     if f.cause_type != "other":
         return
@@ -385,10 +320,7 @@ def classify_cause(f: Finding, df: pd.DataFrame, agents: pd.DataFrame, team_skil
                                 f"meanwhile route these tickets to the {len(agents_ok)} capable agents first")
 
 
-# ---- Merging, examples, cards ----------------------------------------------------------------
-
 def merge_overlapping(findings: list[Finding], overlap: float = 0.5) -> list[Finding]:
-    """Keep the strongest finding of each group that covers mostly the same tickets."""
     kept: list[Finding] = []
     for f in sorted(findings, key=lambda x: x.strength, reverse=True):
         same_story = False
@@ -404,7 +336,6 @@ def merge_overlapping(findings: list[Finding], overlap: float = 0.5) -> list[Fin
 
 
 def add_examples(f: Finding, df: pd.DataFrame, n: int = 3) -> None:
-    """Three affected tickets, worst first, with masked text."""
     rows = df[f.mask]
     sort_col = {"mean wait (min)": "wait_min", "mean resolution time (min)": "resolution_min"}.get(f.metric, "transfers")
     if sort_col not in df:
@@ -412,7 +343,7 @@ def add_examples(f: Finding, df: pd.DataFrame, n: int = 3) -> None:
     rows = rows.sort_values([sort_col, "created_at"], ascending=[False, True]).head(n)
     f.examples = []
     for r in rows.itertuples():
-        wait = getattr(r, "wait_min", None)  # an uploaded export may have no pickup times
+        wait = getattr(r, "wait_min", None)
         f.examples.append({"ticket_id": str(r.ticket_id), "created_at": str(r.created_at)[:16],
                            "text": mask_pii(str(r.text)).text,
                            "wait_min": None if wait is None or pd.isna(wait) else round(float(wait), 1),
@@ -441,11 +372,8 @@ def to_card(f: Finding, number: int, total: int) -> dict:
     }
 
 
-# ---- Entry point -----------------------------------------------------------------------------
-
 def find_patterns(history: pd.DataFrame, agents: pd.DataFrame, team_skills: dict[str, list[str]],
                   known_event_days: set[int], first_weekday: int, max_cards: int = 12) -> dict:
-    """All scans → merged, typed, ranked evidence cards (as dicts) + explained anomalies."""
     df = label_frame(history, team_skills).reset_index(drop=True)
     dates = {int(d): pd.Timestamp(t).strftime("%a %d %b") for d, t in
              df.groupby("day")["created_at"].min().items()}
@@ -460,8 +388,6 @@ def find_patterns(history: pd.DataFrame, agents: pd.DataFrame, team_skills: dict
     cards = [to_card(f, i + 1, len(df)) for i, f in enumerate(kept)]
     return {"cards": cards, "explained_anomalies": explained, "candidates": len(findings)}
 
-
-# ---- Small text helpers ----------------------------------------------------------------------
 
 def nice(category: str) -> str:
     return str(category).replace("_", " ")
@@ -482,16 +408,11 @@ def describe(dim: str, value) -> str:
     return str(value)
 
 
-# ---- Live detection (test period) ------------------------------------------------------------
-
 BIN_MIN = 15
 BINS_PER_DAY = 1440 // BIN_MIN
 BINS_PER_WEEK = 7 * BINS_PER_DAY
 
 
-# Chosen on history days 15-42 (never on test days): the fastest rule with at most 2 false
-# alerts per week. z >= 4.5 on two checks in a row caught the day-18 payment spike in 90 min
-# with 6 false alerts in 28 days; z >= 3.5 on one check was faster (60 min) but gave 54.
 LIVE_Z = 4.5
 LIVE_PERSIST = 2
 
@@ -499,14 +420,6 @@ LIVE_PERSIST = 2
 def live_alerts(tickets: pd.DataFrame, category_col: str, first_day: int, last_day: int,
                 known_event_days: set[int], window_bins: int = 4, weeks: int = 4,
                 z_threshold: float = LIVE_Z, persist: int = LIVE_PERSIST, min_excess: int = 8) -> pd.DataFrame:
-    """Every 15 minutes, compare each category's tickets in the last hour with the same hour in the
-    previous `weeks` weeks (robust z). An alert is raised when the z-score stays above the
-    threshold for `persist` checks in a row. Uses only tickets created before the check time.
-
-    `category_col` must be known when a ticket arrives (the classifier's prediction or the
-    customer's menu choice), never the final category — that is only known after resolution.
-    Returns one row per alert: time, category, count, usual, z, explained (known event day).
-    """
     categories = sorted(tickets[category_col].dropna().unique())
     n_bins = last_day * BINS_PER_DAY
     counts = np.zeros((len(categories), n_bins), dtype=float)
@@ -514,13 +427,12 @@ def live_alerts(tickets: pd.DataFrame, category_col: str, first_day: int, last_d
     cat_index = tickets[category_col].map({c: i for i, c in enumerate(categories)}).to_numpy()
     ok = (bins >= 0) & (bins < n_bins) & ~pd.isna(cat_index)
     np.add.at(counts, (cat_index[ok].astype(int), bins[ok]), 1.0)
-    # Rolling count over the last hour, ending at the end of each bin.
     kernel = np.ones(window_bins)
     rolling = np.stack([np.convolve(row, kernel)[:n_bins] for row in counts])
 
     alerts = []
     first_bin = (first_day - 1) * BINS_PER_DAY
-    streak = np.zeros(len(categories), dtype=int)  # consecutive checks above threshold
+    streak = np.zeros(len(categories), dtype=int)
     for b in range(first_bin, n_bins):
         past = [b - k * BINS_PER_WEEK for k in range(1, weeks + 1) if b - k * BINS_PER_WEEK >= 0]
         if len(past) < 2:
@@ -531,7 +443,7 @@ def live_alerts(tickets: pd.DataFrame, category_col: str, first_day: int, last_d
             median = float(np.median(usual))
             z = robust_z(float(x), usual) if x - median >= min_excess else 0.0
             streak[ci] = streak[ci] + 1 if z >= z_threshold else 0
-            if streak[ci] == persist:  # raise once per episode
+            if streak[ci] == persist:
                 day = b // BINS_PER_DAY + 1
                 alerts.append({"minute": (b + 1) * BIN_MIN, "day": day, "category": category,
                                "count_last_hour": int(x), "usual": median, "z": round(z, 1),
@@ -539,16 +451,7 @@ def live_alerts(tickets: pd.DataFrame, category_col: str, first_day: int, last_d
     return pd.DataFrame(alerts, columns=["minute", "day", "category", "count_last_hour", "usual", "z", "explained"])
 
 
-# ---- Any company's export (Upload CSV) -------------------------------------------------------
-
 def find_patterns_basic(df: pd.DataFrame, max_cards: int = 8) -> dict:
-    """The same scans for an uploaded export, using only the columns it has.
-
-    Expects canonical columns from ingest (ticket_id, created_at, day, hour, weekday,
-    resolution_min, breached) plus any of: final_category, resolved_by_team, priority, channel,
-    transfers, wait_min, text. Without agent rosters there is no capacity or skill-gap typing:
-    findings keep the cause "other", "process" (transfers) or "volume_spike".
-    """
     data = df.copy().reset_index(drop=True)
     data["category"] = data["final_category"].astype(str) if "final_category" in data else "all"
     data["team"] = data["resolved_by_team"].astype(str) if "resolved_by_team" in data else "all"
@@ -562,13 +465,13 @@ def find_patterns_basic(df: pd.DataFrame, max_cards: int = 8) -> dict:
         data["text"] = ""
     metric = "wait_min" if "wait_min" in data and data["wait_min"].notna().mean() > 0.5 else "resolution_min"
     dims = [d for d in ("category", "team", "priority", "channel", "when") if data[d].nunique() > 1]
-    findings = scan_interactions(data, metric=metric, dims=dims)  # means skip missing values
+    findings = scan_interactions(data, metric=metric, dims=dims)
     if "transfers" in data:
-        data["language"], data["tier"] = "all", "all"  # dimensions scan_transfers expects
+        data["language"], data["tier"] = "all", "all"
         findings += scan_transfers(data)
     dates = {int(d): pd.Timestamp(t).strftime("%a %d %b %Y") for d, t in data.groupby("day")["created_at"].min().items()}
     spikes, _ = scan_spikes(data, set(), dates, window_days=28, min_usual=3.0)
-    findings += sorted(spikes, key=lambda f: -f.strength)[:3]  # z-scores dwarf ratios; keep the top 3
+    findings += sorted(spikes, key=lambda f: -f.strength)[:3]
     kept = merge_overlapping(findings)[:max_cards]
     for f in kept:
         add_examples(f, data)

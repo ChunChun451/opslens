@@ -1,35 +1,3 @@
-"""Plan v4 W1: does OpsLens win on 30 food-delivery worlds we did not design?
-
-Run:  .venv/Scripts/python.exe eval/run_worlds.py                  (all 30 worlds, seeds 7001-7030)
-      .venv/Scripts/python.exe eval/run_worlds.py --only 7001 7002  (a pilot)
-      .venv/Scripts/python.exe eval/run_worlds.py --summary          (only re-read finished worlds)
-
-Why: the headline (2.05% vs 5.51% missed SLAs) comes from ONE world we built, with problems we
-planted, a simulator we wrote and a policy tuned in it. A judge can fairly say "of course it wins
-there". So we draw 30 worlds at random from wide ranges fixed in docs/PLAN_V4.md BEFORE any run,
-retrain the product the routine way on each, and compare every policy on each world's test days.
-Nothing is tuned per world: config/optimizer.yaml (OpsLens's weights) is copied unchanged.
-
-Each world, in its own copy of the repo (the main data/generated/ is never touched):
-1. sample its parameters from the world seed (sample_world): volume, peak heights, category mix,
-   Hindi share, handle times, skill-mismatch slowdown, absences, team sizes, SLA targets, chats per
-   agent, and the size/day of each planted problem;
-2. write them into the copy's config files (apply_world);
-3. routine pipeline: data/generate_ops.py → eval/run_classification.py --no-llm (local classifier:
-   30 worlds would exhaust the free LLM quota; the LLM moves accuracy by ~0.1 point) →
-   eval/run_risk.py → eval/run_forecast.py (forecast + staffing plan);
-4. eval/run_world_compare.py: A, B, C, D, least slack and OpsLens, seeds 1-3, test days 43-56;
-5. keep the result in eval/parts/worlds/<seed>.json (so a crash loses one world, not thirty).
-
-Rule (pre-registered): "robust" only if OpsLens has the lowest missed-SLA rate (or is within 0.05
-points of the lowest) in at least 27 of 30 worlds, AND the median over worlds of (OpsLens − industry
-standard) has a 95% bootstrap CI below 0. Every world is reported, with the worst three.
-
-Example: world 7001 draws load x1.22, Hindi share 17%, skill mismatch x1.81, P1 SLA 60 min, 3 chats
-per agent at slowdown .5 and 45 agents; load_factor turns that into the ticket volume that makes the
-floor exactly 1.22 times as busy as today.
-"""
-
 from __future__ import annotations
 
 import json
@@ -45,11 +13,11 @@ import numpy as np
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))  # so eval.run_design_v6 imports (W13)
+sys.path.insert(0, str(ROOT))
 OUT_DIR = ROOT / "eval" / "parts" / "worlds"
-DIAG_DIR = ROOT / "eval" / "parts" / "worlds_diag"  # the overload diagnosis (23 Oct); never counted
+DIAG_DIR = ROOT / "eval" / "parts" / "worlds_diag"
 WORLD_SEEDS = list(range(7001, 7031))
-SKIP = {".git", ".venv", ".venv-challengers", ".claude", "data/generated",
+SKIP = {".git", ".venv", ".venv-challengers", "data/generated",
         "cache", ".pytest_tmp", ".pytest_cache", "__pycache__", "eval/parts/worlds", "eval/parts/worlds_diag",
         "eval/parts/worlds_v6design", "eval/parts/worlds_v6design2", "eval/parts/worlds_v6confirm",
         "eval/challengers"}
@@ -59,25 +27,20 @@ OTHERS = ["baseline_a", "baseline_b", "baseline_c", "baseline_d", "least_slack"]
 TIE_POINTS = 0.05
 
 
-# ---- 1. Sampling a world ----------------------------------------------------------------------
-
 def sample_world(seed: int) -> dict:
-    """The world's parameters, drawn from the ranges in docs/PLAN_V4.md (W1). Same seed, same world."""
     rng = np.random.default_rng(seed)
-    # Restaurant clusters are numbered 0-39; the partner draw is 1-40, so 40 maps to 0 (fix 19 Oct,
-    # found when world 7005 crashed; every draw stays the same, so finished worlds are unchanged).
-    k = int(rng.integers(1, 4))  # chats per agent: 1, 2 or 3
+    k = int(rng.integers(1, 4))
     s = float(rng.choice([0.25, 0.5])) if k > 1 else 0.0
     return {
         "seed": seed,
-        "load": float(rng.uniform(0.7, 1.4)),          # volume x0.7-1.4 of today's load
-        "peak_scale": float(rng.uniform(0.7, 1.3)),    # lunch/dinner peaks ±30%
-        "category_scale": {c: float(rng.uniform(0.6, 1.4)) for c in CATEGORIES},  # mix ±40%
+        "load": float(rng.uniform(0.7, 1.4)),
+        "peak_scale": float(rng.uniform(0.7, 1.3)),
+        "category_scale": {c: float(rng.uniform(0.6, 1.4)) for c in CATEGORIES},
         "hindi_share": float(rng.uniform(0.05, 0.25)),
         "handle_scale": float(rng.uniform(0.7, 1.3)),
         "mismatch_factor": float(rng.uniform(1.2, 2.0)),
         "absent_prob": float(rng.uniform(0.02, 0.10)),
-        "team_delta": {t: int(rng.integers(-2, 3)) for t in "ABCD"},  # ±2 agents per team
+        "team_delta": {t: int(rng.integers(-2, 3)) for t in "ABCD"},
         "sla_minutes": {"P1": int(rng.uniform(30, 90)), "P2": int(rng.uniform(120, 360)),
                         "P3": int(rng.uniform(720, 2160))},
         "chats_per_agent": k, "chat_slowdown": s,
@@ -90,14 +53,6 @@ def sample_world(seed: int) -> dict:
 
 
 def load_factor(world: dict, gen: dict, n_agents_before: int, n_agents_after: int) -> float:
-    """Ticket volume multiplier that makes the floor exactly `world["load"]` times as busy as today
-    (the W1 amendment: "x0.7-1.4 of today's LOAD"). Load = work / capacity, so the volume is
-    - raised by k / (1 + s(k-1)) when agents hold k chats (each agent does that much more work),
-    - raised by agents_after / agents_before when teams grow (more people),
-    - lowered by the handle-time scale and by the category mix's effect on the average handle time
-      (longer tickets = more work per ticket).
-    Example: load 1.10, 2 chats at s = .25 (x1.6), 42 agents instead of 40 (x1.05), handle x1.2 and
-    a mix whose average handle time is 3% longer → 1.10 x 1.6 x 1.05 / (1.2 x 1.03) = 1.50."""
     k, s = world["chats_per_agent"], world["chat_slowdown"]
     medians = gen["handle_median_min"]
     old_mix = sum(gen["categories"][c] * medians[c] for c in CATEGORIES)
@@ -108,16 +63,12 @@ def load_factor(world: dict, gen: dict, n_agents_before: int, n_agents_after: in
     return world["load"] * capacity / work_per_ticket
 
 
-# ---- 2. Writing it into a copy of the repo ----------------------------------------------------
-
 def apply_world(dest: Path, world: dict) -> float:
-    """Edit the copy's generator, roster and SLA configs (comments are lost; it is a throwaway copy).
-    Returns the ticket volume multiplier used."""
     gen_path, roster_path, sla_path = (dest / "config" / n for n in ("generator.yaml", "roster.yaml", "sla.yaml"))
     gen = yaml.safe_load(gen_path.read_text(encoding="utf-8"))
     roster = yaml.safe_load(roster_path.read_text(encoding="utf-8"))
     resized = resize_teams(roster["agents"], world["team_delta"], world["roster_seed"])
-    volume = load_factor(world, gen, len(roster["agents"]), len(resized))  # before gen is edited below
+    volume = load_factor(world, gen, len(roster["agents"]), len(resized))
     gen["seed"] = world["seed"]
     gen["tickets_per_weekday"] = int(round(gen["tickets_per_weekday"] * volume))
     profile = np.asarray(gen["hourly_profile"], dtype=float)
@@ -149,8 +100,6 @@ def apply_world(dest: Path, world: dict) -> float:
 
 
 def resize_teams(agents: list[dict], delta: dict[str, int], seed: int) -> list[dict]:
-    """Drop random agents from a team, or add copies of random team members (same shift and skills,
-    a new id): the floor changes size without anyone designing who goes where."""
     rng = np.random.default_rng(seed)
     out: list[dict] = []
     for team in "ABCD":
@@ -167,8 +116,6 @@ def resize_teams(agents: list[dict], delta: dict[str, int], seed: int) -> list[d
     return out
 
 
-# ---- 3-5. Running one world ----------------------------------------------------------------------
-
 def copy_repo(dest: Path) -> None:
     def ignore(folder: str, names: list[str]) -> list[str]:
         rel = Path(folder).relative_to(ROOT).as_posix()
@@ -183,9 +130,6 @@ def run_step(dest: Path, log, *args: str) -> None:
 
 
 def run_world(seed: int, workers: int, diagnose: bool = False, mode: str = "") -> dict:
-    """The whole pipeline for one world; returns (and saves) its result. With diagnose=True (added
-    23 Oct, after the result): the same world rebuilt, only industry standard, least slack and
-    OpsLens, with misses by priority / tier / language recorded, saved apart in worlds_diag/."""
     folder = DIAG_DIR if diagnose else (ROOT / "eval" / "parts" / f"worlds_{mode}" if mode else OUT_DIR)
     folder.mkdir(parents=True, exist_ok=True)
     out_path = folder / f"{seed}.json"
@@ -216,16 +160,12 @@ def run_world(seed: int, workers: int, diagnose: bool = False, mode: str = "") -
 
 
 def run_world_safe(seed: int, workers: int) -> dict | None:
-    """run_world, but one broken world is logged instead of stopping the other 29. A failed world
-    is never dropped from the rule: the rule needs all 30, so a failure must be fixed and re-run."""
     try:
         return run_world(seed, workers)
-    except Exception as exc:  # noqa: BLE001 — recorded in the world's log and on screen
+    except Exception as exc:
         print(f"world {seed} FAILED: {exc!r} (see eval/parts/worlds/{seed}.log)", flush=True)
         return None
 
-
-# ---- Summary and the pre-registered rule ---------------------------------------------------------
 
 def summarize(results: list[dict]) -> dict:
     rows = []
@@ -253,8 +193,6 @@ def summarize(results: list[dict]) -> dict:
 
 
 def diagnose_losses() -> int:
-    """Rebuild the worlds where OpsLens was not lowest and record who misses the deadline. Checks
-    first that the rebuilt runs reproduce the counted ones exactly (same seeds, same worlds)."""
     DIAG_DIR.mkdir(parents=True, exist_ok=True)
     summary = json.loads((ROOT / "eval" / "parts" / "worlds.json").read_text(encoding="utf-8"))
     seeds = [row["seed"] for row in summary["worlds"] if not row["wins"]]
@@ -275,23 +213,19 @@ def diagnose_losses() -> int:
     return 0
 
 
-MODE_ARGS: dict[str, list[str]] = {"v6design": ["--v6-design"], "v6design2": ["--v6-design", "--round2"]}  # "v6confirm" is added by --v6-confirm
-CONFIRM_SEEDS = list(range(7101, 7131))  # W13: 30 new worlds, same ranges as W1
+MODE_ARGS: dict[str, list[str]] = {"v6design": ["--v6-design"], "v6design2": ["--v6-design", "--round2"]}
+CONFIRM_SEEDS = list(range(7101, 7131))
 
 
 def run_world_safe_mode(seed: int, mode: str) -> dict | None:
     try:
         return run_world(seed, workers=4, mode=mode)
-    except Exception as exc:  # noqa: BLE001 — logged; a failed world must be fixed and re-run
+    except Exception as exc:
         print(f"world {seed} FAILED: {exc!r}", flush=True)
         return None
 
 
 def summarize_v6() -> int:
-    """W13 verdict, from runs already made (no simulation here): the round-1 choice, both main-validation
-    gates, the 20-fresh-seed confirmation and the 30 new worlds 7101-7130. Rule (docs/PLAN_V4.md W13):
-    adopt only if the confirmation CI upper bound < +0.05 AND v6 is lowest (within 0.05 points of the
-    best of the five other policies) in at least 27 of the 30 new worlds."""
     parts = ROOT / "eval" / "parts"
     confirm_main = json.loads((parts / "confirm_v6_main.json").read_text(encoding="utf-8"))
     done = [json.loads(p.read_text(encoding="utf-8")) for p in sorted((parts / "worlds_v6confirm").glob("*.json"))
@@ -299,7 +233,7 @@ def summarize_v6() -> int:
     rows = []
     for r in sorted(done, key=lambda r: r["seed"]):
         mean = {p: v["turnaround.breach_pct"] for p, v in r["compare"]["mean"].items()}
-        best_other = min(OTHERS, key=lambda p: mean[p])  # the five policies that are not OpsLens
+        best_other = min(OTHERS, key=lambda p: mean[p])
         rows.append({"seed": r["seed"], "volume_factor": r["volume_factor"], "breach_pct": mean, "best_other": best_other,
                      "v6_lowest": mean["opslens_v6"] <= mean[best_other] + TIE_POINTS,
                      "v5_lowest": mean["opslens"] <= mean[best_other] + TIE_POINTS,
@@ -332,13 +266,13 @@ def main() -> int:
         return diagnose_losses()
     if "--v6-summary" in sys.argv:
         return summarize_v6()
-    if "--v6-design" in sys.argv:  # W13 design: the 20 design worlds, candidates only
+    if "--v6-design" in sys.argv:
         from eval.run_design_v6 import DESIGN_WORLDS
         mode = "v6design2" if "--round2" in sys.argv else "v6design"
         with ThreadPoolExecutor(max_workers=3) as pool:
             list(pool.map(lambda s: run_world_safe_mode(s, mode), DESIGN_WORLDS))
         return 0
-    if "--v6-confirm" in sys.argv:  # W13 confirmation: 30 NEW worlds, every policy + the chosen v6, once
+    if "--v6-confirm" in sys.argv:
         MODE_ARGS["v6confirm"] = ["--v6", sys.argv[sys.argv.index("--v6-confirm") + 1]]
         with ThreadPoolExecutor(max_workers=3) as pool:
             list(pool.map(lambda s: run_world_safe_mode(s, "v6confirm"), CONFIRM_SEEDS))
@@ -351,7 +285,6 @@ def main() -> int:
         parallel = 3 if len(seeds) > 1 else 1
         with ThreadPoolExecutor(max_workers=parallel) as pool:
             list(pool.map(lambda s: run_world_safe(s, workers=4), seeds))
-    # Only the 30 pre-registered worlds count: the code-check world 7000 is never part of the result.
     done = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(OUT_DIR.glob("*.json"))
             if p.stem.isdigit() and int(p.stem) in WORLD_SEEDS]
     summary = summarize(done)

@@ -1,5 +1,3 @@
-"""make demo refuses fixture or missing results."""
-
 import json
 
 import server.demo as demo

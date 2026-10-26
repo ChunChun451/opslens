@@ -1,12 +1,3 @@
-"""Tests for opslens/anyfile.py ("OpsLens on your file").
-
-What they prove: a relevant file of any shape goes through (a delivery-order file with the date
-and time in separate columns and a duration instead of an end time); a file that is not about
-work items, or too small, is refused with the reason; no feature uses the future; a column
-written after the fact (it gives the outcome away) is dropped; every picker gets the same
-number of flags. The delivery file is generated here (ours), so the test needs no download.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -17,7 +8,6 @@ from opslens import anyfile as A
 
 
 def delivery_file(n: int = 3000, days: int = 30, seed: int = 3) -> pd.DataFrame:
-    """Orders shaped like a public food-delivery export: late when traffic is jammed on festivals."""
     rng = np.random.default_rng(seed)
     start = pd.Timestamp("2022-03-01")
     when = start + pd.to_timedelta(np.sort(rng.uniform(0, days * 24 * 60, n)), unit="min")
@@ -50,10 +40,10 @@ def test_a_delivery_file_goes_through_with_a_promised_time():
     m = mapping_for(raw)
     assert m["created_at"] == "Order_Date" and m["created_time"] == "Time_Orderd"
     assert m["duration_min"] == "Time_taken(min)"
-    assert "Time_taken(min)" not in m["features"]  # the outcome is never a feature
+    assert "Time_taken(min)" not in m["features"]
     report = A.analyse(raw, m, target_min=30)
     w = report["warning"]
-    assert w["auc"]["opslens"] > 0.75  # traffic and festival make lateness predictable
+    assert w["auc"]["opslens"] > 0.75
     assert report["shadow"]["flags"] == round(0.2 * report["shadow"]["items"])
     assert any(c["column"] == "Road_traffic_density" for c in report["cards"])
     assert report["learn"]["items"] + report["test"]["items"] == report["summary"]["items"]
@@ -86,10 +76,10 @@ def test_features_never_use_the_future():
 def test_a_column_written_after_the_fact_is_dropped():
     raw = delivery_file()
     items, _ = A.build_items(raw, mapping_for(raw), 30)
-    raw = raw.iloc[items.index.argsort()]  # same order as the items
+    raw = raw.iloc[items.index.argsort()]
     raw["closing_note"] = np.where(items["missed"].to_numpy(), "sorry for the delay", "thanks")
     m = mapping_for(raw)
-    m["features"].append("closing_note")  # the person ticked it by mistake
+    m["features"].append("closing_note")
     report = A.analyse(raw, m, target_min=30)
     assert "closing_note" in report["dropped_after_the_fact"]
 
@@ -120,11 +110,7 @@ def test_spreadsheet_day_fractions_read_as_clock_times():
     assert out[[0, 1, 3]].tolist() == ["21:55", "11:00", "23:00"] and pd.isna(out[2])
 
 
-# ---- Real data screens (26 Oct): the replay, the forecast, the "needs" notes, the guesses ----------
-
 def helpdesk_file(n: int = 1500, days: int = 40, seed: int = 5) -> pd.DataFrame:
-    """A helpdesk export with names OpsLens has no exact rule for: "Date Created", "Closed On",
-    "Priority Level", "Support Group", "Issue Type", and a Yes/No "SLA Breached" column."""
     rng = np.random.default_rng(seed)
     opened = pd.Timestamp("2026-01-05") + pd.to_timedelta(np.sort(rng.uniform(0, days * 1440, n)), unit="min")
     group = rng.choice(["Network", "Apps", "Access"], n, p=[0.3, 0.4, 0.3])
@@ -150,9 +136,9 @@ def test_the_shadow_timeline_replays_the_day_and_adds_up_to_its_totals():
         assert sum(name in x["flagged"] for x in line) == sh["flags"]
         assert sum(name in x["flagged"] and x["missed"] for x in line) == sh["caught"][name]
     opened = [x["opened_min"] for x in line]
-    assert opened == sorted(opened) and 0 <= opened[0] and opened[-1] < 1440  # one day, in opening order
+    assert opened == sorted(opened) and 0 <= opened[0] and opened[-1] < 1440
     assert all(x["ended_min"] >= x["opened_min"] for x in line)
-    assert all(("reasons" in x) == ("opslens" in x["flagged"]) for x in line)  # reasons only for OpsLens's flags
+    assert all(("reasons" in x) == ("opslens" in x["flagged"]) for x in line)
 
 
 def test_the_shadow_flags_never_read_what_happened_later():
@@ -162,12 +148,12 @@ def test_the_shadow_flags_never_read_what_happened_later():
     assert m["sla_met"] == "on_time"
     before = A.analyse(raw, m)
     flipped = raw.copy()
-    later = np.arange(len(raw)) >= int(0.7 * len(raw))  # the rows are in time order: the last 30% are scored
+    later = np.arange(len(raw)) >= int(0.7 * len(raw))
     flipped.loc[later, "on_time"] = ~flipped.loc[later, "on_time"]
     after = A.analyse(flipped, m)
-    keep = lambda r: [(x["id"], x["flagged"], x["risk"]) for x in r["shadow"]["timeline"]]  # noqa: E731
-    assert keep(before) == keep(after)  # the same flags and risks: they were made as items opened
-    assert before["shadow"]["misses"] != after["shadow"]["misses"]  # only the outcomes changed
+    keep = lambda r: [(x["id"], x["flagged"], x["risk"]) for x in r["shadow"]["timeline"]]
+    assert keep(before) == keep(after)
+    assert before["shadow"]["misses"] != after["shadow"]["misses"]
 
 
 def test_the_forecast_reads_only_days_a_week_or_more_before():
@@ -177,7 +163,7 @@ def test_the_forecast_reads_only_days_a_week_or_more_before():
     changed = counts.copy()
     changed.loc[(changed["team"] == "A") & (changed["day"] == 40), "count"] += 50
     after = A.lag_features(changed, first_weekday=0)
-    same = before["day"] <= 46  # day 40 changed: nothing before day 47 may notice
+    same = before["day"] <= 46
     pd.testing.assert_frame_equal(before.loc[same, A.FORECAST_INPUTS], after.loc[same, A.FORECAST_INPUTS])
     row = (before["team"] == "A") & (before["day"] == 47)
     assert after.loc[row, "lag_7"].item() == before.loc[row, "lag_7"].item() + 50
@@ -187,7 +173,7 @@ def test_the_team_forecast_learns_before_it_scores_and_reports_both_forecasts():
     raw = delivery_file(n=9000, days=90)
     report = A.analyse(raw, mapping_for(raw), target_min=30)
     f = report["forecast"]
-    assert "needs" not in f and len(f["teams"]) == 3  # the three cities
+    assert "needs" not in f and len(f["teams"]) == 3
     assert f["learned_days"][1] < f["scored_days"][0]
     assert f["chosen_on_check"] in ("learned", "same_weekday_last_week")
     assert f["wape_learned"] > 0 and f["wape_same_weekday_last_week"] > 0
@@ -202,7 +188,7 @@ def test_a_file_without_team_priority_or_category_says_what_each_part_needs():
     assert report["needs"]["category"] == "a category column"
     assert report["forecast"] == {"needs": "a team column"} and report["needs"]["forecast"] == "a team column"
     assert report["warning"]["vs"]["rival"] == "rule" and "priority" not in report["warning"]["auc"]
-    for key in ("team", "category", "priority"):  # every table has its rows or says what it needs
+    for key in ("team", "category", "priority"):
         assert f"by_{key}" in report["summary"] or key in report["needs"]
     assert report["shadow"].get("timeline") or report["shadow"].get("timeline_note")
 
@@ -217,7 +203,7 @@ def test_a_helpdesk_export_is_guessed_without_help():
     assert peek["plan"]["miss"] == {"rule": "breached", "column": "SLA Breached", "target_min": None, "assumed": False}
     report = A.analyse(raw, m)
     assert report["miss"]["rule"] == "breached" and report["summary"]["by_team"][0]["name"] == "Network"
-    assert "SLA Breached" not in report["features"]  # the outcome is never learned from
+    assert "SLA Breached" not in report["features"]
 
 
 def test_opslens_asks_only_what_it_cannot_guess():

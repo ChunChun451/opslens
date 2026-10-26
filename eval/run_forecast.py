@@ -1,18 +1,3 @@
-"""M6: forecast accuracy, conformal coverage, bottlenecks and weekly budget-neutral staffing plans.
-
-Run:  .venv/Scripts/python.exe eval/run_forecast.py
-
-- Model trained on days 8-35 (needs 1 week of history for the lags), validation 36-42
-  (early stopping + conformal quantiles + nothing else), report on 43-56.
-- Sale days: the model forecasts as if it were a normal day; then an uplift learned on past
-  sale days (actual ÷ normal-day forecast) is applied. Clearer than learning from one example.
-- Noise floor: even a perfect forecast of a Poisson count is off by chance. We simulate that
-  floor so the WAPE has context.
-- Staffing: plans are made weekly, like a real team lead: on day 42 for days 43-49 and on
-  day 49 for days 50-56, using only data up to the planning day. Saved for the simulator (M7).
-Writes eval/parts/forecast.json and data/generated/staffing_plan.json.
-"""
-
 from __future__ import annotations
 
 import json
@@ -26,17 +11,16 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import forecast as F  # noqa: E402
-from opslens import staffing as S  # noqa: E402
-from opslens.classify import CATEGORIES, TEAM_OF  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.ingest import load_history  # noqa: E402
+from opslens import forecast as F
+from opslens import staffing as S
+from opslens.classify import CATEGORIES, TEAM_OF
+from opslens.config import load_config
+from opslens.ingest import load_history
 
 TEAMS = ["A", "B", "C", "D"]
 
 
 def predict_normal_day(model, rows: pd.DataFrame) -> np.ndarray:
-    """Forecast as if no event (uplift is applied separately)."""
     return model.predict(rows[F.FEATURES].assign(is_event=0))
 
 
@@ -48,14 +32,12 @@ def event_uplift(model, rows: pd.DataFrame, event_days: set[int]) -> float:
 
 
 def noise_floor_wape(forecast: np.ndarray, draws: int = 200, seed: int = 0) -> float:
-    """WAPE a perfect forecast would still have if counts are Poisson around it."""
     rng = np.random.default_rng(seed)
     sims = rng.poisson(forecast, size=(draws, len(forecast)))
     return float(np.mean([np.abs(s - forecast).sum() / max(s.sum(), 1) for s in sims]))
 
 
 def team_workload(rows: pd.DataFrame, values: np.ndarray, aht: dict[str, float]) -> pd.DataFrame:
-    """Per team and hour: arrivals and agent-hours of work."""
     df = rows[["category", "hour_index", "day"]].assign(n=values)
     df["team"] = df["category"].astype(str).map(TEAM_OF)
     df["minutes"] = df["n"] * df["category"].astype(str).map(aht)
@@ -66,13 +48,12 @@ def team_workload(rows: pd.DataFrame, values: np.ndarray, aht: dict[str, float])
 
 
 def bottleneck_blocks(gap: pd.DataFrame, start_ts: pd.Timestamp, first_hour: int, min_gap: float = 1.5) -> list[dict]:
-    """Consecutive hours where a team needs ≥ 1 more agent than scheduled."""
     blocks = []
     for team in gap.columns:
         series = gap[team]
         run = []
         for h, value in series.items():
-            if run and h % 24 == 0:  # a new day starts a new block
+            if run and h % 24 == 0:
                 if len(run) >= 2:
                     blocks.append(make_block(team, run, start_ts, first_hour))
                 run = []
@@ -122,8 +103,6 @@ def main() -> int:
         return np.where(part["day"].isin(events), base * uplift, base)
 
     q80 = F.conformal_q(valid["count"].to_numpy(), forecast(valid), 0.8)
-    # Staffing needs the range of a TEAM's arrivals per hour, not the sum of category ranges
-    # (adding up per-category upper bounds overstates the team's upper bound).
     wl_valid_f = team_workload(valid, forecast(valid), aht)
     wl_valid_y = team_workload(valid, valid["count"].to_numpy(), aht)
     q80_team = F.conformal_q(wl_valid_y["arrivals"].to_numpy(), wl_valid_f["arrivals"].to_numpy(), 0.8)
@@ -152,7 +131,6 @@ def main() -> int:
     for k, v in metrics.items():
         print(f"{k:36s} {v:.3f}")
 
-    # Weekly staffing plans from the UPPER band, made with data up to the planning day only.
     agents = pd.read_csv(ROOT / "data" / "generated" / "agents.csv")
     shifts = S.shifts_from_agents(agents)
     plans, all_blocks = [], []
@@ -160,7 +138,7 @@ def main() -> int:
         days = list(range(first_day, first_day + 7))
         part = test[test["day"].isin(days)]
         wl = team_workload(part, forecast(part), aht)
-        wl["arrivals"] = F.interval(wl["arrivals"].to_numpy(), q80_team)[1]  # team upper band
+        wl["arrivals"] = F.interval(wl["arrivals"].to_numpy(), q80_team)[1]
         wl["hour_index"] = wl["hour_index"] - (first_day - 1) * 24
         need = S.needed_per_hour(wl)
         cov = S.coverage(shifts, TEAMS, first_day, 7, first_weekday)
@@ -180,7 +158,6 @@ def main() -> int:
     for b in sorted(all_blocks, key=lambda b: -b["agent_hours_short"])[:5]:
         print("  bottleneck:", b["text"], f"({b['agent_hours_short']} agent-hours)")
 
-    # 48-hour view for the dashboard: from the start of day 55 (Sat 24 Oct).
     view = test[test["day"].isin([55, 56])]
     fv = forecast(view)
     lo, hi = F.interval(fv, q80)

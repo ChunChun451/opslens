@@ -1,23 +1,3 @@
-"""Find sub-issues inside each category and let the LLM name them.
-
-What it does: inside each category (e.g. refund), group similar messages with TF-IDF + KMeans.
-For each group, the LLM reads 10 typical (masked) messages and the group's top words and
-returns a short name and a likely root cause ("Refund promised but not received").
-
-Why this design:
-- KMeans on TF-IDF is fast, needs no GPU, and the owner can explain it in one sentence:
-  "messages that use the same words end up in the same group".
-- The number of groups k (3 to 6) is chosen per category by the silhouette score: the k whose
-  groups are most clearly separated.
-- The LLM only names groups; it never decides which ticket is in which group. Names may not
-  contain digits (CLAUDE.md: the LLM never writes a number); a bad name falls back to the
-  group's top words.
-
-Example: refund tickets → k = 4 groups; group 2's top words "cancelled, returned, money,
-cancel order" → LLM name "Refund missing after cancellation", root cause "refund not
-triggered when the order is cancelled".
-"""
-
 from __future__ import annotations
 
 import logging
@@ -62,7 +42,6 @@ def clean_texts(texts: pd.Series) -> list[str]:
 
 
 def choose_k(matrix, seed: int = 0) -> int:
-    """The k with the best silhouette score on a sample (higher = clearer groups)."""
     rng = np.random.default_rng(seed)
     rows = rng.choice(matrix.shape[0], size=min(SAMPLE_FOR_K, matrix.shape[0]), replace=False)
     sample = matrix[rows]
@@ -95,7 +74,6 @@ def fit_category(category: str, texts: pd.Series, seed: int = 0) -> CategoryClus
 
 
 def name_clusters(client: LLMClient | None, clusters: CategoryClusters) -> None:
-    """Ask the LLM for a name and root cause per group; fall back to top words."""
     for c, examples in clusters.examples.items():
         fallback = ", ".join(clusters.top_terms[c][:3])
         name, cause = fallback, ""
@@ -117,5 +95,4 @@ def name_clusters(client: LLMClient | None, clusters: CategoryClusters) -> None:
 
 
 def assign(clusters: CategoryClusters, texts: pd.Series) -> np.ndarray:
-    """Group number for new tickets of this category."""
     return clusters.kmeans.predict(clusters.vectorizer.transform(clean_texts(texts)))

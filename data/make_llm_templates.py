@@ -1,17 +1,3 @@
-"""One-time: ask an LLM for varied customer messages per category, to make the ticket text
-less templated. Output: data/llm_templates.json (committed, with model name and prompt).
-
-Why: with ~10 hand-written templates per category the classifier memorises them (99.9%
-accuracy — not believable). Real customers phrase things in endless ways. 32 requests
-(8 categories × English/Hinglish × short/long, 20 messages each) give ~600 message patterns.
-
-Model choice: the messages are written by Groq's Qwen, while the cascade classifies with
-Gemini, so the classifier is never grading text written by itself. Groq's free tier refuses
-requests expecting more than 1,000 output tokens, hence 20 messages per request.
-
-Run once:  .venv/Scripts/python.exe data/make_llm_templates.py   (about 35 minutes: 1 request/min)
-"""
-
 from __future__ import annotations
 
 import json
@@ -23,8 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens.classify import CATEGORY_HELP  # noqa: E402
-from opslens.llm.client import build_client  # noqa: E402
+from opslens.classify import CATEGORY_HELP
+from opslens.llm.client import build_client
 
 OUT = ROOT / "data" / "llm_templates.json"
 ALLOWED_SLOTS = {"{dish}", "{restaurant}", "{side}", "{mins}", "{amount}", "{order_ref}"}
@@ -54,10 +40,10 @@ TONE_LABEL = re.compile(r"^(angry|polite|confused|sarcastic)( tone| face)?\s*[:.
 
 def clean(message: str) -> str | None:
     text = " ".join(str(message).split())
-    text = TONE_LABEL.sub("", text)  # the model sometimes copies the tone word from the prompt
+    text = TONE_LABEL.sub("", text)
     for slot in set(re.findall(r"\{[^}]*\}", text)) - ALLOWED_SLOTS:
-        text = text.replace(slot, "")  # unknown placeholder → drop it
-    text = re.sub(r"\d{6,}", "", text).strip()  # no long numbers (they would look like IDs)
+        text = text.replace(slot, "")
+    text = re.sub(r"\d{6,}", "", text).strip()
     return text if 3 <= len(text.split()) <= 40 else None
 
 

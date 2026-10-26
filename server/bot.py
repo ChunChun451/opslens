@@ -1,28 +1,3 @@
-"""The OpsLens assistant: the bot in the side menu that answers whatever a judge or a customer asks.
-
-What it does: one text box, four kinds of answer, picked by plain rules in this order.
-1. A customer complaint ("dosa ke jagah biryani de diya") → triage: the category and language our
-   text classifier reads, the team it goes to, what OpsLens does with it, and the known problem it
-   belongs to (an evidence card in results.json), if any.
-2. An engine question ("what if Team C loses 2 agents on Saturday?", "why is T060582 at risk?",
-   "plant a refund spike", "what should we fix first?") → Ask OpsLens (opslens/ask.py): the LLM
-   only understands, the simulator / results answer.
-3. A question about OpsLens itself ("isn't this data leakage?", "why trust a simulator?") → the
-   closest model answer in docs/JUDGE_QA.md or docs/BOT_QA.md. Every number in that file is checked against the
-   current results.json by tests/test_doc_numbers.py, so the bot never states an unchecked number.
-4. Nothing close enough → Ask OpsLens gets a try (the LLM may understand it); if it cannot, the
-   three nearest judge questions are offered.
-
-Why this design: a free-form chatbot would sound clever and invent numbers, which is the one
-thing a judge must never catch. Here every sentence comes from tested text, the engine, or the
-classifier at request time. It works with Wi-Fi off (the classifier and the matcher are local).
-The classifier is the M3 local model's text part (word + character TF-IDF, logistic regression),
-trained on training days 1-35 only, once, then kept in data/generated/models/bot_triage.pkl.
-
-Example: "mera paisa kat gaya but order nahi aaya" → payment failure, Hindi, Team B (Payments &
-refunds) → "OpsLens routes it by the text, not the menu choice, ...".
-"""
-
 from __future__ import annotations
 
 import pickle
@@ -32,13 +7,13 @@ from pathlib import Path
 from typing import Callable
 
 ROOT = Path(__file__).resolve().parent.parent
-QA_FILES = [ROOT / "docs" / "JUDGE_QA.md", ROOT / "docs" / "BOT_QA.md"]  # both checked by test_doc_numbers
+QA_FILES = [ROOT / "server" / "answers.md"]
 TICKETS = ROOT / "data" / "generated" / "world_tickets.csv"
 TRIAGE_FILE = ROOT / "data" / "generated" / "models" / "bot_triage.pkl"
-TRAIN_LAST_DAY = 35  # the training days of CLAUDE.md 5.1; never the validation or test days
+TRAIN_LAST_DAY = 35
 
-QA_MIN_SCORE = 0.22  # offline: below this the closest judge answer is not close enough to show
-RERANK_K = 8  # online, the LLM picks among this many nearest prepared questions (or none)
+QA_MIN_SCORE = 0.22
+RERANK_K = 8
 
 CATEGORY_LABEL = {
     "late_delivery": "Late delivery", "refund": "Refund", "payment_failure": "Payment failure",
@@ -51,13 +26,11 @@ TEAM_NAME = {"A": "Live orders", "B": "Payments & refunds", "C": "Order accuracy
              "D": "Account, app bugs & restaurant partners"}
 LANGUAGE_LABEL = {"en": "English", "hi": "Hindi / Hinglish", "other": "a regional language"}
 
-# Hinglish question words → English, so "data leak kyun nahi hai?" finds the leakage answer.
 HINGLISH = {"kyun": "why", "kyu": "why", "kaise": "how", "kya": "what", "kitna": "how much", "kitne": "how many",
             "galat": "wrong", "sahi": "right", "sach": "true", "nakli": "fake synthetic", "asli": "real",
             "bharosa": "trust", "bhrosa": "trust", "jaldi": "fast", "der": "late", "kaam": "work",
             "tum": "you", "aap": "you", "apna": "your", "data": "data"}
 
-# Words that mark a customer writing about their own order, not a question about OpsLens.
 CUSTOMER = re.compile(
     r"\b(my|mera|meri|mere|mujhe|maine|humne|hamara|i ordered|i paid|i got|i received|order|khana|paisa|paise|"
     r"refund|deducted|debited|kat gaya|kata|nahi aaya|nahi mila|delivery boy|rider|restaurant|biryani|dosa|pizza|"
@@ -66,14 +39,11 @@ ABOUT_US = re.compile(
     r"\b(opslens|your (model|system|simulator|data|team|results?)|you (use|tested|trained|built)|how do(es)? (it|you)|"
     r"why (do|does|did|should|is|are) (you|it|opslens)|leak|baseline|judge|jury|auc|ci\b|confidence interval|"
     r"simulator|pre-?regist|ledger|sealed|held-?out|test days?|overfit|tuned?|llm|gemini|groq|privacy|pii)\b", re.I)
-# An engine question: a ticket id, a staffing / volume what-if, planting a problem, fixing first.
-# "What if the LLM is down?" is NOT one (no team, agents, volume or day in it).
 ENGINE = re.compile(
     r"(\bt\d{6}\b|\bwhat (if|happens if|happens when)\b.*\b(agents?|team [a-d]|volume|staff|people|monday|tuesday|"
     r"wednesday|thursday|friday|saturday|sunday|weekend)\b|\bplant (a|an)\b|\bhide a\b|\bfix first\b|\bagents? (on|at|for)\b|"
     r"\bteam [a-d]\b.*\b(lose|loses|gain|add|minus|plus)\b|\bvolume\b.*%|%.*\bvolume\b)", re.I)
 
-# Words a judge uses that the prepared answers phrase differently (added to the question only).
 EXPAND = {
     "explain": "explain reasons why shap", "explanation": "explain reasons why shap", "interpret": "explain reasons shap",
     "scale": "scale speed million large tickets", "millions": "scale million speed", "fast": "speed seconds",
@@ -87,14 +57,7 @@ EXPAND = {
 }
 
 
-# ---- Judge Q&A ---------------------------------------------------------------------------------
-
 def parse_qa(text: str) -> list[dict]:
-    """Every "**Qn. question**" block of JUDGE_QA.md with its answer and section.
-
-    Example: "**Q2. (Attack) Regex masking misses things. What about names?**" →
-    {"id": "Q2", "question": "Regex masking misses things. What about names?", "attack": True, ...}
-    """
     entries: list[dict] = []
     section = ""
     current: dict | None = None
@@ -131,8 +94,6 @@ def normalise(text: str) -> str:
 
 
 class QAIndex:
-    """TF-IDF over the questions (words + characters, for typos) and the answers (words)."""
-
     def __init__(self, entries: list[dict]):
         from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -159,7 +120,6 @@ _QA: dict = {}
 
 
 def qa_index() -> QAIndex:
-    """Built once per change of the answer files (they are re-read when they change)."""
     files = [f for f in QA_FILES if f.exists()]
     mtime = tuple(f.stat().st_mtime for f in files)
     if _QA.get("mtime") != mtime:
@@ -167,8 +127,6 @@ def qa_index() -> QAIndex:
         _QA.update({"mtime": mtime, "index": QAIndex(entries)})
     return _QA["index"]
 
-
-# ---- Customer triage ----------------------------------------------------------------------------
 
 _TRIAGE: dict = {}
 _TRIAGE_LOCK = threading.Lock()
@@ -200,8 +158,6 @@ def _train_triage() -> dict:
 
 
 def triage_models(wait: bool = True) -> dict | None:
-    """The two text models, from the cache file or trained once (about 35 s). None if not ready
-    and wait is False (the first request then trains them in the background)."""
     if _TRIAGE:
         return _TRIAGE
     if TRIAGE_FILE.exists():
@@ -219,7 +175,6 @@ def triage_models(wait: bool = True) -> dict | None:
 
 
 def warm_up() -> None:
-    """Load or train the triage models in the background, so the first complaint is instant."""
     threading.Thread(target=triage_models, daemon=True).start()
 
 
@@ -249,7 +204,6 @@ def triage(message: str, results: dict) -> dict:
         ],
         "masked": mask_pii(message).text != message,
     }
-    # The known problem this ticket belongs to, if an evidence card covers its category.
     cards = (results.get("patterns") or {}).get("cards") or []
     for c in cards:
         if (c.get("segment") or {}).get("category") == category:
@@ -258,19 +212,12 @@ def triage(message: str, results: dict) -> dict:
     return out
 
 
-# ---- The router -----------------------------------------------------------------------------------
-
-# A customer speaks about their own order: first person, or a Hinglish complaint phrase.
 FIRST_PERSON = re.compile(
     r"\b(my|mera|meri|mere|mujhe|maine|humne|hamara|hamare|i|i'm|i've|me|we|our|de diya|diya gaya|nahi aaya|nahi mila|"
     r"kat gaya|kab aayega|abhi tak|bhej diya|galat)\b", re.I)
 
 
 def looks_like_customer(q: str) -> bool:
-    """A customer writing about an order, not a judge asking about OpsLens.
-
-    Example: "dosa ke jagah biryani de diya" → True; "what about late deliveries?" → False.
-    """
     if re.match(r"^\s*(customer|complaint|ticket)\s*[:\-]", q, re.I):
         return True
     return bool(CUSTOMER.search(q) and FIRST_PERSON.search(q)) and not ABOUT_US.search(q) and not ENGINE.search(q)
@@ -285,8 +232,6 @@ RERANK_SYSTEM = (
 
 
 def rerank(question: str, hits: list[tuple[float, dict]], client) -> tuple[dict | None, str]:
-    """The LLM picks the closest prepared question (it never writes the answer). Returns
-    (entry or None, who decided). Falls back to the TF-IDF score when the LLM is unavailable."""
     from opslens.llm.base import LLMUnavailable
 
     if client is not None:
@@ -304,7 +249,6 @@ def rerank(question: str, hits: list[tuple[float, dict]], client) -> tuple[dict 
 
 
 def respond(question: str, ask: Callable[[str], dict], results: dict, client=None) -> dict:
-    """One answer for one question (see the module docstring for the order)."""
     q = question.strip()
     if looks_like_customer(q):
         message = re.sub(r"^\s*(customer|complaint|ticket)\s*[:\-]\s*", "", q, flags=re.I)

@@ -1,16 +1,3 @@
-"""M3: train the local classifier, choose the LLM threshold on validation days, measure the
-cascade on test days, and write predictions + eval/parts/classification.json.
-
-Run:  .venv/Scripts/python.exe eval/run_classification.py          (uses the LLM, cached)
-      .venv/Scripts/python.exe eval/run_classification.py --no-llm  (local model only)
-
-Numbers reported (all on TEST days 43-56 unless said otherwise):
-- accuracy of the customer's menu choice alone (what the status quo routes by),
-- local model accuracy, cascade accuracy, LLM-only accuracy on a random sample,
-- share of tickets sent to the LLM, and how often the LLM fixed / broke a local answer,
-- tickets sent to the wrong TEAM per 100: menu choice vs our prediction (overall and phone).
-"""
-
 from __future__ import annotations
 
 import json
@@ -24,13 +11,13 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens.classify import (  # noqa: E402
+from opslens.classify import (
     BATCH_SIZE, CATEGORIES, cascade, choose_threshold, classify_with_llm, misrouted_per_100, predict_local,
     train_local,
 )
-from opslens.clusters import assign, fit_category, name_clusters  # noqa: E402
-from opslens.ingest import load_history  # noqa: E402
-from opslens.llm.client import build_client  # noqa: E402
+from opslens.clusters import assign, fit_category, name_clusters
+from opslens.ingest import load_history
+from opslens.llm.client import build_client
 
 PARTS = ROOT / "eval" / "parts"
 PRED_PATH = ROOT / "data" / "generated" / "predictions.csv"
@@ -109,7 +96,6 @@ def main() -> int:
     for key, value in results.items():
         print(f"{key:36s} {value:.4f}" if isinstance(value, float) else f"{key:36s} {value}")
 
-    # Predictions for every ticket (local for all; cascade on validation and test days).
     final_val = cascade(local_val, llm_val, threshold)
     preds = local_all.set_index("ticket_id")
     preds["pred_final"] = preds["pred_local"]
@@ -119,7 +105,6 @@ def main() -> int:
         p = part.set_index("ticket_id")
         preds.loc[p.index, ["pred_final", "source", "root_cause"]] = p[["pred_final", "source", "root_cause"]]
 
-    # Sub-issue clusters per category, fitted on days 1-42 (labels known), named by the LLM.
     known = h[h["split"] != "test"]
     category_for = preds["pred_final"].reindex(h["ticket_id"]).to_numpy()
     category_for = np.where(h["split"] != "test", h["final_category"], category_for)

@@ -1,5 +1,3 @@
-"""The real-desk digital twin: hand-computed cases (as tests/test_simulate.py does for the food floor)."""
-
 import numpy as np
 import pandas as pd
 
@@ -19,22 +17,19 @@ def tiny(opened_h, prio, stage_list, agents=("a1",), team="G1", days=2) -> T.Twi
 def test_docstring_example_desk_takes_the_urgent_one_first_at_eight() -> None:
     inp = tiny([7.0, 7.5], [3, 1], [[(T.WORK, "G1", 2.0)], [(T.WORK, "G1", 2.0)]])
     r = T.run(inp, share=0.5, k=1, policy=T.Policy())
-    assert r.pickup.tolist() == [120.0, 30.0]          # A waits 07:00-09:00, B 07:30-08:00
-    assert r.resolved.tolist() == [180.0, 90.0]        # A 09:00-10:00, B 08:00-09:00
+    assert r.pickup.tolist() == [120.0, 30.0]
+    assert r.resolved.tolist() == [180.0, 90.0]
 
 
 def test_two_slots_work_in_parallel_and_waits_release_the_slot() -> None:
-    # Both open at 09:00. A: work 1 h, wait 5 h, work 1 h. B: work 3 h. One agent, k = 2, share 1.
     inp = tiny([9.0, 9.0], [3, 3], [[(T.WORK, "G1", 1.0), (T.WAIT, "G1", 5.0), (T.WORK, "G1", 1.0)],
                                     [(T.WORK, "G1", 3.0)]])
     r = T.run(inp, share=1.0, k=2, policy=T.Policy())
     assert r.pickup.tolist() == [0.0, 0.0]
-    assert r.resolved.tolist() == [7 * 60.0, 3 * 60.0]   # A: 09-10 work, 10-15 wait, 15-16 work
+    assert r.resolved.tolist() == [7 * 60.0, 3 * 60.0]
 
 
 def test_work_starts_only_on_duty_but_finishes_after_hours() -> None:
-    # Opened 18:30, 3 h of work: starts at 18:30 (on duty until 19:00) and runs to 21:30.
-    # A second incident at 19:30 waits for 08:00 the next day.
     inp = tiny([18.5, 19.5], [3, 3], [[(T.WORK, "G1", 3.0)], [(T.WORK, "G1", 1.0)]])
     r = T.run(inp, share=1.0, k=2, policy=T.Policy())
     assert r.pickup.tolist() == [0.0, (24 + 8 - 19.5) * 60]
@@ -42,7 +37,6 @@ def test_work_starts_only_on_duty_but_finishes_after_hours() -> None:
 
 
 def test_cut_shortens_the_duty_window_from_the_end() -> None:
-    # 20% cut: on duty 08:00-16:48. An incident at 17:00 waits until 08:00 next day.
     inp = tiny([17.0], [3], [[(T.WORK, "G1", 1.0)]])
     full = T.run(inp, share=1.0, k=1, policy=T.Policy())
     cut = T.run(inp, share=1.0, k=1, policy=T.Policy(), cut=0.2, cut_from_minute=0.0)
@@ -60,7 +54,7 @@ def test_stages_follow_the_real_states_and_teams() -> None:
     })
     st = T.stages(events)
     assert st["X"] == [(T.WORK, "G1", 3.0), (T.WAIT, "G1", 20.0), (T.WORK, "G2", 2.0)]
-    assert st["Y"] == [(T.WORK, "G3", 2.0)]            # New straight to Resolved: its New hours are the work
+    assert st["Y"] == [(T.WORK, "G3", 2.0)]
 
 
 def test_incident_with_no_stages_is_never_resolved() -> None:

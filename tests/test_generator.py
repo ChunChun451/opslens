@@ -1,5 +1,3 @@
-"""Generator, text bank and project-wide guards."""
-
 import re
 from pathlib import Path
 
@@ -14,10 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 GENERATED = ROOT / "data" / "generated"
 
 
-# ---- Guards that protect the evaluation ------------------------------------------------------
-
 def test_engine_never_reads_planted_json() -> None:
-    """CLAUDE.md hard rule: only eval/ may read data/planted.json."""
     offenders = [
         str(p.relative_to(ROOT)) for p in (ROOT / "opslens").rglob("*.py")
         if re.search(r"planted\.json|PLANTED_PATH", p.read_text(encoding="utf-8"))
@@ -26,8 +21,6 @@ def test_engine_never_reads_planted_json() -> None:
 
 
 def test_engine_never_reads_generator_config() -> None:
-    """generator.yaml describes the planted problems, so the engine must not read it
-    (world.py builds the simulator — the test bench — and is the one exception)."""
     offenders = [
         str(p.relative_to(ROOT)) for p in (ROOT / "opslens").rglob("*.py")
         if 'load_config("generator")' in p.read_text(encoding="utf-8") and p.name != "world.py"
@@ -36,16 +29,12 @@ def test_engine_never_reads_generator_config() -> None:
 
 
 def test_engine_never_reads_world_truth() -> None:
-    """The engine reads the helpdesk export (history.csv), never the simulator's truth file,
-    except world.py, which builds the simulator."""
     offenders = [
         str(p.relative_to(ROOT)) for p in (ROOT / "opslens").rglob("*.py")
         if "world_tickets" in p.read_text(encoding="utf-8") and p.name != "world.py"
     ]
     assert offenders == []
 
-
-# ---- Roster ----------------------------------------------------------------------------------
 
 def test_roster_plants_the_hindi_skill_gap() -> None:
     agents = load_agents()
@@ -59,8 +48,6 @@ def test_roster_has_cross_trained_team_d_agents() -> None:
     for agent_id in ("D06", "D07", "D09"):
         assert {"missing_item", "wrong_item"} <= agents[agent_id].skills
 
-
-# ---- Text bank -------------------------------------------------------------------------------
 
 def test_food_flavour_swaps_ecommerce_words() -> None:
     assert food_flavour("where is my shipment? the product is late") == "where is my order? the food is late"
@@ -87,10 +74,7 @@ def test_make_text_hinglish_for_hindi() -> None:
     assert all(any(w in t.lower() for w in hinglish_words) for t in texts)
 
 
-# ---- World / CRN -----------------------------------------------------------------------------
-
 def test_luck_is_tied_to_ticket_number_not_row() -> None:
-    """Adding a ticket must not change the draws of existing tickets (common random numbers)."""
     base = pd.DataFrame({
         "ticket_id": ["T000001", "T000002"], "created_min": [0.0, 5.0], "category": ["refund", "refund"],
         "selected_category": ["refund", "refund"], "channel": ["chat", "chat"], "priority": ["P2", "P2"],
@@ -104,20 +88,16 @@ def test_luck_is_tied_to_ticket_number_not_row() -> None:
     assert list(ticket_numbers(pd.Series(["T000777"]))) == [777]
 
 
-# ---- Generated data (skipped until `make gen` has run) ---------------------------------------
-
 @pytest.mark.skipif(not (GENERATED / "history.csv").exists(), reason="run `make gen` first")
 def test_generated_data_shape_and_signals() -> None:
     hist = pd.read_csv(GENERATED / "history.csv")
     assert 60_000 < len(hist) < 80_000
     assert hist["resolution_min"].isna().sum() == 0
-    # Planted signals are visible in the raw export.
     b = hist[hist["final_category"].isin(["refund", "payment_failure"])]
     waits = b.groupby("language")["wait_min"].mean()
     assert waits["hi"] > 3 * waits["en"]
     calls = hist.groupby("channel")["transfers"].mean()
     assert calls["call"] > 3 * calls["chat"]
-    # No raw placeholder or template slot leaked into the text.
     assert not hist["text"].str.contains(r"\{|\}", regex=True).any()
     assert not hist["text"].str.contains("order my order").any()
 

@@ -1,17 +1,3 @@
-"""W13 design: which v6 overload-mode candidate, if any? (pre-registered in docs/PLAN_V4.md, W13)
-
-Run:  .venv/Scripts/python.exe eval/run_design_v6.py --main     (main world, validation days 36-42, seeds 1-5)
-      .venv/Scripts/python.exe eval/run_worlds.py --v6-design   (20 design worlds, candidates only)
-      .venv/Scripts/python.exe eval/run_design_v6.py --choose   (apply the pre-registered choice)
-
-Why: OpsLens loses the 11 sustained-overload worlds to least slack. The mode predicts whether the
-floor will fall behind in the next window and, if so, values work per expected minute (c-mu).
-Nothing here touches the test days; the choice uses validation days and the design worlds only.
-
-Example: candidate A turns the mode on when the predicted work for the next 120 minutes exceeds the
-minutes the agents on shift can give (threshold 1.0).
-"""
-
 from __future__ import annotations
 
 import json
@@ -28,20 +14,18 @@ CANDIDATES = {
     "A": {"threshold": 1.0, "horizon_min": 120, "flat_urgency": False},
     "B": {"threshold": 1.0, "horizon_min": 120, "flat_urgency": True},
     "C": {"threshold": 1.2, "horizon_min": 60, "flat_urgency": False},
-    # Round 2 (24 Oct, after round 1, before any round-2 run): switch strategy under sustained overload.
     "D1": {"threshold": 1.5, "horizon_min": 240, "switch_to": "least_slack"},
     "D2": {"threshold": 2.0, "horizon_min": 240, "switch_to": "least_slack"},
 }
 ROUND2 = ["D1", "D2"]
-DESIGN_WORLDS = [7001, 7005, 7006, 7007, 7008, 7011, 7014, 7019, 7023, 7025, 7026,  # the 11 losses
-                 7029, 7018, 7002, 7013, 7012, 7015,                                   # heavy wins
-                 7022, 7004, 7009]                                                     # normal wins
+DESIGN_WORLDS = [7001, 7005, 7006, 7007, 7008, 7011, 7014, 7019, 7023, 7025, 7026,
+                 7029, 7018, 7002, 7013, 7012, 7015,
+                 7022, 7004, 7009]
 OTHERS = ["baseline_a", "baseline_b", "baseline_c", "baseline_d", "least_slack"]
 TIE = 0.05
 
 
 def candidate_jobs(first: int, last: int, seeds: list[int], with_v5: bool, names: list[str] | None = None) -> list[dict]:
-    """One OpsLens run per candidate and seed (+ plain v5 if asked), same tickets and luck."""
     names = names or [n for n in CANDIDATES if n not in ROUND2]
     jobs = [{"policy": "opslens", "seed": s, "first_day": first, "last_day": last, "staffing": True,
              "weights": {"overload": CANDIDATES[name]}, "tag": f"v6_{name}"} for name in names for s in seeds]
@@ -52,7 +36,6 @@ def candidate_jobs(first: int, last: int, seeds: list[int], with_v5: bool, names
 
 
 def main_world(round2: bool = False) -> int:
-    """Main world, validation days 36-42, seeds 1-5: each candidate vs v5, paired by seed."""
     from eval.run_opslens import PARTS, run_jobs
     from opslens.impact import paired_ci
     started = time.perf_counter()
@@ -77,17 +60,15 @@ def main_world(round2: bool = False) -> int:
 
 
 def choose() -> int:
-    """The pre-registered choice: smallest total loss margin over the design worlds, among candidates
-    not above v5 on main validation and keeping every design world v5 won."""
     parts = ROOT / "eval" / "parts"
     main = json.loads((parts / "design_v6_main.json").read_text(encoding="utf-8"))
-    if (parts / "design_v6_main2.json").exists():  # round 2 candidates (same v5 runs, same seeds)
+    if (parts / "design_v6_main2.json").exists():
         main["candidates"].update(json.loads((parts / "design_v6_main2.json").read_text(encoding="utf-8"))["candidates"])
     counted = {s: json.loads((parts / "worlds" / f"{s}.json").read_text(encoding="utf-8"))["compare"]["mean"]
                for s in DESIGN_WORLDS}
     design = {s: json.loads((parts / "worlds_v6design" / f"{s}.json").read_text(encoding="utf-8"))["compare"]["mean"]
               for s in DESIGN_WORLDS}
-    if (parts / "worlds_v6design2").exists():  # round 2: the same worlds rebuilt, D1 and D2 only
+    if (parts / "worlds_v6design2").exists():
         for s in DESIGN_WORLDS:
             design[s].update(json.loads((parts / "worlds_v6design2" / f"{s}.json").read_text(encoding="utf-8"))["compare"]["mean"])
     names = [n for n in CANDIDATES if all(f"v6_{n}" in design[s] for s in DESIGN_WORLDS) and n in main["candidates"]]
@@ -116,8 +97,6 @@ def choose() -> int:
 
 
 def confirm_main(name: str) -> int:
-    """Adoption test (1): main world validation days 36-42, 20 FRESH seeds 26-45, the chosen candidate
-    vs v5. Rule: 95% CI upper bound of (v6 - v5) missed SLA below +0.05 points."""
     from eval.run_opslens import PARTS, run_jobs
     from opslens.impact import paired_ci
     seeds = list(range(26, 46))

@@ -1,15 +1,3 @@
-"""Download the two public datasets into data/public/ (see data/SOURCES.md for licences).
-
-Run:  mingw32-make data
-
-1. Bitext customer-support dataset (CSV, ~19 MB) -> data/public/bitext/
-2. UCI incident management event log (ZIP ~2.3 MB, CSV ~44 MB) -> data/public/uci_incidents/
-
-Files that already exist are not downloaded again. The SHA-256 of each file is printed
-so we can record it in data/SOURCES.md and notice if a source ever changes.
-Standard library only (urllib, zipfile, hashlib).
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -37,7 +25,6 @@ def sha256_of(path: Path) -> str:
 
 
 def download(url: str, target: Path) -> Path:
-    """Download `url` to `target` unless it is already there."""
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists() and target.stat().st_size > 0:
         print(f"exists   {target.relative_to(ROOT)}")
@@ -54,7 +41,6 @@ def download(url: str, target: Path) -> Path:
 
 
 def extract_zip(zip_path: Path, folder: Path) -> list[Path]:
-    """Extract only plain files from the zip, refusing any path that escapes `folder`."""
     extracted: list[Path] = []
     with zipfile.ZipFile(zip_path) as archive:
         for member in archive.infolist():

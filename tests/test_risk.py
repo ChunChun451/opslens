@@ -1,5 +1,3 @@
-"""Leak-proof features and the risk model."""
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -33,19 +31,17 @@ def tiny_history() -> pd.DataFrame:
 
 
 def test_queue_features_by_hand() -> None:
-    # At minute 45: T0 (refund, hi), T1 (refund, en), T3 (refund, hi) waiting; T2 already picked.
     feats = snapshots_from_history(tiny_history(), AGENTS, TEAM_OF, 1, 1, every_min=45).set_index("ticket_id")
     at45 = feats[feats["t"] == 45]
     assert sorted(at45.index) == ["T0", "T1", "T3"]
-    assert at45.loc["T3", "ahead_in_team_queue"] == 2  # T0 and T1 were created earlier
-    assert at45.loc["T0", "queue_team_language"] == 2  # T0 and T3: Team B, Hindi
-    assert at45.loc["T3", "capable_on_shift"] == 1  # only B01 speaks Hindi and handles refunds
+    assert at45.loc["T3", "ahead_in_team_queue"] == 2
+    assert at45.loc["T0", "queue_team_language"] == 2
+    assert at45.loc["T3", "capable_on_shift"] == 1
     assert at45.loc["T1", "age_min"] == 25 and at45.loc["T1", "time_left_min"] == 215
-    assert at45.loc["T0", "in_progress_team"] == 0  # T2 (Team A) is in work, not Team B
+    assert at45.loc["T0", "in_progress_team"] == 0
 
 
 def test_features_never_use_the_future() -> None:
-    """Change everything that happens after t: the features at t must not change."""
     h = tiny_history()
     t = 45.0
     before = snapshots_from_history(h, AGENTS, TEAM_OF, 1, 1, every_min=t)
@@ -53,11 +49,11 @@ def test_features_never_use_the_future() -> None:
 
     future = h.copy()
     later = future["first_pickup_at"] > future["created_at"].min() + pd.Timedelta(minutes=t)
-    future.loc[later, "first_pickup_at"] += pd.Timedelta(hours=5)  # pickups after t move
-    future["resolved_at"] += pd.Timedelta(hours=7)  # every resolution moves later (all after t)
-    future["breached"] = ~future["breached"]  # outcomes flip
+    future.loc[later, "first_pickup_at"] += pd.Timedelta(hours=5)
+    future["resolved_at"] += pd.Timedelta(hours=7)
+    future["breached"] = ~future["breached"]
     new_ticket = future.iloc[[0]].assign(ticket_id="T9", created_at=future["created_at"].min() + pd.Timedelta(minutes=60),
-                                         minute_of_run=60.0)  # a ticket created after t
+                                         minute_of_run=60.0)
     future = pd.concat([future, new_ticket], ignore_index=True)
     after = snapshots_from_history(future, AGENTS, TEAM_OF, 1, 1, every_min=t)
     after = after[after["t"] == t].drop(columns="breached").reset_index(drop=True)
@@ -66,7 +62,7 @@ def test_features_never_use_the_future() -> None:
 
 def test_breached_tickets_are_not_scored() -> None:
     h = tiny_history()
-    h.loc[h["ticket_id"] == "T3", "sla_min"] = 10.0  # created at 40, past SLA by 45 + 15
+    h.loc[h["ticket_id"] == "T3", "sla_min"] = 10.0
     feats = snapshots_from_history(h, AGENTS, TEAM_OF, 1, 1, every_min=60)
     assert "T3" not in set(feats.loc[feats["t"] == 60, "ticket_id"])
 

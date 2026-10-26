@@ -1,5 +1,3 @@
-"""Optimiser and OpsLens policy (tiny worlds, no risk model needed)."""
-
 import numpy as np
 
 from opslens.optimize import Candidate, SolveStats, greedy, solve, ticket_value
@@ -16,8 +14,6 @@ WEIGHTS = {
 
 
 def test_flow_beats_greedy_on_the_docstring_example() -> None:
-    # Kavita can take T1 (Hindi) or T2; Rahul only T2. Greedy gives Kavita her best (T2 here),
-    # leaving T1 unserved. The flow serves both.
     cands = [Candidate(1, "kavita", 0.80, False, "refund", ""), Candidate(2, "kavita", 0.90, False, "refund", ""),
              Candidate(2, "rahul", 0.60, False, "refund", "")]
     slots = {"kavita": 1, "rahul": 1}
@@ -42,8 +38,8 @@ def test_negative_values_are_left_unassigned() -> None:
 def test_ticket_value_guard_and_gold() -> None:
     base = ticket_value("P2", "normal", 350, 0.3, 30, WEIGHTS)
     assert ticket_value("P2", "gold", 350, 0.3, 30, WEIGHTS) > base
-    assert ticket_value("P2", "normal", 350, 0.3, 300, WEIGHTS) > base + 40  # starvation guard
-    assert ticket_value("P1", "normal", 350, 0.3, 30, WEIGHTS) == 2 * base  # urgency 3 vs 1.5
+    assert ticket_value("P2", "normal", 350, 0.3, 300, WEIGHTS) > base + 40
+    assert ticket_value("P1", "normal", 350, 0.3, 30, WEIGHTS) == 2 * base
 
 
 def agent(agent_id, skills, langs=("en",), team="B"):
@@ -57,32 +53,25 @@ def run_policy(world, settings=None):
 
 
 def test_language_never_violated_and_cross_skill_needs_danger() -> None:
-    # One Hindi refund ticket, one English-only refund agent, one Hindi app agent.
     world = make_world([0], [10], [agent("en_refund", {"refund"}), agent("hi_app", {"app_bug"}, ("en", "hi"))],
                        language=["hi"], true_cat=["refund"], sla=60)
     out, _ = run_policy(world)
-    # Without the risk model rescue is 0.3 < 0.5: the Hindi app agent may NOT do a cross-skill job,
-    # and the English agent can never serve Hindi. So the ticket waits (and breaches).
     assert np.isnan(out.loc["T000000", "resolution_min"])
 
 
 def test_v4_prices_cross_skill_in_risk_units() -> None:
-    # A Hindi P2 refund in danger (rescue 0.9) and only a Hindi-speaking agent NOT trained on refunds.
     w = {**WEIGHTS, "new_ticket_rescue": 0.9}
     world = make_world([0], [20], [agent("hi_app", {"app_bug"}, ("en", "hi"))], language=["hi"],
                        true_cat=["refund"], sla=60)
     v3 = simulate(world, OpsLensPolicy(world, {}, None, w, OpsLensSettings(use_risk=False)), 0, 300,
                   decide_every_min=1).tickets.set_index("ticket_id")
-    # v3: value 1.59 x 0.9 - 2.0 < 0, so it waits until aging lifts it (~43 min); 1.6 x 20 = 32 min of work: breach.
     assert v3.loc["T000000", "wait_min"] > 40 and v3.loc["T000000", "breached"]
     v4 = simulate(world, OpsLensPolicy(world, {}, None, {**w, "mismatch_cost": 0.4}, OpsLensSettings(use_risk=False)),
                   0, 300, decide_every_min=1).tickets.set_index("ticket_id")
-    # v4: 1.59 x (0.9 - 0.4) > 0 at once: served at minute 0, done at minute 32 < 60.
     assert v4.loc["T000000", "wait_min"] == 0 and not v4.loc["T000000", "breached"]
 
 
 def test_v5_rescues_cross_skill_only_when_no_trained_agent_comes_in_time() -> None:
-    # Hindi P2 refund at minute 0, work 20 min, SLA 60, rescue 0.9; a Hindi app agent is on shift all day.
     w = {**WEIGHTS, "new_ticket_rescue": 0.9, "roster_margin_min": 15}
 
     def trained_from(start_min):
@@ -95,30 +84,26 @@ def test_v5_rescues_cross_skill_only_when_no_trained_agent_comes_in_time() -> No
 
     late = make_world([0], [20], [agent("hi_app", {"app_bug"}, ("en", "hi")), trained_from(600)], language=["hi"],
                       true_cat=["refund"], sla=60)
-    # Trained agent only at minute 600, after the deadline: v5 sends the Hindi app agent at once (32 min).
     assert run(late, w)["wait_min"] == 0 and not run(late, w)["breached"]
-    # v3 (no roster check) charges the flat penalty, waits ~43 min, then 32 min of work: breach.
     assert run(late, WEIGHTS | {"new_ticket_rescue": 0.9})["breached"]
     soon = make_world([0], [20], [agent("hi_app", {"app_bug"}, ("en", "hi")), trained_from(20)], language=["hi"],
                       true_cat=["refund"], sla=60)
-    # A trained agent arrives at minute 20 (before 60 − 15): v5 waits for them, exactly like v3.
     row = run(soon, w)
     assert row["wait_min"] == 20 and row["last_agent"] == "hi_refund" and not row["breached"]
 
 
 def test_rare_agent_is_never_idle_with_only_common_work() -> None:
-    # Only a Hindi+refund agent (rare pair) is on shift; only English refunds are waiting.
     world = make_world([0, 0], [10, 10], [agent("kavita", {"refund"}, ("en", "hi"))], language=["en", "en"])
     out, _ = run_policy(world, OpsLensSettings(use_risk=False, use_scarcity=True))
-    assert sorted(out["resolution_min"].tolist()) == [10, 20]  # she works through both, never idle
+    assert sorted(out["resolution_min"].tolist()) == [10, 20]
 
 
 def test_v2_aging_is_in_sla_units_and_capped() -> None:
     w = {**WEIGHTS, "aging_in_sla_units": True, "aging_per_sla": 1.0, "aging_cap": 1.0, "max_late_min": 240}
-    fresh_p1 = ticket_value("P1", "normal", 350, 0.0, 30, w, sla_min=60)    # half its SLA waited
-    old_p3 = ticket_value("P3", "normal", 350, 0.0, 600, w, sla_min=1440)   # 10 h of a 24 h SLA
-    assert fresh_p1 > old_p3  # P1 time is 24x more precious
-    lost = ticket_value("P2", "normal", 350, 0.0, 400, w, sla_min=240)       # 160 min past SLA
-    more_lost = ticket_value("P2", "normal", 350, 0.0, 470, w, sla_min=240)  # 230 min past SLA
-    assert lost == more_lost  # stops gaining once past its SLA (cap)
-    assert ticket_value("P2", "normal", 350, 0.0, 481, w, sla_min=240) > lost + 40  # guard: 241 min late
+    fresh_p1 = ticket_value("P1", "normal", 350, 0.0, 30, w, sla_min=60)
+    old_p3 = ticket_value("P3", "normal", 350, 0.0, 600, w, sla_min=1440)
+    assert fresh_p1 > old_p3
+    lost = ticket_value("P2", "normal", 350, 0.0, 400, w, sla_min=240)
+    more_lost = ticket_value("P2", "normal", 350, 0.0, 470, w, sla_min=240)
+    assert lost == more_lost
+    assert ticket_value("P2", "normal", 350, 0.0, 481, w, sla_min=240) > lost + 40

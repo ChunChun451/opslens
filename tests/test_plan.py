@@ -1,10 +1,3 @@
-"""Your plan (opslens/plan.py, POST /api/plan/impact): hand-checkable cases.
-
-The calendar: day 1 = Monday 31 Aug 2026, so day 43 is a Monday, day 45 a Wednesday, day 47 a
-Friday. Roster: C02 (Deepak W., Team C) starts 08:00, off Mon+Tue; B02 (Arjun N., Team B) starts
-14:00, off Fri+Sat.
-"""
-
 import json
 from pathlib import Path
 
@@ -16,12 +9,11 @@ from opslens.plan import (HEADINGS, PLAN_KPIS, apply_items, apply_staffing_move,
                           item_changes, plan_kpis, staffing_items)
 from opslens.world import load_agents
 
-MONDAY = 0  # weekday of day 1
+MONDAY = 0
 GENERATED = Path(__file__).resolve().parent.parent / "data" / "generated"
 
 
 def week_plan() -> list[dict]:
-    """A staffing plan for days 43-49 with two moves, in the format of staffing_plan.json."""
     return [{"first_day": 43, "last_day": 49, "moves": [
         {"agent_id": "C02", "team": "C", "change": "start 07:00 instead of 08:00"},
         {"agent_id": "B02", "team": "B", "change": "day off on Mon instead of Fri"}],
@@ -38,14 +30,14 @@ def test_staffing_items_have_stable_ids_and_one_agent_each() -> None:
 
 def test_applying_a_move_changes_exactly_that_agent() -> None:
     agents = load_agents()
-    item = staffing_items(week_plan(), agents)[0]  # C02 starts 07:00 on days 43-49
+    item = staffing_items(week_plan(), agents)[0]
     after = apply_staffing_move(agents, item)
     changed = [a.agent_id for a, b in zip(agents, after) if a != b]
     assert changed == ["C02"]
     c02 = next(a for a in after if a.agent_id == "C02")
-    assert c02.schedule_on(43 - 1) == (7 * 60, frozenset({0, 1}))   # day 43: the new start
-    assert c02.schedule_on(49 - 1) == (7 * 60, frozenset({0, 1}))   # day 49: still that week
-    assert c02.schedule_on(50 - 1) == (8 * 60, frozenset({0, 1}))   # day 50: back to the roster
+    assert c02.schedule_on(43 - 1) == (7 * 60, frozenset({0, 1}))
+    assert c02.schedule_on(49 - 1) == (7 * 60, frozenset({0, 1}))
+    assert c02.schedule_on(50 - 1) == (8 * 60, frozenset({0, 1}))
 
 
 def test_unknown_or_repeated_ids_are_refused_and_order_is_the_catalogue_order() -> None:
@@ -61,7 +53,7 @@ def test_unknown_or_repeated_ids_are_refused_and_order_is_the_catalogue_order() 
 
 def test_a_day_off_move_is_only_in_effect_on_the_days_it_touches() -> None:
     agents = load_agents()
-    item = staffing_items(week_plan(), agents)[1]  # B02: off Mon instead of Fri, days 43-49
+    item = staffing_items(week_plan(), agents)[1]
     _, _, after, info = apply_items(pd.DataFrame(), pd.DataFrame(), agents, [item], 45, 45, MONDAY)
     wednesday = item_changes(item, info[item["id"]], agents, after, [44, 45, 46], MONDAY)
     friday = item_changes(item, info[item["id"]], agents, after, [46, 47, 48], MONDAY)
@@ -70,7 +62,6 @@ def test_a_day_off_move_is_only_in_effect_on_the_days_it_touches() -> None:
 
 
 def test_counts_from_percentages() -> None:
-    # 2% of 1,500 tickets missed the SLA = 30 customers; 10 transfers per 100 = 150 transfers.
     k = {"tickets": 1500.0, "turnaround.breach_pct": 2.0, "turnaround.mean_resolution_min": 50.0,
          "turnaround.p90_resolution_min": 120.0, "productivity.busy_agent_hours": 300.0,
          "productivity.tickets_per_agent_hour": 4.0, "productivity.transfers_per_100": 10.0,
@@ -79,11 +70,10 @@ def test_counts_from_percentages() -> None:
     assert out["breaches"] == pytest.approx(30.0) and out["transfers"] == pytest.approx(150.0)
     assert out["mean_resolution_min"] == 50.0 and out["breach_pct"] == 2.0
     assert set(out) == {key for key, _, _, _, _ in PLAN_KPIS}
-    assert all("." not in key for key in out)  # usable in the dashboard's evidence paths
+    assert all("." not in key for key in out)
 
 
 def test_paired_effect_per_kpi() -> None:
-    # Breaches without [30, 40, 50], with [25, 36, 44] → differences -5, -4, -6 → mean -5.
     row = {key: 0.0 for key, _, _, _, _ in PLAN_KPIS}
     without = [{**row, "breaches": b} for b in (30, 40, 50)]
     with_plan = [{**row, "breaches": b} for b in (25, 36, 44)]
@@ -95,12 +85,8 @@ def test_paired_effect_per_kpi() -> None:
     assert effect["transfers"]["diff"] == 0.0
 
 
-# ---- The endpoint -----------------------------------------------------------------------------
-
 @pytest.fixture(scope="module")
 def small_inputs() -> dict:
-    """A small slice of the generated data: the tickets of Saturday day 48, 18:00-21:00 (about
-    300), so one simulated day takes a few seconds. Loaded once for all endpoint tests."""
     if not (GENERATED / "world_tickets.csv").exists():
         pytest.skip("run `make gen` first")
     from opslens import risk
@@ -117,8 +103,6 @@ def small_inputs() -> dict:
 
 @pytest.fixture
 def small_server(small_inputs, tmp_path, monkeypatch):
-    """The server on the small slice with one seed. Runs happen in this process, one by one (no
-    memory of earlier runs), so "without" and "with" are really simulated twice."""
     from server import app as server
 
     results = {"meta": {"fixture": False}, "plan": {"items": staffing_items(week_plan(), load_agents()), "alerts_used": []}}
@@ -140,12 +124,11 @@ def test_endpoint_with_no_items_has_zero_delta(small_server) -> None:
     answer = small_server.post("/api/plan/impact", json={"day": 48, "items": []}).json()
     assert answer["delta"] and answer["without"]["tickets"] > 0
     for key, value in answer["delta"].items():
-        assert value == 0.0, key   # same tickets, same luck → identical runs
+        assert value == 0.0, key
     assert answer["items"] == [] and answer["seeds"] == [1]
 
 
 def test_endpoint_returns_all_three_headings_for_a_plan(small_server) -> None:
-    # Day 48 is a Saturday; C02 starts an hour earlier on days 43-49, so the move is in effect.
     answer = small_server.post("/api/plan/impact", json={"day": 48, "items": ["staff_43_C02"]}).json()
     assert answer["day"] == 48 and answer["weekday"] == "Sat" and answer["policy"] == "opslens"
     assert [i["id"] for i in answer["items"]] == ["staff_43_C02"] and answer["items"][0]["in_effect"]

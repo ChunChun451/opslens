@@ -1,27 +1,3 @@
-"""Generate the 56-day operations dataset, plant the problems, and make history with Baseline A.
-
-Run:  mingw32-make gen
-
-Outputs (data/generated/, git-ignored, fully reproducible from the seed):
-- world_tickets.csv  the TRUTH (true category, text, ...). Only the simulator reads it.
-- history.csv        the helpdesk export: what a company would give us. Produced by running
-                     Baseline A in the simulator on all 56 days. The engine reads this.
-- agents.csv         the roster as a table.
-- ../planted.json    the planted problems and decoys. Only eval/ reads it.
-
-How volume is made, step by step:
-1. Each day gets a total: 1,130 on weekdays, ×1.15 at weekends, ×1.35 on the two sale days,
-   ×1.12 on the busy-but-normal decoy day, times a small random day-to-day factor.
-2. Each hour gets its share of the day (lunch and dinner peaks, `hourly_profile`).
-3. Each category gets its share of the hour, with lifts: late deliveries and missing items
-   rise at meal peaks; planted spikes multiply one category in a few hours.
-4. The number of tickets is a Poisson draw around that expected value.
-
-Example: Saturday 20:00, missing_item.
-    day total 1,130 × 1.15 = 1,299.5; hour share 7.3/92.9 = 7.86% → 102.1 tickets;
-    missing_item share 0.14 × peak lift 1.2 × weekend-dinner lift 1.35 → 23.2 expected.
-"""
-
 from __future__ import annotations
 
 import json
@@ -35,11 +11,11 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from data.text_bank import RESTAURANTS, TextBank  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.policies import baseline_a  # noqa: E402
-from opslens.simulate import MINUTES_PER_DAY, available_minutes, simulate  # noqa: E402
-from opslens.world import agents_table, build_world, load_agents  # noqa: E402
+from data.text_bank import RESTAURANTS, TextBank
+from opslens.config import load_config
+from opslens.policies import baseline_a
+from opslens.simulate import MINUTES_PER_DAY, available_minutes, simulate
+from opslens.world import agents_table, build_world, load_agents
 
 OUT_DIR = ROOT / "data" / "generated"
 PLANTED_PATH = ROOT / "data" / "planted.json"
@@ -47,17 +23,14 @@ BITEXT_PATH = ROOT / "data" / "public" / "bitext" / "bitext_customer_support_27k
 HISTORY_SEED = 0
 
 
-# ---- Volume ----------------------------------------------------------------------------------
-
 def day_totals(cfg: dict, rng: np.random.Generator, first_weekday: int) -> np.ndarray:
-    """Expected tickets for each day 1..N (index 0 = day 1)."""
     days = int(cfg["days"])
     totals = np.full(days, float(cfg["tickets_per_weekday"]))
     for d in range(1, days + 1):
         if (first_weekday + d - 1) % 7 in (5, 6):
             totals[d - 1] *= float(cfg["weekend_multiplier"])
     for event in cfg["known_events"]:
-        if event["day"] <= days:  # shorter runs (blind test) may end before a sale day
+        if event["day"] <= days:
             totals[event["day"] - 1] *= float(cfg["known_event_multiplier"])
     for decoy in cfg["decoys"]:
         if decoy["kind"] == "busy_normal_day" and decoy["day"] <= days:
@@ -67,7 +40,6 @@ def day_totals(cfg: dict, rng: np.random.Generator, first_weekday: int) -> np.nd
 
 
 def category_lift(cfg: dict, day: int, weekday: int, hour: int, category: str) -> float:
-    """Multiplier for one category in one hour: meal peaks + planted spikes."""
     lift = 1.0
     peak = cfg["peak_category_lift"]
     if hour in peak["hours"]:
@@ -80,7 +52,6 @@ def category_lift(cfg: dict, day: int, weekday: int, hour: int, category: str) -
         spike = planted[key]
         if spike["enabled"] and day == spike["day"] and hour in spike["hours"] and category == spike["category"]:
             lift *= float(spike["multiplier"])
-    # Generic lifts, used by data/plant.py for the blind recall test.
     for extra in cfg.get("extra_lifts", []):
         if category not in extra["categories"] or hour not in extra["hours"]:
             continue
@@ -92,8 +63,6 @@ def category_lift(cfg: dict, day: int, weekday: int, hour: int, category: str) -
     return lift
 
 
-# ---- Ticket attributes -----------------------------------------------------------------------
-
 def pick(rng: np.random.Generator, probs: dict[str, float]) -> str:
     keys = list(probs)
     weights = np.array([probs[k] for k in keys], dtype=float)
@@ -101,14 +70,12 @@ def pick(rng: np.random.Generator, probs: dict[str, float]) -> str:
 
 
 def cluster_weights(cfg: dict) -> np.ndarray:
-    """Restaurant-cluster popularity: a few big clusters, a long tail (Zipf-like)."""
     k = np.arange(int(cfg["restaurant_clusters"]))
     w = 1.0 / (k + 1.0) ** 0.8
     return w / w.sum()
 
 
 def choose_selected_category(cfg: dict, rng: np.random.Generator, true_cat: str, channel: str) -> str:
-    """The category the customer picks. Sometimes wrong — much more often in the IVR menu."""
     p_wrong = float(cfg["wrong_selection_prob"][channel])
     ivr = cfg["planted"]["ivr_misrouting"]
     if ivr["enabled"] and channel == ivr["channel"]:
@@ -125,7 +92,6 @@ def choose_selected_category(cfg: dict, rng: np.random.Generator, true_cat: str,
 
 
 def cluster_weights_by_category(cfg: dict) -> dict[str, np.ndarray]:
-    """Cluster popularity per category, with partner plants (one cluster sends more of a category)."""
     base = cluster_weights(cfg)
     partners = []
     main = cfg["planted"]["partner_cluster"]
@@ -143,10 +109,9 @@ def cluster_weights_by_category(cfg: dict) -> dict[str, np.ndarray]:
 
 
 def make_tickets(cfg: dict, bank: TextBank | None) -> pd.DataFrame:
-    """All tickets for the run. `bank=None` skips the text (the blind recall test does not need it)."""
     seed = int(cfg["seed"])
-    rng = np.random.default_rng([seed, 10])  # structure: counts, times, attributes
-    rng_text = np.random.default_rng([seed, 11])  # text only, so editing templates moves nothing else
+    rng = np.random.default_rng([seed, 10])
+    rng_text = np.random.default_rng([seed, 11])
     first_weekday = pd.Timestamp(cfg["start_date"]).weekday()
     profile = np.array(cfg["hourly_profile"], dtype=float)
     profile = profile / profile.sum()
@@ -204,8 +169,6 @@ def one_ticket(cfg, rng, day, hour, category, cluster_weights_for_category) -> d
     }
 
 
-# ---- Planted problems ------------------------------------------------------------------------
-
 def planted_record(cfg: dict) -> dict:
     p = cfg["planted"]
     problems = [
@@ -234,8 +197,6 @@ def planted_record(cfg: dict) -> dict:
     return {"generated_from_seed": cfg["seed"], "problems": problems, "decoys": cfg["decoys"]}
 
 
-# ---- History (the helpdesk export) -----------------------------------------------------------
-
 def make_history(tickets: pd.DataFrame, result_tickets: pd.DataFrame, agents: pd.DataFrame,
                  start: pd.Timestamp, sla: dict) -> pd.DataFrame:
     out = result_tickets.set_index("ticket_id")
@@ -254,10 +215,7 @@ def make_history(tickets: pd.DataFrame, result_tickets: pd.DataFrame, agents: pd
     return hist.drop(columns=["first_pickup_min", "resolved_min", "last_agent"]).reset_index()
 
 
-# ---- Calibration report ----------------------------------------------------------------------
-
 def team_c_weekend_dinner_rho(world, tickets: pd.DataFrame, cfg: dict) -> float:
-    """Work arriving for Team C's categories at weekend dinner ÷ Team C minutes on shift then."""
     hours = cfg["planted"]["team_c_weekend_dinner"]["hours"]
     first_weekday = world.first_weekday
     t = tickets.copy()
@@ -310,7 +268,7 @@ def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     bank = TextBank.from_bitext_csv(BITEXT_PATH, ROOT / "data" / "llm_templates.json")
     tickets = make_tickets(cfg, bank)
-    if "--tickets-only" in sys.argv:  # calibration helper: skip the slow history simulation
+    if "--tickets-only" in sys.argv:
         tickets.to_csv(OUT_DIR / "world_tickets.csv", index=False)
         print(f"tickets: {len(tickets):,} (history not simulated)")
         return 0

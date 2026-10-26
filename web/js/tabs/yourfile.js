@@ -1,17 +1,3 @@
-// tabs/yourfile.js — Real data on YOUR file: the five screens, drawn from the uploaded report.
-//
-// Why (26 Oct, the owner: "an uploaded CSV gets the same treatment as the IT service desk"): a judge
-// switches to Real data, uploads a CSV and clicks through Overview, Shadow mode, Problems, Risks,
-// Actions and Proof on their own items. Every number is read from state.upload (the finished job of
-// opslens/anyfile.py: learned on the file's first 70%, scored once on the rest) through ev() and
-// evText(), so each one opens its evidence. A part the file cannot support says which column it
-// needs ("needs a team column"): nothing is left blank and nothing is invented. Column names read
-// like words ("Road_traffic_density: Jam" -> "traffic: Jam"); the popover keeps the file's own text.
-// Shadow mode is tabs/shadow.js, which replays upload.shadow.timeline like the UCI day.
-//
-// Example (generated delivery orders, a 25-minute promise assumed): flagging 1 in 5 orders as they
-// opened, OpsLens caught 66.5% of the real misses on the later orders; a rule of thumb 51.1%.
-
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, stat, fold } from "../ui.js";
@@ -19,11 +5,8 @@ import { escapeHtml } from "../format.js";
 import { planButtons, registerItem } from "../plan.js";
 
 const U = "upload";
-const HOT_SHOWN = 8; // busy team-days shown before the fold (a layout choice, not a result)
+const HOT_SHOWN = 8;
 
-// ---- Words -------------------------------------------------------------------------------------
-
-// Common export columns in words; any other name: underscores and camelCase become spaces.
 const WORDS = {
   road_traffic_density: "traffic", weatherconditions: "weather", weather_conditions: "weather",
   type_of_order: "order type", type_of_vehicle: "vehicle", vehicle_condition: "vehicle condition",
@@ -31,8 +14,6 @@ const WORDS = {
   delivery_person_age: "rider age", assignment_group: "team", first_team: "team",
 };
 
-// A column (or the model's name for a mapped one: team, category, priority) as a word on screen.
-// Example: "Road_traffic_density" -> "traffic"; "team" when the team is the file's City -> "city".
 export function readable(column) {
   const name = String(column);
   const mapped = state.upload && state.upload.mapping ? state.upload.mapping[name] : "";
@@ -41,8 +22,6 @@ export function readable(column) {
   return WORDS[key] || name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_\s]+/g, " ").trim().toLowerCase();
 }
 
-// One of the model's reasons in words: "Road_traffic_density: Jam " -> "traffic: Jam"; with the team
-// in a column called City, "4 open in its team" -> "4 open in its city". Numbers stay as written.
 export function plainReason(text) {
   const t = String(text).trim();
   const names = ((state.upload && state.upload.features) || []).slice().sort((a, b) => b.length - a.length);
@@ -53,18 +32,15 @@ export function plainReason(text) {
 
 const capital = (text) => (text ? text[0].toUpperCase() + text.slice(1) : text);
 
-// Who OpsLens is compared with: the file's own priority field, or (when it has none) a rule of thumb.
 export function rivalWords(r) {
   if (r.warning.vs.rival === "priority") return "your priority field";
   return escapeHtml(r.rule_column ? `a rule of thumb (past miss rate by ${readable(r.rule_column)})` : "a rule of thumb (the past miss rate)");
 }
 
-// "1 in 5", from the share each picker flags (the popover shows the share itself).
 function oneIn(r) {
   return evText(`${U}.flag_share_pct`, `1 in ${Math.round(100 / r.flag_share_pct)}`);
 }
 
-// What counts as a miss in this file, in one sentence.
 function missWords(r) {
   const m = r.miss || {};
   if (m.rule === "promise") {
@@ -76,7 +52,6 @@ function missWords(r) {
   return `A miss is what your file's own ${evText(`${U}.miss.column`)} column says.`;
 }
 
-// "This table needs a team column." for a part of the report the file cannot support.
 function needsLine(key, what) {
   return `<p class="needs"><b>${escapeHtml(what)}</b> needs ${evText(`${U}.needs.${key}`) || escapeHtml(`a ${key} column`)}.</p>`;
 }
@@ -85,7 +60,6 @@ export function stampHtml(stillTrue) {
   return `<span class="stamp ${stillTrue ? "is-yes" : "is-no"}">${stillTrue ? "still true later" : "not confirmed later"}</span>`;
 }
 
-// A problem group in words, clickable to its raw value: "traffic: Jam".
 function groupName(c, i) {
   return evText(`${U}.cards[${i}].value`, `${readable(c.column)}: ${String(c.value).trim()}`);
 }
@@ -94,8 +68,6 @@ function noFile(section) {
   section.innerHTML = pageHeader("Your file", "") +
     card({ body: `<p class="muted">No file analysed yet. Press <b>Upload a CSV</b> above.</p>` });
 }
-
-// ---- Overview: what is happening in your file? -------------------------------------------------
 
 export const overview = { render(section) {
   const r = state.upload;
@@ -114,7 +86,6 @@ export const overview = { render(section) {
     ${topProblems(r)}`;
 } };
 
-// The early-warning answer in one sentence, with the 95% interval of the gap over days.
 function headline(r) {
   const rival = r.warning.vs.rival;
   return card({ id: "up-headline", cls: "up-headline", body: `<p class="lead-line">Flagging ${oneIn(r)} items as they opened,
@@ -146,13 +117,10 @@ function topProblems(r) {
           for the rest, on your first items</span></li>`).join("")}</ol>` });
 }
 
-// "2016-05-05" -> "5 May 2016" (the popover keeps the file's date).
 function prettyDate(iso) {
   const d = new Date(iso + "T00:00:00Z");
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
-
-// ---- Problems: why does it go wrong? ---------------------------------------------------------
 
 export const problems = { render(section) {
   const r = state.upload;
@@ -164,10 +132,8 @@ export const problems = { render(section) {
     <div class="grid cols-3 up-worst">${["team", "category", "priority"].map((key) => worstTable(r, key)).join("")}</div>`;
 } };
 
-// One group as a finding card: first part vs the rest, later part vs the rest, the interval, the stamp.
 function findingCard(c, i) {
   const b = `${U}.cards[${i}]`;
-  // The bars are a picture of the four numbers beside them, scaled to the largest.
   const top = Math.max(c.learn_pct, c.learn_rest_pct, c.test_pct, c.test_rest_pct) || 1;
   const bar = (label, key, cls) => `<div class="mini-bar"><span>${label}</span><div class="cbar-track"><div class="cbar-fill ${cls}"
       style="width: ${Math.round((c[key] / top) * 100)}%"></div></div><span class="cbar-value">${ev(`${b}.${key}`, "pct")}</span></div>`;
@@ -200,8 +166,6 @@ function worstTable(r, key) {
       <th class="num">Items</th><th class="num">Missed</th></tr></thead><tbody>${body}</tbody></table></div>` });
 }
 
-// ---- Risks: what will go wrong next? -----------------------------------------------------------
-
 export const risks = { render(section) {
   const r = state.upload;
   if (!r) return noFile(section);
@@ -224,7 +188,6 @@ export const risks = { render(section) {
     ${forecastCard(r)}`;
 } };
 
-// New items per team a week ahead, learned vs "same weekday last week", or what the file needs for it.
 function forecastCard(r) {
   const f = r.forecast;
   const word = readable("team");
@@ -232,7 +195,6 @@ function forecastCard(r) {
   if (f.needs) return card({ id: "up-forecast", title, body: `<p class="needs"><b>This forecast</b> needs ${evText(`${U}.forecast.needs`)}.</p>` });
   const fc = `${U}.forecast`;
   const better = f.wape_learned < f.wape_same_weekday_last_week;
-  // Busy team-days: forecast above what the team usually finishes in a day, furthest above first.
   const hot = f.first_week.map((x, i) => ({ x, i })).filter(({ x }) => x.forecast > x.usual_ends)
     .sort((a, b) => (b.x.forecast - b.x.usual_ends) - (a.x.forecast - a.x.usual_ends));
   const table = (list) => `<div class="table-wrap"><table><thead><tr><th>${escapeHtml(capital(word))}</th><th>Day</th>
@@ -257,11 +219,6 @@ function forecastCard(r) {
         <th class="num">Learned</th><th class="num">Same weekday last week</th></tr></thead><tbody>${teams}</tbody></table></div>`)}` });
 }
 
-// ---- Actions: what should we do? ---------------------------------------------------------------
-
-// The file's recommendations as plan items (web/js/plan.js): measured facts from the file only. A
-// log cannot be replayed under other decisions, so no item has a simulated effect. Also registered
-// when a report arrives (source.js), so Your plan can describe them before Actions is opened.
 export function filePlanItems() {
   const r = state.upload;
   const meta = state.uploadMeta;
@@ -302,8 +259,6 @@ export const actions = { render(section) {
       body: fixList || `<p class="muted">No group misses clearly more often than the rest, so nothing needs fixing first.</p>` })}
     <p class="up-oneline">No Simulate here: a log cannot be replayed under different decisions. Every number above is measured in your file.</p>`;
 } };
-
-// ---- Proof: does it work on your file? ---------------------------------------------------------
 
 export const proof = { render(section) {
   const r = state.upload;

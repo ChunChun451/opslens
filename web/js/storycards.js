@@ -1,21 +1,3 @@
-// storycards.js — two animated, clickable stories on the Results screen, for people who do not
-// read percentages: "Out of 1,000 customers" and "Follow one ticket" (with a delivery rider).
-//
-// Why (24 Oct, the owner: "add information in animated format which people can interact with and
-// relate to"): "2.0% vs 5.5%" is abstract; 20 red dots out of 1,000 next to 55 is not. And one
-// real ticket walking through OpsLens ("mera paisa wapas karo please") explains the engine
-// better than a diagram. Every number comes from results.json and stays clickable to it; the
-// dot counts are the measured rate × 10, rounded. The "your floor" slider is plain arithmetic
-// on the measured rates (tickets per day × the gap), labelled as such; it is not a simulation.
-// The delivery scene (flat cartoon, after the owner's reference pictures: a rider in a red helmet
-// on a red scooter with a burger paper bag, a dashed route between two pins, a stopwatch, a big
-// phone with the live map) is decoration; the rider, the route and the map dot move with the
-// ticket's steps. No brand marks (CLAUDE.md 1.5).
-//
-// Example: click "First come, first served" → 131 of the 1,000 dots turn red; click "OpsLens" →
-// all but 20 ripple back to green; the slider at 50,000 tickets a day says "about 1,730 more
-// promises kept every day than the industry standard".
-
 import { state, policyKeys } from "./data.js";
 import { ev } from "./evidence.js";
 import { shortLabel } from "./ui.js";
@@ -23,9 +5,9 @@ import { escapeHtml, tidyDash } from "./format.js";
 
 const BREACH = "turnaround.breach_pct";
 const DOTS = 1000;
-const CYCLE_MS = 3200; // the dot wall shows each way of working in turn until someone clicks
-const STEP_MS = 2600; // one step of the ticket's journey
-const FLOORS = [1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000]; // the slider's stops
+const CYCLE_MS = 3200;
+const STEP_MS = 2600;
+const FLOORS = [1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000];
 const LANG = { hi: "Hindi", en: "English" };
 
 const pathOf = (k) => `sim.policies.${k}.kpis.${BREACH}.mean`;
@@ -33,11 +15,6 @@ const rateOf = (k) => state.results.sim.policies[k].kpis[BREACH].mean;
 const perThousand = (k) => Math.round(rateOf(k) * 10);
 const nice = (n) => Math.round(n).toLocaleString("en-IN");
 
-// ---------------------------------------------------------------------------------------------
-// Out of 1,000 customers
-// ---------------------------------------------------------------------------------------------
-
-// A fixed shuffle (same every load), so the same customers turn red as the count grows.
 function shuffledRanks() {
   const order = Array.from({ length: DOTS }, (_, i) => i);
   let seed = 7;
@@ -56,7 +33,6 @@ export function thousandHtml() {
   if (!r.sim || !r.sim.policies.opslens) return "";
   const keys = policyKeys();
   const ranks = shuffledRanks();
-  // The ripple: each dot's change waits a little by its distance from the top-left corner.
   const dots = ranks.map((rank, i) => `<i style="--r:${rank};--d:${(i % 40) + Math.floor(i / 40)}"></i>`).join("");
   const chips = keys.map((k) => `<button type="button" class="tw-chip${k === "opslens" ? " is-ours" : ""}" data-k="${k}">${escapeHtml(shortLabel(k))}</button>`).join("");
   const counts = keys.map((k) => `<div class="tw-count" data-k="${k}" hidden>
@@ -114,7 +90,6 @@ function initThousand(section) {
     box.querySelector("#tw-save").innerHTML = `≈ <b>${nice(saved)}</b> more promises kept every day than ${escapeHtml(shortLabel(versus))}`;
   };
 
-  // The dots: red when their rank is below the count (CSS reads --red and each dot's --r).
   box.querySelectorAll(".tw-chip").forEach((chip) => chip.addEventListener("click", () => {
     cycling = false;
     draw(chip.dataset.k);
@@ -129,10 +104,6 @@ function initThousand(section) {
   }, CYCLE_MS);
 }
 
-// ---------------------------------------------------------------------------------------------
-// Follow one ticket (with the rider)
-// ---------------------------------------------------------------------------------------------
-
 const STEPS = [
   { label: "A customer writes", icon: '<path d="M4 6h16v10H8l-4 4z"/>' },
   { label: "OpsLens reads it", icon: '<path d="M4 7h10l6 5-6 5H4z"/><circle cx="8" cy="12" r="1.5"/>' },
@@ -141,7 +112,6 @@ const STEPS = [
   { label: "The risk drops", icon: '<path d="M4 6l6 6 4-4 6 8"/><path d="M15 16h5v-5"/>' },
 ];
 
-// Tickets worth following: the riskiest ones where serving now really helps (from the model).
 function journeyTickets() {
   const list = (state.results.risk && state.results.risk.at_risk) || [];
   return list.map((t, i) => ({ t, i }))
@@ -153,8 +123,6 @@ function pretty(category) {
   return String(category || "").replace(/_/g, " ");
 }
 
-// The rider, flat cartoon style: red helmet and jacket, a red scooter, a burger paper bag on
-// the back carrier. Drawn on a 200×150 grid; wheels spin, the body bobs, exhaust puffs.
 function riderSvg() {
   const wheel = (x) => `<g class="wheel"><circle cx="${x}" cy="126" r="19" fill="#111827"/>
       <circle cx="${x}" cy="126" r="10.5" fill="#f8fafc"/><circle cx="${x}" cy="126" r="4" fill="#334155"/>
@@ -194,7 +162,6 @@ function riderSvg() {
     </svg>`;
 }
 
-// The big phone on the right: a yellow map with streets, the route, both pins and the rider's dot.
 function phoneHtml() {
   return `<div class="dl-phone" aria-hidden="true">
       <div class="dl-screen">
@@ -237,7 +204,6 @@ export function journeyHtml() {
     </section>`;
 }
 
-// The panel for one step of one ticket. Values are clickable to results.json.
 function stepPanel(n, t, i) {
   const at = `risk.at_risk[${i}]`;
   const meter = (value, extra = "") => `<div class="jr-meter ${extra}"><i style="width:${Math.round(value * 100)}%"></i></div>`;
@@ -301,7 +267,7 @@ function initJourney(section) {
     if (!document.body.contains(box)) { clearInterval(timer); return; }
     if (!playing || box.offsetParent === null) return;
     step = (step + 1) % STEPS.length;
-    if (step === 0) ticket = (ticket + 1) % picks.length; // the next ticket after each finish
+    if (step === 0) ticket = (ticket + 1) % picks.length;
     draw();
   }, STEP_MS);
 }

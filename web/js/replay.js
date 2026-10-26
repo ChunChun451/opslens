@@ -1,26 +1,17 @@
-// replay.js — one busy evening, played side by side for every policy.
-//
-// Why: a table of averages is easy to doubt; watching the same evening unfold is not. Every
-// policy gets the same tickets and the same luck, so the only difference is the decisions.
-// The replay steps through sim.replay (one point every step_min minutes): the "waiting now"
-// counters and queue bars move, the breach counters count up, and both charts grow.
-//
-// Example (fixture, 21:00): waiting 179 / 169 / 109; breaches so far 57 / 32 / 16.
-
 import { state, policyKeys } from "./data.js";
 import { ev, evText } from "./evidence.js";
 import { makeChart, policyStyle } from "./charts.js";
 import { policyName } from "./ui.js";
 import { hasFloor, floorHtml, floorLegend, drawFloor } from "./floormap.js";
 
-let index = 0; // the replay step on screen
-let timer = null; // setInterval handle while playing
-let charts = {}; // { waiting: Chart, breached: Chart }
-let keys = []; // policies that have a replay series
-let maxWaiting = 1; // for the queue bar widths
-let speed = 1; // 1×, 2× or 4×
+let index = 0;
+let timer = null;
+let charts = {};
+let keys = [];
+let maxWaiting = 1;
+let speed = 1;
 
-const STEP_MS = 700; // real milliseconds per replay step at 1× speed
+const STEP_MS = 700;
 
 export function replayHtml() {
   return `<section class="card" id="replay">
@@ -50,7 +41,6 @@ export function replayHtml() {
     </section>`;
 }
 
-// Call after replayHtml() is in the page.
 export function initReplay() {
   const replay = state.results.sim.replay;
   keys = policyKeys().filter((k) => replay.series[k]);
@@ -59,7 +49,7 @@ export function initReplay() {
   keys.forEach((k) => replay.series[k].waiting.forEach((w) => { maxWaiting = Math.max(maxWaiting, w); }));
 
   const lanes = document.getElementById("rp-lanes");
-  lanes.className = `grid cols-${Math.min(keys.length, 4)}`; // one lane per policy in the results
+  lanes.className = `grid cols-${Math.min(keys.length, 4)}`;
   lanes.innerHTML = keys.map((k) => `
       <div class="lane">
         ${policyName(k)}
@@ -76,7 +66,6 @@ export function initReplay() {
   scrub.max = String(replay.times.length - 1);
   scrub.addEventListener("input", () => showStep(Number(scrub.value)));
   document.getElementById("rp-play").addEventListener("click", () => (timer ? pauseReplay() : startReplay()));
-  // Speed buttons: press one, and restart the timer at the new speed if it is playing.
   document.querySelectorAll("#replay [data-speed]").forEach((button) => {
     button.addEventListener("click", () => {
       speed = Number(button.dataset.speed);
@@ -87,7 +76,6 @@ export function initReplay() {
       }
     });
   });
-  // Stop the animation when the user leaves this tab.
   document.addEventListener("tab-shown", (event) => {
     if (event.detail !== "compare") pauseReplay();
   });
@@ -97,7 +85,6 @@ export function initReplay() {
   showStep(0);
 }
 
-// A line chart with the full time axis; the lines are revealed step by step.
 function lineChart(canvasId, field, unit) {
   const replay = state.results.sim.replay;
   let top = 1;
@@ -124,7 +111,6 @@ function lineChart(canvasId, field, unit) {
         x: { ticks: { maxTicksLimit: 8, maxRotation: 0 }, grid: { display: false } },
         y: { beginAtZero: true, suggestedMax: top },
       },
-      // No legend: the three lanes above name the policies in the same colours.
       plugins: { legend: { display: false } },
     },
   }, (datasetIndex, i) => ({ path: `sim.replay.series.${keys[datasetIndex]}.${field}[${i}]`, unit }));
@@ -151,7 +137,7 @@ function showStep(i) {
 export function startReplay() {
   const last = state.results.sim.replay.times.length - 1;
   if (index >= last) {
-    showStep(0); // at the end: start again from the beginning
+    showStep(0);
   }
   pauseReplay();
   timer = setInterval(() => {

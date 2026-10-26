@@ -1,16 +1,3 @@
-"""M4: run the pattern finder on history (days 1-42), score it against the planted problems,
-check that unplanted findings replicate on held-out days, and measure live detection.
-
-Run:  .venv/Scripts/python.exe eval/run_patterns.py
-
-Outputs eval/parts/patterns.json. Numbers printed:
-- planted problems found / diagnosed (history problems; the test-period surge is scored by
-  the live detector),
-- findings that match no planted problem, and whether each REPLICATES on days 43-56
-  (a real problem shows up again in new data; noise does not),
-- live detection latency for the day-47 surge and false alerts per week on test days.
-"""
-
 from __future__ import annotations
 
 import json
@@ -24,16 +11,15 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from eval.recall import score  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.ingest import load_history  # noqa: E402
-from opslens.patterns import find_patterns, label_frame, live_alerts, team_rho  # noqa: E402
+from eval.recall import score
+from opslens.config import load_config
+from opslens.ingest import load_history
+from opslens.patterns import find_patterns, label_frame, live_alerts, team_rho
 
 PARTS = ROOT / "eval" / "parts"
 
 
 def replicates(card: dict, test: pd.DataFrame, agents: pd.DataFrame, team_skills: dict, first_weekday: int) -> tuple[bool, str]:
-    """Does the card's effect show up again on held-out days (weaker bar: 1.5x instead of 2x)?"""
     seg, df = card["segment"], test
     if card["cause_type"] == "volume_spike":
         return False, "one-off spike (not expected to repeat)"
@@ -56,7 +42,6 @@ def replicates(card: dict, test: pd.DataFrame, agents: pd.DataFrame, team_skills
         share = (df.loc[in_cluster, "category"] == cat).mean()
         rest = (df.loc[~in_cluster, "category"] == cat).mean()
         return share / rest >= 1.5, f"share {share / rest:.1f}x on test days"
-    # Mean-wait interaction: compare with both parents again.
     keys = [k for k in seg if k not in ("hour", "day")]
     worst_parent = 0.0
     for k in keys:
@@ -98,8 +83,6 @@ def main() -> int:
         unmatched.append({"id": card["id"], "title": card["title"], "replicated": ok, "why": why})
         print(f"  unplanted {card['id']}: {card['title']} -> {'REPLICATES' if ok else 'does not replicate'} ({why})")
 
-    # Live detection on test days, using what is known at arrival (the customer's menu choice;
-    # M3's classifier predictions are used instead when they exist).
     category_col = "selected_category"
     pred_path = ROOT / "data" / "generated" / "predictions.csv"
     if pred_path.exists():

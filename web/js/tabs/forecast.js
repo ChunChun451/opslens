@@ -1,12 +1,3 @@
-// tabs/forecast.js — the forecast horizon (48 h): demand with its 80% band vs capacity.
-//
-// Why: "predict bottlenecks" means showing WHEN a team will run out of capacity, with honest
-// uncertainty. The band is the split-conformal 80% interval. The engine's bottleneck windows
-// (Erlang C on the upper band) are shaded red and listed below.
-//
-// Example (real results, Team B, Sat 24 Oct 18:00-23:00): shaded "bottleneck", listed as
-// "Team B short by up to 5.2 agents", 19.9 agent-hours short in total.
-
 import { state, teamNames } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, shadeRanges, INK, POLICY_STYLE } from "../charts.js";
@@ -24,7 +15,6 @@ export function render(section) {
     return;
   }
   const teams = teamNames();
-  // Start on the team the engine flagged first, so the demo opens on the interesting chart.
   const flagged = f.bottlenecks.length ? f.bottlenecks[0].team : null;
   selectedTeam = teams.includes(flagged) ? flagged : teams[0];
 
@@ -61,7 +51,6 @@ export function render(section) {
   drawChart(section);
 }
 
-// The WAPE no forecast can beat (random arrivals), when the engine reports it.
 function noiseFloor() {
   const d = state.results.details;
   if (d && d.forecast && typeof d.forecast.wape_noise_floor === "number") {
@@ -70,7 +59,6 @@ function noiseFloor() {
   return "lower is better";
 }
 
-// "2026-10-26T19:00" -> "Mon 19:00" (the look only; the popover keeps the raw time)
 function hourLabel(iso) {
   const weekday = new Date(iso).toLocaleDateString("en-GB", { weekday: "short" });
   return weekday + " " + iso.slice(11, 16);
@@ -82,13 +70,10 @@ function drawChart(section) {
     button.setAttribute("aria-pressed", String(button.dataset.team === selectedTeam));
   });
 
-  // Keep each point's index in the full horizon list, so clicks map to the right JSON path.
   const points = [];
   f.horizon.forEach((p, i) => {
     if (p.team === selectedTeam) points.push({ p, i });
   });
-  // Only the engine's bottleneck windows are shaded: they use Erlang C (waiting time), which is
-  // stricter and more meaningful than "band above capacity" for a single hour.
   const ranges = bottleneckRanges(points);
 
   const datasets = [
@@ -98,7 +83,7 @@ function drawChart(section) {
       data: points.map(({ p }) => p.hi80),
       borderWidth: 0,
       backgroundColor: "rgba(42, 120, 214, 0.14)",
-      fill: "-1", // fill down to the lo80 line = the band
+      fill: "-1",
       pointRadius: 0,
     },
     {
@@ -116,7 +101,7 @@ function drawChart(section) {
       borderWidth: 1.5,
       borderDash: [6, 4],
       pointRadius: 0,
-      stepped: "middle", // capacity changes in whole hours: draw it as steps
+      stepped: "middle",
     },
   ];
   const fields = ["lo80", "hi80", "demand_hours", "capacity_hours"];
@@ -152,7 +137,6 @@ function drawChart(section) {
   }));
 }
 
-// [false, true, true, false] -> [{ from: 1, to: 2, label }]
 function runsOf(flags, label) {
   const ranges = [];
   let start = -1;
@@ -167,9 +151,6 @@ function runsOf(flags, label) {
   return ranges;
 }
 
-// A window that lies entirely in the night (00:00-07:00). Staffing plans day hours only: three
-// cross-trained night agents cover every team at night by design (opslens/staffing.py DAY_HOURS),
-// so a team-by-team night gap is not a real shortage. Shown folded, not deleted.
 function isNight(b) {
   const startHour = Number(b.start.slice(11, 13));
   const endHour = Number(b.end.slice(11, 13));
@@ -177,8 +158,6 @@ function isNight(b) {
   return sameDay && startHour < 7 && endHour <= 7;
 }
 
-// The engine's bottleneck windows for this team that fall inside the chart.
-// ISO strings of the same format compare correctly as text.
 function bottleneckRanges(points) {
   const ranges = [];
   state.results.forecast.bottlenecks.forEach((b) => {
@@ -191,14 +170,12 @@ function bottleneckRanges(points) {
   return ranges;
 }
 
-// Every bottleneck the engine flagged, biggest first, with the ones inside the chart marked.
 function bottleneckCard(f) {
   if (!f.bottlenecks.length) {
     return card({ title: "Bottlenecks", body: `<p class="muted">No bottleneck flagged in the forecast window.</p>` });
   }
   const first = f.horizon.length ? f.horizon[0].time : "";
   const last = f.horizon.length ? f.horizon[f.horizon.length - 1].time : "";
-  // Older results gave peak_rho; the real engine gives the agent gap instead. Show what exists.
   const hasGap = f.bottlenecks.some((b) => typeof b.peak_gap_agents === "number");
   const hasRho = f.bottlenecks.some((b) => typeof b.peak_rho === "number");
   const night = f.bottlenecks.filter(isNight).length;
@@ -227,7 +204,6 @@ function bottleneckCard(f) {
   });
 }
 
-// Did alerts like these come true? Scored on the test days, made 1-7 days ahead (Plan v4 W7).
 function alertHitRate() {
   const a = state.results.prediction_baselines && state.results.prediction_baselines.alerts;
   if (!a || !a.rules) return "";

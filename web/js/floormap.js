@@ -1,20 +1,8 @@
-// floormap.js — the support floor as a picture, inside each replay lane.
-//
-// Why: averages are easy to doubt and hard to remember; a floor you can watch is not. Each
-// lane shows the same four teams: one tile per agent on shift (blue = working on their own
-// skill, amber = a deliberate cross-skill rescue, red = opened a ticket from the wrong queue,
-// pale = free) and, next to it, the team's queue as dots (grey = can still make its SLA,
-// red = already late). Every frame comes from sim.replay.floor, recorded in the same seed-1
-// simulator runs as the counters above (eval/run_opslens.py::floor_frames), so picture and
-// numbers always agree.
-//
-// Example frame: Team B, OpsLens, 21:30 → 9 blue tiles, 1 amber, 2 pale; queue 6 grey, 1 red.
-
 import { state } from "./data.js";
 
 const TEAM_NAMES = { A: "Live orders", B: "Payments & refunds", C: "Order accuracy", D: "Account, app & partners" };
-const STATUS_CLASS = { b: "busy", x: "cross", w: "wrong", i: "idle" }; // "o" (off shift) is not drawn
-const MAX_DOTS = 36; // beyond this a queue shows "+N" so the lane keeps its height
+const STATUS_CLASS = { b: "busy", x: "cross", w: "wrong", i: "idle" };
+const MAX_DOTS = 36;
 
 export function hasFloor() {
   return Boolean(state.results.sim.replay && state.results.sim.replay.floor);
@@ -35,13 +23,10 @@ export function floorLegend() {
     </div>`;
 }
 
-// Draw every lane at replay time `time` ("21:30"). Floor frames are every 5 min, the replay
-// every 15 min, so we look the frame up by its clock time.
 export function drawFloor(keys, time) {
   keys.forEach((key) => drawFloorInto(document.getElementById("rp-f-" + key), key, time));
 }
 
-// Draw one policy's floor at clock time `time` into `box` (also used by the Overview hero).
 export function drawFloorInto(box, key, time) {
   const f = state.results.sim.replay.floor[key];
   if (!box || !f) return;
@@ -49,8 +34,6 @@ export function drawFloorInto(box, key, time) {
   box.innerHTML = Object.keys(TEAM_NAMES).map((team) => teamRow(team, f, frame)).join("");
 }
 
-// Draw one frame given directly (Live now, js/tabs/live.js): the same picture as the replay,
-// for a floor that is not in results.json. `status` has one letter per agent, in `agents` order.
 export function drawFrameInto(box, agents, status, queues) {
   if (!box) return;
   const f = { agents, status: [status], queues: [queues] };

@@ -1,33 +1,3 @@
-"""Discrete-event simulator of a support floor: the "digital twin" we test every policy in.
-
-What it does: given the tickets, the agents and one seed's luck draws (a `World`), it runs a
-policy (who works on which ticket) through time and records when each ticket was picked
-up, transferred, reopened and resolved.
-
-How it works:
-- Events sit in a heap ordered by time: FINISH (an agent ends a piece of work), REOPEN (a
-  customer comes back), ARRIVAL (a new ticket), DECIDE (every `decide_every_min` minutes the
-  policy assigns waiting tickets to free agents). The clock jumps from event to event.
-- At equal times FINISH comes first, then REOPEN, ARRIVAL, DECIDE, so an agent freed at
-  20:00 and a ticket created at 20:00 are both visible to the 20:00 decision.
-- Policies only see a `TicketView` (what a real helpdesk shows: created time, channel,
-  priority, language, the category the customer picked, ...). They never see the true
-  category or the handle-time draws, so they cannot cheat.
-- An agent who opens a ticket outside their skills, believing it was theirs, spends
-  `transfer_discovery_min` and sends it back to the queue (a transfer). A policy may instead
-  assign a ticket deliberately to an agent without the skill: then it is handled, 1.6x slower.
-
-Why common random numbers (CRN): all luck (handle-time draws, reopen draws, absences) is
-drawn once per seed into arrays indexed by ticket and attempt, before the run. Whatever a
-policy does, ticket 812's second attempt always uses the same draw. So two policies differ
-only because of their decisions, not because one got luckier.
-
-Example (tests/test_simulate.py, hand-computed):
-    2 agents, 3 tickets arriving at minute 0 with handle times 10, 10 and 5 minutes,
-    decisions every minute, FIFO. Agents take tickets 1 and 2 at 0; ticket 3 starts at 10
-    and is resolved at 15. Resolution times: 10, 10, 15.
-"""
-
 from __future__ import annotations
 
 import heapq
@@ -44,28 +14,21 @@ SNAPSHOT_EVERY_MIN = 15
 FLOOR_EVERY_MIN = 5
 
 
-# ---- Static inputs ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class Agent:
-    """One agent. `skills` = team skills + extra skills."""
-
     agent_id: str
     name: str
     team: str
     team_skills: frozenset[str]
     skills: frozenset[str]
     languages: frozenset[str]
-    shift_start_min: int  # minute of the day the shift starts (e.g. 22:00 → 1320)
+    shift_start_min: int
     shift_minutes: int
-    days_off: frozenset[int]  # 0 = Monday
+    days_off: frozenset[int]
     max_concurrent: int = 1
-    # Week-specific schedule changes from a staffing plan (budget-neutral):
-    # ((first_day, last_day, shift_start_min, days_off), ...) with days counted from 1.
     overrides: tuple = ()
 
     def schedule_on(self, day_index: int) -> tuple[int, frozenset[int]]:
-        """(shift start minute, days off) for calendar day `day_index` (0 = day 1)."""
         for first, last, start_min, off in self.overrides:
             if first - 1 <= day_index <= last - 1:
                 return start_min, off
@@ -74,13 +37,8 @@ class Agent:
 
 @dataclass
 class World:
-    """Everything fixed for one run: tickets, agents and this seed's luck draws.
-
-    Ticket arrays are indexed by ticket number 0..N-1, sorted by creation time.
-    """
-
     ticket_ids: list[str]
-    created_min: np.ndarray  # minutes since day 1, 00:00
+    created_min: np.ndarray
     true_category: list[str]
     selected_category: list[str]
     channel: list[str]
@@ -89,20 +47,17 @@ class World:
     tier: list[str]
     order_value: np.ndarray
     sla_min: np.ndarray
-    base_handle_min: np.ndarray  # shape (N, 3): minutes for attempt 1, 2, 3 (before mismatch factor)
-    reopen_u: np.ndarray  # uniform(0, 1) per ticket; reopen if below the reopen probability
+    base_handle_min: np.ndarray
+    reopen_u: np.ndarray
     reopen_delay_min: np.ndarray
     agents: list[Agent]
-    absent: np.ndarray  # shape (n_agents, n_days) of bools
-    first_weekday: int = 0  # weekday of day 1 (0 = Monday)
+    absent: np.ndarray
+    first_weekday: int = 0
     mismatch_factor: float = 1.6
     reopen_prob_matched: float = 0.04
     reopen_prob_mismatch: float = 0.15
     reopen_handle_factor: float = 0.6
     transfer_discovery_min: float = 4.0
-    # Agents with several chats open (max_concurrent > 1, Plan v4 W2): a piece of work started while
-    # the agent already has k − 1 others open takes ×(1 + concurrency_slowdown·(k − 1)). Fixed when
-    # the work starts (a stated simplification). With one chat per agent it never applies.
     concurrency_slowdown: float = 0.0
 
     @property
@@ -110,12 +65,8 @@ class World:
         return len(self.ticket_ids)
 
 
-# ---- What policies see -----------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class TicketView:
-    """The fields a real helpdesk would show for a waiting ticket. No hidden truth."""
-
     idx: int
     ticket_id: str
     created_min: float
@@ -126,7 +77,7 @@ class TicketView:
     tier: str
     order_value: float
     selected_category: str
-    known_category: str | None  # set after an agent has read the ticket (transfer or reopen)
+    known_category: str | None
     sla_deadline_min: float
     transfers: int
     reopens: int
@@ -146,12 +97,10 @@ class AgentView:
 
 @dataclass(frozen=True)
 class Assignment:
-    """A policy's decision: give ticket `ticket_idx` to agent `agent_id`."""
-
     ticket_idx: int
     agent_id: str
-    believed_category: str  # the category the policy thinks the ticket is
-    deliberate_cross_skill: bool = False  # True = "handle it even though it is not your skill"
+    believed_category: str
+    deliberate_cross_skill: bool = False
     reason: str = ""
 
 
@@ -161,22 +110,20 @@ class Policy(Protocol):
     def decide(self, state: "SimState", now: float) -> list[Assignment]: ...
 
 
-# ---- Mutable state during a run --------------------------------------------------------------
-
 @dataclass
 class TicketState:
-    status: str = "future"  # future | waiting | in_work | resolved
+    status: str = "future"
     queue_since_min: float = 0.0
     first_pickup_min: float = math.nan
     resolved_min: float = math.nan
-    attempts: int = 0  # pieces of real work started (transfers do not count)
+    attempts: int = 0
     transfers: int = 0
     reopens: int = 0
     known_category: str | None = None
     handled_min: float = 0.0
     mismatch_used: bool = False
     last_agent: str = ""
-    working_cross: bool = False  # the current piece of work is a deliberate cross-skill job
+    working_cross: bool = False
 
 
 @dataclass
@@ -188,25 +135,18 @@ class AgentState:
 
 @dataclass
 class SimState:
-    """Read-only window the policy gets each decision."""
-
     world: World
     tickets: list[TicketState]
     agent_states: dict[str, AgentState]
-    # Waiting tickets and their view. The view is built once when the ticket (re)enters the
-    # queue — building it at every decision was 70% of the run time.
     waiting: dict[int, TicketView] = field(default_factory=dict)
-    # Per agent: (valid_until, shift_end or None). Shift status only changes at shift
-    # boundaries, so we remember it until the next boundary. (Simulation time never goes back.)
     _shift_cache: dict[int, tuple[float, float | None]] = field(default_factory=dict)
-    in_work: set[int] = field(default_factory=set)  # tickets an agent is working on right now
-    agent_index: dict[str, int] = field(default_factory=dict)  # agent_id -> position in world.agents
+    in_work: set[int] = field(default_factory=set)
+    agent_index: dict[str, int] = field(default_factory=dict)
 
     def add_waiting(self, i: int) -> None:
         self.waiting[i] = self._view(i)
 
     def waiting_tickets(self) -> list[TicketView]:
-        """Waiting tickets, oldest first."""
         return sorted(self.waiting.values(), key=lambda v: v.created_min)
 
     def _view(self, i: int) -> TicketView:
@@ -229,7 +169,6 @@ class SimState:
         )
 
     def shift_end(self, agent_idx: int, now: float) -> float | None:
-        """Cached version of `shift_end_if_on`."""
         cached = self._shift_cache.get(agent_idx)
         if cached is not None and now < cached[0]:
             return cached[1]
@@ -237,17 +176,15 @@ class SimState:
         if end is not None:
             valid_until = end
         else:
-            # Off now: nothing can change before the next possible shift start.
             agent = self.world.agents[agent_idx]
             today = int(now // MINUTES_PER_DAY)
             starts = [d * MINUTES_PER_DAY + agent.schedule_on(d)[0] for d in (today, today + 1)]
-            starts += [d * MINUTES_PER_DAY for d in (today + 1, today + 2)]  # midnight: a weekly override may begin
+            starts += [d * MINUTES_PER_DAY for d in (today + 1, today + 2)]
             valid_until = min(s for s in starts if s > now)
         self._shift_cache[agent_idx] = (float(valid_until), end)
         return end
 
     def any_free_agent(self, now: float) -> bool:
-        """Cheap check used by the simulator to skip pointless decisions."""
         for agent_idx, agent in enumerate(self.world.agents):
             if self.agent_states[agent.agent_id].busy < agent.max_concurrent:
                 if self.shift_end(agent_idx, now) is not None:
@@ -255,7 +192,6 @@ class SimState:
         return False
 
     def free_agents(self, now: float) -> list[AgentView]:
-        """Agents on shift, present today, with at least one free slot. Longest-idle first."""
         free: list[AgentView] = []
         for agent_idx, agent in enumerate(self.world.agents):
             shift_end = self.shift_end(agent_idx, now)
@@ -273,11 +209,6 @@ class SimState:
 
 
 def shift_end_if_on(world: World, agent_idx: int, now: float) -> float | None:
-    """If the agent is working at `now`, return when their current shift ends; else None.
-
-    A shift that starts at 22:00 on day d runs into day d+1, so we check the shift that
-    started today and the one that started yesterday.
-    """
     agent = world.agents[agent_idx]
     today = int(now // MINUTES_PER_DAY)
     for day in (today, today - 1):
@@ -296,21 +227,17 @@ def shift_end_if_on(world: World, agent_idx: int, now: float) -> float | None:
     return None
 
 
-# ---- Results ---------------------------------------------------------------------------------
-
 @dataclass
 class SimResult:
     policy: str
     seed_label: str
-    tickets: pd.DataFrame  # one row per ticket created inside the metric window
-    snapshots: pd.DataFrame  # queue length and breaches every 15 min
+    tickets: pd.DataFrame
+    snapshots: pd.DataFrame
     agent_busy_minutes: dict[str, float]
     agent_available_minutes: dict[str, float]
     decisions: int
-    floor: list[dict] = field(default_factory=list)  # floor-map frames (only if asked for)
+    floor: list[dict] = field(default_factory=list)
 
-
-# ---- The simulation loop ---------------------------------------------------------------------
 
 def simulate(
     world: World,
@@ -318,14 +245,11 @@ def simulate(
     start_min: float,
     end_min: float,
     metric_start_min: float | None = None,
-    decide_every_min: float = 2.0,  # periodic tick (shift starts); events trigger decisions at once
+    decide_every_min: float = 2.0,
     drain_min: float = 2 * MINUTES_PER_DAY,
     seed_label: str = "",
     floor_window: tuple[float, float] | None = None,
 ) -> SimResult:
-    """Run `policy` on tickets created in [start_min, end_min); report those created after
-    `metric_start_min` (earlier ones are warm-up). After `end_min` no new tickets arrive and
-    the floor keeps working for up to `drain_min` so late tickets can finish."""
     metric_start = start_min if metric_start_min is None else metric_start_min
     tickets = [TicketState() for _ in range(world.n_tickets)]
     agent_states = {a.agent_id: AgentState(idle_since_min=start_min) for a in world.agents}
@@ -339,9 +263,6 @@ def simulate(
     for i in in_window:
         heapq.heappush(heap, (float(world.created_min[i]), ARRIVAL, seq, (int(i),)))
         seq += 1
-    # Two kinds of DECIDE: "event" right after something changed (a ticket arrived, an agent
-    # finished, a customer reopened) — like a real floor where the next ticket is pulled at
-    # once — and a periodic "tick" that catches agents starting their shift.
     heapq.heappush(heap, (start_min, DECIDE, seq, ("tick",)))
     seq += 1
     decide_pending: set[float] = {start_min}
@@ -349,8 +270,6 @@ def simulate(
     snapshots: list[dict] = []
     next_snapshot = math.ceil(start_min / SNAPSHOT_EVERY_MIN) * SNAPSHOT_EVERY_MIN
     decisions = 0
-    # Floor map for the dashboard replay: every FLOOR_EVERY_MIN inside `floor_window`, what each
-    # agent is doing and each team's queue. Recording only, it never changes a decision.
     floor: list[dict] = []
     next_floor = floor_window[0] if floor_window else math.inf
 
@@ -372,7 +291,6 @@ def simulate(
                 for assignment in policy.decide(state, now):
                     seq = _start_work(world, tickets, state, agent_by_id, heap, seq, now, assignment)
             if payload[0] == "tick":
-                # Keep ticking while tickets can still arrive, wait, finish or reopen.
                 work_remains = now < end_min or bool(state.waiting) or bool(heap)
                 if work_remains and now + decide_every_min <= stop_min:
                     heapq.heappush(heap, (now + decide_every_min, DECIDE, seq, ("tick",)))
@@ -393,8 +311,6 @@ def simulate(
             t.status, t.queue_since_min, t.reopens = "waiting", now, t.reopens + 1
             t.resolved_min = math.nan
             state.add_waiting(i)
-        # Something changed: decide at this same minute, after all other events at `now`
-        # (DECIDE sorts last among equal times). One DECIDE per timestamp is enough.
         if now not in decide_pending:
             heapq.heappush(heap, (now, DECIDE, seq, ("event",)))
             seq += 1
@@ -407,7 +323,6 @@ def simulate(
 
 
 def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignment) -> int:
-    """Begin one piece of work. Checks the assignment is legal (a policy bug raises)."""
     i, agent = a.ticket_idx, agent_by_id[a.agent_id]
     t, ast = tickets[i], state.agent_states[a.agent_id]
     if i not in state.waiting:
@@ -430,10 +345,6 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
 
     true_cat = world.true_category[i]
     if true_cat in agent.skills or a.deliberate_cross_skill:
-        # Common random numbers: the k-th piece of real WORK on a ticket always uses draw k, so
-        # a transfer (wrong queue) does not move the ticket to another draw. The same ticket then
-        # costs the same work under every policy, and no policy can re-roll a long job by
-        # misrouting it on purpose. (Until 18 Oct transfers also used up a draw.)
         attempt = min(t.attempts, world.base_handle_min.shape[1] - 1)
         t.attempts += 1
         base = float(world.base_handle_min[i, attempt])
@@ -442,9 +353,8 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
         mismatch = true_cat not in agent.skills
         duration, outcome = (base * world.mismatch_factor if mismatch else base), "resolve"
     else:
-        # The agent believed it was theirs; reading it shows it belongs elsewhere.
         duration, outcome, mismatch = world.transfer_discovery_min, "transfer", False
-    if ast.busy > 1:  # only when the agent already had other chats open: one-chat runs are untouched
+    if ast.busy > 1:
         duration *= 1.0 + world.concurrency_slowdown * (ast.busy - 1)
 
     ast.busy_minutes += duration
@@ -459,7 +369,7 @@ def _finish(world, tickets, state, agent_by_id, heap, seq, now, payload) -> int:
     state.in_work.discard(i)
     if ast.busy == 0:
         ast.idle_since_min = now
-    t.known_category = world.true_category[i]  # whoever opened it now knows what it is
+    t.known_category = world.true_category[i]
 
     if outcome == "transfer":
         t.status, t.queue_since_min, t.transfers = "waiting", now, t.transfers + 1
@@ -477,7 +387,6 @@ def _finish(world, tickets, state, agent_by_id, heap, seq, now, payload) -> int:
 
 
 def _snapshot(world: World, tickets: list[TicketState], waiting: dict[int, TicketView], at: float) -> dict:
-    """Queue length and breached-so-far, for the replay animation and max-backlog KPI."""
     breached_open = sum(
         1 for i in waiting if at > world.created_min[i] + world.sla_min[i]
     )
@@ -485,14 +394,6 @@ def _snapshot(world: World, tickets: list[TicketState], waiting: dict[int, Ticke
 
 
 def floor_snapshot(state: SimState, at: float) -> dict:
-    """One floor-map frame: each agent's status and each team's queue at minute `at`.
-
-    Agent status: "off" (not on shift or absent), "idle", "busy" (own skill), "cross"
-    (a deliberate cross-skill job) or "wrong" (opened a misrouted ticket, about to transfer).
-    Queues are counted by the team that owns the ticket's TRUE category, split into tickets that
-    can still make their SLA and tickets already past it.
-    Example: {"minute": 47220, "agents": {"B03": "busy", ...}, "queues": {"B": [12, 3], ...}}
-    """
     world, tickets = state.world, state.tickets
     status = {}
     for k, agent in enumerate(world.agents):
@@ -557,7 +458,6 @@ def _collect(world, tickets, agent_states, snapshots, policy_name, seed_label,
 
 
 def available_minutes(world: World, agent_idx: int, start: float, end: float) -> float:
-    """Minutes the agent is on shift (and present) between start and end."""
     agent = world.agents[agent_idx]
     total = 0.0
     first_day = int(start // MINUTES_PER_DAY) - 1

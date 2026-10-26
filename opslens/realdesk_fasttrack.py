@@ -1,40 +1,3 @@
-"""Fast-track benchmark on the real service desk: whose pick saves more missed deadlines?
-
-What it does: a real log cannot be replayed, so we ask one fair, stated question. If the desk can
-fast-track 10%, 20% or 30% of each day's new incidents at their 1-hour mark, which way of picking
-them saves the most missed deadlines? Fast-track = the incident's wait to be picked up after the
-1-hour mark becomes zero; everything else happens as it really did (an ASSUMPTION, shown on screen).
-Five pickers, all scored with what the desk knows 1 hour after opening (risk_features):
-the desk's priority field; "still unassigned at 1 hour"; oldest first; logistic regression on the
-same features as OpsLens; OpsLens (the LightGBM early warning). Plus the ceiling: every incident
-picked up the moment its first hour ends.
-
-How it works:
-1. Deadline rule. The log has the company's own SLA flag but not its clock, so we learn, per
-   priority, the resolution-time limit (whole hours) that best matches the flag on the learning
-   part (first 80% of the learning period). Two candidate clocks: plain resolution time, or with
-   waits on others (user, vendor, another fix) paused; the check part (last 20%) picks one.
-   Critical and High are flagged missed ~98% whatever their time: no rule can score them, so they
-   are left out of the benchmark (a desk fast-tracks them anyway) and reported separately.
-2. Pickup wait after 1 h, from the event log: the first event in a state other than New is the
-   pickup. When an incident goes from New straight to Resolved, no pickup was recorded and its New
-   time includes the fix itself, so we count NO wait for it (conservative: understates savings).
-3. Each day, a picker fast-tracks round(k × that day's incidents) of them, highest score first,
-   ties oldest first. Incidents that never got a resolution time use budget but save nothing.
-4. Saved = missed under the rule as it happened, met once its pickup wait after 1 h is removed.
-5. 95% CIs: whole test weeks resampled (2,000 times), totals scaled to the test size. Most test
-   incidents fall in 5 busy weeks (2 May - 5 Jun 2016), so we also show each busy week alone.
-
-Pre-registered rule (docs/PLAN_V4.md, W3): we say OpsLens's pick is better only if it saves more
-misses than the BEST other picker (best on the test months, the hardest comparison) at the 20%
-budget with a CI excluding 0. Every picker and budget is shown either way.
-
-Example (real, test months, results.realdesk.fasttrack.example): INC0024933, "3 - Moderate", opened
-Mon 2 May 2016 13:24, resolved after 96.9 h → missed the learned 91 h limit (the company's flag says
-missed too). It still waited 74.4 h for a pickup after its 14:24 mark; fast-tracked it resolves after
-22.5 h → saved. It is the first incident OpsLens's 20% pick saves.
-"""
-
 from __future__ import annotations
 
 import lightgbm as lgb
@@ -47,8 +10,8 @@ from opslens import risk
 
 SCORED_PRIORITIES = ["3 - Moderate", "4 - Low"]
 LEFT_OUT_PRIORITIES = ["1 - Critical", "2 - High"]
-LIMIT_GRID_H = np.arange(1.0, 2001.0)      # candidate limits: 1 h .. 2,000 h in whole hours
-BUDGETS = [10, 20, 30]                      # % of each day's new incidents
+LIMIT_GRID_H = np.arange(1.0, 2001.0)
+BUDGETS = [10, 20, 30]
 RULE_BUDGET = 20
 PICKERS = ["priority", "unassigned", "oldest", "logistic", "opslens"]
 PICKER_LABELS = {
@@ -64,12 +27,7 @@ ASSUMPTION = ("A log cannot be replayed. We assume a fast-tracked incident is pi
               "first hour ends and that everything after the pickup happens exactly as it really did.")
 
 
-# ---- 1. The deadline rule ---------------------------------------------------------------------
-
 def learn_limits(hours: np.ndarray, priority: np.ndarray, missed_flag: np.ndarray, mask: np.ndarray) -> dict[str, float]:
-    """Per priority, the limit L (whole hours) for which "took longer than L" best matches the flag.
-    Example: 3 Moderate incidents of 10 h, 50 h, 120 h flagged made, made, missed → any L in
-    50..119 matches all three; the smallest, 50, is kept."""
     limits = {}
     for prio in SCORED_PRIORITIES:
         m = mask & (priority == prio) & ~np.isnan(hours)
@@ -80,24 +38,17 @@ def learn_limits(hours: np.ndarray, priority: np.ndarray, missed_flag: np.ndarra
 
 
 def missed_by_rule(hours: np.ndarray, priority: np.ndarray, limits: dict[str, float]) -> np.ndarray:
-    """True where the incident took longer than its priority's limit (NaN hours → False)."""
     limit = np.array([limits.get(p, np.nan) for p in priority])
     with np.errstate(invalid="ignore"):
         return hours > limit
 
 
 def rule_match_pct(hours, priority, missed_flag, mask, limits) -> float:
-    """% of scored incidents in `mask` where the rule agrees with the company's flag."""
     m = mask & np.isin(priority, SCORED_PRIORITIES) & ~np.isnan(hours)
     return float(np.mean(missed_by_rule(hours[m], priority[m], limits) == missed_flag[m]) * 100)
 
 
-# ---- 2. Pickup wait after the 1-hour mark -----------------------------------------------------
-
 def pickup_wait_after(incidents: pd.DataFrame, events: pd.DataFrame, hours: float = 1.0) -> np.ndarray:
-    """Hours each incident still waited to be picked up after its `hours` mark (order of incidents).
-    Example: opened 08:00, New until 21:00, then Active → 12 h after the 09:00 mark. Opened 08:00,
-    New until 15:00, then Resolved → 0 (no pickup recorded; the New time includes the fix)."""
     later = events[events["incident_state"] != "New"].groupby("number").head(1).set_index("number")
     pickup_at = later["sys_updated_at"].reindex(incidents["ticket_id"]).to_numpy()
     state = later["incident_state"].reindex(incidents["ticket_id"]).to_numpy()
@@ -108,11 +59,7 @@ def pickup_wait_after(incidents: pd.DataFrame, events: pd.DataFrame, hours: floa
     return wait.astype(float)
 
 
-# ---- 3. Pickers and the daily budget ----------------------------------------------------------
-
 def logistic_scores(feats: pd.DataFrame, cats: list[str], nums: list[str], learn, check, test) -> tuple[np.ndarray, float, float]:
-    """Logistic regression on the same as-of features; C chosen by AUC on the check part.
-    Returns test probabilities, the chosen C and its check AUC."""
     X = design_matrix(feats, cats, nums, learn)
     y = feats["breached"].to_numpy()
     best = None
@@ -125,8 +72,6 @@ def logistic_scores(feats: pd.DataFrame, cats: list[str], nums: list[str], learn
 
 
 def design_matrix(feats: pd.DataFrame, cats: list[str], nums: list[str], learn: np.ndarray) -> np.ndarray:
-    """One-hot categories (values seen ≥ 20 times while learning, else "other"; missing → "missing")
-    and standardised numbers (missing → the learning median). Only the learning part sets them."""
     parts = []
     for c in cats:
         col = feats[c].astype("object").where(feats[c].notna(), "missing").astype(str)
@@ -143,41 +88,31 @@ def design_matrix(feats: pd.DataFrame, cats: list[str], nums: list[str], learn: 
 
 
 def picker_scores(feats_test: pd.DataFrame, p_logistic: np.ndarray, p_opslens: np.ndarray) -> dict[str, np.ndarray]:
-    """Higher score = fast-track first. Ties are broken oldest first by pick_daily."""
-    level = feats_test["priority_raw"].str[0].astype(float).to_numpy()   # "3 - Moderate" → 3
+    level = feats_test["priority_raw"].str[0].astype(float).to_numpy()
     state = feats_test["state_now"]
-    unassigned = (state.isna() | (state == "New")).to_numpy().astype(float)  # no event yet = nobody on it
+    unassigned = (state.isna() | (state == "New")).to_numpy().astype(float)
     return {"priority": -level, "unassigned": unassigned, "oldest": np.zeros(len(feats_test)),
             "logistic": np.asarray(p_logistic, dtype=float), "opslens": np.asarray(p_opslens, dtype=float)}
 
 
 def pick_daily(day: np.ndarray, created: np.ndarray, score: np.ndarray, share_pct: float) -> np.ndarray:
-    """Each day, pick round(share × that day's count) incidents: highest score first, ties oldest first.
-    Example: a day with 7 incidents, share 30% → 2.1 → 2 picked; a day with 5 → 1.5 → 2."""
-    order = np.lexsort((created, -score, day))           # last key is the main one: day, then score, then age
+    order = np.lexsort((created, -score, day))
     day_sorted = day[order]
     starts = np.r_[0, np.flatnonzero(day_sorted[1:] != day_sorted[:-1]) + 1]
     sizes = np.diff(np.r_[starts, len(day_sorted)])
     rank = np.arange(len(day_sorted)) - np.repeat(starts, sizes)
-    budget = np.floor(share_pct / 100.0 * sizes + 0.5).astype(int)   # rounded half up
+    budget = np.floor(share_pct / 100.0 * sizes + 0.5).astype(int)
     picked = np.zeros(len(day), dtype=bool)
     picked[order] = rank < np.repeat(budget, sizes)
     return picked
 
 
-# ---- 5. Bootstrap over weeks -----------------------------------------------------------------
-
 def week_totals(weeks: np.ndarray, columns: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
-    """Sum of each column per week (weeks in order of first appearance)."""
     codes, uniques = pd.factorize(weeks)
     return {name: np.bincount(codes, weights=np.asarray(v, dtype=float), minlength=len(uniques)) for name, v in columns.items()}
 
 
 def bootstrap_ci(totals: dict[str, np.ndarray], plus: str, minus: str | None, scale: float, seed: int = 0) -> tuple[float, float]:
-    """95% percentile interval of scale × (Σ plus − Σ minus) ÷ Σ n when whole weeks are resampled
-    with replacement. The same seed draws the same weeks for every picker, so differences are paired.
-    Example: 2 weeks with n = 100, 300 and saved = 10, 20: one draw (week 2, week 2) gives
-    scale × 40 ÷ 600; with scale = 400 incidents that is 26.7 saved."""
     n_weeks = len(totals["n"])
     draws = np.random.default_rng(seed).integers(0, n_weeks, size=(N_BOOT, n_weeks))
     top = totals[plus][draws].sum(axis=1)
@@ -187,10 +122,7 @@ def bootstrap_ci(totals: dict[str, np.ndarray], plus: str, minus: str | None, sc
     return float(np.percentile(values, 2.5)), float(np.percentile(values, 97.5))
 
 
-# ---- The benchmark ----------------------------------------------------------------------------
-
 def deadline_rule(incidents: pd.DataFrame, states: pd.DataFrame, learn, check, test) -> dict:
-    """Learn both candidate clocks on `learn`, pick one on `check`, report the match everywhere."""
     hours = incidents["resolution_min"].to_numpy() / 60.0
     st = states.reindex(incidents["ticket_id"]).fillna(0.0)
     waits = np.zeros(len(incidents))
@@ -217,13 +149,12 @@ def deadline_rule(incidents: pd.DataFrame, states: pd.DataFrame, learn, check, t
 
 def fasttrack_benchmark(incidents: pd.DataFrame, events: pd.DataFrame, states: pd.DataFrame, feats: pd.DataFrame,
                         p_opslens_test: np.ndarray, cats: list[str], nums: list[str], learn, check, test) -> dict:
-    """Every picker at every budget on the test months, the ceiling, CIs, and the pre-registered rule."""
     rule = deadline_rule(incidents, states, learn, check, test)
     hours, priority, flag, limits = rule["hours"], rule["priority"], rule["flag"], rule["limits_h"]
     wait = pickup_wait_after(incidents, events)
     p_log, c_chosen, c_auc = logistic_scores(feats, cats, nums, learn, check, test)
 
-    pool = np.isin(priority[test], SCORED_PRIORITIES)          # test incidents in the benchmark
+    pool = np.isin(priority[test], SCORED_PRIORITIES)
     inc_t = incidents[test].reset_index(drop=True)[pool].reset_index(drop=True)
     feats_t = feats[test].reset_index(drop=True)[pool].reset_index(drop=True)
     h, pr, w = hours[test][pool], priority[test][pool], wait[test][pool]
@@ -274,7 +205,6 @@ def fasttrack_benchmark(incidents: pd.DataFrame, events: pd.DataFrame, states: p
         by_week.append({"week": wk, "incidents": int(in_week.sum()), "missed": int((base_miss & in_week).sum()),
                         "saved": {p: int((savable & picks[(RULE_BUDGET, p)] & in_week).sum()) for p in PICKERS}})
     wins = sum(1 for row in by_week if row["saved"]["opslens"] > row["saved"][best_other])
-    # One worked example for the screen: the first incident (by opening time) that OpsLens's 20% pick saves.
     first = int(np.flatnonzero(savable & picks[(RULE_BUDGET, "opslens")])[0])
     example = {"ticket_id": str(inc_t.loc[first, "ticket_id"]), "opened": str(inc_t.loc[first, "created_at"]),
                "priority": str(pr[first]), "limit_h": limits[str(pr[first])], "resolution_h": round(float(h[first]), 1),
@@ -315,7 +245,6 @@ def fasttrack_benchmark(incidents: pd.DataFrame, events: pd.DataFrame, states: p
 
 
 def new_to_resolved_pct(incidents: pd.DataFrame, events: pd.DataFrame, mask: np.ndarray) -> float:
-    """% of incidents in `mask` that went from New straight to Resolved/Closed (no pickup recorded)."""
     later = events[events["incident_state"] != "New"].groupby("number").head(1).set_index("number")["incident_state"]
     first = events.groupby("number").head(1).set_index("number")["incident_state"]
     ids = incidents.loc[mask, "ticket_id"]
@@ -324,8 +253,6 @@ def new_to_resolved_pct(incidents: pd.DataFrame, events: pd.DataFrame, mask: np.
 
 
 def whole_log_flags(incidents: pd.DataFrame) -> dict:
-    """Why the screen says 36.6% missed and the benchmark starts from another number: the summary
-    counts every incident; 1,556 never got a resolution time and are rarely flagged missed yet."""
     has = incidents["resolution_min"].notna().to_numpy()
     flag = incidents["breached"].to_numpy().astype(bool)
     return {"incidents": int(len(incidents)), "missed_pct": float(flag.mean() * 100),
@@ -334,7 +261,6 @@ def whole_log_flags(incidents: pd.DataFrame) -> dict:
 
 
 def impact(ft: dict) -> dict:
-    """The problem statement's three headings for the real desk, from the fast-track benchmark."""
     b = str(RULE_BUDGET)
     ops, desk = ft["results"][b]["opslens"], ft["results"][b]["priority"]
     pop = ft["population"]
@@ -357,12 +283,6 @@ def impact(ft: dict) -> dict:
     }
 
 
-# ---- Second look (pre-registered 23 Oct, after W3 missed its rule) ----------------------------
-# W3 showed that ranking by RISK ties the plain "still unassigned" rule: fast-track can only help
-# an incident that is still waiting, and risk does not know that. OpsLens's dispatcher in the food
-# world ranks by RESCUE (risk if it waits minus risk if served now). These candidates bring that
-# idea to the real desk. They are chosen on the CHECK part only and run once on the test months.
-# The test months were already used by W3, so this is labelled a second look and W3 stays "missed".
 SECOND_LOOK = ["unassigned_then_risk", "rescue_model", "unassigned_then_rescue"]
 SECOND_LOOK_LABELS = {
     "unassigned_then_risk": "Still unassigned first, then OpsLens risk",
@@ -372,15 +292,11 @@ SECOND_LOOK_LABELS = {
 
 
 def daily_saved(day: np.ndarray, created: np.ndarray, score: np.ndarray, savable: np.ndarray, share_pct: float) -> np.ndarray:
-    """Which incidents a picker fast-tracks AND saves (same daily budget as the benchmark)."""
     return savable & pick_daily(day, created, score, share_pct)
 
 
 def second_look(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limits: dict[str, float],
                 learn: np.ndarray, check: np.ndarray, test: np.ndarray) -> dict:
-    """Choose one rescue-style picker on the check part (most misses saved at the 20% budget), then
-    compare it once on the test months with "still unassigned at 1 hour" (W3's best picker).
-    Rule: better only if it saves more at 20% with a 95% CI (whole test weeks resampled) above 0."""
     hours = incidents["resolution_min"].to_numpy() / 60.0
     priority = incidents["priority_raw"].astype(str).to_numpy()
     wait = pickup_wait_after(incidents, events)
@@ -392,7 +308,6 @@ def second_look(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limi
                        valid_sets=[lgb.Dataset(X[check], savable[check].astype(int), categorical_feature=model["cats"])],
                        callbacks=[lgb.early_stopping(50, verbose=False)])
     p_rescue = rescue.predict(X)
-    # Unassigned is 0 or 1 and a probability is below 1, so "1 + p" ranks every unassigned incident first.
     scores = {"unassigned": unassigned, "opslens": p_risk, "unassigned_then_risk": unassigned + p_risk,
               "rescue_model": p_rescue, "unassigned_then_rescue": unassigned + p_rescue}
 
@@ -406,7 +321,7 @@ def second_look(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limi
     chk, tst = part(check), part(test)
     check_saved = {c: int(daily_saved(chk["day"], chk["created"], scores[c][chk["m"]], savable[chk["m"]], RULE_BUDGET).sum())
                    for c in ["unassigned", "opslens"] + SECOND_LOOK}
-    chosen = max(SECOND_LOOK, key=lambda c: check_saved[c])     # ties: the first in the list
+    chosen = max(SECOND_LOOK, key=lambda c: check_saved[c])
     n_pool = int(tst["m"].sum())
     results, vs_unassigned = {}, {}
     for b in BUDGETS:

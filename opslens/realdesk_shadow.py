@@ -1,27 +1,3 @@
-"""Shadow mode on a real day: what OpsLens would have said, hour by hour, next to what really happened.
-
-What it does: for real days of the UCI test months, every incident with what the desk knew at its
-1-hour mark (OpsLens risk and its top 3 reasons, the priority field, still unassigned?) and what
-happened later (pickup, resolution, the company's SLA flag, our deadline rule). Per day: how many
-misses each warning caught in time, how many of its flags were real, and how many misses each
-fast-track picker would have saved (the W3 assumption). This is how a company would try OpsLens
-in week 1: watching, not acting.
-
-Why this design: nothing is retrained. The models, the deadline rule and the pickers are the ones
-of the W3 benchmark (realdesk_fasttrack), so the day pages add up to the benchmark (a test checks
-the picks are the same). The UCI log has no free text (only codes such as "Category 26",
-"Group 70"), so nothing needs PII masking; if a text column is ever added, mask it with
-privacy.mask_pii before it is written here.
-
-Days: every test-month day with at least 50 new incidents. Showcase: the busiest test weekday (the
-day with the most new incidents: the floor at its hardest, and the day with the most to show). Four
-more: the busiest weekday of each other busy test week (weeks with at least 100 incidents), so a
-judge can see the result is not one lucky day.
-
-Example (results.realdesk.shadow, showcase Thu 5 May 2016): 403 new incidents, 111 missed; OpsLens's top 20%
-at the 1-hour mark caught 53 of the 102 benchmark misses (precision 67.1%), the priority field 16 (20.3%).
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -37,8 +13,6 @@ SHADOW_PICKERS = ["opslens", "priority", "unassigned"]
 
 
 def minute_of_day(times: pd.Series, day: pd.Timestamp) -> list[int | None]:
-    """Minutes since the day's midnight (more than 1440 for a later day); None when unknown.
-    Example: opened Mon 2 May 13:24, resolved Fri 6 May 14:18 → 804 and 6618."""
     out = []
     for t in times:
         out.append(None if pd.isna(t) else int((t - day).total_seconds() // 60))
@@ -46,7 +20,6 @@ def minute_of_day(times: pd.Series, day: pd.Timestamp) -> list[int | None]:
 
 
 def top_reasons(booster, X: pd.DataFrame, feats: pd.DataFrame) -> list[list[dict]]:
-    """The 3 features that push each incident's risk up most (TreeSHAP), worded as at_risk_examples."""
     contrib = booster.predict(X, pred_contrib=True)[:, :-1]
     names = list(X.columns)
     out = []
@@ -59,7 +32,6 @@ def top_reasons(booster, X: pd.DataFrame, feats: pd.DataFrame) -> list[list[dict
 
 
 def choose_days(daily: pd.DataFrame) -> list[pd.Timestamp]:
-    """Showcase first (busiest weekday), then the busiest weekday of every other busy week."""
     weekdays = daily[daily["weekday"] < 5]
     showcase = weekdays["opened"].idxmax()
     busy = daily.groupby("week")["opened"].sum()
@@ -74,7 +46,6 @@ def choose_days(daily: pd.DataFrame) -> list[pd.Timestamp]:
 
 
 def day_summary(rows: pd.DataFrame) -> dict:
-    """Misses caught in time and flag precision (company flag, benchmark incidents), fast-track saved."""
     pool = rows[rows["in_benchmark"]]
     missed = pool["missed_flag"].to_numpy()
     out = {"incidents": int(len(rows)), "benchmark_incidents": int(len(pool)),
@@ -90,7 +61,6 @@ def day_summary(rows: pd.DataFrame) -> dict:
 
 
 def shadow(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limits: dict[str, float], test: np.ndarray) -> dict:
-    """results.realdesk.shadow (shape: docs/explain/realdesk.md section 8)."""
     feats, X, booster = model["feats"], model["X"], model["booster"]
     hours = incidents["resolution_min"].to_numpy() / 60.0
     priority = incidents["priority_raw"].astype(str).to_numpy()
@@ -110,7 +80,6 @@ def shadow(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limits: d
     days = [{"date": str(d.date()), "weekday": d.strftime("%a"), "opened": int(r.opened), "missed_flag": int(r.missed)}
             for d, r in daily.iterrows()]
 
-    # The W3 benchmark's own picks over the whole test pool: every shown day must pick the same incidents.
     full = test & np.isin(priority, SCORED_PRIORITIES)
     full_rows = np.flatnonzero(full)
     full_scores = picker_scores(feats.iloc[full_rows].reset_index(drop=True), np.zeros(len(full_rows)), risk_all[full_rows])
@@ -132,7 +101,7 @@ def shadow(incidents: pd.DataFrame, events: pd.DataFrame, model: dict, limits: d
             chosen = np.zeros(len(idx), dtype=bool)
             chosen[pool] = pick_daily(day_code, created, scores[p][pool], RULE_BUDGET)
             picks[p] = chosen
-            assert all(chosen[i] == benchmark_pick[p][idx[i]] for i in np.flatnonzero(pool)), p   # same as W3
+            assert all(chosen[i] == benchmark_pick[p][idx[i]] for i in np.flatnonzero(pool)), p
         ids = d["ticket_id"]
         pickup_state = later["incident_state"].reindex(ids).to_numpy()
         recorded = pd.notna(pickup_state) & ~np.isin(pickup_state.astype(str), ["Resolved", "Closed"])

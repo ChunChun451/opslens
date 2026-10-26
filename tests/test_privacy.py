@@ -1,5 +1,3 @@
-"""PII masking must catch Indian-format personal data and leave normal ticket text alone."""
-
 import pytest
 
 from opslens.privacy import contains_pii, luhn_valid, mask_pii
@@ -35,14 +33,12 @@ def test_normal_ticket_text_is_unchanged() -> None:
 
 
 def test_order_id_is_not_mistaken_for_phone() -> None:
-    # A 10-digit order ID that starts with 9 looks like a phone number on its own.
     result = mask_pii("order no 9123456780 is wrong")
     assert result.text == "order no [ORDER_ID] is wrong"
     assert "[PHONE]" not in result.counts
 
 
 def test_long_non_luhn_number_is_not_a_card() -> None:
-    # 16 digits that fail Luhn are an ID, not a card — still masked, but as [NUMBER].
     assert not luhn_valid("1234567812345678")
     assert mask_pii("txn 1234567812345678").text == "txn [NUMBER]"
 

@@ -335,7 +335,7 @@ Main validation days, 20 fresh seeds: v6 - v5 -0.006 [-0.028, +0.017] points (ga
 ## Challenger arena (pre-registered: ship only if > 2% better AND within the latency budget)
 
 - Forecast: Chronos-2 (zero-shot) WAPE 0.304 vs LightGBM 0.305 (+0.4%), 80% coverage 76.2% vs 79.2%; one 48 h refresh 1.7 s → **keep LightGBM**.
-- Risk: TabPFN-3 not run yet (needs the owner's TabPFN licence key).
+- Risk: TabPFN-3 not run yet (needs a TabPFN licence key).
 
 ## Speed
 

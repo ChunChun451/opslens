@@ -1,19 +1,3 @@
-// story.js — the guided walkthrough for the demo (about seven minutes), on the real numbers.
-//
-// Why: in a short pitch the order matters. Story mode walks the judges through
-// today's floor live -> 1,000 customers in one picture -> one pattern with evidence -> one at-risk
-// ticket -> impact with CIs -> 30 worlds we did not build -> a real day at a real desk (Shadow
-// mode) -> the rules we wrote first, misses included -> their turn. (Issue #16: the Saturday
-// replay step went, the cold open already plays it.) Each step switches tab, outlines the element being discussed in red, and
-// explains it in two or three sentences. Every number in the story text is ev()/evText():
-// read from the results file and clickable. The pattern and the ticket are CHOSEN from the
-// data (rules below), so the story stays correct when the results change.
-// Next / Back (or the arrow keys) move; Esc closes.
-//
-// Example step 4 (real results): "T060582, a P2 refund ticket, has a 99.7% chance of
-// breaching ... If we assign now to a free agent who handles refund in Hindi, the risk falls
-// to 29%."
-
 import { state } from "./data.js";
 import { shortLabel } from "./ui.js";
 import { ev, evText } from "./evidence.js";
@@ -25,8 +9,6 @@ import { ledgerSummary } from "./tabs/ledger.js";
 
 const BREACH = "turnaround.breach_pct";
 
-// Each step: the tab to open, a function returning the id of the element to outline, a title,
-// a function writing the text, and optionally something to start (the replay).
 const STEPS = [
   { tab: "overview", view: "live", target: () => firstOf(".lv-hero"), title: "The problem, live", body: problemText },
   { tab: "overview", view: "overview", target: () => "ov-thousand", title: "1,000 customers, one picture", body: thousandText },
@@ -39,8 +21,6 @@ const STEPS = [
   { tab: "whatif", target: () => "whatif-form", title: "Your turn", body: yourTurnText },
 ];
 
-// The id of the first element matching a selector (giving it one if it has none), for targets
-// that are classes rather than ids.
 function firstOf(selector) {
   const el = document.querySelector(`.tab-panel:not([hidden]) .view:not([hidden]) ${selector}`) || document.querySelector(selector);
   if (!el) return "";
@@ -48,11 +28,10 @@ function firstOf(selector) {
   return el.id;
 }
 
-let step = -1; // -1 = story mode is off
+let step = -1;
 let highlighted = null;
 
 export function initStory() {
-  // The story is told on the food-delivery floor (its steps point at that world's screens).
   document.getElementById("story-button").addEventListener("click", () => { setWorld("food"); syncSwitch(); goTo(0); });
   document.getElementById("story-card").addEventListener("click", (event) => {
     if (event.target.closest("#story-next")) next();
@@ -61,7 +40,6 @@ export function initStory() {
   });
   document.addEventListener("keydown", (event) => {
     if (step < 0) return;
-    // Arrow keys on a slider or a dropdown belong to that control, not to the story.
     if (event.target.matches("input, select, textarea")) return;
     if (event.key === "Escape") stop();
     if (event.key === "ArrowRight") next();
@@ -86,16 +64,15 @@ function goTo(i) {
   pauseReplay();
   step = i;
   const s = STEPS[step];
-  const world = s.world || "food"; // one step visits the real desk; the rest are the food floor
-  if (world === "real" && state.realSource !== "uci") setSource("uci"); // the story's real step is the UCI desk, not an upload
+  const world = s.world || "food";
+  if (world === "real" && state.realSource !== "uci") setSource("uci");
   if (state.world !== world) { setWorld(world); syncSwitch(); }
   showTab(s.tab, s.view);
   const target = document.getElementById(s.target());
-  if (target && target.tagName === "DETAILS") target.open = true; // a folded panel opens for its step
+  if (target && target.tagName === "DETAILS") target.open = true;
   if (target) {
     target.classList.add("story-target");
     highlighted = target;
-    // Scroll it to the top of the screen: the story card sits at the bottom.
     target.scrollIntoView({ block: "start", behavior: "smooth" });
   }
   renderCard();
@@ -120,7 +97,6 @@ function clearHighlight() {
 function renderCard() {
   const s = STEPS[step];
   const card = document.getElementById("story-card");
-  // Progress dashes: one per step, the ones done so far filled in.
   const dots = STEPS.map((_, i) => `<span class="${i <= step ? "on" : ""}"></span>`).join("");
   card.innerHTML = `
     <div class="story-top">
@@ -138,13 +114,10 @@ function renderCard() {
   card.querySelector("#story-next").focus();
 }
 
-// ---- Step texts. Every number is ev() / evText(): read from the JSON, never typed in. -----
-
 function breachPath(policy) {
   return `sim.policies.${policy}.kpis.${BREACH}.mean`;
 }
 
-// The paired difference (OpsLens − baseline) for one KPI: "−4.6 pts (95% CI −5.8 to −3.4)".
 function diffText(baseline, kpi, unit) {
   const i = state.results.sim.comparisons.findIndex((c) => c.policy === "opslens" && c.baseline === baseline && c.kpi === kpi);
   if (i < 0) return "";
@@ -155,7 +128,6 @@ function diffText(baseline, kpi, unit) {
 
 function problemText() {
   if (!state.results.sim) return "The simulator results are not in the results file yet.";
-  // Lead with the strongest baseline: industry-standard skills routing if it was run.
   const best = state.results.sim.policies.baseline_d ? "baseline_d" : "baseline_b";
   return `Helpdesk tools tell you a ticket is already late. This is today's floor, simulated live on this
     laptop: the same customers and agents run two ways at once. On all held-out days the industry standard
@@ -193,8 +165,6 @@ function shadowText() {
     desk's own priority field, ${ev(s + ".priority.caught", "int")}.`;
 }
 
-// The pattern the story shows: the strongest skill-gap card (Hindi refunds wait for the few
-// agents who speak Hindi and know refunds), or simply the strongest card if there is none.
 function storyCard() {
   const cards = state.results.patterns.cards;
   let best = -1;
@@ -224,10 +194,6 @@ function patternText() {
     Cause: ${escapeHtml(CAUSE_LABELS[card.cause_type] || card.cause_type)}${why}.${action}`;
 }
 
-// The ticket the story shows: among tickets in the story pattern's language (if it has one),
-// the one where acting now helps most (biggest drop from probability to
-// probability_after_action); otherwise the same rule over all tickets.
-// A choice made by comparing JSON values; no new number is shown.
 function storyTicket() {
   const list = state.results.risk.at_risk;
   const p = state.results.patterns;
@@ -259,7 +225,6 @@ function ticketText() {
   const { ticket: t, index: top } = storyTicket();
   const base = `risk.at_risk[${top}]`;
   const reasons = t.reasons.slice(0, 2).map((_, j) => evText(`${base}.reasons[${j}].text`)).join("; ");
-  // Same honesty rule as the Risks screen: with nobody capable on shift, "assign now" is a what-if.
   const nobody = t.reasons.some((r) => r.feature === "capable_on_shift" && /^no agent/.test(r.text));
   const after = typeof t.probability_after_action === "number" ? ev(base + ".probability_after_action", "frac_pct") : "";
   const action = !t.action || !after ? ""

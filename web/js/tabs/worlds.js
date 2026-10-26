@@ -1,16 +1,3 @@
-// tabs/worlds.js — Proof → "Beyond our world": does OpsLens still win on floors we did not build?
-//
-// Why (Plan v4 W1 + W2, issue #16): every other proof runs on the one simulated floor we tuned
-// the generator for. Here are 30 random floors drawn from wide, fixed ranges (load, peaks, mix,
-// skills), and the same floor with agents holding 2 or 3 chats at once. The pre-registered rule
-// for the worlds MISSED (lowest in 19 of 30, the rule needed 27), so the screen says that first;
-// then what did hold (beats the industry standard in 29 of 30), where it loses (heavy load, to
-// "least slack first") and the analysis made after the result. Every number is a path in
-// results.worlds / results.concurrency; the chart is a picture of those numbers.
-//
-// Example: world 7001, load 1.22× today's: OpsLens 14.5% missed, least slack 11.1% → a loss of
-// +3.41 pts, while it still beats the industry standard by −9.34 pts.
-
 import { state, lookup, policyLabel } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, fold, onFirstOpen, factLine } from "../ui.js";
@@ -62,10 +49,9 @@ export function render(section) {
   drawChart(w);
 }
 
-// The analysis made after the result: who misses in the worlds OpsLens did not win.
 function diagnosisCard(w) {
   const d = "worlds.diagnosis.opslens_lower_than_least_slack";
-  const n = ev("worlds.breakdown.losses.worlds", "int"); // the loss worlds, as a clickable number
+  const n = ev("worlds.breakdown.losses.worlds", "int");
   return card({ title: "In the worlds it lost, who was let down?",
     sub: `<span class="pill">analysis after the result</span> ${evText("worlds.diagnosis.note")}`,
     body: `<div class="wd-diag">
@@ -78,7 +64,6 @@ function diagnosisCard(w) {
       customers its weights protect.${w.diagnosis.all_reproduced ? ` All ${n} loss worlds were rebuilt from their seeds and reproduced exactly.` : ""}</p>` });
 }
 
-// W2: agents holding 2 or 3 chats at once, at equal load (the pre-registered setting).
 function concurrencyCard() {
   const settings = lookup("concurrency.settings") || [];
   const rows = settings.map((s, i) => ({ s, i })).filter(({ s }) => s.load === "equal_load").map(({ s, i }) => {
@@ -117,7 +102,6 @@ function worldsTable(w) {
     <tbody>${rows}</tbody></table></div>`;
 }
 
-// The scatter: x = the world's load, y = OpsLens minus the best other policy. Pictures only.
 function drawChart(w) {
   const canvas = document.getElementById("wd-chart");
   if (!canvas || typeof Chart === "undefined") return;

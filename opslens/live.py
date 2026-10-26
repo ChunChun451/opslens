@@ -1,25 +1,3 @@
-"""Live now: today's support day, simulated on this laptop and shown at the real clock.
-
-What it does: when the server starts (or a viewer asks for new luck), it simulates one whole
-support day twice, with the industry standard and with OpsLens, on the same tickets and the same
-luck. While simulating it records, every 5 minutes, the floor (who is busy, how long each queue
-is), the tickets OpsLens sees in most danger with their reasons, and every OpsLens decision with
-its reason. The dashboard then asks for "the state at 21:14" every few seconds, using the
-viewer's real clock, so the day unfolds in real time.
-
-Why this design:
-- A real floor cannot be replayed; ours can. The tickets are the practice company's tickets for
-  the test day with the same weekday as today (a day OpsLens never studied), so nothing here was
-  tuned on them. Every number on the Live screen is computed by the engine on this laptop.
-- Simulating the whole day once (about 20-40 s) and revealing it minute by minute keeps the page
-  instant. A viewer can press "New luck" to simulate the day again with another seed.
-- The date shown is today's: the screen says plainly that the tickets are simulated.
-
-Example (Saturday, 21:14): industry standard 61 waiting and 23 promises missed so far; OpsLens
-24 waiting and 6 missed; in danger now: T060582 Hindi refund 99.7%, "no agent on shift can
-serve Hindi refund".
-"""
-
 from __future__ import annotations
 
 import math
@@ -36,15 +14,13 @@ from opslens.simulate import FLOOR_EVERY_MIN, MINUTES_PER_DAY, simulate
 from opslens.whatif import change_agents, change_volume, make_policy
 from opslens.world import build_world, day_bounds
 
-POLICIES = ("baseline_d", "opslens")  # the lead comparison, as on the Overview
-RISK_EVERY_MIN = 10  # how often the "in danger now" list is recorded
+POLICIES = ("baseline_d", "opslens")
+RISK_EVERY_MIN = 10
 RISK_SHOWN = 5
 STATUS_LETTER = {"off": "o", "idle": "i", "busy": "b", "cross": "x", "wrong": "w"}
 
 
 def matching_test_day(weekday: int, first_weekday: int, test_days: tuple[int, int]) -> int:
-    """The first test day that falls on `weekday` (0 = Monday). Day d's weekday is
-    (first_weekday + d - 1) % 7, with day 1 = the calendar's start date."""
     for day in range(test_days[0], test_days[1] + 1):
         if (first_weekday + day - 1) % 7 == weekday:
             return day
@@ -53,22 +29,17 @@ def matching_test_day(weekday: int, first_weekday: int, test_days: tuple[int, in
 
 @dataclass
 class LiveDay:
-    """One simulated day, ready to be read at any minute."""
     day: int
     seed: int
-    start: float  # simulator minute of 00:00 on that day
+    start: float
     agents: list[dict]
-    floors: dict[str, list[dict]] = field(default_factory=dict)  # policy -> frames
-    tickets: dict[str, pd.DataFrame] = field(default_factory=dict)  # policy -> per-ticket outcome
-    danger: list[dict] = field(default_factory=list)  # OpsLens: {minute, tickets: [...]}
-    decisions: list[dict] = field(default_factory=list)  # OpsLens: {minute, ticket_id, agent, reason}
+    floors: dict[str, list[dict]] = field(default_factory=dict)
+    tickets: dict[str, pd.DataFrame] = field(default_factory=dict)
+    danger: list[dict] = field(default_factory=list)
+    decisions: list[dict] = field(default_factory=list)
 
 
 class _CaptureFeatures:
-    """Wraps policies.features_for_snapshot so the live run can see the features OpsLens just
-    scored (to explain the riskiest tickets). It returns exactly what it is given, and keeps one
-    copy per thread: a What-if simulated by the server at the same moment cannot mix in."""
-
     def __init__(self, original) -> None:
         self.original = original
         self._mine = threading.local()
@@ -84,9 +55,6 @@ class _CaptureFeatures:
 
 def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[str, int] | None = None,
                       volume_factor: float = 1.0) -> LiveDay:
-    """Simulate `day` (with the day before as warm-up) for every policy and record the floor.
-    `agents_delta` ({"C": -2}) and `volume_factor` (1.3 = 30% more customers) change the day the
-    same way the What-if panel does (opslens/whatif.py), so a viewer can stress today live."""
     warm, _ = day_bounds(day - 1, day - 1)
     start, end = day_bounds(day, day)
     tickets, preds = inputs["tickets"], inputs["preds"]
@@ -105,7 +73,7 @@ def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[
         policy = make_policy(key, world, inputs["preds"], inputs["model"], inputs["weights"])
         capture = None
         if key == "opslens":
-            policy.log_window = (start, end)  # record every decision of the day with its reason
+            policy.log_window = (start, end)
             capture = _CaptureFeatures(policies.features_for_snapshot)
             policies.features_for_snapshot = capture
             _record_danger(policy, capture, live, inputs, tickets_info, start, end)
@@ -133,7 +101,6 @@ def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[
 
 def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dict,
                    tickets_info: pd.DataFrame, start: float, end: float) -> None:
-    """Every RISK_EVERY_MIN, keep OpsLens's riskiest waiting tickets with their top reasons."""
     original_refresh = policy.refresh
     next_at = [start]
 
@@ -150,7 +117,7 @@ def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dic
         order = np.argsort(-p)[:RISK_SHOWN]
         top = live_rows.iloc[order]
         reasons = top_reasons(inputs["model"], top)
-        served_now = risk_if_assigned_now(inputs["model"], top)  # the same what-if as the Risks screen
+        served_now = risk_if_assigned_now(inputs["model"], top)
         rows = []
         for (_, row), prob, now_p, why in zip(top.iterrows(), p[order], served_now, reasons):
             info = tickets_info.loc[row["ticket_id"]]
@@ -160,7 +127,7 @@ def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dic
                          "minutes_left": round(float(row["time_left_min"]), 1),
                          "priority": str(row["priority"]), "language": str(row["language"]),
                          "category": str(row["category_pred"]),
-                         "text": mask_pii(str(info["text"])).text[:140],  # never show a phone number
+                         "text": mask_pii(str(info["text"])).text[:140],
                          "reasons": [r["text"] for r in why]})
         live.danger.append({"minute": now, "tickets": rows})
 
@@ -168,7 +135,6 @@ def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dic
 
 
 def state_at(live: LiveDay, minute_of_day: float) -> dict:
-    """What the floor looks like at `minute_of_day` (0-1439) of the simulated day."""
     now = live.start + max(0.0, min(float(minute_of_day), MINUTES_PER_DAY - 1))
     out = {"day": live.day, "seed": live.seed, "minute_of_day": round(now - live.start, 1),
            "agents": live.agents, "policies": {}}
@@ -176,7 +142,7 @@ def state_at(live: LiveDay, minute_of_day: float) -> dict:
         k = min(len(frames) - 1, max(0, int((now - live.start) // FLOOR_EVERY_MIN)))
         t = live.tickets[key]
         arrived = t["created"] <= now
-        waiting = arrived & ~(t["pickup"] <= now)  # NaN pickup = never picked up: still waiting
+        waiting = arrived & ~(t["pickup"] <= now)
         due = t["deadline"] <= now
         missed = due & ~(t["resolved"] <= t["deadline"])
         out["policies"][key] = {
@@ -196,6 +162,5 @@ def state_at(live: LiveDay, minute_of_day: float) -> dict:
 
 
 def clock(minute_of_day: float) -> str:
-    """'21:14' for minute 1274."""
     m = int(math.floor(minute_of_day))
     return f"{m // 60:02d}:{m % 60:02d}"

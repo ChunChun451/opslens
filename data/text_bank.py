@@ -1,30 +1,3 @@
-"""Ticket text for the generator: Bitext requests + food-delivery templates (English + Hinglish).
-
-What it does: `TextBank.make_text(rng, category, language, ...)` returns one realistic
-customer message for a ticket.
-
-Why this design:
-- Bitext (data/SOURCES.md) gives varied, noisy, human-like requests for refunds, payments,
-  accounts and order tracking. It is written for generic e-commerce, so we swap words
-  ("shipment" → "order", "product" → "food").
-- Bitext has nothing for missing items, wrong items, restaurants or app bugs, so those come
-  from templates with slots (dish, restaurant, minutes, amount). Hindi-language customers
-  write Hinglish (Hindi in Latin letters), as most do in chat.
-- Hand-written templates alone are too easy to memorise, so half of the template-based
-  messages come from ~600 LLM-written patterns (data/llm_templates.json, made once by
-  data/make_llm_templates.py with Groq's Qwen — a different model from the classifier's Gemini).
-- ~12% of first messages are vague ("I have a problem with my order") — only the menu
-  choice can tell what they are about, as in real chats.
-- Realism on purpose: ~15% of tickets mention a second issue, ~20% get typos, and many
-  contain an order ID or phone number (which privacy.py must then mask).
-- The text is partly synthetic, and we say so (data/SOURCES.md).
-
-Example:
-    >>> bank = TextBank.from_bitext_csv(path)
-    >>> bank.make_text(rng, "missing_item", "hi", restaurant="Biryani Junction", order_id="4815162342")
-    'raita nahi aaya biryani ke saath, order id 4815162342. refund chahiye'
-"""
-
 from __future__ import annotations
 
 import csv
@@ -35,7 +8,6 @@ from pathlib import Path
 
 import numpy as np
 
-# ---- Bitext intents we use, mapped to OpsLens categories ------------------------------------
 
 BITEXT_INTENT_TO_CATEGORY: dict[str, str] = {
     "delivery_period": "late_delivery",
@@ -51,7 +23,6 @@ BITEXT_INTENT_TO_CATEGORY: dict[str, str] = {
     "registration_problems": "account",
 }
 
-# Share of a category's English tickets that come from Bitext (the rest from templates).
 BITEXT_SHARE: dict[str, float] = {
     "late_delivery": 0.3,
     "refund": 0.5,
@@ -59,7 +30,6 @@ BITEXT_SHARE: dict[str, float] = {
     "account": 0.6,
 }
 
-# Bitext is generic e-commerce; make it sound like food delivery.
 WORD_SWAPS: list[tuple[str, str]] = [
     (r"\bshipments?\b", "order"),
     (r"\bparcels?\b", "order"),
@@ -69,7 +39,6 @@ WORD_SWAPS: list[tuple[str, str]] = [
     (r"\bshipped\b", "delivered"),
 ]
 
-# ---- Slot values (all fictional) -------------------------------------------------------------
 
 DISHES = [
     "chicken biryani", "paneer butter masala", "veg thali", "masala dosa", "chole bhature",
@@ -83,7 +52,6 @@ RESTAURANTS = [
     "Chaat Bazaar", "Burger Hub", "Kerala Kitchen",
 ]
 
-# ---- English templates -----------------------------------------------------------------------
 
 TEMPLATES_EN: dict[str, list[str]] = {
     "late_delivery": [
@@ -180,7 +148,6 @@ TEMPLATES_EN: dict[str, list[str]] = {
     ],
 }
 
-# ---- Hinglish templates (Hindi in Latin letters) ---------------------------------------------
 
 TEMPLATES_HI: dict[str, list[str]] = {
     "late_delivery": [
@@ -238,8 +205,6 @@ TEMPLATES_HI: dict[str, list[str]] = {
     ],
 }
 
-# Vague first messages (~12% of tickets): no category words at all, as in real chats. Only the
-# menu choice (or a human) can tell what these are about.
 VAGUE_EN = [
     "I have a problem with my order",
     "please call me back urgently",
@@ -263,7 +228,6 @@ VAGUE_HI = [
     "hello koi hai? reply karo",
 ]
 
-# Short second-issue sentences for multi-issue tickets.
 SECOND_ISSUE_EN: dict[str, str] = {
     "late_delivery": "also it came very late",
     "missing_item": "and one item was missing too",
@@ -288,20 +252,17 @@ SECOND_ISSUE_HI: dict[str, str] = {
 
 @dataclass
 class TextBank:
-    """Holds the Bitext pools and produces one message per ticket."""
-
     bitext_pool: dict[str, list[str]] = field(default_factory=dict)
     vague_prob: float = 0.12
     multi_issue_prob: float = 0.15
-    second_issue_first_prob: float = 0.3  # "app not working and refund pending..." — main issue second
+    second_issue_first_prob: float = 0.3
     typo_prob: float = 0.20
     phone_prob: float = 0.05
     email_prob: float = 0.02
     order_ref_prob: float = 0.45
 
-    # LLM-written message patterns (data/llm_templates.json), {category: {language: [..]}}.
     llm_pool: dict[str, dict[str, list[str]]] = field(default_factory=dict)
-    llm_share: float = 0.5  # share of template-based messages taken from the LLM-written pool
+    llm_share: float = 0.5
 
     @classmethod
     def from_bitext_csv(cls, path: Path, llm_templates: Path | None = None) -> "TextBank":
@@ -318,7 +279,6 @@ class TextBank:
         return cls(bitext_pool=pool, llm_pool=llm_pool)
 
     def _template(self, rng: np.random.Generator, category: str, language: str) -> str:
-        """A hand-written template, or (half the time, if available) an LLM-written one."""
         lang = "hi" if language == "hi" else "en"
         llm_options = self.llm_pool.get(category, {}).get(lang, [])
         if llm_options and rng.random() < self.llm_share:
@@ -359,7 +319,6 @@ class TextBank:
         return self._finish(rng, text)
 
     def _finish(self, rng: np.random.Generator, text: str) -> str:
-        """Contact details and typos, added the same way to every kind of message."""
         if rng.random() < self.phone_prob:
             text += f". call me on {random_phone(rng)}"
         elif rng.random() < self.email_prob:
@@ -370,15 +329,12 @@ class TextBank:
 
 
 def food_flavour(text: str) -> str:
-    """Swap generic e-commerce words for food-delivery words (case-insensitive)."""
     for pattern, replacement in WORD_SWAPS:
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
     return text
 
 
 def fill_slots(rng: np.random.Generator, text: str, restaurant: str, order_id: str, order_ref_prob: float) -> str:
-    """Fill {slots} and Bitext {{placeholders}} with concrete values."""
-    # "order {order_ref}" would read "order my order"; the slot itself says "order".
     text = re.sub(r"(?:my )?order \{order_ref\}", "{order_ref}", text)
     if "{order_ref}" in text:
         order_ref = f"order id {order_id}" if rng.random() < order_ref_prob else "my order"
@@ -397,12 +353,10 @@ def fill_slots(rng: np.random.Generator, text: str, restaurant: str, order_id: s
     }
     for slot, value in values.items():
         text = text.replace(slot, value)
-    # Any Bitext placeholder we did not expect: drop it rather than leave {{...}} in the text.
     return re.sub(r"\{\{[^}]+\}\}", "", text).strip()
 
 
 def add_typos(rng: np.random.Generator, text: str, rate: float) -> str:
-    """Swap two neighbouring letters in about `rate` of the longer words."""
     words = text.split(" ")
     for i, word in enumerate(words):
         if len(word) > 3 and word.isalpha() and rng.random() < rate:

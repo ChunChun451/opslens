@@ -1,15 +1,3 @@
-"""W7: predictions against strong baselines. Design (pre-registered): docs/explain/w7_baselines.md.
-
-Run:  python eval/run_w7.py [--skip-dispatch]
-
-(a) Breach risk on the same test snapshots: the frozen LightGBM model vs a logistic regression on
-    the same features vs the time-left rule (all calibrated on days 36-42); cluster-bootstrap CIs
-    over tickets. Then OpsLens dispatch on test days with each risk model (and with none).
-(b) Bottleneck alerts made on days 42 and 49 for the next 7 days: OpsLens forecast vs naive,
-    scored against actual workload and against actual breaches.
-Writes eval/parts/w7.json.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -32,8 +20,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import risk  # noqa: E402
-from opslens.features import CATEGORICAL, FEATURES  # noqa: E402
+from opslens import risk
+from opslens.features import CATEGORICAL, FEATURES
 
 MODELS = ROOT / "data" / "generated" / "models"
 LOGREG_FILE = MODELS / "w7_logreg.pkl"
@@ -43,11 +31,7 @@ FIRST, LAST = 43, 56
 NUMERIC = [f for f in FEATURES if f not in CATEGORICAL]
 
 
-# ---- (a) The rival models ----------------------------------------------------------------------
-
 class LogRegRisk:
-    """Logistic regression with the RiskModel interface the OpsLens policy uses (.predict)."""
-
     def __init__(self, train_feats: pd.DataFrame, valid_feats: pd.DataFrame) -> None:
         prep = ColumnTransformer([
             ("num", Pipeline([("impute", SimpleImputer(strategy="median")), ("scale", StandardScaler())]), NUMERIC),
@@ -75,8 +59,6 @@ class LogRegRisk:
 
 
 class TimeLeftRule:
-    """Least time left = most at risk; isotonic on days 36-42 turns it into a probability."""
-
     def __init__(self, valid_feats: pd.DataFrame) -> None:
         self.calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0, increasing=False)
         self.calibrator.fit(valid_feats["time_left_min"].to_numpy(float), valid_feats["breached"].astype(int))
@@ -86,7 +68,6 @@ class TimeLeftRule:
 
 
 def metrics(y: np.ndarray, p: np.ndarray, rank: np.ndarray | None = None) -> dict:
-    """risk.evaluate, but AUC/PR-AUC/top-10% from `rank` when given (the raw rule keeps its ties)."""
     out = risk.evaluate(y, p)
     if rank is not None:
         order = np.argsort(-rank)
@@ -97,7 +78,6 @@ def metrics(y: np.ndarray, p: np.ndarray, rank: np.ndarray | None = None) -> dic
 
 
 def cluster_bootstrap(y: np.ndarray, scores: dict[str, np.ndarray], tickets: np.ndarray, rng) -> dict:
-    """95% CIs of AUC and Brier per model and of (LightGBM − rival), resampling whole tickets."""
     codes, uniq = pd.factorize(tickets)
     rows_of = pd.Series(np.arange(len(codes))).groupby(codes).apply(np.array).to_list()
     stats = {name: {"auc": [], "brier": []} for name in scores}
@@ -108,7 +88,7 @@ def cluster_bootstrap(y: np.ndarray, scores: dict[str, np.ndarray], tickets: np.
             stats[name]["auc"].append(roc_auc_score(y[idx], rank[idx]))
             stats[name]["brier"].append(brier_score_loss(y[idx], prob[idx]))
     out = {}
-    q = lambda a: [round(float(np.percentile(a, 2.5)), 4), round(float(np.percentile(a, 97.5)), 4)]  # noqa: E731
+    q = lambda a: [round(float(np.percentile(a, 2.5)), 4), round(float(np.percentile(a, 97.5)), 4)]
     for name in scores:
         out[name] = {"auc_ci95": q(stats[name]["auc"]), "brier_ci95": q(stats[name]["brier"])}
         if name != "lightgbm":
@@ -130,7 +110,7 @@ def offline_compare() -> tuple[dict, LogRegRisk]:
     first_weekday = pd.Timestamp(cal["start_date"]).weekday()
     agents = pd.read_csv(ROOT / "data" / "generated" / "agents.csv")
     h = history_with_predictions()
-    snaps = lambda a, b: snapshots_from_history(h, agents, TEAM_OF, a, b, first_weekday=first_weekday)  # noqa: E731
+    snaps = lambda a, b: snapshots_from_history(h, agents, TEAM_OF, a, b, first_weekday=first_weekday)
     train_f, valid_f = snaps(1, sp["train_last_day"]), snaps(sp["train_last_day"] + 1, sp["validation_last_day"])
     test_f = snaps(sp["validation_last_day"] + 1, sp["test_last_day"])
     print(f"snapshots: train {len(train_f):,}, validation {len(valid_f):,}, test {len(test_f):,}", flush=True)
@@ -141,7 +121,6 @@ def offline_compare() -> tuple[dict, LogRegRisk]:
     y = test_f["breached"].astype(int).to_numpy()
     probs = {"lightgbm": lgbm.predict(test_f), "logistic_regression": logreg.predict(test_f),
              "time_left_rule": rule.predict(test_f)}
-    # Ranks for AUC: LightGBM's and LR's raw scores (isotonic steps create ties), the rule's -time left.
     ranks = {"lightgbm": lgbm.raw(test_f), "logistic_regression": logreg.raw(test_f),
              "time_left_rule": -test_f["time_left_min"].to_numpy(float)}
     first = (~test_f.duplicated("ticket_id")).to_numpy()
@@ -160,19 +139,16 @@ def offline_compare() -> tuple[dict, LogRegRisk]:
     return out, logreg
 
 
-# ---- (a) In the dispatcher ---------------------------------------------------------------------
-
 def run_variant(job: dict) -> dict:
-    """Worker: one OpsLens simulation, with the logistic regression swapped in if asked."""
     import eval.run_opslens as R
     original = risk.load
     if job.get("risk_variant") == "logistic_regression":
         model = pickle.loads(LOGREG_FILE.read_bytes())
-        R.risk.load = lambda folder: model  # the policy calls risk.load(GENERATED / "models")
+        R.risk.load = lambda folder: model
     try:
         return R.run_one(job)
     finally:
-        R.risk.load = original  # a worker process runs several jobs: never leak the swap
+        R.risk.load = original
 
 
 def dispatch_compare() -> dict:
@@ -187,7 +163,7 @@ def dispatch_compare() -> dict:
     with ProcessPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(run_variant, jobs))
     by = {name: sorted([r for r in results if r["job"]["tag"] == name], key=lambda r: r["job"]["seed"]) for name in variants}
-    kpi = lambda rs, k: [r["kpis"][k] for r in rs]  # noqa: E731
+    kpi = lambda rs, k: [r["kpis"][k] for r in rs]
     base = kpi(by["lightgbm"], "turnaround.breach_pct")
     out = {"seeds": SEEDS, "days": [FIRST, LAST], "variants": {}}
     for name in variants:
@@ -202,8 +178,6 @@ def dispatch_compare() -> dict:
               f"{ci['ci_high']:+.3f}] vs LightGBM)", flush=True)
     return out
 
-
-# ---- (b) Bottleneck alerts ---------------------------------------------------------------------
 
 def alerts_compare() -> dict:
     from eval.run_forecast import TEAMS, event_uplift, predict_normal_day, team_workload
@@ -232,11 +206,10 @@ def alerts_compare() -> dict:
         "naive_last_week": lambda part: part["lag_168"].fillna(0).to_numpy(float),
     }
     q_team = {}
-    for name, fc in forecasters.items():  # each forecaster gets its own band, fitted on validation days
+    for name, fc in forecasters.items():
         wf, wy = team_workload(valid, fc(valid), aht), team_workload(valid, valid["count"].to_numpy(), aht)
         q_team[name] = F.conformal_q(wy["arrivals"].to_numpy(), wf["arrivals"].to_numpy(), 0.8)
 
-    # Truth 2: breach rate of tickets ARRIVING in each team-hour (recorded history, published roster).
     test_h = h[h["day"] > sp["validation_last_day"]].copy()
     test_h["team"] = test_h["final_category"].map(TEAM_OF)
     test_h["hour_index"] = (test_h["minute_of_run"] // 60).astype(int)
@@ -245,18 +218,14 @@ def alerts_compare() -> dict:
     outcome_true = {(t, hi) for (t, hi), r in by_hour.iterrows() if r["size"] >= 5 and r["mean"] >= 2 * team_rate[t]}
 
     shifts = S.shifts_from_agents(pd.read_csv(ROOT / "data" / "generated" / "agents.csv"))
-    # Two alert rules. "erlang_gap" is the pre-registered one (Erlang-C need >= scheduled + 1.5).
-    # "rho_085" was added after the first run, from Claude 1's brief (issue #8) and the dashboard's
-    # 48-hour view: P80 work (agent-hours) > scheduled agents x 0.85. Each rule is scored against
-    # the same rule applied to the ACTUAL arrivals, and both against the breach outcome.
     rules = ("erlang_gap", "rho_085")
-    alerts = {(rule, name): [] for rule in rules for name in forecasters}  # (team, hour, lead hours)
+    alerts = {(rule, name): [] for rule in rules for name in forecasters}
     workload_true = {rule: set() for rule in rules}
     for first_day in (sp["validation_last_day"] + 1, sp["validation_last_day"] + 8):
         part = rows[rows["day"].isin(range(first_day, first_day + 7))]
         cov = S.coverage(shifts, TEAMS, first_day, 7, first_weekday)
         offset = (first_day - 1) * 24
-        plan_hour = offset  # plan made at the end of the day before (00:00 of first_day)
+        plan_hour = offset
 
         def flags(arrivals_workload: pd.DataFrame, rule: str) -> pd.DataFrame:
             wl = arrivals_workload.copy()
@@ -281,7 +250,7 @@ def alerts_compare() -> dict:
         for name, fc in forecasters.items():
             wl = team_workload(part, fc(part), aht)
             wl["arrivals"] = F.interval(wl["arrivals"].to_numpy(), q_team[name])[1]
-            wl["agent_hours"] = wl["arrivals"] * wl["aht_min"] / 60.0  # work at the upper band
+            wl["agent_hours"] = wl["arrivals"] * wl["aht_min"] / 60.0
             for rule in rules:
                 add(flags(wl, rule), alerts[(rule, name)], True)
 
@@ -315,7 +284,6 @@ def alerts_compare() -> dict:
 
 
 def alert_blocks(hours: list[tuple[str, int]]) -> list[list[tuple[str, int]]]:
-    """Runs of ≥ 2 consecutive alert hours of one team within one day."""
     blocks, run = [], []
     for item in hours:
         if run and (item[0] != run[-1][0] or item[1] != run[-1][1] + 1 or item[1] % 24 == 0):
@@ -334,8 +302,6 @@ def main() -> int:
     parser.add_argument("--alerts-only", action="store_true", help="recompute (b) only; keep the rest of w7.json")
     args = parser.parse_args()
     started = time.perf_counter()
-    # Use the importable module (not __main__) so the pickled model and the worker function
-    # resolve by the same name inside the worker processes.
     import eval.run_w7 as me
     path = ROOT / "eval" / "parts" / "w7.json"
     if args.alerts_only:

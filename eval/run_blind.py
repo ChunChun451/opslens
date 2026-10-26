@@ -1,16 +1,3 @@
-"""Blind recall test: 20 fresh datasets, each with 3 problems of random type, place and size.
-
-Run:  .venv/Scripts/python.exe eval/run_blind.py [n_sets]
-
-For each set: clean floor + random plants (data/plant.py) → 42 days of tickets (new seed, no
-text) → Baseline A history → the SAME pattern finder as on the main data → scored with the
-SAME matcher (eval/recall.py). Also one CLEAN set with no plants: every card there is a false
-alarm (or a real roster gap). Writes eval/parts/blind.json.
-
-Why: 5/5 on problems we designed ourselves could be tuning. Problems drawn at random after
-the finder was frozen cannot be.
-"""
-
 from __future__ import annotations
 
 import json
@@ -24,22 +11,21 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from data.generate_ops import make_history, make_tickets  # noqa: E402
-from data.plant import apply_plants, clean_config, clean_roster, random_plant_set  # noqa: E402
-from eval.recall import score  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.ingest import add_calendar, add_timing, clean  # noqa: E402
-from opslens.patterns import find_patterns  # noqa: E402
-from opslens.policies import baseline_a  # noqa: E402
-from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
-from opslens.world import agents_table, build_world, load_agents  # noqa: E402
+from data.generate_ops import make_history, make_tickets
+from data.plant import apply_plants, clean_config, clean_roster, random_plant_set
+from eval.recall import score
+from opslens.config import load_config
+from opslens.ingest import add_calendar, add_timing, clean
+from opslens.patterns import find_patterns
+from opslens.policies import baseline_a
+from opslens.simulate import MINUTES_PER_DAY, simulate
+from opslens.world import agents_table, build_world, load_agents
 
 DAYS = 42
 SEED_BASE = 5000
 
 
 def run_set(cfg: dict, roster: dict, sla: dict, calendar: dict, seed: int, days: int = DAYS) -> list[dict]:
-    """Generate, simulate, ingest and run the pattern finder for one dataset. Returns cards."""
     cfg = {**cfg, "seed": seed, "days": days}
     tickets = make_tickets(cfg, bank=None)
     agents = load_agents(roster)

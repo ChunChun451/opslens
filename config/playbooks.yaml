@@ -1,26 +1,13 @@
-# Fix-at-source playbooks (opslens/playbooks.py, added 16 Oct — docs/PLAN.md section 9).
-# Every evidence card gets an upstream action, and eval/run_playbooks.py replays the test days
-# with that action in place. Values marked ASSUMPTION are business guesses, not measurements:
-# the dashboard labels them, and eval reports the result for the low and high value too.
+partner_fix_share: 1.0
 
-# Partner issue: the cluster's extra wrong-item tickets go away after a kitchen order-check.
-partner_fix_share: 1.0          # ASSUMPTION: share of the EXTRA tickets removed (sensitivity 0.5)
+cross_train_agents: 2
 
-# Process issue: the phone menu is rewritten. Its error rate falls to that of the other
-# channels, measured on the card itself (transfers per 100: other channels ÷ phone).
-# No assumption beyond "the new menu is as good as the chat/email menu".
+banner_hours: 4
+banner_deflect_share: 0.3
 
-# Skill gap: cross-train agents who ALREADY speak the language on the team's categories.
-cross_train_agents: 2           # chosen automatically: most shift-hours not yet covered
-
-# Volume spike: when OpsLens raises a live spike alert, show an in-app status banner.
-banner_hours: 4                 # how long the banner stays up after the alert
-banner_deflect_share: 0.3       # ASSUMPTION: customers who read it and do not open a ticket (sensitivity 0.15 / 0.5)
-
-# Capacity: self-serve instant refund in the overloaded window, for small orders only.
 self_serve_categories: [missing_item, refund]
-self_serve_max_order_inr: 300   # policy choice: about a third of orders are this small
-self_serve_uptake: 0.6          # ASSUMPTION: eligible customers who use it (sensitivity 0.3 / 0.8)
+self_serve_max_order_inr: 300
+self_serve_uptake: 0.6
 
 sensitivity:
   partner_fix_share: [0.5]

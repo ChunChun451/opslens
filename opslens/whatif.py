@@ -1,22 +1,3 @@
-"""What-if: re-run one day in the simulator with the judge's changes, in a few seconds.
-
-What it does: takes a test day, a policy, a volume factor and "agents added/removed per team",
-builds that world, simulates the day (with the previous day as warm-up), and returns the KPIs —
-for the chosen policy and, under the same changes, for the other two policies.
-
-How the changes are made (simple and reproducible):
-- Volume ×1.25: 25% of that day's tickets are copied as extra tickets 0-30 minutes later
-  (new ticket numbers, so they get their own luck). Volume ×0.8: 20% of the day's tickets
-  are removed. A fixed seed picks which ones, so the same request always gives the same answer.
-- Team C +2: two agents are added to Team C as copies of Team C's agents with the latest
-  shifts (evening cover is where most teams need help). Team D −2: the two Team D agents
-  with the latest shifts are removed. Copies keep their languages and skills.
-
-Example request: {"day": 48, "policy": "opslens", "volume_factor": 1.0, "agents_delta": {"C": 2}}
-→ the day's KPIs for all three policies with two extra Team C agents. The numbers are computed
-by the simulator at request time and are never stored or typed by hand.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace
@@ -37,7 +18,6 @@ MAX_VOLUME, MIN_VOLUME, MAX_DELTA = 2.0, 0.5, 5
 
 def change_volume(tickets: pd.DataFrame, preds: dict[str, str], day: int, factor: float,
                   seed: int = 11) -> tuple[pd.DataFrame, dict[str, str]]:
-    """Scale the day's ticket volume by `factor` (copies above 1, removals below 1)."""
     lo, hi = (day - 1) * MINUTES_PER_DAY, day * MINUTES_PER_DAY
     in_day = (tickets["created_min"] >= lo) & (tickets["created_min"] < hi)
     rng = np.random.default_rng(seed)
@@ -56,7 +36,6 @@ def change_volume(tickets: pd.DataFrame, preds: dict[str, str], day: int, factor
 
 
 def change_agents(agents: list[Agent], delta: dict[str, int]) -> list[Agent]:
-    """Add or remove agents per team (latest shifts first)."""
     out = list(agents)
     for team, k in delta.items():
         k = int(max(-MAX_DELTA, min(MAX_DELTA, k)))
@@ -72,24 +51,20 @@ def change_agents(agents: list[Agent], delta: dict[str, int]) -> list[Agent]:
 
 
 def check_day(day: int, test_days: tuple[int, int]) -> None:
-    """Live runs are allowed on held-out test days only."""
     if not test_days[0] <= day <= test_days[1]:
         raise ValueError(f"day must be a test day ({test_days[0]}-{test_days[1]})")
 
 
 def make_policy(key: str, world, preds: dict[str, str], risk_model, weights: dict):
-    """The policies the What-if panel can run, by key."""
     if key == "opslens":
         return OpsLensPolicy(world, preds, risk_model, weights, OpsLensSettings())
     if key == "baseline_d":
-        return baseline_d(world, preds)  # industry standard, with the same AI triage
+        return baseline_d(world, preds)
     return baseline_a() if key == "baseline_a" else baseline_b()
 
 
 def simulate_day(tickets: pd.DataFrame, agents: list[Agent], preds: dict[str, str], risk_model, weights: dict,
                  day: int, seed: int, policy_key: str = "opslens") -> dict[str, float]:
-    """KPIs of one policy on one day, with the day before as warm-up. Also used by "Your plan"
-    (opslens/plan.py), so the plan's live numbers come from the same runner as the What-if panel."""
     world = build_world(tickets, seed=seed, agents=agents)
     warm, _ = day_bounds(day - 1, day - 1)
     start, end = day_bounds(day, day)
@@ -99,7 +74,6 @@ def simulate_day(tickets: pd.DataFrame, agents: list[Agent], preds: dict[str, st
 
 def run_whatif(request: dict, tickets: pd.DataFrame, agents: list[Agent], preds: dict[str, str],
                risk_model, weights: dict, test_days: tuple[int, int], seed: int = 1) -> dict:
-    """Simulate the requested day for all three policies; return the chosen one's KPIs first."""
     day = int(request.get("day", test_days[0]))
     check_day(day, test_days)
     factor = float(min(MAX_VOLUME, max(MIN_VOLUME, request.get("volume_factor", 1.0))))

@@ -1,17 +1,3 @@
-"""Build a simulation `World` from a tickets table, the roster and a seed.
-
-Why this file exists: the generator (to make history), the evaluation (to compare policies)
-and the What-if panel all need the same thing — tickets + agents + one seed's luck draws.
-
-Common random numbers: every luck draw is looked up by the ticket's *number* (T000812 → 812),
-not by its row position. If a stress test adds extra tickets, the original tickets still
-get exactly the same handle times and reopen draws.
-
-Example: ticket T000812, refund via chat, seed 3. Its three handle-time draws are
-    12 min (median) × 1.0 (chat) × exp(0.5 × z) with z = the 812th row of seed 3's normals,
-so with z = 0.4 → 12 × e^0.2 ≈ 14.7 minutes for the first attempt — for every policy.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -28,12 +14,10 @@ ALL_CATEGORIES = [
     "payment_failure", "app_bug", "account", "restaurant_partner",
 ]
 
-# Separate random streams so adding one kind of draw never shifts another.
 STREAM_HANDLE, STREAM_REOPEN, STREAM_REOPEN_DELAY, STREAM_ABSENCE = 1, 2, 3, 4
 
 
 def load_agents(roster: dict[str, Any] | None = None) -> list[Agent]:
-    """Agents from config/roster.yaml (team skills + extra skills)."""
     roster = roster or load_config("roster")
     teams = roster["teams"]
     agents: list[Agent] = []
@@ -59,7 +43,6 @@ def load_agents(roster: dict[str, Any] | None = None) -> list[Agent]:
 
 
 def agents_table(agents: list[Agent]) -> pd.DataFrame:
-    """Agents as a table (for data/generated/agents.csv and the dashboard)."""
     return pd.DataFrame([
         {
             "agent_id": a.agent_id, "name": a.name, "team": a.team,
@@ -73,7 +56,6 @@ def agents_table(agents: list[Agent]) -> pd.DataFrame:
 
 
 def ticket_numbers(ticket_ids: pd.Series) -> np.ndarray:
-    """'T000812' → 812."""
     return ticket_ids.str.slice(1).astype(int).to_numpy()
 
 
@@ -85,8 +67,6 @@ def build_world(
     sla_cfg: dict[str, Any] | None = None,
     n_days: int | None = None,
 ) -> World:
-    """World for `tickets` (needs columns ticket_id, created_min, category, selected_category,
-    channel, priority, language, customer_tier, order_value_inr) and one seed's luck."""
     gen_cfg = gen_cfg or load_config("generator")
     calendar = load_config("calendar")
     sla_cfg = sla_cfg or load_config("sla")
@@ -94,9 +74,8 @@ def build_world(
     tickets = tickets.sort_values("created_min", kind="stable").reset_index(drop=True)
     nums = ticket_numbers(tickets["ticket_id"])
     max_num = int(nums.max()) + 1 if len(nums) else 1
-    n_days = n_days or int(calendar["days"]) + 7  # a week of slack for the drain period
+    n_days = n_days or int(calendar["days"]) + 7
 
-    # Luck draws, indexed by ticket number (common random numbers).
     z = np.random.default_rng([seed, STREAM_HANDLE]).standard_normal((max_num, 3))[nums]
     reopen_u = np.random.default_rng([seed, STREAM_REOPEN]).random(max_num)[nums]
     lo, hi = gen_cfg["reopen_delay_min"]
@@ -134,13 +113,11 @@ def build_world(
         reopen_prob_mismatch=float(gen_cfg["reopen_prob"]["mismatch"]),
         reopen_handle_factor=float(gen_cfg["reopen_handle_factor"]),
         transfer_discovery_min=float(gen_cfg["transfer_discovery_min"]),
-        # Several chats per agent (Plan v4 W1/W2); absent from today's config, so 0 = no change.
         concurrency_slowdown=float(gen_cfg.get("concurrency_slowdown", 0.0)),
     )
 
 
 def day_bounds(first_day: int, last_day: int) -> tuple[float, float]:
-    """Minutes [start, end) covering calendar days first_day..last_day (day 1 = minute 0)."""
     return (first_day - 1) * MINUTES_PER_DAY, last_day * MINUTES_PER_DAY
 
 
@@ -149,8 +126,6 @@ def load_world_tickets(path: Path) -> pd.DataFrame:
 
 
 def apply_staffing_plan(agents: list[Agent], plans: list[dict]) -> list[Agent]:
-    """Agents with week-specific shifts from data/generated/staffing_plan.json (same people,
-    same hours per week — only start times and days off move)."""
     from dataclasses import replace
 
     by_agent: dict[str, list] = {}

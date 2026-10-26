@@ -1,23 +1,3 @@
-"""The OpsLens web server: serves the dashboard and the results, and runs live simulations.
-
-Run:  mingw32-make serve     → http://localhost:8000/
-
-Why this design:
-- The dashboard (web/) only reads numbers from `GET /api/results`, which returns
-  eval/results.json — the one file every number comes from. If it does not exist yet, the
-  fixture file is returned instead, and the UI shows its red FIXTURE banner.
-- Everything runs locally: no network calls at serve time (LLM answers are already cached),
-  so the demo works with Wi-Fi off.
-- Live endpoints (What-if M10, Plant-a-problem M11, Upload M10) are added as their milestones land.
-- "Live now" (GET /api/live, 24 Oct): today's weekday simulated once on this laptop (both the industry
-  standard and OpsLens), then shown minute by minute at the viewer's real clock (opslens/live.py).
-- "Your plan" (POST /api/plan/impact, 19 Oct): the accepted recommendations are replayed on one
-  test day with and without them. Each run takes ~20 s, so the runs go to a few worker processes
-  in parallel and every finished run is kept in memory (the same run is never simulated twice).
-
-Example: curl http://localhost:8000/api/health  →  {"ok": true, "results": "eval/results.json", "fixture": false}
-"""
-
 from __future__ import annotations
 
 import json
@@ -43,9 +23,6 @@ def results_path() -> Path:
 
 @app.get("/")
 def home() -> RedirectResponse:
-    # /app/ serves the same files as /web/. It is the address people open now: a browser that
-    # cached /web/ files before the no-cache header existed kept running them (24 Oct); under a
-    # new address it has nothing cached, so it always loads the current dashboard.
     return RedirectResponse("/app/")
 
 
@@ -58,12 +35,11 @@ def health() -> dict:
 
 @app.get("/api/results")
 def results() -> JSONResponse:
-    # Read on every request: re-running `make eval` updates the dashboard without a restart.
     data = json.loads(results_path().read_text(encoding="utf-8"))
     return JSONResponse(data, headers={"Cache-Control": "no-store"})
 
 
-_CACHE: dict = {}  # tickets, predictions, risk model and weights, loaded once on first use
+_CACHE: dict = {}
 
 
 def engine_inputs() -> dict:
@@ -90,7 +66,6 @@ def engine_inputs() -> dict:
 
 @app.post("/api/whatif")
 def whatif(request: dict) -> JSONResponse:
-    """Re-run one test day with the judge's changes (see opslens/whatif.py)."""
     from opslens.whatif import run_whatif
 
     inputs = engine_inputs()
@@ -102,23 +77,19 @@ def whatif(request: dict) -> JSONResponse:
     return JSONResponse(answer)
 
 
-PLAN_SEEDS = [1, 2, 3]  # live plan runs: 3 seeds, without and with the plan = 6 runs side by side
+PLAN_SEEDS = [1, 2, 3]
 _PLAN_POOL: ProcessPoolExecutor | None = None
-_PLAN_RUNS: dict = {}  # (day, seed, accepted items) -> finished run
-_PLAN_LOCK = threading.Lock()  # one plan request at a time: they share the pool and the memory
+_PLAN_RUNS: dict = {}
+_PLAN_LOCK = threading.Lock()
 
 
 def plan_job(job: dict) -> dict:
-    """One plan simulation (opslens/plan.py). Runs in a worker process, which loads the engine
-    inputs once and keeps them for later requests."""
     from opslens.plan import run_plan_day
 
     return run_plan_day(engine_inputs(), job)
 
 
 def run_plan_jobs(jobs: list[dict]) -> list[dict]:
-    """Results for the jobs, from memory if this exact run was done before, else simulated in
-    parallel. The "without" runs of a day are shared by every plan asked for that day."""
     global _PLAN_POOL
     keys = [(j["day"], j["seed"], json.dumps(j["items"], sort_keys=True)) for j in jobs]
     with _PLAN_LOCK:
@@ -129,7 +100,7 @@ def run_plan_jobs(jobs: list[dict]) -> list[dict]:
             try:
                 runs = list(_PLAN_POOL.map(plan_job, list(todo.values())))
             except Exception:
-                _PLAN_POOL.shutdown(cancel_futures=True)  # e.g. a worker died: start fresh next time
+                _PLAN_POOL.shutdown(cancel_futures=True)
                 _PLAN_POOL = None
                 raise
             _PLAN_RUNS.update(zip(todo, runs))
@@ -138,8 +109,6 @@ def run_plan_jobs(jobs: list[dict]) -> list[dict]:
 
 @app.post("/api/plan/impact")
 def plan_impact(request: dict) -> JSONResponse:
-    """What the accepted recommendations would change on one test day (opslens/plan.py).
-    Request: {"day": 48, "items": ["staff_43_C02", "pb_F2"]}. Unknown ids → 400."""
     import pandas as pd
 
     from opslens.config import load_config
@@ -169,7 +138,6 @@ def plan_impact(request: dict) -> JSONResponse:
 @app.post("/api/upload")
 async def upload(mapping: str = Form("{}"), file: UploadFile | None = File(None),
                  example: str | None = Form(None)) -> JSONResponse:
-    """Run the analysis on an uploaded export, or on the UCI example (server/upload.py)."""
     from server.upload import analyse_csv, analyse_uci
 
     try:
@@ -182,7 +150,6 @@ async def upload(mapping: str = Form("{}"), file: UploadFile | None = File(None)
 
 @app.post("/api/anyfile/peek")
 async def anyfile_peek(file: UploadFile | None = File(None), example: str | None = Form(None)) -> JSONResponse:
-    """OpsLens on your file, step 1: keep the CSV, return its columns and a suggested mapping."""
     from server.anyfile_jobs import keep_example, keep_file
 
     try:
@@ -197,8 +164,6 @@ async def anyfile_peek(file: UploadFile | None = File(None), example: str | None
 
 @app.post("/api/anyfile/check")
 def anyfile_check(request: dict) -> JSONResponse:
-    """Between steps 1 and 2: what will happen with a changed {token, mapping, target_min}, before
-    anything is learned (usable items, what counts as a miss and how many, the 70/30 split)."""
     from server.anyfile_jobs import check
 
     try:
@@ -211,8 +176,6 @@ def anyfile_check(request: dict) -> JSONResponse:
 
 @app.post("/api/anyfile/run")
 def anyfile_run(request: dict) -> JSONResponse:
-    """Step 2: start the report for {token, mapping, target_min, target_assumed}; returns {job}.
-    target_assumed = the promised time is OpsLens's assumption (the file's median, rounded up)."""
     from server.anyfile_jobs import start_job
 
     try:
@@ -226,7 +189,6 @@ def anyfile_run(request: dict) -> JSONResponse:
 
 @app.get("/api/anyfile/job/{job_id}")
 def anyfile_job(job_id: str) -> JSONResponse:
-    """Step 3: poll the job: {status, step, steps, elapsed, result | error}."""
     from server.anyfile_jobs import job_state
 
     try:
@@ -237,7 +199,6 @@ def anyfile_job(job_id: str) -> JSONResponse:
 
 @app.post("/api/plant")
 def plant(request: dict) -> JSONResponse:
-    """Hide the judge's problem in fresh data and see whether OpsLens finds it (server/plant_demo.py)."""
     from server.plant_demo import run_plant
 
     try:
@@ -247,18 +208,16 @@ def plant(request: dict) -> JSONResponse:
 
 
 def _route_client():
-    """The LLM used only to understand questions (routing), or None when offline."""
     from opslens.llm.base import LLMUnavailable
     from opslens.llm.client import build_client
 
     try:
         return build_client(["groq_route", "gemini"])
     except LLMUnavailable:
-        return None  # offline: keyword rules and word matching still answer
+        return None
 
 
 def _run_ask(question: str, client) -> dict:
-    """Ask OpsLens on one question (opslens/ask.py): understand → one engine tool → the answer."""
     import pandas as pd
 
     from opslens.ask import answer
@@ -279,7 +238,6 @@ def _run_ask(question: str, client) -> dict:
 
 @app.post("/api/ask")
 def ask(request: dict) -> JSONResponse:
-    """Ask OpsLens: a plain-words question → one engine tool → an answer (opslens/ask.py)."""
     question = str(request.get("question", "")).strip()[:300]
     if not question:
         return JSONResponse({"error": "empty question"}, status_code=400)
@@ -289,11 +247,8 @@ def ask(request: dict) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
-# ---- The OpsLens assistant (server/bot.py, 24 Oct): the bot in the side menu --------------------------
-
 @app.get("/api/bot/warm")
 def bot_warm() -> dict:
-    """Load (or, the very first time, train in the background) the bot's text classifier."""
     from server.bot import warm_up
 
     warm_up()
@@ -302,7 +257,6 @@ def bot_warm() -> dict:
 
 @app.post("/api/bot")
 def bot(request: dict) -> JSONResponse:
-    """One question for the assistant: a customer complaint, an engine question or a judge question."""
     from server.bot import respond
 
     question = str(request.get("question", "")).strip()[:400]
@@ -316,10 +270,8 @@ def bot(request: dict) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
-# ---- Live now (opslens/live.py, 24 Oct): today's day, simulated here, shown at the real clock ----------
-
-_LIVE: dict = {}  # (day, seed) -> LiveDay, simulated once and kept
-_LIVE_BUILDING: dict = {}  # (day, seed) -> the thread simulating it
+_LIVE: dict = {}
+_LIVE_BUILDING: dict = {}
 _LIVE_LOCK = threading.Lock()
 
 
@@ -341,14 +293,13 @@ def _build_live(key: tuple) -> None:
 
     day, seed, agents_delta, volume = key
     try:
-        with _LIVE_BUILD_ONE_AT_A_TIME:  # it briefly wraps one engine function: one build at a time
+        with _LIVE_BUILD_ONE_AT_A_TIME:
             _LIVE[key] = simulate_live_day(engine_inputs(), day, seed, dict(agents_delta), volume)
     finally:
         _LIVE_BUILDING.pop(key, None)
 
 
 def _parse_agents(text: str) -> tuple:
-    """"C:-2,B:1" -> (("B", 1), ("C", -2)); teams A-D, each change -5..+5, zeros dropped."""
     out = {}
     for part in filter(None, text.split(",")):
         team, _, k = part.partition(":")
@@ -362,12 +313,8 @@ def _parse_agents(text: str) -> tuple:
 
 @app.get("/api/live")
 def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: float = 1.0) -> JSONResponse:
-    """The floor at the viewer's real clock: `weekday` (0 = Monday) and `minute` of the day come
-    from the browser. The first request for a weekday starts the simulation (about 20-40 s) and
-    answers {"ready": false}; the page asks again until it is ready."""
     from opslens.live import state_at
 
-    # `agents` ("C:-2,B:1") and `volume` (1.3 = 30% more customers) change the day, as in What-if.
     try:
         delta = _parse_agents(agents)
     except ValueError as exc:
@@ -390,15 +337,11 @@ def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: f
 
 @app.on_event("startup")
 def warm_live_now() -> None:
-    """Start simulating today's weekday the moment the server starts (24 Oct review): the first
-    visitor then sees Live now ready instead of ~25 s of "Starting...". Same key as the endpoint's
-    first request (seed 1, no change), so nothing is simulated twice. Skipped quietly if the data
-    is missing (a fresh clone): the endpoint still builds on the first request."""
     import datetime
 
     try:
         day, seed = _live_key(datetime.datetime.now().weekday(), 1)
-    except Exception:  # noqa: BLE001 — no generated data yet: nothing to warm
+    except Exception:
         return
     key = (day, seed, (), 1.0)
     with _LIVE_LOCK:
@@ -410,14 +353,10 @@ def warm_live_now() -> None:
 
 @app.middleware("http")
 async def always_fresh_web_files(request, call_next):
-    """The browser must ask for the newest dashboard files on every load (it may reuse its copy
-    only when the file did not change). Without this, Chrome kept showing an old app.js."""
     response = await call_next(request)
     if request.url.path.startswith(("/web", "/app")):
         response.headers["Cache-Control"] = "no-cache"
     if request.url.path in ("/web", "/web/", "/web/index.html", "/app", "/app/", "/app/index.html"):
-        # Opening the dashboard also tells the browser to drop every copy it kept from older
-        # versions (files cached before this header existed were reused without asking).
         response.headers["Clear-Site-Data"] = '"cache"'
     return response
 

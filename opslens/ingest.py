@@ -1,22 +1,3 @@
-"""Load a helpdesk export, check it, clean it, and compute the timing columns.
-
-What it does: turns any ticket CSV into OpsLens's canonical table — one row per ticket with
-created/pickup/resolved times, wait, resolution time, SLA breach flag, and the day split
-(train / validation / test).
-
-Why this design:
-- One canonical schema (`TicketRecord`) for every source: our generated history, the UCI
-  ServiceNow log (adapters/uci_incidents.py), or a company's own upload with a column mapping.
-  Everything after ingest only knows the canonical names.
-- Timing columns are **recomputed from timestamps**, never trusted from the file, because a
-  real export has timestamps, not our simulator's numbers.
-- Every row is validated with pydantic; a bad row is reported, not silently dropped.
-
-Example (ticket T000812):
-    created 2026-09-14 20:05, first pickup 20:41, resolved 21:19, priority P1 (SLA 60 min)
-    → wait 36 min, resolution 74 min, breached = True (74 > 60).
-"""
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -38,8 +19,6 @@ REQUIRED = ["ticket_id", "created_at", "priority"]
 
 
 class TicketRecord(BaseModel):
-    """One ticket as OpsLens understands it. Optional fields may be missing in some exports."""
-
     model_config = ConfigDict(extra="ignore")
 
     ticket_id: str
@@ -54,7 +33,7 @@ class TicketRecord(BaseModel):
     text: str | None = None
     first_pickup_at: datetime | None = None
     resolved_at: datetime | None = None
-    handled_min: float | None = None  # minutes agents actively worked (many helpdesks export it)
+    handled_min: float | None = None
     transfers: int | None = None
     reopens: int | None = None
     final_category: str | None = None
@@ -70,7 +49,6 @@ class TicketRecord(BaseModel):
 
 
 def apply_mapping(raw: pd.DataFrame, mapping: dict[str, str] | None) -> pd.DataFrame:
-    """Rename source columns to canonical names. `mapping` = {canonical: source column}."""
     if not mapping:
         return raw.copy()
     missing = [src for src in mapping.values() if src not in raw.columns]
@@ -80,7 +58,6 @@ def apply_mapping(raw: pd.DataFrame, mapping: dict[str, str] | None) -> pd.DataF
 
 
 def validate_rows(df: pd.DataFrame, max_errors: int = 5) -> list[str]:
-    """Validate every row; return up to `max_errors` readable error messages."""
     errors: list[str] = []
     for row in df.replace({np.nan: None}).to_dict("records"):
         try:
@@ -94,7 +71,6 @@ def validate_rows(df: pd.DataFrame, max_errors: int = 5) -> list[str]:
 
 
 def clean(df: pd.DataFrame) -> pd.DataFrame:
-    """Types, duplicates, lower-case categories."""
     out = df.drop_duplicates(subset="ticket_id", keep="last").copy()
     for col in ("created_at", "first_pickup_at", "resolved_at"):
         if col in out:
@@ -109,20 +85,17 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_timing(df: pd.DataFrame, sla_minutes: dict[str, float]) -> pd.DataFrame:
-    """Wait, resolution time, SLA and breach flag — computed from timestamps."""
     out = df.copy()
     out["sla_min"] = out["priority"].map(sla_minutes).astype(float)
     if "first_pickup_at" in out:
         out["wait_min"] = (out["first_pickup_at"] - out["created_at"]).dt.total_seconds() / 60.0
     if "resolved_at" in out:
         out["resolution_min"] = (out["resolved_at"] - out["created_at"]).dt.total_seconds() / 60.0
-        # Never resolved = breached (it certainly missed its SLA by now).
         out["breached"] = out["resolution_min"].isna() | (out["resolution_min"] > out["sla_min"])
     return out
 
 
 def add_calendar(df: pd.DataFrame, start_date: str, splits: dict[str, int]) -> pd.DataFrame:
-    """Day number (day 1 = start_date), hour, weekday, and train/validation/test split."""
     out = df.copy()
     start = pd.Timestamp(start_date)
     out["day"] = (out["created_at"].dt.normalize() - start).dt.days + 1
@@ -143,7 +116,6 @@ def ingest(
     sla_minutes: dict[str, float] | None = None,
     start_date: str | None = None,
 ) -> pd.DataFrame:
-    """Load → map columns → validate → clean → timing → calendar. Raises on bad input."""
     raw = pd.read_csv(path)
     df = apply_mapping(raw, mapping)
     absent = [c for c in REQUIRED if c not in df.columns]
@@ -160,7 +132,6 @@ def ingest(
 
 
 def load_history() -> pd.DataFrame:
-    """The generated helpdesk export, ingested."""
     from opslens.config import PROJECT_ROOT
 
     return ingest(PROJECT_ROOT / "data" / "generated" / "history.csv")

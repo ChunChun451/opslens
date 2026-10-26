@@ -1,21 +1,3 @@
-"""M7: choose OpsLens weights on validation days, then compare OpsLens with both baselines on
-the held-out test days.
-
-Run:  .venv/Scripts/python.exe eval/run_opslens.py --tune     (validation days 36-42, seeds 1-3)
-      .venv/Scripts/python.exe eval/run_opslens.py            (test days 43-56, seeds 1-5)
-
-Tuning (decision-focused: weights are judged by the breaches they cause, not by a model score):
-one weight at a time, try a few values, keep the best mean breach % over 3 seeds, provided the
-slowest customers (P99 wait) are not worse than under Baseline B. Writes eval/parts/tuning.json;
-the chosen values are then copied into config/optimizer.yaml by hand (so the choice is visible).
-
-Comparison: every policy sees the same tickets and the same luck per seed (common random
-numbers); day 42 is a warm-up day. OpsLens uses the weekly staffing plans made on days 42 and
-49 (M6) — same people, same hours. Writes eval/parts/sim.json with KPIs per seed, paired
-95% CIs, the Saturday-evening replay series, and example assignments with reasons.
-Seeds run in parallel processes.
-"""
-
 from __future__ import annotations
 
 import dataclasses
@@ -31,26 +13,26 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from opslens import risk  # noqa: E402
-from opslens.config import load_config  # noqa: E402
-from opslens.impact import mean_std, paired_ci, summarize  # noqa: E402
-from opslens.playbooks import apply_scenario  # noqa: E402
-from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d  # noqa: E402
-from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy,  # noqa: E402
+from opslens import risk
+from opslens.config import load_config
+from opslens.impact import mean_std, paired_ci, summarize
+from opslens.playbooks import apply_scenario
+from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d
+from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy,
                               LeastSlackRescuePolicy, expected_handle_minutes)
-from opslens.simulate import MINUTES_PER_DAY, simulate  # noqa: E402
-from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents  # noqa: E402
+from opslens.simulate import MINUTES_PER_DAY, simulate
+from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents
 
 GENERATED = ROOT / "data" / "generated"
 PARTS = ROOT / "eval" / "parts"
 TUNE_GRID = {
     "aging_per_hour": [0.25, 0.5, 1.0, 2.0],
-    "cross_skill_min_rescue": [0.5, 0.7, 99.0],  # 99 = never cross-skill
+    "cross_skill_min_rescue": [0.5, 0.7, 99.0],
     "mismatch_penalty": [1.0, 2.0, 3.0],
     "scarcity_weight": [0.0, 0.3, 1.0],
     "rescue_floor": [0.05, 0.2],
 }
-REPLAY_DAY, REPLAY_FROM_H, REPLAY_TO_H = 48, 18, 24  # Saturday 17 Oct, 18:00-24:00
+REPLAY_DAY, REPLAY_FROM_H, REPLAY_TO_H = 48, 18, 24
 KPIS = [
     "turnaround.breach_pct", "turnaround.mean_resolution_min", "turnaround.p90_resolution_min",
     "turnaround.mean_wait_min", "turnaround.max_backlog", "productivity.tickets_per_agent_hour",
@@ -61,7 +43,6 @@ KPIS = [
 
 
 def run_one(job: dict) -> dict:
-    """One simulation (runs in a worker process). Returns KPIs and small extras."""
     tickets = pd.read_csv(GENERATED / "world_tickets.csv")
     preds = pd.read_csv(GENERATED / "predictions.csv", usecols=["ticket_id", "pred_final"])
     if job.get("volume_boost"):
@@ -70,16 +51,16 @@ def run_one(job: dict) -> dict:
     if job.get("staffing"):
         agents = apply_staffing_plan(agents, json.loads((GENERATED / "staffing_plan.json").read_text(encoding="utf-8")))
     weekday = pd.Timestamp(load_config("calendar")["start_date"]).weekday()
-    for spec in job.get("scenarios", []):  # fix-at-source playbooks (eval/run_playbooks.py)
+    for spec in job.get("scenarios", []):
         tickets, preds, agents, _ = apply_scenario(tickets, preds, agents, spec, job["first_day"], job["last_day"],
                                                    weekday, alerts=job.get("alerts"))
     gen_cfg = load_config("generator")
     if job.get("absent_prob") is not None:
         gen_cfg = {**gen_cfg, "absent_prob": job["absent_prob"]}
-    if job.get("max_concurrent"):  # Plan v4 W2: every agent may hold several chats at once
+    if job.get("max_concurrent"):
         agents = [dataclasses.replace(a, max_concurrent=int(job["max_concurrent"])) for a in agents]
     world = build_world(tickets, seed=job["seed"], agents=agents, gen_cfg=gen_cfg)
-    if "concurrency_slowdown" in job:  # else the world's own setting (generator.yaml, default 0)
+    if "concurrency_slowdown" in job:
         world.concurrency_slowdown = float(job["concurrency_slowdown"])
     warm, _ = day_bounds(job["first_day"] - 1, job["first_day"] - 1)
     start, end = day_bounds(job["first_day"], job["last_day"])
@@ -91,7 +72,7 @@ def run_one(job: dict) -> dict:
         policy = baseline_c()
     elif job["policy"] == "baseline_d":
         policy = baseline_d(world, dict(zip(preds.ticket_id, preds.pred_final)))
-    elif job["policy"] in PUBLISHED_RULES:  # eval/run_best_baselines.py
+    elif job["policy"] in PUBLISHED_RULES:
         policy = published_rule(job, world, dict(zip(preds.ticket_id, preds.pred_final)))
     else:
         weights = {**load_config("optimizer"), **job.get("weights", {})}
@@ -100,7 +81,7 @@ def run_one(job: dict) -> dict:
             day0 = (REPLAY_DAY - 1) * MINUTES_PER_DAY
             log_window = (day0 + 20 * 60 + 30, day0 + 20 * 60 + 45)
         handle = None
-        if weights.get("overload"):  # v6 candidate: expected minutes of work, history days 1-35 only
+        if weights.get("overload"):
             history = pd.read_csv(GENERATED / "history.csv", usecols=["created_at", "final_category", "channel",
                                                                      "handled_min", "reopens", "resolution_min"])
             handle = expected_handle_minutes(history, load_config("calendar")["start_date"], last_day=35)
@@ -121,16 +102,14 @@ def run_one(job: dict) -> dict:
         ms = policy.stats.solve_ms or [0.0]
         out["solver"] = {"solves": policy.stats.solves, "fallbacks": policy.stats.fallbacks,
                          "median_ms": float(np.median(ms)), "max_ms": float(np.max(ms))}
-    if job.get("daily"):  # performance tracking (eval/run_tracking.py): the same run, day by day
+    if job.get("daily"):
         out["daily"] = daily_breakdown(result.tickets)
-    if hasattr(policy, "overload_minutes") and policy.handle:  # OpsLens v6 candidates only
+    if hasattr(policy, "overload_minutes") and policy.handle:
         out["overload_minutes"] = policy.overload_minutes
     return out
 
 
 def daily_breakdown(tickets: pd.DataFrame) -> list[dict]:
-    """One row per day (the day a ticket was created) and per team (the team its true category belongs
-    to): tickets, missed SLAs, minutes past SLA and the mean wait. Sums, so seeds and days add up exactly."""
     from opslens.classify import TEAM_OF
     t = tickets.assign(day=(tickets["created_min"] // MINUTES_PER_DAY).astype(int) + 1,
                        team=tickets["category"].map(TEAM_OF).fillna("?"),
@@ -146,14 +125,12 @@ PUBLISHED_RULES = {"least_slack", "least_slack_rescue", "gen_cmu", "clairvoyant"
 
 
 def published_rule(job: dict, world, predicted: dict[str, str]):
-    """The rules from the scheduling literature (opslens/policies.py, added 18 Oct). Expected
-    handle times come from this world's history, days 1-35 only."""
     history = pd.read_csv(GENERATED / "history.csv",
                           usecols=["created_at", "final_category", "channel", "handled_min", "reopens", "resolution_min"])
     handle = expected_handle_minutes(history, load_config("calendar")["start_date"], last_day=35)
     if job["policy"] == "least_slack":
         return LeastSlackPolicy(world, predicted, handle)
-    if job["policy"] == "least_slack_rescue":  # the same freedom as OpsLens: cross-skill rescues
+    if job["policy"] == "least_slack_rescue":
         return LeastSlackRescuePolicy(world, predicted, handle, threshold_min=job["params"]["threshold_min"])
     if job["policy"] == "gen_cmu":
         params = job["params"]
@@ -163,9 +140,6 @@ def published_rule(job: dict, world, predicted: dict[str, str]):
 
 def boost_volume(tickets: pd.DataFrame, preds: pd.DataFrame, share: float, first_day: int,
                  last_day: int) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Stress test: copy `share` of the tickets in the window as extra tickets, 0-30 min later.
-    New ticket numbers (900000+) get their own luck; copies keep the original's text and
-    predicted category, so every policy faces the same extra work."""
     rng = np.random.default_rng(99)
     lo, hi = (first_day - 1) * MINUTES_PER_DAY, last_day * MINUTES_PER_DAY
     window = tickets[(tickets["created_min"] >= lo) & (tickets["created_min"] < hi)]
@@ -179,13 +153,12 @@ def boost_volume(tickets: pd.DataFrame, preds: pd.DataFrame, share: float, first
 
 
 def replay_series(result, world) -> dict:
-    """Waiting tickets and cumulative breaches every 15 minutes on the replay evening."""
     day0 = (REPLAY_DAY - 1) * MINUTES_PER_DAY
     times = np.arange(day0 + REPLAY_FROM_H * 60, day0 + REPLAY_TO_H * 60 + 1, 15.0)
     snaps = result.snapshots.set_index("minute")["waiting"]
     t = result.tickets
     deadline = t["created_min"] + t["idx"].map(lambda i: world.sla_min[i])
-    breach_at = deadline[t["breached"]].to_numpy()  # a breach "happens" when the deadline passes
+    breach_at = deadline[t["breached"]].to_numpy()
     since = day0 + REPLAY_FROM_H * 60
     return {
         "times": [f"{int((m - day0) // 60) % 24:02d}:{int(m % 60):02d}" for m in times],
@@ -195,9 +168,6 @@ def replay_series(result, world) -> dict:
 
 
 def floor_frames(frames: list[dict], world, day0: float) -> dict:
-    """Floor map for the replay, compact for the dashboard: agents once, then per 5-min frame a
-    status letter per agent (o off, i idle, b busy, x cross-skill, w wrong queue) and each
-    team's queue as [can still make SLA, already late]."""
     letter = {"off": "o", "idle": "i", "busy": "b", "cross": "x", "wrong": "w"}
     agents = [{"id": a.agent_id, "team": a.team, "languages": sorted(a.languages)} for a in world.agents]
     return {
@@ -251,7 +221,6 @@ def compare(seeds: list[int]) -> int:
     for s in seeds:
         jobs.append({"policy": "baseline_a", "seed": s, "first_day": first, "last_day": last, "log": s == seeds[0]})
         jobs.append({"policy": "baseline_b", "seed": s, "first_day": first, "last_day": last, "log": s == seeds[0]})
-        # Industry standard (added 17 Oct, Claude 2): skills-based routing with AI triage.
         jobs.append({"policy": "baseline_d", "seed": s, "first_day": first, "last_day": last, "log": s == seeds[0]})
         jobs.append({"policy": "opslens", "seed": s, "first_day": first, "last_day": last, "staffing": True,
                      "log": s == seeds[0]})
@@ -287,7 +256,6 @@ def compare(seeds: list[int]) -> int:
               "times": logged["opslens"]["replay"]["times"],
               "series": {k: {"waiting": logged[k]["replay"]["waiting"], "breached_cum": logged[k]["replay"]["breached_cum"]}
                          for k in labels},
-              # Floor map (5-min frames): same seed-1 runs as the series above, so they agree.
               "floor": {k: logged[k]["floor"] for k in labels}}
     PARTS.mkdir(parents=True, exist_ok=True)
     (PARTS / "sim.json").write_text(json.dumps({

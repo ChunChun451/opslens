@@ -1,18 +1,3 @@
-"""Upload CSV: run OpsLens's analysis on any company's ticket export (or the UCI example).
-
-What it does: maps the uploaded columns to OpsLens's names, computes the timing columns and
-breach flag, then returns headline KPIs, the worst teams and categories, and evidence cards
-from the same pattern scans the engine uses (patterns.find_patterns_basic).
-
-Mapping (from the Upload tab): ticket_id, created_at, resolved_at, priority are required;
-category, team, sla_met, reassignments, text are optional. Priorities that are not P1/P2/P3
-(e.g. "1 - Critical", "4 - Low") are ranked: the most urgent → P1, the least → P3, others → P2.
-If an "SLA met" column exists it decides the breach; otherwise our SLA table (config/sla.yaml).
-
-Example: the UCI ServiceNow log (24,918 incidents) → breach 36.6%, worst groups by breach %,
-and cards such as "Category 26 × Group 70 resolution time 3.1× longer".
-"""
-
 from __future__ import annotations
 
 import io
@@ -33,7 +18,6 @@ _UCI_CACHE: dict = {}
 
 
 def to_priority(values: pd.Series) -> pd.Series:
-    """Map any priority labels to P1/P2/P3 (most urgent first)."""
     labels = values.astype(str).str.strip()
     if set(labels.unique()) <= {"P1", "P2", "P3"}:
         return labels
@@ -50,7 +34,6 @@ def truthy(values: pd.Series) -> pd.Series:
 
 
 def parse_dates(values: pd.Series) -> pd.Series:
-    """ISO dates (2026-09-01 10:00) first; if most fail, day-first (29/2/2016 01:16, as in UCI)."""
     iso = pd.to_datetime(values, errors="coerce", format="ISO8601")
     if iso.notna().mean() >= 0.9:
         return iso
@@ -114,7 +97,6 @@ def summarise(df: pd.DataFrame, source: str, started: float) -> dict:
 
 
 def json_safe(value):
-    """NaN / infinity → None, recursively (JSON cannot carry NaN)."""
     if isinstance(value, dict):
         return {k: json_safe(v) for k, v in value.items()}
     if isinstance(value, list):
@@ -131,7 +113,6 @@ def analyse_csv(content: bytes, mapping: dict[str, str]) -> dict:
 
 
 def analyse_uci() -> dict:
-    """The ready example: the real ServiceNow incident log, through the UCI adapter."""
     if not _UCI_CACHE:
         started = time.perf_counter()
         incidents, _ = load_uci()
