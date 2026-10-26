@@ -27,7 +27,7 @@ points, 95% interval −4.77 to −2.15). OpsLens was lower on **14 of 14** days
 | *Tech:* NLP or LLMs to classify and summarise | Local classifier, LLM only for unsure tickets; the LLM writes words, never digits | Real public benchmark (BANKING77): 90.3% local, 91.0% with the LLM; with 10 examples per intent 68.5% → 78.7% | Proof → How we tested |
 | *Tech:* optimisation for allocation | Min-cost flow over rescue value; exact CP-SAT roster tried | Honest: greedy ties min-cost flow at our scale, and CP-SAT did not beat the greedy roster — both shown | Proof → Rules |
 | *Tech:* dashboard incl. **performance tracking** | Day-by-day tracking, a live floor simulated on this laptop, the ledger of every rule | Lower than the industry standard on 14 of 14 days | Overview → Live now |
-| **Deliverable 1:** a public dataset | A real company's IT service desk (UCI ServiceNow log, CC BY 4.0, 24,918 incidents) on every screen | Shadow mode on the busiest real day: OpsLens flagged 53 of 102 real misses in time, the desk's priority field 16 | IT service desk → Shadow mode |
+| **Deliverable 1:** a public dataset | A real company's IT service desk (UCI ServiceNow log, CC BY 4.0, 24,918 incidents) on every screen; or the judge's own CSV, on the same screens | Shadow mode on the busiest real day: OpsLens flagged 53 of 102 real misses in time, the desk's priority field 16 | Real data → Shadow mode |
 | **Deliverable 4:** baseline vs proposed, measurable | First come, urgent first, SLA due, the industry standard, published scheduling rules; 30 random worlds | Beats the industry standard in 29 of 30 worlds we did not design | Proof → Beyond our world |
 
 ## What we do NOT claim (we show these on screen)
@@ -52,8 +52,10 @@ screen, kept or missed.
    the engine computes every number.
 3. **Problems → Plant a problem** — hide a problem in fresh data and watch OpsLens find it.
 4. **Actions → Accept** a fix → **Your plan → Simulate** — the day replayed with and without it.
-5. **IT service desk → Shadow mode** — a real day, OpsLens's warnings next to the desk's own.
-6. **Proof → Rules we wrote first** — every rule, the date it was sealed, kept or missed.
+5. **Real data → Shadow mode** — a real day at a real IT desk, OpsLens's warnings next to the desk's own.
+6. **Real data → Upload a CSV** — drop your own export of tickets, incidents or orders (or try the UCI example), read
+   the five sentences that say what OpsLens will do, press *Analyse my file*: every real screen then runs on your file.
+7. **Proof → Rules we wrote first** — every rule, the date it was sealed, kept or missed.
 
 ## Run it (Windows)
 

@@ -41,13 +41,16 @@ Same screens in both. Food is the star; the real desk is the proof that it works
 5. **Proof — "Does it actually work?"**
    OpsLens against today's methods, on days or months it never learned from. Includes the replay,
    "try a what-if", and everything we tested — including what failed.
-6. **Your data — "Will it work on my company?"**
-   Upload any export (a CSV) and see its problems in seconds.
+6. **Your own file — "Will it work on my company?"**
+   In Real data, press **Upload a CSV** and drop any export of tickets, incidents or orders. OpsLens says in five
+   sentences what it will do with it; press **Analyse my file**, and every real screen (Overview, Shadow mode,
+   Problems, Risks, Actions, Proof) runs on that file. What the file does not have, the screen names.
 
 ## What every button does
 | Button | What happens |
 |---|---|
-| Food delivery / IT service desk | Switches every screen to that world |
+| Food delivery / Real data | Switches every screen to that world |
+| UCI ServiceNow example / Your file (bar on top, Real data) | Which real data the screens show; × goes back to the example |
 | Accept | The recommendation goes into *Your plan*, with its measured effect |
 | Override → a reason | The recommendation is refused, and the reason is kept |
 | Your plan | Opens the plan: what you accepted, what each changes, what you refused |

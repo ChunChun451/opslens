@@ -64,7 +64,7 @@ run for two weeks on the company's own data and the numbers hold.
 The engine works on *work items*: something arrives at a time, has a type, a deadline, and is
 handled by someone with the right skill. Support tickets and IT incidents are two such kinds
 (both on screen); sales leads with a response-time promise, insurance claims, or internal
-approval requests have the same shape, and `Your data` maps any CSV export onto it. We have
+approval requests have the same shape, and *Real data → Upload a CSV* maps any CSV export onto it. We have
 tested two kinds, not these others: their first step is the same shadow mode.
 
 ## 9. Known limits of the prototype (updated 24 Oct)

@@ -47,7 +47,7 @@ decides the big things; OpsLens handles the thousand small ones and explains eac
 down, before the run, that it would be the best of all six methods in 27 of 30. It was 19. The losses
 are floors in sustained overload; even there it protects gold customers and late customers better."
 
-## 7. A real day at a real desk (50 s) — IT service desk → Shadow mode
+## 7. A real day at a real desk (50 s) — Real data (UCI ServiceNow example) → Shadow mode
 **Sneha:** "Our food floor is simulated — no company publishes its complaints. So here is a real
 company's IT desk, public data, a real day: Thursday 5 May 2016. OpsLens only watched. Of the 102
 incidents that really missed their deadline, it warned about 53 in time. The desk's own priority
@@ -60,6 +60,11 @@ missed stay on screen. A team that never misses is not testing hard enough."
 ## 9. Your turn (45 s) — the judges
 Hand over the keyboard: **Ask OpsLens** "kal raat refund wale kitne late honge?" or "what if Team C
 loses 2 agents on Saturday?"; or **Proof → Try a what-if**; or **Problems → Plant a problem**.
+If a judge brought a file: **Real data → Upload a CSV**, drop it, read the five sentences aloud ("it
+starts at…, a miss is…, it learns on your first 70%"), press **Analyse my file**. It lands on their
+Overview; click through Shadow mode, Problems, Risks, Actions and Proof on their own data. **Sneha:**
+"Every number here is from your file, scored on your later rows it never saw. What your file does
+not have, the screen says by name: no priority column, no comparison with your priority field."
 
 ## Close (15 s)
 **Sneha:** "Tested on days it never saw, on worlds we did not design, and on a real company's data —
@@ -71,6 +76,8 @@ and honest about where it loses. OpsLens: every ticket is a promise; it helps yo
 - Live now still "Starting…" → go to *Results on the test days* and come back later.
 - Simulate or Ask slow → "each action's measured effect is already in the plan" and move on.
 - Server down → restart `mingw32-make demo` (it warms Live now again). Projector problem → backup video.
+- A judge's file is refused → read the one sentence aloud (it says why and what to try), then *or try the
+  UCI example* on the same card. A file without an on-time column gets an assumed promise: say so, and type theirs.
 
 ## Backup video (record on 27 Oct)
 1920×1080, full screen, steps 1–9 exactly (about 6 minutes), including one Accept → Simulate.

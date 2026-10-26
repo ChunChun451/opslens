@@ -507,3 +507,32 @@ Junk or small files are refused with the reason. Background job with live steps 
 UCI as a plain CSV (`results.anyfile`): 1.5 s; AUC 0.796 vs priority 0.575; caught 48.9% vs 25.5%; 5 May 2016 shadow
 50 vs 22 of 111. 100,000 rows: 2.9 s. 228 tests pass. Explain file docs/explain/anyfile.md; JUDGE_QA Q85-Q88.
 
+
+**Update 26 Oct — Real data: the UCI example or your own CSV, on every screen (Claude 2, branch claude2/real-data-upload).**
+Owner's decision: an uploaded CSV gets the same treatment as the IT service desk. The top-bar switch is now *Food delivery |
+Real data*; a bar on every real screen switches between *UCI ServiceNow example* (results.realdesk, drawn exactly as before)
+and *Your file: name.csv* (× back to UCI). *Upload a CSV* is one card in three moments: drop (or "try the UCI example"),
+confirm (five plain sentences with the guessed columns as small dropdowns, a lit 3-row preview, Adjust for the rest, a
+question only when the start or end cannot be guessed), watch (four plain steps, a bar, seconds); then every real screen
+runs on the file: Overview, Shadow mode (the same animated replay on the file's busiest later day), Problems (cards with
+"still true later" stamps, worst-group tables), Risks (riskiest later items with reasons; a week-ahead workload forecast per
+team), Actions (Fix first and early warning into Your plan, measured facts only, no Simulate) and Proof. What a file lacks is
+said by name ("needs a priority column"). A reload brings the report back (job id in sessionStorage, report in server
+memory). "Your data" left the side menu; `#upload` opens Real data with the card open.
+Engine (`opslens/anyfile.py`): `day_timeline()` (the shadow day item by item), `team_forecast()` (daily counts per team,
+lags of 1-4 weeks only, learned before the later 30%, scored on its first 4 weeks vs same weekday last week), `needs`,
+`miss`, `test_misses` per card, better guesses by column kind and name words, a "breached" column, `check_mapping()` (what
+will happen, before learning; `POST /api/anyfile/check`), the assumed promise = median rounded up to the next round number,
+refusals as one sentence + one fix. Every existing value is unchanged: the UCI CSV report compared value by value before/after
+(580 values, 0 moved; one new step at the end of the list); eval/results.json not touched (results.anyfile gets the new fields
+when eval/run_anyfile.py runs again, which also re-times it).
+Numbers (computed live, not in results.json): UCI as a plain CSV, team forecast scored 2-29 May 2016: learned 0.378 vs 0.356 for
+same weekday last week (not better, like the real-desk screen's 0.365 vs 0.341); 90-day generated delivery file: 0.122 vs 0.176.
+Generated delivery file, promise 30 min: OpsLens caught 84.0% of real misses vs 58.0% for the rule of thumb.
+Checks: 246 tests pass (12 new: replay adds up and never reads later outcomes, forecast reads only past weeks, a file without
+team/priority/category says what each part needs, a helpdesk export guessed without help, questions only when needed, the
+assumed promise, refusals, the server round trip). Browser, both themes, 1366x768 and 375 px: the UCI views (7) and the food
+views (10) render the same HTML as main; uploads of cache/uci_one_row.csv, delivery_file() CSVs (30 and 90 days, 30 min), a
+helpdesk export, a junk file and a too-small file. Screenshots: docs/screenshots/real-data/.
+Open: run the real Kaggle "Zomato Dataset.csv" (Claude 1; a generated file with its column names needed no help); rebuild docs/GUIDE.pdf;
+CLAUDE.md section 8 still lists "Your data" as a screen (plan text for the owner / Claude 1).

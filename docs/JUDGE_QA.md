@@ -477,3 +477,18 @@ such a column and checks it is dropped; the screen lists every column it learned
 It is refused, with the reason: it needs at least 500 rows, 7 days, 30 misses and 30 in time, and items that end after they
 start. A 100,000-row file takes 2.9 s.
 
+
+**Q89. I uploaded my own CSV. Is every screen really about my file?**
+Yes. Real data has two sources: the UCI example and your file. After *Analyse my file*, Overview, Shadow mode, Problems,
+Risks, Actions and Proof are all drawn from the report on your file, learned on your first 70% and scored once on the rest,
+and every number clicks to its source. On the UCI log as a plain CSV: OpsLens caught 48.9% of real misses, the priority field 25.5%.
+
+**Q90. (Attack) My file has no priority or SLA column. Then you just make something up?**
+No. Without an on-time column, a miss is taking longer than your file's median time rounded up, labelled as OpsLens's
+assumption, and you can type your real promise. Without a priority field, OpsLens is compared with a rule of thumb (the past
+miss rate of your best column). Anything that needs a missing column says so by name: "needs a priority column".
+
+**Q91. (Attack) You forecast my teams' workload too. Isn't that fitting noise?**
+Each day's forecast reads only counts from a week or more before it; it learns on the days before your later 30% and is
+scored on the four weeks after, against "same weekday last week", and the screen says which wins. On the real desk the
+learned team forecast does not win: 0.365 against 0.341 for same day last week, and we show that.

@@ -81,8 +81,8 @@ The dashboard has a switch at the top between two "worlds":
 - **Food delivery (simulated)** — a support floor we built in the computer, with 40 agents and eight
   weeks of complaints. Because we built it, we know the full truth, so we can replay decisions and prove
   which ones help.
-- **IT service desk (real, public)** — a real company's IT help desk, from a public dataset (the UCI
-  ServiceNow log, 24,918 incidents). It shows the ideas hold on real data, not just on ours.
+- **Real data** — a real company's IT help desk, from a public dataset (the UCI ServiceNow log, 24,918
+  incidents), or the judge's own uploaded CSV on the same screens. It shows the ideas hold on real data, not just on ours.
 
 ### What makes OpsLens different (our "moats")
 1. **Proof, not promises.** Every claim is tested on unseen days, with fair comparisons and ranges.
@@ -195,7 +195,7 @@ The PDF asks for five things the system should do, four suggested technical part
 | *Tech:* NLP / LLMs | Local classifier + LLM for unsure tickets; LLM understands Ask questions; LLM writes words, not numbers | Real benchmark BANKING77: 91.0% | Proof → How we tested |
 | *Tech:* optimisation | Min-cost flow assignment; an exact roster solver tried | Honest: at our size a simple rule ties it (section 10) | Proof → Rules |
 | *Tech:* dashboard incl. performance tracking | Six screens, Live now, day-by-day tracking | Lower than the industry standard on 14 of 14 days | Overview |
-| **Deliverable 1**: a public dataset | The real IT desk on every screen | Shadow mode: 53 of 102 real misses warned in time vs 16 | IT service desk |
+| **Deliverable 1**: a public dataset | The real IT desk on every screen | Shadow mode: 53 of 102 real misses warned in time vs 16 | Real data |
 | **Deliverable 2**: dashboard of insights + bottlenecks | The dashboard | — | everywhere |
 | **Deliverable 3**: explainable recommendations | Reasons on every recommendation and assignment | 98.9% faithfulness | Risks, Actions |
 | **Deliverable 4**: baseline vs proposed, measurable | 4 baselines + published scheduling rules, intervals, 30 random worlds | Beat the industry standard in 29 of 30 worlds we did not design | Proof |
@@ -677,7 +677,8 @@ never abandons the late, while least slack wins the raw count by letting the alr
 ## 11. The dashboard, click by click
 
 ### The top bar
-- **Food delivery / IT service desk** — switches every screen between the two worlds.
+- **Food delivery / Real data** — switches every screen between the two worlds; in Real data, the bar on top
+  switches between the UCI example and your own uploaded CSV.
 - **Ask OpsLens** — type a question in plain words or Hinglish, press Enter. Try: "what if Team C loses 2
   agents on Saturday?", "kal raat refund wale kitne late honge?", "which customers will miss their deadline?",
   "why is T060582 at risk?". Below every answer, "How I answered" shows how the question was understood.
@@ -699,9 +700,16 @@ never abandons the late, while least slack wins the raw count by letting the alr
 | **Proof → Try a what-if** | Change agents per team, volume, policy | Run it (the simulator replays the day) |
 | **Proof → Rules we wrote first** | Every pre-registered rule with date and stamp | Click a commit |
 | **Proof → How we tested** | Every evaluation, including BANKING77 and what failed | — |
-| **Your data** | Upload any helpdesk CSV and map its columns; the UCI file is ready as an example | Upload / use the example |
+### Real data (switch to Real data): the UCI example, or your own CSV
+A slim bar at the top of every real screen says which data is shown: **UCI ServiceNow example** (the real desk below,
+the default) or **Your file: name.csv** (× goes back to UCI). **Upload a CSV** opens one card: drop the file (or try the
+UCI example), read five plain sentences saying what OpsLens guessed (where an item starts and ends, what a miss is, how
+items are grouped, what it learns from), change any bold value if needed, and press **Analyse my file**. Every real
+screen then runs on that file: Overview, Shadow mode (its busiest later day), Problems, Risks (with a team workload
+forecast when the file has teams and 8 weeks), Actions (Accept / Override, measured facts only, no Simulate) and Proof.
+What the file lacks is said by name ("needs a priority column"). The old *Your data* screen is gone; `#upload` opens this card.
 
-### The real desk (switch to IT service desk)
+### The real desk (switch to Real data, UCI ServiceNow example)
 - **Overview** — the fast-track outcome with its assumption, the desk's size, where an incident's time goes.
 - **Overview → Shadow mode** — a real day replayed with OpsLens watching.
 - **Problems** — real findings, each marked "still true on later months".
