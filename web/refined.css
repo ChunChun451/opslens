@@ -324,3 +324,4 @@ html[data-theme="neon"] .subnav button[aria-current="true"] { background: var(--
 .brief-value .brief-of { font-size: 0.95rem; font-weight: 500; color: var(--muted); }
 .brief-value .brief-text { font-family: var(--font); font-size: 1rem; font-weight: 600; line-height: 1.35; display: block; }
 .brief-sub { margin-top: 6px; font-size: 0.8rem; color: var(--ink-2); line-height: 1.4; }
+.finding-bars .cbar-track, html[data-theme="neon"] .finding-bars .cbar-track { background: transparent !important; }
