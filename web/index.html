@@ -68,10 +68,11 @@
 
     <div class="main">
       <header class="topbar">
-        <!-- Which data (Plan v3): the simulated food-delivery floor, or a real public service desk. -->
+        <!-- Which data (Plan v3; 26 Oct): the simulated food-delivery floor, or real data: the public
+             UCI service desk example or the judge's own CSV (the bar at the top of each real screen). -->
         <div class="world-switch" role="group" aria-label="Which data to show">
           <button type="button" data-world="food">Food delivery <span>simulated</span></button>
-          <button type="button" data-world="real">IT service desk <span>real, public</span></button>
+          <button type="button" data-world="real">Real data <span>UCI or your CSV</span></button>
         </div>
         <div id="data-source" class="status"></div>
         <!-- Ask OpsLens lives in the assistant now ("Ask OpsLens AI" in the side menu, js/bot.js),

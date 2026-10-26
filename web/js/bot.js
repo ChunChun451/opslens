@@ -16,7 +16,7 @@
 import { characterHtml } from "./characters.js";
 import { escapeHtml } from "./format.js";
 import { factsTable } from "./ask.js";
-import { setWorld } from "./router.js";
+import { setWorld, setSource } from "./router.js";
 import { state } from "./data.js";
 
 const STARTERS = [
@@ -27,10 +27,11 @@ const STARTERS = [
   ["Show me", ["Show me Shadow mode", "Show me the 30 random worlds", "Show me the rules we wrote first"]],
 ];
 
-// "Show me X" → a screen. [pattern, hash, world]
+// "Show me X" → a screen. [pattern, hash, world, real source]. Shadow mode opens on whatever Real
+// data shows (your file's busiest day once you uploaded one); "the service desk" is the UCI example.
 const PLACES = [
   [/shadow/i, "#overview/rd-shadow", "real"],
-  [/real (it )?desk|it desk|service desk|servicenow/i, "#overview/rd-overview", "real"],
+  [/real (it )?desk|it desk|service desk|servicenow/i, "#overview/rd-overview", "real", "uci"],
   [/30|random world|beyond/i, "#proof/worlds", "food"],
   [/rule|ledger|pre-?regist/i, "#proof/ledger", "food"],
   [/what-?if|simulat/i, "#proof/whatif", "food"],
@@ -42,7 +43,7 @@ const PLACES = [
   [/forecast|48|next week/i, "#risks/next48", "food"],
   [/risk|late tickets|at risk/i, "#risks/atrisk", "food"],
   [/action|fix|recommend/i, "#actions", "food"],
-  [/upload|your data|csv/i, "#upload", "food"],
+  [/upload|your data|csv|my file|own file/i, "#upload", "real"], // Real data with the upload card open
 ];
 const SHOW = /^\s*(show( me)?|open|go to|take me to|dikhao|dikha do|le chalo)\b/i;
 
@@ -139,6 +140,7 @@ async function ask(question) {
     const place = PLACES.find(([re]) => re.test(question));
     if (place) {
       addMessage("bot", `<p>Opening it for you.</p><button type="button" class="bm-go" data-go="${place[1]}" data-world="${place[2]}">Open again</button>`);
+      if (place[3]) setSource(place[3]);
       goTo(place[1], place[2]);
       return;
     }

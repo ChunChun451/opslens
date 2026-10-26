@@ -17,7 +17,7 @@
 import { state } from "./data.js";
 import { shortLabel } from "./ui.js";
 import { ev, evText } from "./evidence.js";
-import { showTab, setWorld } from "./router.js";
+import { showTab, setWorld, setSource } from "./router.js";
 import { pauseReplay } from "./replay.js";
 import { escapeHtml, prettyKey } from "./format.js";
 import { CAUSE_LABELS } from "./tabs/patterns.js";
@@ -87,6 +87,7 @@ function goTo(i) {
   step = i;
   const s = STEPS[step];
   const world = s.world || "food"; // one step visits the real desk; the rest are the food floor
+  if (world === "real" && state.realSource !== "uci") setSource("uci"); // the story's real step is the UCI desk, not an upload
   if (state.world !== world) { setWorld(world); syncSwitch(); }
   showTab(s.tab, s.view);
   const target = document.getElementById(s.target());

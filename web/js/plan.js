@@ -7,6 +7,10 @@
 // together (food world: POST /api/plan/impact, the simulator). Override records why — a manager's
 // "no" is information too. The plan is kept in this browser only (a demo, no accounts).
 //
+// Real data on your file (26 Oct): the file's items carry `source: "upload:<token>"`, so each file
+// has its own plan, apart from the UCI example's; they show measured facts only and no Simulate
+// (a log cannot be replayed under different decisions), which the panel says in one line.
+//
 // Example: Accept "Cross-train 2 Hindi-speaking agents" → the plan shows its effect on missed SLAs
 // over the two held-out weeks (playbooks.playbooks[1].effect.opslens.vs_without.breaches) → Simulate.
 
@@ -104,8 +108,14 @@ export function initPlan(startItems = []) {
   if (stale.length) store("opslens-plan", state.plan);
   document.addEventListener("click", onClick);
   document.getElementById("plan-button").addEventListener("click", () => togglePanel());
-  document.addEventListener("world-changed", () => { refreshCount(); if (panelOpen()) renderPanel(); });
+  ["world-changed", "source-changed"].forEach((type) => document.addEventListener(type, () => { refreshCount(); if (panelOpen()) renderPanel(); }));
   refreshCount();
+}
+
+// Which plan is shown: "" for the food floor and the UCI example, "upload:<token>" for your file.
+function sourceKey() {
+  const meta = state.uploadMeta;
+  return state.world === "real" && state.realSource === "upload" && state.upload && meta ? `upload:${meta.token}` : "";
 }
 
 function onClick(event) {
@@ -116,13 +126,14 @@ function onClick(event) {
   const id = box.dataset.planItem;
   const act = button.dataset.planAct;
   const item = itemInfo(id) || { world: state.world, title: id };
+  const source = item.source || "";
   if (act === "accept") {
-    state.plan[id] = { status: "accepted", world: item.world, title: item.title, at: new Date().toISOString() };
+    state.plan[id] = { status: "accepted", world: item.world, source, title: item.title, at: new Date().toISOString() };
   } else if (act === "override") {
     choosing.add(id);
   } else if (act === "reason") {
     choosing.delete(id);
-    state.plan[id] = { status: "overridden", reason: button.dataset.reason, world: item.world, title: item.title,
+    state.plan[id] = { status: "overridden", reason: button.dataset.reason, world: item.world, source, title: item.title,
                        at: new Date().toISOString() };
   } else if (act === "undo") {
     delete state.plan[id];
@@ -135,7 +146,8 @@ function onClick(event) {
 }
 
 function mine(status) {
-  return Object.entries(state.plan).filter(([, d]) => d.world === state.world && d.status === status).map(([id]) => id);
+  return Object.entries(state.plan)
+    .filter(([, d]) => d.world === state.world && (d.source || "") === sourceKey() && d.status === status).map(([id]) => id);
 }
 
 function refreshCount() {
@@ -168,16 +180,19 @@ function effectsHtml(item) {
 function renderPanel() {
   const accepted = mine("accepted");
   const overridden = mine("overridden");
-  const world = state.world === "real" ? "the real public service desk" : "the food-delivery floor";
+  const onFile = sourceKey() !== "";
+  const world = onFile ? `your file ${escapeHtml(state.uploadMeta.name)}` : state.world === "real" ? "the real public service desk" : "the food-delivery floor";
   const simulable = state.world === "food" && accepted.some((id) => itemInfo(id) && itemInfo(id).simulable);
   document.getElementById("plan-panel").innerHTML = `
     <div class="plan-head"><h3>Your plan</h3>
       <button type="button" class="link-btn" id="plan-close" aria-label="Close your plan">Close</button></div>
-    <p class="small muted">Recommendations you accepted or overrode for ${world}. Accepting shows what each one changes,
-      measured on days OpsLens never saw. Kept in this browser only.</p>
+    <p class="small muted">Recommendations you accepted or overrode for ${world}. ${onFile
+      ? "Each one keeps the facts measured in your file." : "Accepting shows what each one changes, measured on days OpsLens never saw."}
+      Kept in this browser only.</p>
     <h4>Accepted (${accepted.length})</h4>
     ${accepted.length ? accepted.map(acceptedHtml).join("")
       : `<p class="small muted">Nothing yet. Open Actions and press Accept on a recommendation.</p>`}
+    ${onFile ? `<p class="small muted">No Simulate for a file: a log cannot be replayed under different decisions.</p>` : ""}
     ${simulable ? `<div class="plan-sim"><label class="small" for="plan-day">Day</label>
         <select id="plan-day">${dayOptions()}</select>
         <button type="button" class="btn btn-primary" id="plan-simulate">Simulate this day with your plan</button></div>

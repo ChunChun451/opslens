@@ -5,7 +5,9 @@
   tokens and adds none of its own.
 
   How it works: loaded after neon.css and, like it, applies only while <html data-theme="neon"> (the
-  default). The one rule outside it hides the top-bar Ask box on Overview, in both themes.
+  default). The one rule outside it hides the top-bar Ask box on Overview, in both themes; and section 5
+  (Real data, 26 Oct: the source bar, the upload card, stamps and "needs" notes) styles both themes
+  with the shared colour tokens only (cyan accent in neon, red-coral for missed, no gradients).
 
   Example: "Live now | Results on the test days" is one rounded box; the chosen item keeps the neon
   cyan-violet highlight.
@@ -99,3 +101,92 @@ html[data-theme="neon"] .grid { gap: 20px; }
 /* Free agents are drawn as an outline (an inset shadow), so they keep it. */
 html[data-theme="neon"] .floor .tile.idle,
 html[data-theme="neon"] .tile.idle { box-shadow: inset 0 0 0 1.5px rgba(34, 211, 238, 0.55); }
+
+/* ---- 5. Real data (26 Oct): the source bar, the upload card, the screens on your file ----------
+   Both themes, shared tokens only. The bar sits above every real screen; the card opens under it. */
+.source-bar { margin: 0 0 16px; }
+.sb-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+.sb-switch { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid var(--border-strong);
+  border-radius: 10px; background: var(--surface); }
+.sb-switch button { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 0.85rem;
+  font-weight: 600; padding: 6px 12px; border-radius: 7px; cursor: pointer; }
+.sb-switch button:hover { color: var(--ink); background: var(--surface-2); }
+.sb-switch button[aria-pressed="true"] { color: var(--ink); background: var(--surface-3); box-shadow: inset 0 -2px 0 var(--blue); }
+.sb-file { display: inline-flex; align-items: center; }
+.sb-file b { display: inline-block; max-width: 24ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+.sb-switch .sb-x { padding: 6px 9px; font-size: 1rem; line-height: 1; }
+.sb-switch .sb-x:hover { color: var(--bad); background: var(--bad-soft); }
+.sb-note { flex-basis: 100%; font-size: 0.85rem; color: var(--bad); }
+
+.up-card { position: relative; margin-top: 12px; padding: 20px 22px; }
+.up-close { position: absolute; top: 10px; right: 12px; border: 0; background: none; color: var(--muted); font-size: 1.3rem;
+  line-height: 1; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+.up-close:hover { color: var(--ink); background: var(--surface-2); }
+.up-drop { display: grid; justify-items: center; gap: 12px; padding: 40px 20px; border: 2px dashed var(--border-strong);
+  border-radius: var(--radius); background: var(--surface-2); text-align: center; transition: border-color 0.2s, background 0.2s; }
+.up-drop.is-over { border-color: var(--blue); background: var(--blue-soft); }
+.up-drop-icon { width: 34px; height: 34px; fill: none; stroke: var(--blue); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.up-drop-title { margin: 0; font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+.up-drop-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 14px; }
+.up-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: -4px 0 12px; }
+.up-head .up-close { position: static; }
+.up-file { font-weight: 700; font-size: 0.95rem; overflow-wrap: anywhere; }
+.up-says { margin: 0 0 14px; padding-left: 22px; display: grid; gap: 10px; line-height: 1.65; }
+.up-says li::marker { color: var(--muted); font-weight: 600; }
+/* A bold value that is also a small dropdown, closed until clicked. */
+.up-card select.pick { display: inline-block; width: auto; max-width: 100%; height: auto; margin: 0 1px; padding: 1px 4px 1px 7px;
+  font: inherit; font-weight: 700; color: var(--ink); background-color: var(--surface-2); border: 1px solid var(--border-strong);
+  border-radius: 6px; cursor: pointer; vertical-align: baseline; field-sizing: content; }
+.up-card select.pick:hover { border-color: var(--blue); }
+.up-card input.pick-num { display: inline-block; width: 5.5em; height: auto; padding: 1px 6px; font: inherit; font-weight: 700;
+  text-align: right; vertical-align: baseline; }
+.up-assume { display: block; font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+.up-question { display: grid; gap: 12px; margin-bottom: 16px; }
+.up-q-text { margin: 0; font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; }
+.up-answers { display: flex; flex-wrap: wrap; gap: 8px; }
+.up-preview { margin: 4px 0 16px; }
+.up-preview-title { font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.up-preview table { font-size: 0.78rem; }
+.up-preview th, .up-preview td { white-space: nowrap; }
+.up-preview .is-used { background: var(--blue-soft); }
+.up-role { display: block; font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue); }
+.up-go { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.up-card .btn-lg { height: 46px; padding: 0 22px; font-size: 1rem; font-weight: 700; }
+.up-adjust { display: grid; gap: 18px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.up-adjust[hidden] { display: none; }
+.up-problem { margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--bad); border-radius: 8px; background: var(--bad-soft);
+  color: var(--ink); font-size: 0.92rem; }
+.up-watch .up-steps { margin: 4px 0 14px; }
+.up-mark { display: inline-grid; place-items: center; width: 18px; color: var(--blue); font-weight: 700; }
+.up-step.is-done .up-mark { color: var(--good); }
+.up-bar { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.up-bar i { display: block; height: 100%; background: var(--blue); border-radius: 4px; transition: width 0.45s ease; }
+.up-clock { margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+/* "still true later" / "not confirmed later": a small stamp, not a pill. */
+.stamp { display: inline-block; padding: 2px 8px; border: 1px solid var(--border-strong); border-radius: 6px; font-size: 0.7rem;
+  font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); white-space: nowrap; vertical-align: middle; }
+.stamp.is-yes { color: var(--blue); border-color: var(--blue); }
+.stamp.is-no { border-style: dashed; }
+/* A part of the report this file cannot support, and the column it needs. */
+.needs { margin: 0; font-size: 0.9rem; color: var(--muted); }
+.needs b { color: var(--ink-2); font-weight: 600; }
+.up-headline .lead-line { margin: 0 0 12px; font-size: 1.12rem; line-height: 1.55; }
+[id^="view-up-"] .t-ours { color: var(--blue); }
+[id^="view-up-"] .t-theirs { color: var(--ink-2); }
+.up-oneline { margin: 4px 2px 0; font-size: 0.88rem; color: var(--muted); }
+
+@media (max-width: 700px) {
+  .sb-switch { width: 100%; }
+  .sb-switch button { flex: 1 1 auto; }
+  .up-card { padding: 16px 14px; }
+  .up-drop { padding: 28px 14px; }
+  .up-drop-title { font-size: 1.08rem; }
+}
+.up-issues .issue { padding: 10px 0; border-top: 1px solid var(--border); align-items: center; }
+.up-issues .issue:first-child { border-top: 0; padding-top: 0; }
+.up-says .link-btn { padding: 0; }
+.sb-row [data-upload-toggle][aria-expanded="true"] { border-color: var(--blue); color: var(--blue); }
+/* A long file name in a title wraps instead of pushing the page sideways on a phone. */
+[id^="view-up-"] .page-head > div { min-width: 0; }
+[id^="view-up-"] .page-title { overflow-wrap: anywhere; }

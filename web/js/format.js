@@ -300,13 +300,68 @@ export const DEFINITIONS = {
   numbers_used: "Paths of the numbers the brief refers to. Code fills them in; the LLM never writes a digit.",
 };
 
+// Real data on your file (upload.* and uploadpeek.* paths): what each number means, in words.
+const FILE_DEFINITIONS = {
+  caught_pct: "Share of the real misses on your later items that this picker had flagged as they opened. Every picker flags the same share of each day's items.",
+  auc: "How well the score ranks: the chance a real miss is scored above an item that was in time. A coin flip scores one half.",
+  gap_pts: "OpsLens's share of the real misses caught minus the other picker's, in percentage points.",
+  ci: "95% interval of the gap, from resampling whole days of your later items.",
+  missed_pct: "Share of items that missed, by the rule shown on screen.",
+  median_min: "Half of the items took less than this.",
+  p90_min: "Nine in ten items took less than this.",
+  items: "Number of items.",
+  rows: "Rows in your file.",
+  days: "Calendar days with at least one item.",
+  risk: "OpsLens's chance that this item misses, known the moment it opened.",
+  share: "Share of the push towards a miss that this reason gives, from the model itself (TreeSHAP).",
+  flags: "Items each picker flagged that day: the same number for each.",
+  misses: "Real misses: your file's own outcomes.",
+  wape_learned: "Error of the learned forecast: the sum of |forecast − actual| over the sum of actual, over team-days. Lower is better.",
+  wape_same_weekday_last_week: "The same error for \"same weekday last week\" (the forecast is last week's count).",
+  forecast: "New items forecast for this team and day, a week ahead.",
+  actual: "New items that really came that day.",
+  usual_ends: "What this team usually finishes in a day: the median of the four weeks before the forecast.",
+  same_weekday_last_week: "New items on the same weekday a week before.",
+  items_scored: "New items on the scored days.",
+  target_min: "The promised time: an item that takes longer counts as a miss.",
+  flag_share_pct: "Each picker flags this share of each day's items, as they open.",
+  learns_from_count: "Columns of your file the model learns from: only ones known when an item starts.",
+  learn_items: "Items OpsLens learns from: the first part of your file, by start time.",
+  test_items: "Items OpsLens is tested on: the later part, which it never sees while learning.",
+  seconds: "Time the server took to analyse your file.",
+};
+// The same keys mean something else on a problem group (upload.cards[i].*).
+const GROUP_DEFINITIONS = {
+  learn_pct: "Share of this group's items that missed, on the first part of your file (where the group was found).",
+  learn_rest_pct: "Share of all other items that missed, on the first part of your file.",
+  test_pct: "Share of this group's items that missed on your later items, which the search never saw.",
+  test_rest_pct: "Share of all other items that missed on your later items.",
+  gap_ci: "95% interval of (this group's miss rate minus the rest's) on your later items, resampling whole days. Above zero: still true later.",
+  test_misses: "Real misses in this group among your later items.",
+  learn_items: "Items in this group in the first part of your file.",
+  test_items: "Items in this group among your later items.",
+  examples: "Items of this group that really missed, among your later items.",
+};
+
+function fileDefinition(rest) {
+  const key = rest.replace(/\[\d+\]/g, "").split(".").pop();
+  if (/^cards\[/.test(rest) && GROUP_DEFINITIONS[key]) return GROUP_DEFINITIONS[key];
+  return FILE_DEFINITIONS[key] || "";
+}
+
 // Find the definition for a path: walk its parts from the end and take the first match.
 // "sim.policies.opslens.kpis.turnaround.breach_pct.mean" -> DEFINITIONS.breach_pct
 export function definitionFor(path) {
   if (path.startsWith("whatif.")) {
     return "Simulated live for your settings. " + definitionFor(path.slice("whatif.".length));
   }
-  if (path.startsWith("plant.") || path.startsWith("upload.")) {
+  if (path.startsWith("upload.") || path.startsWith("uploadpeek.")) {
+    const rest = path.slice(path.indexOf(".") + 1);
+    const where = path.startsWith("uploadpeek.") ? "Read from your file by the server; nothing learned yet. "
+      : "Computed live by the server on your file (not part of the results file). ";
+    return where + (fileDefinition(rest) || definitionFor(rest));
+  }
+  if (path.startsWith("plant.")) {
     const rest = path.slice(path.indexOf(".") + 1);
     return "Computed live by the server for this request (not part of the results file). " + definitionFor(rest);
   }

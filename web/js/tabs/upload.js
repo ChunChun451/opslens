@@ -1,277 +1,465 @@
-// tabs/upload.js — "Your data": OpsLens on any export of work items, with a live report.
+// tabs/upload.js — the upload card: drop a CSV, read what OpsLens will do with it, watch it work.
 //
-// Why (25 Oct, the owner: "a judge brings his own CSV and asks what OpsLens would have done"):
-// a log records one way of working, so nobody can honestly replay it under another policy. What a
-// log CAN answer: learn on the first 70% of items, then show on the last 30% which real misses
-// OpsLens would have flagged as they opened, against the file's own priority field and a rule of
-// thumb; shadow mode on the busiest later day; problem cards found early and checked later.
-// The server does the work (opslens/anyfile.py via server/anyfile_jobs.py); this screen maps the
-// columns, follows the steps live and draws the report. Numbers are clickable ("upload.*" paths).
+// Why (26 Oct, the owner: "no friction, nothing weird"): a first-time judge must get from a file to
+// results in two clicks without reading anything. One card, three moments:
+//   1. DROP: one drop zone ("Drop a CSV of tickets, incidents or orders"), Choose file, and
+//      "or try the UCI example". Nothing else.
+//   2. CONFIRM: OpsLens guesses everything (POST /api/anyfile/peek: which column starts and ends an
+//      item, what a miss is, the groups; when the file has no on-time column, a promise from its
+//      median, rounded up) and says each decision as one plain sentence, with a 3-row preview where
+//      those columns are lit. Each bold value is a small dropdown; every other setting waits behind
+//      "Adjust". A question appears only when OpsLens truly cannot guess (the start, or the end),
+//      with the likely columns as buttons. Any change is checked at once (POST /api/anyfile/check,
+//      nothing learned yet), so the sentences always say what will happen.
+//   3. WATCH: four plain steps with ticks, a bar and the seconds (GET /api/anyfile/job/<id>); then
+//      every Real data screen switches to the file (web/js/source.js).
+// Errors are one sentence and one fix. Every number on the card is read from the server's answer
+// (state.uploadpeek) through ev(), so it is clickable like every other number.
 //
-// Flow: choose a CSV (or the UCI example) -> POST /api/anyfile/peek returns the columns, their
-// kinds and a suggested mapping -> the person fixes the mapping and says what a miss is ->
-// POST /api/anyfile/run -> poll GET /api/anyfile/job/<id> every half second until done.
-//
-// Example (the UCI example, 24,918 incidents, about 2 s): on Thu 5 May 2016, flagging 78 of 388
-// incidents as they opened, OpsLens caught 52 of the 111 real misses; the priority field 22.
+// Example (the Kaggle delivery export): "Each row is one item. It starts at Order_Date +
+// Time_Orderd. It ends Time_taken (min) minutes later. A miss = taking longer than [30] minutes."
 
 import { state } from "../data.js";
-import { pageHeader, card, stat, backendMissing } from "../ui.js";
 import { ev, evText } from "../evidence.js";
+import { backendMissing, postJson } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 const POLL_MS = 500;
-const STEPS = [
-  "Reading the file and the column mapping",
-  "Checking the file can be learned from",
-  "Building what was known when each item opened",
-  "Learning on the first 70% of items",
-  "Scoring the last 30%, which it never saw",
-  "Shadow mode on the busiest later day",
-  "Finding recurring problems, then checking them on later items",
+// The engine's steps (opslens/anyfile.py, analyse) in four plain phases for the person watching.
+const PHASES = [
+  ["Reading your file", ["Reading the file and the column mapping", "Checking the file can be learned from"]],
+  ["Learning from the first 70%", ["Building what was known when each item opened", "Learning on the first 70% of items"]],
+  ["Checking the last 30% it never saw", ["Scoring the last 30%, which it never saw", "Shadow mode on the busiest later day"]],
+  ["Building your screens", ["Finding recurring problems, then checking them on later items", "Forecasting each team's workload a week ahead"]],
 ];
-const ROLES = [
-  { key: "created_at", label: "Start (date or date and time)", need: true },
-  { key: "created_time", label: "Start time, if it is a separate column" },
-  { key: "resolved_at", label: "End time (resolved, closed, delivered)" },
-  { key: "duration_min", label: "or a duration in minutes" },
-  { key: "id", label: "ID" },
-  { key: "priority", label: "Priority / urgency" },
-  { key: "team", label: "Team / queue / city" },
-  { key: "category", label: "Category / type" },
+const ENGINE_STEPS = PHASES.reduce((n, [, steps]) => n + steps.length, 0);
+// Every part a column can play, in plain words, for the Adjust panel: [part, label, kind of column].
+const PARTS = [
+  ["created_at", "Starts (a date, or a date and time)", "time"],
+  ["created_time", "Start time, if it is in its own column", "time"],
+  ["resolved_at", "Ends at (a date and time)", "time"],
+  ["duration_min", "Or: how many minutes it took", "number"],
+  ["id", "ID of each item", "any"],
+  ["priority", "Priority", "any"],
+  ["team", "Team, queue or city", "any"],
+  ["category", "Category or type", "any"],
+  ["sla_met", "Says if it was on time (yes or no)", "any"],
+  ["breached", "Says if it missed (yes or no)", "any"],
+  ["due_at", "Due by (a date and time)", "time"],
 ];
-const PICKERS = { opslens: "OpsLens", priority: "Your priority field", rule: "Rule of thumb" };
-let peeked = null;
+// The word above a lit column in the preview.
+const PART_WORD = { created_at: "starts", created_time: "starts", resolved_at: "ends", duration_min: "ends", sla_met: "miss",
+                    breached: "miss", due_at: "due", team: "group", category: "group", priority: "priority", id: "id" };
+const MISS_PARTS = ["sla_met", "breached", "due_at"];
 
-export function render(section) {
-  section.innerHTML = `
-    ${pageHeader("Your data", "Run OpsLens on any export of work items: support tickets, incidents, delivery orders. " +
-      "It learns on your first 70% and shows what it would have caught on the rest.")}
-    ${card({
-      id: "upload-panel",
-      body: `<div class="dropzone">
-          <div><div class="card-title">Your export</div>
-            <div class="card-sub" id="up-file-name">A CSV with one row per item: when it started, when it ended (or how long it took), and anything known when it started.</div></div>
-          <div class="btn-row">
-            <button type="button" class="btn" id="up-uci">Use the UCI example</button>
-            <button type="button" class="btn btn-primary" id="up-choose">Choose a CSV file</button>
-            <input type="file" id="up-file" accept=".csv,text/csv,text/plain" hidden>
-          </div>
-        </div>
-        <div id="up-mapping"></div>
-        <div id="up-result" style="margin-top: 16px"></div>`,
-    })}`;
-  section.querySelector("#up-choose").addEventListener("click", () => section.querySelector("#up-file").click());
-  section.querySelector("#up-file").addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    section.querySelector("#up-file-name").textContent = file.name;
-    const form = new FormData();
-    form.append("file", file);
-    peek(section, form);
-  });
-  section.querySelector("#up-uci").addEventListener("click", () => {
-    section.querySelector("#up-file-name").textContent = "UCI ServiceNow incident log, one row per incident (CC BY 4.0)";
+let box = null; // the element the card draws into (#upload-card, inside the source bar)
+let hooks = {}; // {done(result, meta), refused(name, sentence), closed()} from source.js
+let file = ""; // the file's name
+let peeked = null; // the server's first read: token, columns, suggested parts, preview, questions
+let parts = {}; // which column plays which part (and `features`, the columns it learns from)
+let target = null; // the promised minutes in the box, when a miss is a promised time
+let typed = false; // true once the person typed a promise: then it is theirs, not OpsLens's guess
+let asking = []; // questions still to answer
+let adjusting = false; // the Adjust panel is open
+let shown = false; // the card is open: a closed card is not drawn again by a late answer
+
+export function openUpload(container, callbacks) {
+  box = container;
+  hooks = callbacks || {};
+  shown = true;
+  if (!box.dataset.wired) {
+    box.dataset.wired = "1";
+    box.addEventListener("click", onClick);
+    box.addEventListener("change", onChange);
+  }
+  drawDrop();
+}
+
+// Closing hides the card; a file being analysed still finishes and arrives (source.js).
+export function closeUpload() {
+  shown = false;
+  if (box) box.innerHTML = "";
+}
+
+function paint(html) {
+  if (!shown) return false;
+  box.innerHTML = html;
+  return true;
+}
+
+function onClick(event) {
+  const t = event.target;
+  if (t.closest("[data-up-close]")) { if (hooks.closed) hooks.closed(); return; }
+  if (t.closest("[data-up-other]")) { drawDrop(); return; }
+  const answerButton = t.closest("[data-answer]");
+  if (answerButton) { answer(answerButton.dataset.role, answerButton.dataset.answer); return; }
+  const adjust = t.closest("[data-adjust]");
+  if (adjust) toggleAdjust(adjust.dataset.adjust === "learn");
+  if (t.closest("#up-run")) run();
+}
+
+function onChange(event) {
+  const t = event.target;
+  if (t.matches("select[data-part]")) setPart(t.dataset.part, t.value);
+  else if (t.matches("select[data-end]")) setPart(...t.value.split("|"));
+  else if (t.matches("select[data-miss]")) setMiss(t.value);
+  else if (t.matches("#up-target")) {
+    const minutes = Number(t.value);
+    if (minutes > 0) { typed = true; target = minutes; recheck(); }
+  } else if (t.matches("[data-learn]")) {
+    const name = t.dataset.learn;
+    parts.features = (parts.features || []).filter((f) => f !== name).concat(t.checked ? [name] : []);
+    recheck();
+  }
+}
+
+// ---- 1. DROP -------------------------------------------------------------------------------------
+
+function closeButton() {
+  return `<button type="button" class="up-close" data-up-close aria-label="Close the upload card">×</button>`;
+}
+
+function drawDrop(problem = "") {
+  const drawn = paint(`<section class="card up-card" aria-label="Upload a CSV">${closeButton()}
+      <div class="up-drop" id="up-drop">
+        <svg class="up-drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4.5M7.5 9L12 4.5 16.5 9"/>
+          <path d="M4.5 15v3.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V15"/></svg>
+        <p class="up-drop-title">Drop a CSV of tickets, incidents or orders</p>
+        <div class="up-drop-actions"><button type="button" class="btn btn-primary" id="up-choose">Choose file</button>
+          <button type="button" class="link-btn" id="up-uci">or try the UCI example</button></div>
+        <input type="file" id="up-file" accept=".csv,text/csv,text/plain" hidden>
+      </div>
+      ${problem ? problemHtml(problem) : ""}
+    </section>`);
+  if (!drawn) return;
+  const zone = box.querySelector("#up-drop");
+  const input = box.querySelector("#up-file");
+  box.querySelector("#up-choose").addEventListener("click", () => input.click());
+  input.addEventListener("change", () => { if (input.files[0]) sendFile(input.files[0]); });
+  box.querySelector("#up-uci").addEventListener("click", () => {
     const form = new FormData();
     form.append("example", "uci_incidents");
-    peek(section, form);
+    send(form, "uci_one_row.csv");
+  });
+  ["dragenter", "dragover"].forEach((type) => zone.addEventListener(type, (event) => { event.preventDefault(); zone.classList.add("is-over"); }));
+  ["dragleave", "drop"].forEach((type) => zone.addEventListener(type, () => zone.classList.remove("is-over")));
+  zone.addEventListener("drop", (event) => {
+    event.preventDefault();
+    const dropped = event.dataTransfer && event.dataTransfer.files[0];
+    if (dropped) sendFile(dropped);
   });
 }
 
-async function peek(section, form) {
-  const result = section.querySelector("#up-result");
-  section.querySelector("#up-mapping").innerHTML = "";
-  result.innerHTML = `<div class="wait" role="status"><span class="spinner" aria-hidden="true"></span><span class="wait-text">Reading the columns…</span></div>`;
+function sendFile(chosen) {
+  const form = new FormData();
+  form.append("file", chosen);
+  send(form, chosen.name);
+}
+
+async function send(form, name) {
+  file = name;
+  if (state.staticServer) {
+    paint(`<section class="card up-card">${closeButton()}${backendMissing("POST /api/anyfile/peek", "Start the OpsLens server to read your file.")}</section>`);
+    return;
+  }
+  paint(`<section class="card up-card">${closeButton()}<div class="wait" role="status"><span class="spinner" aria-hidden="true"></span>
+      <span class="wait-text">Reading ${escapeHtml(name)}…</span></div></section>`);
+  let data;
   try {
     const response = await fetch("/api/anyfile/peek", { method: "POST", body: form });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || `server answered ${response.status}`);
-    peeked = data;
-    result.innerHTML = "";
-    showMapping(section, data);
+    data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "The server could not read this file. Try another file.");
   } catch (error) {
-    result.innerHTML = state.staticServer || /404|405|Failed to fetch/.test(error.message)
-      ? backendMissing("POST /api/anyfile/peek", "Start the OpsLens server to read your file.")
-      : `<div class="callout warn"><strong>That file could not be read.</strong> ${escapeHtml(error.message)}.</div>`;
+    const sentence = /Failed to fetch|NetworkError|Load failed/.test(error.message)
+      ? "The OpsLens server is not answering. Start it, then try again." : error.message;
+    refuse(sentence);
+    drawDrop(sentence);
+    return;
   }
+  file = data.name || name;
+  peeked = data;
+  state.uploadpeek = data;
+  parts = { ...data.suggested };
+  typed = false;
+  target = data.plan && data.plan.miss && data.plan.miss.rule === "promise" ? data.plan.miss.target_min : null;
+  asking = [...data.ask];
+  adjusting = false;
+  if (asking.length) drawQuestion();
+  else drawConfirm();
 }
 
-function columnSelect(role, columns, chosen) {
-  const options = [`<option value="">(not in this file)</option>`].concat(columns.map((c) =>
-    `<option value="${escapeHtml(c.name)}" ${c.name === chosen ? "selected" : ""}>${escapeHtml(c.name)}</option>`));
-  return `<label class="field"><span class="field-label">${escapeHtml(role.label)}${role.need ? " *" : ""}</span>
-      <select data-role="${role.key}">${options.join("")}</select></label>`;
+// ---- a question, only when OpsLens cannot guess ------------------------------------------------------
+
+function usedColumns() {
+  return new Set(Object.entries(parts).filter(([key, value]) => key !== "features" && value).map(([, value]) => value));
 }
 
-function showMapping(section, data) {
-  const s = data.suggested || {};
-  const missRule = s.sla_met ? "sla_met" : s.due_at ? "due_at" : "target";
-  const featureBoxes = data.columns.filter((c) => ["number", "category"].includes(c.kind)).map((c) => `
-      <label class="up-check"><input type="checkbox" data-feature="${escapeHtml(c.name)}" ${c.feature ? "checked" : ""}>
-        <span>${escapeHtml(c.name)}</span><small>${escapeHtml(c.examples.slice(0, 2).join(", "))}</small></label>`).join("");
-  section.querySelector("#up-mapping").innerHTML = `
-    <div class="section-label" style="margin-top: 22px">${Number(data.rows).toLocaleString("en-IN")} rows, ${data.columns.length} columns. Which column is which?</div>
-    <p class="small muted">Guessed from the names; fix any that are wrong. * = needed. An end time or a duration is needed too.</p>
-    <div class="form-grid">${ROLES.map((r) => columnSelect(r, data.columns, s[r.key])).join("")}</div>
-    <div class="section-label" style="margin-top: 20px">What counts as a miss?</div>
-    <div class="up-miss">
-      <label><input type="radio" name="up-miss" value="sla_met" ${missRule === "sla_met" ? "checked" : ""}> A column that says it met the SLA:
-        ${columnSelect({ key: "sla_met", label: "" }, data.columns, s.sla_met).replace('<label class="field">', '<span class="field">').replace("</label>", "</span>")}</label>
-      <label><input type="radio" name="up-miss" value="due_at" ${missRule === "due_at" ? "checked" : ""}> A due time:
-        ${columnSelect({ key: "due_at", label: "" }, data.columns, s.due_at).replace('<label class="field">', '<span class="field">').replace("</label>", "</span>")}</label>
-      <label><input type="radio" name="up-miss" value="target" ${missRule === "target" ? "checked" : ""}> Taking longer than
-        <input type="number" id="up-target" min="1" step="1" value="30" style="width: 90px"> minutes (the promise)</label>
-    </div>
-    <div class="section-label" style="margin-top: 20px">Known when an item starts</div>
-    <p class="small muted">OpsLens learns only from these. Untick anything written after an item ended; a column that gives the outcome away is dropped anyway.</p>
-    <div class="up-checks">${featureBoxes}</div>
-    <div class="btn-row" style="margin-top: 20px"><button type="button" class="btn btn-primary" id="up-run">Run OpsLens on this file</button></div>`;
-  section.querySelector("#up-run").addEventListener("click", () => run(section));
+function drawQuestion() {
+  const q = asking[0];
+  const used = usedColumns();
+  const options = q.options.filter((o) => !used.has(o.column));
+  if (!options.length) {
+    asking = [];
+    adjusting = true;
+    drawConfirm(q.role === "created_at"
+      ? "This file has no column that says when an item started. Pick the column under Adjust, or try another file."
+      : "This file has no time an item ended or took. Pick the column under Adjust, or try another file.");
+    return;
+  }
+  paint(`<section class="card up-card">${headHtml()}
+      <div class="up-question"><p class="up-q-text">${escapeHtml(q.text)}</p>
+        <div class="up-answers">${options.map((o) => `<button type="button" class="btn" data-role="${o.role}"
+          data-answer="${escapeHtml(o.column)}">${escapeHtml(o.column)}</button>`).join("")}</div></div>
+      ${previewHtml()}</section>`);
 }
 
-function readMapping(section) {
-  const mapping = {};
-  section.querySelectorAll("#up-mapping select[data-role]").forEach((sel) => { if (sel.value) mapping[sel.dataset.role] = sel.value; });
-  const rule = section.querySelector('input[name="up-miss"]:checked').value;
-  if (rule !== "sla_met") delete mapping.sla_met;
-  if (rule !== "due_at") delete mapping.due_at;
-  const used = new Set(Object.values(mapping));
-  mapping.features = [...section.querySelectorAll("[data-feature]:checked")].map((b) => b.dataset.feature).filter((f) => !used.has(f));
-  const target = rule === "target" ? Number(section.querySelector("#up-target").value) : null;
-  return { mapping, target };
+function answer(role, column) {
+  parts[role] = column;
+  if (role === "resolved_at") delete parts.duration_min;
+  if (role === "duration_min") delete parts.resolved_at;
+  parts.features = (parts.features || []).filter((f) => f !== column);
+  asking.shift();
+  if (asking.length) drawQuestion();
+  else recheck();
 }
 
-async function run(section) {
-  const result = section.querySelector("#up-result");
-  const button = section.querySelector("#up-run");
-  const { mapping, target } = readMapping(section);
-  button.disabled = true;
-  result.innerHTML = progressHtml([], "", 0);
+// ---- 2. CONFIRM ----------------------------------------------------------------------------------
+
+// Ask the server what will happen with the parts as they are now (nothing is learned yet).
+async function recheck() {
   try {
-    const response = await fetch("/api/anyfile/run", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: peeked.token, mapping, target_min: target }),
-    });
-    const start = await response.json();
-    if (!response.ok) throw new Error(start.error || `server answered ${response.status}`);
-    const done = await follow(start.job, result);
-    state.upload = done.result;
-    result.innerHTML = reportHtml(done.result);
+    const plan = await postJson("/api/anyfile/check", { token: peeked.token, mapping: cleanParts(), target_min: typed ? target : null });
+    state.uploadpeek = { ...state.uploadpeek, plan };
+    if (plan.miss && plan.miss.rule === "promise") target = plan.miss.target_min;
+    drawConfirm();
   } catch (error) {
-    state.upload = null;
-    result.innerHTML = `<div class="callout warn"><strong>OpsLens could not analyse this file.</strong> ${escapeHtml(error.message)}</div>`;
-  } finally {
-    button.disabled = false;
+    drawConfirm(cleanError(error.message));
   }
 }
 
-// Poll the job and redraw the step list until it finishes.
-async function follow(job, result) {
+function cleanParts() {
+  const out = {};
+  Object.entries(parts).forEach(([key, value]) => { if (key !== "features" && value) out[key] = value; });
+  const used = new Set(Object.values(out));
+  out.features = (parts.features || []).filter((f) => !used.has(f));
+  return out;
+}
+
+function setPart(part, column) {
+  if (column) parts[part] = column;
+  else delete parts[part];
+  if (column && part === "resolved_at") delete parts.duration_min;
+  if (column && part === "duration_min") delete parts.resolved_at;
+  if (column && MISS_PARTS.includes(part)) MISS_PARTS.filter((p) => p !== part).forEach((p) => delete parts[p]);
+  parts.features = (parts.features || []).filter((f) => f !== column); // a column with a part is not also learned from
+  recheck();
+}
+
+// The miss dropdown: the same kind of column, another one, or "none" (then a promised time).
+function setMiss(value) {
+  const [part, column] = value.split("|");
+  MISS_PARTS.forEach((p) => delete parts[p]);
+  if (column) parts[part] = column;
+  else typed = false;
+  recheck();
+}
+
+function drawConfirm(forced = "") {
+  const plan = state.uploadpeek && state.uploadpeek.plan;
+  const problem = forced || (plan && plan.problem) || "";
+  refuse(problem);
+  paint(`<section class="card up-card">${headHtml()}
+      ${plan ? `<ol class="up-says">${sentences(plan)}</ol>` : ""}
+      ${problem ? problemHtml(problem) : ""}
+      ${previewHtml()}
+      <div class="up-go"><button type="button" class="btn btn-primary btn-lg" id="up-run" ${problem || !plan ? "disabled" : ""}>Analyse my file</button>
+        <button type="button" class="link-btn" data-adjust aria-expanded="${adjusting}">Adjust</button>
+        <button type="button" class="link-btn" data-up-other>Choose another file</button></div>
+      <div class="up-adjust" id="up-adjust" ${adjusting ? "" : "hidden"}>${adjustHtml()}</div>
+    </section>`);
+}
+
+function toggleAdjust(toLearn) {
+  adjusting = toLearn ? true : !adjusting;
+  const panel = box.querySelector("#up-adjust");
+  if (!panel) return;
+  panel.hidden = !adjusting;
+  box.querySelectorAll("[data-adjust]").forEach((b) => b.setAttribute("aria-expanded", String(adjusting)));
+  if (toLearn) box.querySelector("#up-learn").scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+// One plain sentence per decision OpsLens made. Numbers are the server's (uploadpeek.plan.*).
+function sentences(plan) {
+  const P = "uploadpeek.plan";
+  const rows = plan.rows !== plan.items ? ` (${ev(`${P}.items`, "int")} of your ${ev(`${P}.rows`, "int")} rows can be read)` : "";
+  const start = `${pick("created_at", ["time"])}${parts.created_time ? ` + ${pick("created_time", ["time"])}` : ""}`;
+  return `<li>Each row is one item: ${ev(`${P}.items`, "int")} items from ${evText(`${P}.from`)} to ${evText(`${P}.to`)}${rows}.
+        It starts at ${start}.</li>
+      <li>${endSentence()}</li>
+      <li>${missSentence(plan)}</li>
+      <li>${groupSentence()}</li>
+      <li>${learnSentence(plan)}</li>`;
+}
+
+// Columns free for `part`: of the right kind and not playing another part, plus its own current one.
+function freeColumns(part, kinds) {
+  const current = parts[part] || "";
+  const taken = new Set(Object.entries(parts).filter(([key, value]) => key !== "features" && key !== part && value).map(([, value]) => value));
+  return peeked.columns.filter((c) => c.name === current || (kinds.includes(c.kind) && !taken.has(c.name)));
+}
+
+// A small dropdown that shows the chosen column in bold; closed until clicked.
+function pick(part, kinds, optional = false) {
+  const current = parts[part] || "";
+  const columns = freeColumns(part, kinds);
+  const none = optional ? `<option value="" ${current ? "" : "selected"}>${part === "priority" ? "none in this file" : "none"}</option>` : "";
+  return `<select class="pick" data-part="${part}" aria-label="${escapeHtml(partLabel(part))}">${none}${columns.map((c) =>
+    `<option value="${escapeHtml(c.name)}" ${c.name === current ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}</select>`;
+}
+
+function partLabel(part) {
+  const found = PARTS.find(([p]) => p === part);
+  return found ? found[1] : part;
+}
+
+function endSentence() {
+  const current = parts.duration_min ? `duration_min|${parts.duration_min}` : `resolved_at|${parts.resolved_at || ""}`;
+  // The current end column is always offered: "(min) 24" reads as minutes although it is text.
+  const option = (part, c) => `<option value="${escapeHtml(`${part}|${c.name}`)}" ${`${part}|${c.name}` === current ? "selected" : ""}>${escapeHtml(c.name)}</option>`;
+  const times = freeColumns("resolved_at", ["time"]).filter((c) => c.name !== parts.duration_min).map((c) => option("resolved_at", c));
+  const minutes = freeColumns("duration_min", ["number"]).filter((c) => c.name !== parts.resolved_at).map((c) => option("duration_min", c));
+  const select = `<select class="pick" data-end aria-label="When each item ended">
+      ${times.length ? `<optgroup label="Ends at this time">${times.join("")}</optgroup>` : ""}
+      ${minutes.length ? `<optgroup label="Took this many minutes">${minutes.join("")}</optgroup>` : ""}</select>`;
+  return parts.duration_min ? `It ends ${select} minutes later.` : `It ends at ${select}.`;
+}
+
+function missSentence(plan) {
+  const P = "uploadpeek.plan";
+  const rule = plan.miss.rule;
+  if (MISS_PARTS.includes(rule)) {
+    const kinds = rule === "due_at" ? ["time"] : ["category", "number"];
+    const options = freeColumns(rule, kinds).filter((c) => rule === "due_at" || c.unique <= 3 || c.name === parts[rule]);
+    const select = `<select class="pick" data-miss aria-label="What counts as a miss">${options.map((c) =>
+      `<option value="${rule}|${escapeHtml(c.name)}" ${c.name === parts[rule] ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}
+      <option value="promise|">none: use a promised time</option></select>`;
+    const says = rule === "due_at" ? `finishing after ${select}` : `what your file's own ${select} column says`;
+    return `A miss = ${says}. That makes ${ev(`${P}.missed_pct`, "pct")} of your items misses.`;
+  }
+  const input = `<input type="number" class="pick-num" id="up-target" min="1" step="1" value="${escapeHtml(String(target))}" aria-label="Promised minutes">`;
+  const guess = plan.miss.assumed ? `<span class="up-assume">That is OpsLens's guess: your file has no on-time column, and half your items
+      take under ${ev(`${P}.median_min`, "dur")}. Type your own promise if it is different.</span>` : "";
+  return `A miss = taking longer than ${input} minutes. That makes ${ev(`${P}.missed_pct`, "pct")} of your items misses. ${guess}`;
+}
+
+function groupSentence() {
+  const groups = ["team", "category"].filter((p) => parts[p]).map((p) => pick(p, ["category", "number"], true));
+  const by = groups.length ? `Grouped by ${groups.join(" and ")}.` : "Not grouped: no team or category column was found (see Adjust).";
+  return `${by} Priority: ${pick("priority", ["category", "number"], true)}.`;
+}
+
+function learnSentence(plan) {
+  const P = "uploadpeek.plan";
+  const columns = plan.learns_from_count
+    ? `${ev(`${P}.learns_from_count`, "int")} columns known when an item starts
+       (<button type="button" class="link-btn" data-adjust="learn">see which</button>), plus the time of day and how busy it was`
+    : "the time of day and how busy it was (no other column of your file is known when an item starts)";
+  return `OpsLens will learn from ${columns}. It learns on your first ${ev(`${P}.learn_items`, "int")} items and tests on the last
+    ${ev(`${P}.test_items`, "int")}, which it never sees while learning.`;
+}
+
+// The first rows of the file, with the columns OpsLens uses lit and named.
+function previewHtml() {
+  const lit = {};
+  Object.entries(parts).forEach(([part, column]) => { if (PART_WORD[part] && column && !lit[column]) lit[column] = PART_WORD[part]; });
+  const names = peeked.columns.map((c) => c.name);
+  const head = names.map((n) => `<th class="${lit[n] ? "is-used" : ""}">${lit[n] ? `<span class="up-role">${lit[n]}</span>` : ""}${escapeHtml(n)}</th>`).join("");
+  const rows = peeked.preview.map((row) => `<tr>${names.map((n) =>
+    `<td class="${lit[n] ? "is-used" : ""}">${escapeHtml(row[n] === undefined ? "" : row[n])}</td>`).join("")}</tr>`).join("");
+  return `<div class="up-preview"><div class="up-preview-title">The first rows of ${escapeHtml(file)}</div>
+      <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+// Every part as a dropdown, and the columns it learns from as ticks.
+function adjustHtml() {
+  const selects = PARTS.map(([part, label, kind]) => {
+    const current = parts[part] || "";
+    const columns = freeColumns(part, kind === "any" ? ["time", "number", "category", "id", "text"] : [kind]);
+    return `<label class="field"><span class="field-label">${escapeHtml(label)}</span><select data-part="${part}">
+        <option value="">(not in this file)</option>${columns.map((c) =>
+          `<option value="${escapeHtml(c.name)}" ${c.name === current ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}</select></label>`;
+  }).join("");
+  const used = usedColumns();
+  const ticks = peeked.columns.filter((c) => ["number", "category"].includes(c.kind) && !used.has(c.name)).map((c) => `
+      <label class="up-check"><input type="checkbox" data-learn="${escapeHtml(c.name)}" ${(parts.features || []).includes(c.name) ? "checked" : ""}>
+        <span>${escapeHtml(c.name)}</span><small>${escapeHtml(c.examples.slice(0, 2).join(", "))}</small></label>`).join("");
+  return `<div class="form-grid">${selects}</div>
+    <div class="up-learn" id="up-learn"><div class="section-label">Learns from (known when an item starts)</div>
+      <p class="small muted">Untick anything written after an item ended. A column that gives the outcome away is dropped anyway.</p>
+      <div class="up-checks">${ticks || `<p class="small muted">No other column of your file can be learned from.</p>`}</div></div>`;
+}
+
+// ---- 3. WATCH ------------------------------------------------------------------------------------
+
+async function run() {
+  const plan = state.uploadpeek.plan;
+  const promise = plan.miss.rule === "promise";
+  const body = { token: peeked.token, mapping: cleanParts(), target_min: promise ? target : null, target_assumed: promise && !typed };
+  drawWatch([], "", 0);
+  try {
+    const started = await postJson("/api/anyfile/run", body);
+    const done = await follow(started.job);
+    if (hooks.done) hooks.done(done.result, { job: started.job, token: peeked.token, name: file });
+  } catch (error) {
+    drawConfirm(cleanError(error.message));
+  }
+}
+
+// Poll the job and redraw the steps until it finishes.
+async function follow(job) {
   for (;;) {
-    const response = await fetch(`/api/anyfile/job/${encodeURIComponent(job)}`);
-    const s = await response.json();
+    const response = await fetch(`/api/anyfile/job/${encodeURIComponent(job)}`, { cache: "no-store" });
+    const s = await response.json().catch(() => ({}));
     if (s.status === "done") return s;
-    if (s.status === "error" || !response.ok) throw new Error(s.error || "the job stopped");
-    result.innerHTML = progressHtml(s.steps || [], s.step, s.elapsed);
+    if (s.status === "error" || !response.ok) throw new Error(s.error || "OpsLens could not analyse this file. Try another file.");
+    drawWatch(s.steps || [], s.step, s.elapsed);
     await new Promise((resolve) => setTimeout(resolve, POLL_MS));
   }
 }
 
-function progressHtml(seen, current, elapsed) {
-  const rows = STEPS.map((name) => {
-    const isNow = name === current;
-    const isDone = seen.includes(name) && !isNow;
-    const mark = isDone ? "✓" : isNow ? `<span class="spinner" aria-hidden="true"></span>` : "·";
-    return `<li class="up-step ${isDone ? "is-done" : ""} ${isNow ? "is-now" : ""}"><span class="up-mark">${mark}</span>${escapeHtml(name)}</li>`;
+function drawWatch(seen, current, elapsed) {
+  const finishedSteps = seen.filter((s) => s !== current).length;
+  const share = Math.min(1, (finishedSteps + (current ? 0.5 : 0)) / ENGINE_STEPS);
+  const rows = PHASES.map(([name, steps]) => {
+    const now = steps.includes(current);
+    const done = !now && steps.every((s) => seen.includes(s));
+    const mark = done ? "✓" : now ? `<span class="spinner" aria-hidden="true"></span>` : "";
+    return `<li class="up-step ${done ? "is-done" : ""} ${now ? "is-now" : ""}"><span class="up-mark">${mark}</span>${escapeHtml(name)}</li>`;
   }).join("");
-  return `<div class="card up-progress" role="status" aria-live="polite"><div class="card-head"><h3 class="card-title">OpsLens is working on your file</h3>
-      <span class="muted">${Number(elapsed || 0).toFixed(1)} s</span></div><ol class="up-steps">${rows}</ol></div>`;
+  // The seconds are a clock (time waited so far), not a result.
+  paint(`<section class="card up-card up-watch" role="status" aria-live="polite">${headHtml(false)}
+      <ol class="up-steps">${rows}</ol>
+      <div class="up-bar" aria-hidden="true"><i style="width: ${(share * 100).toFixed(0)}%"></i></div>
+      <div class="small muted up-clock">${Number(elapsed || 0).toFixed(1)} s</div></section>`);
 }
 
-// ---- The report ----------------------------------------------------------------------------
+// ---- small pieces ----------------------------------------------------------------------------------
 
-function reportHtml(r) {
-  const w = r.warning;
-  const rival = w.vs.rival;
-  const head = `<div class="callout good"><strong>Flagging 1 item in 5 as they opened, OpsLens caught
-      ${ev("upload.warning.caught_pct.opslens", "pct")} of the real misses on your later items;
-      ${escapeHtml(PICKERS[rival].toLowerCase())} caught ${ev(`upload.warning.caught_pct.${rival}`, "pct")}</strong>
-      (gap ${ev("upload.warning.vs.gap_pts", "pts", { signed: true })}, 95% interval ${ev("upload.warning.vs.ci[0]", "pts", { bare: true })} to
-      ${ev("upload.warning.vs.ci[1]", "pts", { bare: true })} points over days). Learned on ${ev("upload.learn.items", "int")} items
-      (${evText("upload.learn.from")} to ${evText("upload.learn.to")}), scored on ${ev("upload.test.items", "int")} it never saw.</div>`;
-  const stats = `<div class="grid cols-4 stretch" style="margin-top: 14px">
-      ${card({ body: stat("Items", ev("upload.summary.items", "int"), `${evText("upload.summary.from")} to ${evText("upload.summary.to")}`) })}
-      ${card({ body: stat("Missed", ev("upload.summary.missed_pct", "pct"), "of all items") })}
-      ${card({ body: stat("Median time", ev("upload.summary.median_min", "dur"), `90% within ${ev("upload.summary.p90_min", "dur")}`) })}
-      ${card({ body: stat("Analysed in", ev("upload.seconds", "sec"), "on this laptop") })}
-    </div>`;
-  return `${head}${stats}
-    <div class="grid cols-2" style="margin-top: 18px">${shadowHtml(r)}${warningHtml(r)}</div>
-    <div style="margin-top: 18px">${cardsHtml(r)}</div>
-    <div class="grid cols-2" style="margin-top: 18px">${worstHtml(r, "team", "Worst teams")}${worstHtml(r, "category", "Worst categories")}</div>
-    <div style="margin-top: 18px">${honestHtml(r)}</div>`;
+function headHtml(withClose = true) {
+  return `<header class="up-head"><span class="up-file">${escapeHtml(file)}</span>${withClose ? closeButton() : ""}</header>`;
 }
 
-function shadowHtml(r) {
-  const sh = r.shadow;
-  const most = Math.max(1, sh.misses);
-  const bars = Object.keys(sh.caught).map((k) => `<div class="ft-row ${k === "opslens" ? "is-ours" : ""}">
-      <span>${escapeHtml(PICKERS[k])}${k === "rule" && r.rule_column ? ` (by ${escapeHtml(r.rule_column)})` : ""}</span>
-      <span class="ft-track"><i style="width: ${(100 * sh.caught[k]) / most}%"></i></span>
-      <b>${ev(`upload.shadow.caught.${k}`, "int")}</b></div>`).join("");
-  const examples = sh.examples.map((x, i) => `<li><span class="mono">${escapeHtml(x.opened)}</span> ${evText(`upload.shadow.examples[${i}].id`)}
-      · ${ev(`upload.shadow.examples[${i}].risk`, "frac_pct")} risk · ${x.missed ? `<strong class="bad">missed</strong>` : "in time"}
-      <div class="small muted">${x.reasons.map((reason) => escapeHtml(reason.text)).join(" · ")}</div></li>`).join("");
-  return card({
-    title: `Shadow mode: ${sh.weekday} ${sh.date}, your busiest later day`,
-    sub: `${ev("upload.shadow.items", "int")} items opened, ${ev("upload.shadow.misses", "int")} really missed. Each one flags the same ${ev("upload.shadow.flags", "int")} as they open: how many real misses did it catch?`,
-    body: `<div class="ft-bars">${bars}</div><div class="section-label" style="margin-top: 12px">OpsLens's first flags that day</div><ul class="list">${examples}</ul>`,
-  });
+function problemHtml(sentence) {
+  return `<div class="up-problem" role="alert">${escapeHtml(sentence)}</div>`;
 }
 
-function warningHtml(r) {
-  const w = r.warning;
-  const rows = Object.keys(w.auc).map((k) => `<tr><td>${escapeHtml(PICKERS[k])}</td><td class="num">${ev(`upload.warning.auc.${k}`, "ratio")}</td>
-      <td class="num">${ev(`upload.warning.caught_pct.${k}`, "pct")}</td></tr>`).join("");
-  const top = w.at_risk.slice(0, 4).map((x, i) => `<li>${evText(`upload.warning.at_risk[${i}].id`)} · ${ev(`upload.warning.at_risk[${i}].risk`, "frac_pct")}
-      · ${x.missed ? `<strong class="bad">missed</strong>` : "in time"}<div class="small muted">${x.reasons.map((reason) =>
-        `${escapeHtml(reason.text)} (${Math.round(100 * reason.share)}%)`).join(" · ")}</div></li>`).join("");
-  return card({
-    title: "Early warning, the moment an item opens",
-    sub: `On your later ${ev("upload.warning.items", "int")} items (${ev("upload.warning.misses", "int")} misses). Ranking score: 0.5 is a coin toss, 1 is perfect.`,
-    body: `<div class="table-wrap"><table><thead><tr><th>Who flags</th><th class="num">Ranking score</th><th class="num">Misses caught (1 in 5 flagged)</th></tr></thead>
-      <tbody>${rows}</tbody></table></div><div class="section-label" style="margin-top: 12px">Riskiest later items, with the model's own reasons</div><ul class="list">${top}</ul>`,
-  });
+// The server's sentence without the transport words ("HTTP 400: ").
+function cleanError(message) {
+  const text = String(message).replace(/^HTTP \d+:?\s*/, "");
+  return text || "OpsLens could not analyse this file. Try another file.";
 }
 
-function cardsHtml(r) {
-  if (!r.cards.length) return card({ title: "Recurring problems", body: `<p class="muted">No group misses clearly more often than the rest.</p>` });
-  const items = r.cards.map((c, i) => `<li><div class="issue">
-      <span class="issue-title">${escapeHtml(c.column)} = ${evText(`upload.cards[${i}].value`)}</span>
-      <span class="pill ${c.still_true ? "good" : ""}">${c.still_true ? "still true later" : "not confirmed later"}</span>
-      <span class="issue-text">First 70%: ${ev(`upload.cards[${i}].learn_pct`, "pct")} missed vs ${ev(`upload.cards[${i}].learn_rest_pct`, "pct")} for the rest
-        (${ev(`upload.cards[${i}].learn_items`, "int")} items). Later: ${ev(`upload.cards[${i}].test_pct`, "pct")} vs ${ev(`upload.cards[${i}].test_rest_pct`, "pct")},
-        gap ${ev(`upload.cards[${i}].gap_ci[0]`, "pts", { bare: true })} to ${ev(`upload.cards[${i}].gap_ci[1]`, "pts", { bare: true })} points (95%).</span>
-    </div></li>`).join("");
-  return card({ title: "Recurring problems", sub: "Found on your first 70%, then measured again on the last 30%.", body: `<ul class="list">${items}</ul>` });
-}
-
-function worstHtml(r, key, title) {
-  const rows = r.summary[`by_${key}`] || [];
-  if (!rows.length) return "";
-  const body = rows.map((x, i) => `<tr><td>${evText(`upload.summary.by_${key}[${i}].name`)}</td>
-      <td class="num">${ev(`upload.summary.by_${key}[${i}].items`, "int")}</td><td class="num">${ev(`upload.summary.by_${key}[${i}].missed_pct`, "pct")}</td></tr>`).join("");
-  return card({ title, body: `<div class="table-wrap"><table><thead><tr><th>Name</th><th class="num">Items</th><th class="num">Missed</th></tr></thead><tbody>${body}</tbody></table></div>` });
-}
-
-function honestHtml(r) {
-  const notes = r.notes.map((n) => `<li>${escapeHtml(n)}</li>`).join("");
-  const dropped = r.dropped_after_the_fact.length
-    ? `<li>Dropped because they give the outcome away (written after the fact): ${escapeHtml(r.dropped_after_the_fact.join(", "))}.</li>` : "";
-  const cannot = r.cannot.map((n) => `<li>${escapeHtml(n)}</li>`).join("");
-  return card({
-    title: "How to read this",
-    body: `<ul class="list">${notes}${dropped}<li>Learned from: ${escapeHtml(r.features.join(", "))}.</li></ul>
-      <div class="section-label" style="margin-top: 12px">What this file cannot tell you</div><ul class="list">${cannot}</ul>`,
-  });
+// Tell the source bar (one sentence, or "" to clear it).
+function refuse(sentence) {
+  if (hooks.refused) hooks.refused(file, sentence);
 }

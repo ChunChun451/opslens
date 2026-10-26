@@ -16,12 +16,20 @@ export const state = {
   // are read by "whatif.*", "plant.*" and "upload.*" paths so they are clickable too.
   whatif: null, // POST /api/whatif
   plant: null, // POST /api/plant
-  upload: null, // POST /api/upload
+  // OpsLens on your file (26 Oct): the finished report of GET /api/anyfile/job/<id>, which every
+  // Real data screen draws when the source is "upload"; and the server's first read of the file
+  // (POST /api/anyfile/peek, then /check after a change), which the upload card's sentences quote.
+  upload: null,
+  uploadpeek: null,
+  uploadMeta: null, // {job, token, name} of the report in `upload`, kept in sessionStorage for a reload
   staticServer: false, // true when served by `python -m http.server` (no API at all)
   // Plan v3 (19 Oct): which world the dashboard shows — "food" (simulated food-delivery floor)
-  // or "real" (the public UCI ServiceNow service desk) — and the manager's plan: the
-  // recommendations they accepted or overrode. Both are remembered in this browser only.
+  // or "real" (real data) — and the manager's plan: the recommendations they accepted or
+  // overrode. Both are remembered in this browser only.
   world: readStored("opslens-world", "food"),
+  // Real data (26 Oct): "uci" (the UCI ServiceNow example, results.realdesk) or "upload" (your
+  // file, state.upload). Remembered for this tab only, like the report it points at.
+  realSource: readSession("opslens-real-source", "uci"),
   plan: readStored("opslens-plan", {}),
   planimpact: null, // POST /api/plan/impact (live simulation of the accepted plan)
   live: null, // GET /api/live (Live now: the floor at the viewer's real clock)
@@ -42,6 +50,25 @@ export function store(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (error) {
     // Not remembered — fine for a demo.
+  }
+}
+
+// The same for sessionStorage: kept while this tab is open, gone when it closes.
+export function readSession(key, fallback) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
+  } catch (error) {
+    return fallback;
+  }
+}
+
+export function storeSession(key, value) {
+  try {
+    if (value === null) sessionStorage.removeItem(key);
+    else sessionStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    // Not remembered: after a reload the dashboard shows the UCI example again.
   }
 }
 
@@ -114,7 +141,8 @@ export function getPath(root, path) {
 export const LIVE_SOURCES = {
   whatif: "POST /api/whatif (live simulation)",
   plant: "POST /api/plant (live detection on fresh data)",
-  upload: "POST /api/anyfile (OpsLens on your file: learned on its first 70%, scored on the rest)",
+  upload: "GET /api/anyfile/job (OpsLens on your file: learned on its first 70%, scored on the rest)",
+  uploadpeek: "POST /api/anyfile/peek (your file as the server read it; nothing learned yet)",
   planimpact: "POST /api/plan/impact (live simulation of your plan)",
   live: "GET /api/live (today's day, simulated on this laptop, at your clock)",
 };

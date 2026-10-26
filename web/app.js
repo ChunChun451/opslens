@@ -22,6 +22,7 @@ import { initScenes } from "./js/scenes.js";
 import { initSeason } from "./js/season.js";
 import { initSplash } from "./js/splash.js";
 import { initBot } from "./js/bot.js";
+import { initSource, restoreUpload } from "./js/source.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
@@ -43,14 +44,16 @@ async function start() {
   document.getElementById("fixture-banner").hidden = !isFixture;
   document.body.classList.toggle("has-fixture", isFixture);
 
+  await restoreUpload(); // a file analysed in this tab before a reload: its report comes back from the server
   showStatus(isFixture);
-  document.addEventListener("world-changed", () => showStatus(isFixture));
+  ["world-changed", "source-changed"].forEach((type) => document.addEventListener(type, () => showStatus(isFixture)));
   initWorldSwitch();
 
   setChartDefaults();
   initEvidence(); // before story mode, so Esc closes the popover first
   initMotion(); // before the first tab is shown, so its numbers count up too
   initSliderFill();
+  initSource(); // before the tabs: the old #upload address opens the upload card on the first screen
   initTabs();
   initPlan(realPlanItems());
   initStory();
@@ -66,8 +69,9 @@ async function start() {
 // The status line: what this world's numbers are, and how they were tested.
 function showStatus(isFixture) {
   const meta = state.results.meta;
-  const where = state.world === "real"
-    ? `<span>· real public data, scored on later months</span>`
+  const onFile = state.world === "real" && state.realSource === "upload" && state.upload;
+  const where = onFile ? `<span>· your file, scored on items it never learned from</span>`
+    : state.world === "real" ? `<span>· real public data, scored on later months</span>`
     : `<span>· simulated floor, held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}</span>`;
   document.getElementById("data-source").innerHTML = `
     <span class="status-dot ${isFixture ? "fixture" : ""}"></span>
@@ -82,7 +86,8 @@ function initWorldSwitch() {
   buttons.forEach((b) => b.addEventListener("click", () => { setWorld(b.dataset.world); paint(); }));
   paint();
   document.body.dataset.world = state.world;
-  document.addEventListener("world-changed", () => { document.body.dataset.world = state.world; });
+  // Every way into the other world (the switch, #upload, the assistant, story mode) repaints the switch.
+  document.addEventListener("world-changed", () => { document.body.dataset.world = state.world; paint(); });
 }
 
 function showLoadError(error) {
