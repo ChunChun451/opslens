@@ -1,9 +1,9 @@
 import { state, policyKeys } from "../data.js";
-import { ev, evText, labelFor } from "../evidence.js";
+import { ev, evText } from "../evidence.js";
 import {
   pageHeader, card, stat, missing, policyName, shortLabel, deltaPill, comparisonIndex, fold, onFirstOpen,
 } from "../ui.js";
-import { escapeHtml, kpiInfo, unitForPath, spreadUnit } from "../format.js";
+import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
 import { policyStyle } from "../charts.js";
 import { hasMission, missionHtml, initMission } from "../mission.js";
 import { thousandHtml, journeyHtml, initStoryCards } from "../storycards.js";
@@ -28,7 +28,7 @@ export function render(section) {
     ${r.sim && hasMission() ? fold("Replay one Saturday dinner, side by side", missionHtml(), { id: "fold-mission", hint: "the evening in 30 seconds" }) : ""}
     ${r.sim ? fold("More numbers: time to solve, waits, queues, transfers", `<div class="grid cols-4 stretch">${KEY_KPIS.map(kpiCard).join("")}</div>`, { hint: "against the industry standard" }) : ""}
     ${r.sim ? fold("Who is protected: urgent orders, gold and Hindi-speaking customers", segmentsCard()) : ""}
-    ${r.brief ? fold("Today's brief, written by the LLM (numbers filled in by code)", briefCard()) : ""}`;
+    ${r.brief ? fold("Today's brief", briefCard(), { hint: "five numbers" }) : ""}`;
   if (r.sim && hasMission()) onFirstOpen("fold-mission", initMission);
   initStoryCards(section);
 }
@@ -120,16 +120,37 @@ function briefCard() {
   if (!b) {
     return missing("The daily brief", "M10");
   }
-  const used = b.numbers_used.map((path) =>
-    `<li>${escapeHtml(labelFor(path))}: <strong>${ev(path, unitForPath(path))}</strong></li>`).join("");
-  return card({
-    id: "ov-brief",
-    title: "Today's brief",
-    actions: `<span class="pill">${b.source === "llm" ? "LLM text · numbers by code" : "template"}</span>`,
-    body: `<p class="brief">${evText("brief.text")}</p>
-      ${used ? `<details class="disclosure"><summary>Numbers in this brief</summary>
-        <ul class="small muted">${used}</ul></details>` : ""}`,
-  });
+  const used = b.numbers_used;
+  const find = (re) => used.find((path) => re.test(path));
+  const ours = find(/^sim\.policies\.opslens\.kpis\.turnaround\.breach_pct\.mean$/);
+  const theirs = find(/^sim\.policies\.baseline_d\.kpis\.turnaround\.breach_pct\.mean$/);
+  const diff = find(/^sim\.comparisons\[\d+\]\.mean_diff$/);
+  const days = find(/better_than_industry_days$/);
+  const watch = find(/^forecast\.bottlenecks\[\d+\]\.text$/);
+  const problem = find(/^patterns\.cards\[\d+\]\.title$/);
+  const fix = find(/^plan\.items\[\d+\]\.title$/);
+  const testDays = state.results.meta.test_days[1] - state.results.meta.test_days[0] + 1;
+  const base = (path, tail) => path.slice(0, path.lastIndexOf(".")) + tail;
+  const tile = (label, valueHtml, subHtml) => `<div class="brief-tile">
+      <div class="brief-label">${escapeHtml(label)}</div>
+      <div class="brief-value">${valueHtml}</div>
+      ${subHtml ? `<div class="brief-sub">${subHtml}</div>` : ""}
+    </div>`;
+  const tiles = [
+    ours && theirs && tile("Missed deadlines", `${ev(ours, "pct", { key: true })}`,
+      `industry standard ${ev(theirs, "pct")}${diff ? ` · ${ev(diff, "pts", { signed: true })}` : ""}`),
+    days && tile("Days OpsLens was lower", `${ev(days, "int", { key: true })} <span class="brief-of">of ${testDays}</span>`, "held-out days"),
+    watch && tile("Watch next", `<span class="brief-text">${evText(watch)}</span>`, ""),
+    problem && tile("Biggest problem", `${ev(base(problem, ".value"), "num", { key: true })} <span class="brief-of">vs ${ev(base(problem, ".comparison_value"), "num")}</span>`,
+      escapeHtml(state.results.patterns.cards[Number(problem.match(/\[(\d+)\]/)[1])].metric) + " · " + evText(problem)),
+    fix && tile("Do first", `${ev(base(fix, ".effect.breaches.diff"), "count", { signed: true, key: true })}`,
+      `missed deadlines over ${testDays} days · ${evText(fix)}`),
+  ].filter(Boolean).join("");
+  return `<div class="brief-tiles">${tiles}</div>
+    <details class="disclosure"><summary>Read it as text</summary>
+      <p class="brief">${evText("brief.text")}</p>
+      <p class="small muted">${b.source === "llm" ? "Written by the LLM; every number filled in by code." : "Template text; every number filled in by code."}</p>
+    </details>`;
 }
 
 function kpiCard(kpi) {
@@ -162,7 +183,7 @@ function segmentsCard() {
           <span class="cbar-value">${ev(`sim.policies.${k}.kpis.${kpi}.mean`, "pct")}</span>
         </div>`;
     }).join("");
-    return `<div class="section-label">${escapeHtml(kpiInfo(kpi).label)}</div><div class="mini-bars">${bars}</div>`;
+    return `<div class="seg"><div class="section-label">${escapeHtml(kpiInfo(kpi).label)}</div><div class="mini-bars">${bars}</div></div>`;
   }).join("");
   return `<div id="ov-segments" class="segments-grid">${blocks}</div>`;
 }

@@ -9,7 +9,6 @@ import { initAsk } from "./js/ask.js";
 import { initMotion, initSliderFill } from "./js/motion.js";
 import { initLiveTicker } from "./js/liveticker.js";
 import { initThemeSwitch } from "./js/themeswitch.js";
-import { initScenes } from "./js/scenes.js";
 import { initSeason } from "./js/season.js";
 import { initBot } from "./js/bot.js";
 import { initSource, restoreUpload } from "./js/source.js";
@@ -49,7 +48,6 @@ async function start() {
   initStory();
   initAsk();
   initLiveTicker();
-  initScenes();
   initThemeSwitch();
   initSeason();
   initBot();

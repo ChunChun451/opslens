@@ -2,9 +2,8 @@ import { state } from "../data.js";
 import { ev } from "../evidence.js";
 import { drawFrameInto } from "../floormap.js";
 import { escapeHtml, prettyKey, tidyDash } from "../format.js";
-import { mascotHtml, customerHtml, biryaniHtml, cheer, setMood } from "../mascot.js";
+import { mascotHtml } from "../mascot.js";
 
-const BUSY_WAITING = 60;
 const POLL_MS = 5000;
 const WAIT_MS = 2500;
 const LANGUAGE = { hi: "Hindi", en: "English", other: "Regional" };
@@ -27,12 +26,6 @@ let applied = clone(NORMAL);
 let draft = clone(NORMAL);
 let waitingSince = null;
 let seenDecisions = new Set();
-let lastGap = null;
-const JOKE = "Dosa ke jagah biryani de diya!";
-let lines = [JOKE];
-let lineIndex = 0;
-let talk = null;
-let lastRun = "";
 
 export function render(section) {
   section.innerHTML = `
@@ -54,16 +47,10 @@ export function render(section) {
           <div class="lv-midnight" id="lv-midnight"></div>
         </div>
         <div class="lv-actions">
-          <button type="button" class="btn btn-primary" id="lv-speed">▶ Play the evening</button>
+          <button type="button" class="btn btn-primary" id="lv-speed">▶ Play the day</button>
           <button type="button" class="btn" id="lv-luck">↻ New luck</button>
         </div>
       </header>
-
-      <div class="lv-scene" aria-hidden="true">
-        <div class="lv-scene-customer">${customerHtml("lv-customer")}${biryaniHtml("lv-biryani")}<div class="lv-say" id="lv-say">${escapeHtml(JOKE)}</div></div>
-        <div class="lv-scene-track"><i class="tk"></i><i class="tk"></i><i class="tk"></i><i class="tk"></i></div>
-        <div class="lv-scene-lenny"><div class="lv-scene-status" id="lv-scene-status">Lenny is on shift</div>${mascotHtml("lv-mascot", "tired")}</div>
-      </div>
 
       <div class="lv-floors">
         <div class="lv-lane"><div class="lv-lane-head"><b>Industry standard</b><span id="lv-w-theirs"></span></div><div class="floor" id="lv-f-theirs"></div></div>
@@ -181,7 +168,6 @@ function minuteNow() {
 
 function start() {
   stop();
-  talk = setInterval(nextLine, 3600);
   showClock();
   tick = setInterval(() => {
     if (speed > 1 && fastMinute !== null) fastMinute = Math.min(1439, fastMinute + speed / 60);
@@ -192,7 +178,6 @@ function start() {
 }
 
 function stop() {
-  clearInterval(talk);
   clearInterval(tick);
   clearTimeout(poll);
   tick = null;
@@ -204,10 +189,11 @@ function toggleSpeed() {
   if (speed > 1) {
     speed = 1;
     fastMinute = null;
-    button.textContent = "▶ Play the evening";
+    button.textContent = "▶ Play the day";
   } else {
-    speed = 180;
-    fastMinute = 17 * 60;
+    const now = new Date();
+    speed = 600;
+    fastMinute = now.getHours() * 60 + now.getMinutes();
     button.textContent = "■ Back to real time";
   }
   showClock();
@@ -285,15 +271,6 @@ function draw(d) {
   document.getElementById("lv-bar-theirs").style.width = `${(100 * theirs.missed) / top}%`;
   document.getElementById("lv-bar-ours").style.width = `${(100 * ours.missed) / top}%`;
   const diff = theirs.missed - ours.missed;
-  const runKey = query();
-  if (lastGap !== null && lastRun === runKey && diff > lastGap) cheer("lv-mascot", `+${diff - lastGap} helped!`);
-  lastGap = diff;
-  lastRun = runKey;
-  const waiting = ours.waiting;
-  setMood("lv-mascot", waiting >= BUSY_WAITING ? "tired" : "idle");
-  const status = document.getElementById("lv-scene-status");
-  if (status) status.textContent = waiting >= BUSY_WAITING ? `${waiting} customers waiting… phew!` : `${waiting} waiting, all calm`;
-  lines = [JOKE, ...d.danger.slice(0, 4).map((t) => t.text).filter(Boolean)];
   bump("lv-saved", String(Math.abs(diff)));
   document.getElementById("lv-saved-label").textContent = diff >= 0
     ? `more customer${diff === 1 ? "" : "s"} helped in time today, with the same agents`
@@ -344,7 +321,7 @@ function drawDanger(d) {
           : `<span>if served now</span>${ev(`live.danger[${i}].if_served_now`, "frac_pct")}`}</div>
       </article>`).join("")
     : `<div class="lv-empty lv-sleep">${mascotHtml("lv-mascot-sleep", "sleep")}<p class="muted">Nobody in danger right now.
-        Press “Play the evening” for the dinner rush.</p></div>`;
+        Press “Play the day” to run it forward.</p></div>`;
 }
 
 function drawDecisions(d) {
@@ -385,17 +362,6 @@ function bump(id, html) {
     void el.offsetWidth;
     el.classList.add("bumped");
   }
-}
-
-function nextLine() {
-  const say = document.getElementById("lv-say");
-  if (!say || !lines.length) return;
-  lineIndex = (lineIndex + 1) % lines.length;
-  const text = lines[lineIndex];
-  say.textContent = text.length > 60 ? text.slice(0, 58) + "…" : text;
-  say.classList.remove("pop");
-  void say.offsetWidth;
-  say.classList.add("pop");
 }
 
 function countUp(el, beforeText, afterText) {

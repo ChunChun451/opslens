@@ -312,3 +312,15 @@ html[data-theme="neon"] .subnav button[aria-current="true"] { background: var(--
 .proof-line a { color: var(--blue); text-decoration: none; white-space: nowrap; }
 .proof-line a:hover { text-decoration: underline; }
 .proof-line b { color: var(--ink-2); font-weight: 600; }
+
+.mini-bar .cbar-track, html[data-theme="neon"] .mini-bar .cbar-track { background: color-mix(in srgb, var(--ink) 5%, transparent) !important; }
+.cbar-fill.is-normal, html[data-theme="neon"] .cbar-fill.is-normal { background: #94a3b8 !important; }
+
+.segments-grid .seg { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.brief-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.brief-tile { padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); min-width: 0; }
+.brief-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+.brief-value { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.brief-value .brief-of { font-size: 0.95rem; font-weight: 500; color: var(--muted); }
+.brief-value .brief-text { font-family: var(--font); font-size: 1rem; font-weight: 600; line-height: 1.35; display: block; }
+.brief-sub { margin-top: 6px; font-size: 0.8rem; color: var(--ink-2); line-height: 1.4; }
