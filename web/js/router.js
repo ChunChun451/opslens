@@ -181,6 +181,14 @@ export function showTab(id, viewId) {
     viewId = viewId || id;
   }
   viewId = VIEW_ALIAS[viewId] || viewId;
+  // An up-* address names the file on purpose: when a report is here, show the file, not UCI.
+  // (rd-* stays generic: old links and the assistant use it for "the real screen", whichever source.)
+  if (viewId && viewId.startsWith("up-") && state.world === "real" && state.upload && state.realSource !== "upload") {
+    state.realSource = "upload";
+    storeSession("opslens-real-source", "upload");
+    clearScreens();
+    document.dispatchEvent(new CustomEvent("source-changed", { detail: "upload" }));
+  }
   // A real view of the other source (an old link, the assistant, a reload): its twin in this one.
   const twin = OTHER_SOURCE_VIEW[viewId];
   if (twin && (onFile() ? !viewId.startsWith("up-") : viewId.startsWith("up-"))) viewId = twin;

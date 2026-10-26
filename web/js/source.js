@@ -102,7 +102,10 @@ function openCard() {
   if (panels) panels.scrollTop = 0;
 }
 
+// Closing the card is a deliberate "never mind": the refusal it showed goes with it, so no stale red
+// line stays under the bar.
 function closeCard() {
+  note = "";
   cardOpen = false;
   closeUpload();
   drawBar();
