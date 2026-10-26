@@ -72,7 +72,6 @@ html[data-theme="neon"] .live-ticker {
   box-shadow: none !important;
 }
 html[data-theme="neon"] .lt-theirs { color: var(--bad) !important; }
-html[data-theme="neon"] .intro-replay { border-radius: 8px !important; }
 
 html[data-theme="neon"] :is(.card, .stat-card, .proof, .challenge, .playbook, .week, .stepper, .live-volume, .fold, .fact, .lv-lane, .lv-feed) {
   background: var(--surface) !important;
@@ -280,13 +279,6 @@ html[data-theme="neon"] :is(.fix-card.is-win .fix-number, .fix-card.is-win .fix-
 .bm-attack { background: var(--bad-soft) !important; color: var(--bad) !important; }
 .bt-tag.is-cat { background: var(--bad-soft) !important; color: var(--bad) !important; }
 .bt-tag.is-team { background: var(--blue-soft) !important; color: var(--blue) !important; }
-
-.splash { background: #050506 !important; }
-.sp-mark, .sp-logo { filter: none !important; }
-.splash .sp-by, .sp-by { background: none !important; box-shadow: none !important; color: #8d8d94 !important; padding: 0 !important; }
-.sp-bar i { background: #22d3ee !important; }
-.sp-live { background: #ff5a5f !important; }
-.sp-pill { border-radius: 8px !important; border-color: rgba(255, 255, 255, 0.1) !important; }
 
 @media (min-width: 1000px) {
   .proof-strip { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) !important; }
