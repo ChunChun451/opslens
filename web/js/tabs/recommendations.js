@@ -1,6 +1,6 @@
 import { state, lookup } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { pageHeader, card, missing, initials, fold } from "../ui.js";
+import { pageHeader, card, missing, initials, fold, proofLine } from "../ui.js";
 import { escapeHtml, kpiInfo, spreadUnit } from "../format.js";
 import { planButtons, registerItem, planIndex, measured } from "../plan.js";
 
@@ -10,7 +10,7 @@ const TOP_FIXES = 3;
 export function render(section) {
   const rec = state.results.recommendations;
   const head = pageHeader("What to do",
-    "The changes that pay off most, each tested on 14 days OpsLens never saw. Accept one to add it to Your plan.");
+    "Biggest effect first. Accept one to add it to Your plan.");
   if (!rec) {
     section.innerHTML = head + missing("Recommendations", "M7");
     return;
@@ -25,10 +25,8 @@ export function render(section) {
 function planLead() {
   const plan = state.results.plan;
   if (!plan || !plan.all_items) return "";
-  return `<p class="lead">Accept all ${plan.items.length} recommendations below and, over the 14 held-out days,
-    the customers who miss their SLA change by ${measured("plan.all_items.effect.breaches", "breaches", false)}
-    (${ev("plan.base_kpis.breaches.mean", "count")} without any of them). Each one alone is measured the same way, so
-    you can see which ones pay off and which do not.</p>`;
+  return proofLine(`All ${plan.items.length} together: <b>${ev("plan.all_items.effect.breaches.diff", "count", { signed: true, key: true, title: "All recommendations together", explain: "Change in customers who miss their SLA over the 14 test days, replayed in the simulator with every recommendation applied against the same days without them." })}</b>
+    missed SLAs over 14 days it never saw (${ev("plan.base_kpis.breaches.mean", "count")} without them).`, "#proof/tested");
 }
 
 function playbooksCard() {
@@ -59,12 +57,11 @@ function playbooksCard() {
           <span class="pill">${evText(base + ".owner")}</span>
         </div>
         <div class="fix-effect">
-          <span class="fix-number">${j >= 0 ? ev(`plan.items[${j}].effect.breaches.diff`, "count", { signed: true }) : ev(fx("opslens", "breaches") + ".mean_diff", "count", { signed: true })}</span>
+          <span class="fix-number">${j >= 0 ? ev(`plan.items[${j}].effect.breaches.diff`, "count", { signed: true, key: true, title: "This fix alone", explain: "Change in customers who miss their promise over the 14 test days when only this fix is applied, replayed with OpsLens routing against the same days without it." }) : ev(fx("opslens", "breaches") + ".mean_diff", "count", { signed: true, key: true, title: "This fix alone", explain: "Change in customers who miss their promise over the 14 test days when only this fix is applied, replayed with OpsLens routing against the same days without it." })}</span>
           <span class="fix-label">customers who miss their promise over 14 days, with OpsLens${clear ? "" : " · no clear effect"}</span>
         </div>
-        <p class="fix-message">${evText(base + ".message.text")}
-          <span class="small muted">(${pb.message.source === "llm" ? "drafted by the LLM, numbers filled in by code" : "template"})</span></p>
-        <details class="disclosure"><summary>The numbers</summary>
+        <details class="disclosure"><summary>Message and numbers</summary>
+        <p class="fix-message" title="${pb.message.source === "llm" ? "Drafted by the LLM; every number filled in by code" : "Template text"}">${evText(base + ".message.text")}</p>
         <div class="table-wrap"><table>
           <thead><tr><th>Measured on test days</th><th class="num">With OpsLens</th><th class="num">With priority-first</th></tr></thead>
           <tbody>
@@ -78,17 +75,14 @@ function playbooksCard() {
         ${planButtons(pb.id)}
       </div>`;
   };
-  const all = (policy) => `playbooks.all.${policy}.vs_without.breaches`;
   const order = byOpsLensEffect(pbs.playbooks);
   return card({
     id: "rec-playbooks",
     title: "Fix problems at their source",
-    sub: "Each fix goes to the team that can remove the problem. Each was replayed alone on 14 held-out days; biggest effect first.",
+    sub: "Each goes to the team that can remove the cause.",
     body: `<div class="fix-grid">${order.slice(0, TOP_FIXES).map((i) => item(pbs.playbooks[i], i)).join("")}</div>
       ${order.length > TOP_FIXES ? fold(`${order.length - TOP_FIXES} more fixes`, `<div class="fix-grid">${order.slice(TOP_FIXES).map((i) => item(pbs.playbooks[i], i)).join("")}</div>`, { hint: "smaller or unclear effect" }) : ""}
-      <p><strong>All six fixes together</strong> under priority-first: ${diff(all("baseline_b"), "count")} customers who missed the SLA.
-        OpsLens with every fix and this week's staffing, against priority-first today:
-        ${diff("playbooks.opslens_all_vs_baseline_b.breaches", "count")}.</p>`,
+      `,
   });
 }
 
@@ -109,8 +103,7 @@ function assignmentsCard(rec) {
   const head = `<thead><tr><th>Ticket</th><th>Agent</th><th>Why this agent</th><th class="num">Value</th></tr></thead>`;
   const first = rec.assignments.slice(0, ASSIGNMENTS_SHOWN).map((a, i) => row(a, i)).join("");
   const rest = rec.assignments.slice(ASSIGNMENTS_SHOWN).map((a, i) => row(a, i + ASSIGNMENTS_SHOWN)).join("");
-  return `<div id="rec-assignments"><p class="small muted">OpsLens hands each waiting ticket to a free agent the moment one is free:
-      the tickets most likely to miss their promise first, with the right skills and language. A Saturday evening.</p>
+  return `<div id="rec-assignments"><p class="small muted">Automatic. A Saturday evening.</p>
     <div class="table-wrap"><table>${head}<tbody>${first}</tbody></table></div>
       ${rest ? `<details class="disclosure"><summary>Show all assignments</summary>
         <div class="table-wrap"><table>${head}<tbody>${rest}</tbody></table></div></details>` : ""}</div>`;
@@ -143,17 +136,6 @@ function movesHtml(rec, indexes) {
         ${unclear.map((i) => moveHtml(rec.staffing_moves[i], i)).join("")}</details>` : "");
 }
 
-function staffingNote() {
-  const so = state.results.staffing_opt;
-  if (!so || !so.test) return "";
-  const p = "staffing_opt.test.candidate_minus_greedy.breach_pct";
-  return `<p class="small muted staffing-note">Staffing is a small lever on this floor: the dispatcher's rescues decide most of
-    the outcome. We also tried an exact roster optimiser (CP-SAT): it beats these moves on the planning score but not
-    on customers (test days ${ev(p + ".mean_diff", "ratio", { signed: true })} pts
-    [${ev(p + ".ci95[0]", "ratio", { signed: true, bare: true })}, ${ev(p + ".ci95[1]", "ratio", { signed: true, bare: true })}]), so these simple moves stay.
-    <a href="#proof/ledger">See the rule we set first</a>.</p>`;
-}
-
 function staffingCard(rec) {
   if (!rec.staffing_moves.length) {
     return card({ title: "Staffing moves", body: `<p class="muted">No staffing change needed.</p>` });
@@ -170,12 +152,11 @@ function staffingCard(rec) {
             <strong>${ev(`details.forecast.plans[${p}].shortage_after`, "num")}</strong></span>
         </div>
         ${movesHtml(rec, moveIndexes)}
-      </div>`).join("")}</div>${staffingNote()}`;
+      </div>`).join("")}</div>`;
   } else {
-    body = movesHtml(rec, rec.staffing_moves.map((m, i) => i)) + staffingNote();
+    body = movesHtml(rec, rec.staffing_moves.map((m, i) => i));
   }
-  return `<div id="rec-staffing"><p class="small muted">From the forecast: the same people and the same hours, but a shift starts
-    earlier or later, or a day off moves to a quieter day.</p>${body}</div>`;
+  return `<div id="rec-staffing"><p class="small muted">Same people, same hours: a shift or a day off moves.</p>${body}</div>`;
 }
 
 function weeklyPlans(rec) {

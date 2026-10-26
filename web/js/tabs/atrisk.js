@@ -1,6 +1,6 @@
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { pageHeader, card, missing, fold, factLine } from "../ui.js";
+import { pageHeader, card, missing, fold, proofLine } from "../ui.js";
 import { escapeHtml, prettyKey } from "../format.js";
 
 const SHOWN = 5;
@@ -8,33 +8,21 @@ const SHOWN = 5;
 export function render(section) {
   const risk = state.results.risk;
   const head = pageHeader("Customers about to miss their promise",
-    "Ranked by the chance they will be late. Each shows why, and what would help. Click a card for every reason.");
+    "Most likely to be late first. Click a card for every reason.");
   if (!risk) {
     section.innerHTML = head + missing("The risk model", "M5");
     return;
   }
-  const quality = factLine([
-    [ev("risk.top10_precision", "frac_pct"), "of the 10% flagged riskiest really were late"],
-    [ev("risk.auc", "ratio"), "ranking score (AUC, 1 = perfect)"],
-    typeof risk.realdata_auc === "number" && [ev("risk.realdata_auc", "ratio"), "on a real company's incidents"],
-  ]);
-  const judge = challengeStrip();
   section.innerHTML = `${head}
-    ${quality}
-    <div id="ticket-list" class="risk-cards">${ticketsHtml(risk)}</div>
-    ${judge ? fold("Would a simpler model do? Are the reasons real?", judge, { hint: "tested, with numbers" }) : ""}
-    ${fold("Model quality in detail", factLine([
-      [ev("risk.pr_auc", "ratio"), "PR-AUC"],
-      [ev("risk.brier", "ratio"), "Brier score (lower = better calibrated)"],
-      [ev("risk.base_rate", "frac_pct"), "of snapshots were late (base rate)"],
-    ]))}`;
+    ${proofLine(`Of the 10% it flags riskiest, <b>${ev("risk.top10_precision", "frac_pct")}</b> really were late, on days it never saw.`, "#proof/tested")}
+    <div id="ticket-list" class="risk-cards">${ticketsHtml(risk)}</div>`;
   section.querySelector("#ticket-list").addEventListener("click", (event) => {
     const cardEl = event.target.closest(".ticket");
     if (cardEl && !event.target.closest(".ev, .ev-text")) cardEl.classList.toggle("open");
   });
 }
 
-function challengeStrip() {
+export function challengeStrip() {
   const r = state.results;
   const items = [];
   const pb = "prediction_baselines";

@@ -11,7 +11,7 @@ const BREACH = "turnaround.breach_pct";
 
 const STEPS = [
   { tab: "overview", view: "live", target: () => firstOf(".lv-hero"), title: "The problem, live", body: problemText },
-  { tab: "overview", view: "overview", target: () => "ov-thousand", title: "1,000 customers, one picture", body: thousandText },
+  { tab: "results", target: () => "ov-thousand", title: "1,000 customers, one picture", body: thousandText },
   { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
   { tab: "compare", target: () => "kpi-table-panel", title: "What it is worth, with confidence intervals", body: impactText },

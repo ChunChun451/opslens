@@ -301,9 +301,13 @@ const GROUP_DEFINITIONS = {
 };
 
 function fileDefinition(rest) {
-  const key = rest.replace(/\[\d+\]/g, "").split(".").pop();
+  const parts = rest.replace(/\[\d+\]/g, "").split(".");
+  const key = parts[parts.length - 1];
   if (/^cards\[/.test(rest) && GROUP_DEFINITIONS[key]) return GROUP_DEFINITIONS[key];
-  return FILE_DEFINITIONS[key] || "";
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (FILE_DEFINITIONS[parts[i]]) return FILE_DEFINITIONS[parts[i]];
+  }
+  return "";
 }
 
 export function definitionFor(path) {
@@ -344,7 +348,7 @@ export function definitionFor(path) {
     if (part === "mean" || part === "std") continue;
     if (DEFINITIONS[part]) return DEFINITIONS[part];
   }
-  return "A value from the results file.";
+  return "";
 }
 
 export const CATEGORIES = [

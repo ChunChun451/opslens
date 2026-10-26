@@ -11,7 +11,10 @@ export function ev(path, unit = "num", options = {}) {
   const text = options.signed
     ? fmtSigned(value, unit, options.bare)
     : fmt(value, unit, options.bare);
-  return `<button type="button" class="ev" data-path="${escapeHtml(path)}" data-unit="${unit}">${escapeHtml(text)}</button>`;
+  const cls = options.key ? "ev key" : "ev";
+  const extra = (options.title ? ` data-title="${escapeHtml(options.title)}"` : "")
+    + (options.explain ? ` data-explain="${escapeHtml(options.explain)}"` : "");
+  return `<button type="button" class="${cls}" data-path="${escapeHtml(path)}" data-unit="${unit}"${extra}>${escapeHtml(text)}</button>`;
 }
 
 export function evText(path, display) {
@@ -23,7 +26,7 @@ export function evText(path, display) {
   if (display !== undefined) {
     text = display;
   }
-  return `<span class="ev-text" role="button" tabindex="0" data-path="${escapeHtml(path)}" data-unit="text">${escapeHtml(text)}</span>`;
+  return escapeHtml(text);
 }
 
 function popover() {
@@ -42,7 +45,7 @@ export function initEvidence() {
   document.addEventListener("click", (event) => {
     const target = event.target.closest("[data-path]");
     if (target) {
-      openEvidence(target.dataset.path, target.dataset.unit, target.getBoundingClientRect());
+      openEvidence(target.dataset.path, target.dataset.unit, target.getBoundingClientRect(), target.dataset);
       return;
     }
     if (event.target.closest("canvas") || event.target.closest("#evidence-popover")) {
@@ -70,14 +73,14 @@ export function openEvidenceAt(path, unit, x, y) {
   openEvidence(path, unit, { left: x, right: x, top: y, bottom: y });
 }
 
-export function openEvidence(path, unit, anchorRect) {
+export function openEvidence(path, unit, anchorRect, words = {}) {
   const el = popover();
-  el.innerHTML = evidenceHtml(path, unit || "num", lookup(path));
+  el.innerHTML = evidenceHtml(path, unit || "num", lookup(path), words);
   el.hidden = false;
   place(el, anchorRect);
 }
 
-function evidenceHtml(path, unit, value) {
+function evidenceHtml(path, unit, value, words = {}) {
   let valueText;
   if (typeof value === "number") {
     valueText = fmt(value, unit);
@@ -86,28 +89,26 @@ function evidenceHtml(path, unit, value) {
   } else {
     valueText = String(value);
   }
-  let rawText = String(value);
-  if (typeof value === "number" && rawText.length > 10) rawText = value.toPrecision(6) + "…";
-  const raw = typeof value === "number" && String(value) !== valueText
-    ? `<span class="pop-raw" title="${escapeHtml(String(value))}">raw ${escapeHtml(rawText)}</span>`
-    : "";
   const lines = spreadLines(path, unit).map((line) => `<li>${line}</li>`).join("");
   const fixtureTag = state.results.meta.fixture ? ' <strong class="pop-fixture">FIXTURE</strong>' : "";
   return `
     <div class="pop-head">
-      <span class="pop-title">${escapeHtml(titleFor(path))}</span>
+      <span class="pop-title">${escapeHtml(words.title || titleFor(path))}</span>
       <button type="button" class="pop-close" aria-label="Close">×</button>
     </div>
-    <div class="pop-value ${unit === "text" ? "is-text" : ""}">${escapeHtml(valueText)} ${raw}</div>
+    <div class="pop-value ${unit === "text" ? "is-text" : ""}">${escapeHtml(valueText)}</div>
+    ${words.explain || definitionFor(path) ? `<p class="pop-def">${escapeHtml(words.explain || definitionFor(path))}</p>` : ""}
     ${lines ? `<ul class="pop-spread">${lines}</ul>` : ""}
-    <p class="pop-def">${escapeHtml(definitionFor(path))}</p>
-    <div class="pop-path"><span>JSON path</span><code>${escapeHtml(path)}</code></div>
-    <div class="pop-source">Source: ${escapeHtml(sourceFor(path))}${fixtureTag}</div>`;
+    <div class="pop-source">${escapeHtml(sourceFor(path))}${fixtureTag}
+      <code title="${escapeHtml(String(value))}">${escapeHtml(path)}</code></div>`;
 }
 
 export function labelFor(path) {
   return titleFor(path);
 }
+
+const WHO = { opslens: "OpsLens", priority: "priority field", rule: "rule of thumb", baseline_d: "industry standard",
+  baseline_b: "urgent first", baseline_c: "SLA due first", baseline_a: "first come" };
 
 function titleFor(path) {
   const kpi = path.match(/^sim\.policies\.([^.]+)\.kpis\.(.+)\.(mean|std)$/);
@@ -129,6 +130,8 @@ function titleFor(path) {
     return policyLabel(replay[1]) + " · replay";
   }
   const parts = path.replace(/\[\d+\]/g, "").split(".").filter((p) => p !== "mean" && p !== "std");
+  const who = WHO[parts[parts.length - 1]];
+  if (who && parts.length > 1) return `${prettyKey(parts[parts.length - 2])} · ${who}`;
   return prettyKey(parts[parts.length - 1]);
 }
 
@@ -137,7 +140,7 @@ function sourceFor(path) {
   if (live) {
     return LIVE_SOURCES[live];
   }
-  return state.source;
+  return state.source === "/api/results" ? "From the results file, eval/results.json (make eval)" : state.source;
 }
 
 function spreadLines(path, unit) {
@@ -189,6 +192,15 @@ function spreadLines(path, unit) {
     if (typeof row.ci_low === "number") {
       lines.push(`Breach vs full OpsLens: ${fmtSigned(row.delta_breach_vs_full, "pts")} (paired 95% CI `
         + `${fmtSigned(row.ci_low, "pts")} to ${fmtSigned(row.ci_high, "pts")})`);
+    }
+  }
+
+  const diff = path.match(/^(.*)\.(mean_diff|diff)$/);
+  if (diff && !lines.length) {
+    const low = lookup(diff[1] + ".ci_low");
+    const high = lookup(diff[1] + ".ci_high");
+    if (typeof low === "number" && typeof high === "number") {
+      lines.push(`95% range: ${fmtSigned(low, unit)} to ${fmtSigned(high, unit)}`);
     }
   }
 

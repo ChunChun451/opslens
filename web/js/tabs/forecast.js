@@ -1,7 +1,7 @@
 import { state, teamNames } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, shadeRanges, INK, POLICY_STYLE } from "../charts.js";
-import { pageHeader, card, missing, fold, factLine } from "../ui.js";
+import { pageHeader, card, missing, fold, proofLine } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 let selectedTeam = null;
@@ -9,7 +9,7 @@ let selectedTeam = null;
 export function render(section) {
   const f = state.results.forecast;
   const head = pageHeader("The next 48 hours",
-    "How much work is coming to each team, hour by hour, against the people on the roster. Shaded hours: a team will be short.");
+    "Work coming to each team against the people on shift. Shaded: a team will be short.");
   if (!f) {
     section.innerHTML = head + missing("The forecast", "M6");
     return;
@@ -22,25 +22,16 @@ export function render(section) {
       ${teams.map((t) => `<button type="button" data-team="${escapeHtml(t)}">Team ${escapeHtml(t)}</button>`).join("")}
     </div>`;
   section.innerHTML = `${head}
-    ${factLine([
-      [ev("forecast.wape_model", "frac_pct"), "forecast error"],
-      [ev("forecast.wape_naive", "frac_pct"), "error of “same hour last week”"],
-      [ev("forecast.coverage_80", "frac_pct"), "of hours inside the 80% range"],
-    ])}
+    ${proofLine(`<b>${ev("forecast.coverage_80", "frac_pct")}</b> of test-day hours fell inside the shaded 80% range.`, "#proof/tested")}
     ${card({
       id: "fc-panel",
       title: "Demand vs capacity",
       sub: `${evText("forecast.horizon[0].time", hourLabel(f.horizon[0].time))} to
-        ${evText(`forecast.horizon[${f.horizon.length - 1}].time`, hourLabel(f.horizon[f.horizon.length - 1].time))}
-        · shaded = bottleneck flagged by the engine (Erlang C on the upper band)`,
+        ${evText(`forecast.horizon[${f.horizon.length - 1}].time`, hourLabel(f.horizon[f.horizon.length - 1].time))}`,
       actions: picker,
       body: `<div class="chart lg"><canvas id="fc-chart" aria-label="Forecast demand and capacity"></canvas></div>`,
     })}
-    ${alertHitRate()}
-    ${fold("Every shortage the engine flagged", bottleneckCard(f), { hint: `${f.bottlenecks.length} windows` })}
-    ${fold("How good is the forecast?", `<p>${noiseFloor()}</p>${factLine([
-      [ev("forecast.coverage_90", "frac_pct"), "of hours inside the 90% range"],
-    ])}`)}`;
+    ${fold("Every shortage the engine flagged", bottleneckCard(f), { hint: `${f.bottlenecks.length} windows` })}`;
 
   section.querySelectorAll("[data-team]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -49,14 +40,6 @@ export function render(section) {
     });
   });
   drawChart(section);
-}
-
-function noiseFloor() {
-  const d = state.results.details;
-  if (d && d.forecast && typeof d.forecast.wape_noise_floor === "number") {
-    return `noise floor ${ev("details.forecast.wape_noise_floor", "frac_pct")}: random arrivals, no model can beat it`;
-  }
-  return "lower is better";
 }
 
 function hourLabel(iso) {
@@ -204,7 +187,7 @@ function bottleneckCard(f) {
   });
 }
 
-function alertHitRate() {
+export function alertHitRate() {
   const a = state.results.prediction_baselines && state.results.prediction_baselines.alerts;
   if (!a || !a.rules) return "";
   const r = (rule, who, key) => `prediction_baselines.alerts.rules.${rule}.predictors.${who}.workload.${key}`;

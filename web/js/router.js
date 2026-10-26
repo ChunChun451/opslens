@@ -24,8 +24,7 @@ const ICONS = {
 
 export const TABS = [
   { id: "overview", label: "Overview", views: {
-    food: [{ id: "live", label: "Live now", module: live },
-           { id: "overview", label: "Results on the test days", module: overview }],
+    food: [{ id: "live", label: "Live now", module: live }],
     real: [{ id: "rd-overview", label: "Overview", module: realdesk.overview },
            { id: "rd-shadow", label: "Shadow mode", module: shadow }],
     upload: [{ id: "up-overview", label: "Overview", module: yourfile.overview },
@@ -44,7 +43,8 @@ export const TABS = [
     real: [{ id: "rd-actions", label: "What to do", module: realdesk.actions }],
     upload: [{ id: "up-actions", label: "What to do", module: yourfile.actions }] } },
   { id: "proof", label: "Proof", views: {
-    food: [{ id: "compare", label: "Side by side", module: compare },
+    food: [{ id: "results", label: "Results", module: overview },
+           { id: "compare", label: "Side by side", module: compare },
            { id: "worlds", label: "Beyond our world", module: worlds },
            { id: "whatif", label: "Try a what-if", module: whatif },
            { id: "ledger", label: "Rules we wrote first", module: ledger },
@@ -59,7 +59,7 @@ const OTHER_SOURCE_VIEW = { "rd-overview": "up-overview", "rd-shadow": "up-shado
 Object.entries({ ...OTHER_SOURCE_VIEW }).forEach(([uci, file]) => { OTHER_SOURCE_VIEW[file] = uci; });
 
 const ALIAS = { patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
-                compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview",
+                results: "proof", compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview",
                 worlds: "proof", "rd-shadow": "overview", "up-shadow": "overview", shadow: "overview", next48: "risks" };
 
 const VIEW_ALIAS = { next48: "forecast", "next-48-hours": "forecast", "at-risk": "atrisk", shadow: "rd-shadow",

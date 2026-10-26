@@ -3,6 +3,8 @@ import { ev, evText } from "../evidence.js";
 import { makeChart, errorBarsPlugin, policyStyle, INK, SLOTS } from "../charts.js";
 import { pageHeader, missing, fold, onFirstOpen } from "../ui.js";
 import { escapeHtml, prettyKey, unitForKey } from "../format.js";
+import { challengeStrip } from "./atrisk.js";
+import { alertHitRate } from "./forecast.js";
 
 const SECTIONS = [
   ["what-failed", "What failed"],
@@ -413,7 +415,7 @@ function forecastPanel() {
     ["Error on the known sale day", "details.forecast.sale_day_error_pct", "pct", { signed: true }],
     ["80% interval coverage", "forecast.coverage_80", "frac_pct"],
     ["90% interval coverage", "forecast.coverage_90", "frac_pct"],
-  ])}</section>`;
+  ])}${alertHitRate()}</section>`;
 }
 
 function riskPanel() {
@@ -445,7 +447,7 @@ function riskPanel() {
           ${details().risk && details().risk.feature_gain ? `<div class="section-label" style="margin-top: 18px">What the model looks at (share of gain, top 8)</div>
           <div class="chart sm"><canvas id="gain-chart"></canvas></div>` : ""}
         </div>
-      </div></section>`;
+      </div>${challengeStrip()}</section>`;
 }
 
 function drawCalibration() {

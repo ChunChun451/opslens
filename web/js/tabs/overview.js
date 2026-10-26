@@ -5,7 +5,6 @@ import {
 } from "../ui.js";
 import { escapeHtml, kpiInfo, unitForPath, spreadUnit } from "../format.js";
 import { policyStyle } from "../charts.js";
-import { CAUSE_LABELS } from "./patterns.js";
 import { hasMission, missionHtml, initMission } from "../mission.js";
 import { thousandHtml, journeyHtml, initStoryCards } from "../storycards.js";
 
@@ -21,11 +20,10 @@ export function render(section) {
   const r = state.results;
   const strip = proofStrip();
   section.innerHTML = `
-    ${pageHeader("Results on days it never saw", "14 held-out days. Same customers, same agents, same luck for every way of working; only the decisions differ.")}
+    ${pageHeader("Results on days it never saw", "14 held-out days. Same customers, agents and luck; only the decisions differ.")}
     ${strip || (r.sim ? heroCard() : missing("The simulator comparison", "M7"))}
     ${r.sim ? thousandHtml() : ""}
     ${r.risk ? journeyHtml() : ""}
-    ${issuesCard()}
     ${r.sim && strip ? fold("Every way of working, with 95% intervals", heroCard(), { id: "fold-all-ways", hint: "OpsLens against all four" }) : ""}
     ${r.sim && hasMission() ? fold("Replay one Saturday dinner, side by side", missionHtml(), { id: "fold-mission", hint: "the evening in 30 seconds" }) : ""}
     ${r.sim ? fold("More numbers: time to solve, waits, queues, transfers", `<div class="grid cols-4 stretch">${KEY_KPIS.map(kpiCard).join("")}</div>`, { hint: "against the industry standard" }) : ""}
@@ -145,30 +143,6 @@ function kpiCard(kpi) {
     .map((k) => `<div class="pair"><span>${escapeHtml(shortLabel(k))}</span>${ev(`sim.policies.${k}.kpis.${kpi}.mean`, info.unit)}</div>`).join("");
   return card({
     body: stat(info.label, ev(`sim.policies.opslens.kpis.${kpi}.mean`, info.unit), `${delta}<div class="pairs">${others}</div>`, "md"),
-  });
-}
-
-function issuesCard() {
-  const patterns = state.results.patterns;
-  if (!patterns) {
-    return missing("Patterns", "M4");
-  }
-  const order = patterns.cards
-    .map((c, index) => ({ c, index }))
-    .sort((a, b) => b.c.strength - a.c.strength)
-    .slice(0, 3);
-  const items = order.map(({ c, index }) => `
-      <li class="issue" data-goto-tab="patterns" data-goto-id="card-${escapeHtml(c.id)}">
-        <span class="issue-title">${evText(`patterns.cards[${index}].title`)}</span>
-        <span class="pill">${escapeHtml(CAUSE_LABELS[c.cause_type] || c.cause_type)}</span>
-        <span class="issue-text">${evText(`patterns.cards[${index}].comparison_text`)}</span>
-      </li>`).join("");
-  return card({
-    id: "ov-issues",
-    title: "Top problems found",
-    sub: "Strongest evidence first. Open one to see the tickets behind it.",
-    actions: `<a class="btn btn-sm" href="#patterns">All findings</a>`,
-    body: `<ul class="list">${items}</ul>`,
   });
 }
 

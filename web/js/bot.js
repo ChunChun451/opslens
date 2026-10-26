@@ -21,7 +21,7 @@ const PLACES = [
   [/how we tested|tests?\b|banking|earn its place/i, "#proof/tested", "food"],
   [/side by side|compare|baseline/i, "#proof/compare", "food"],
   [/live/i, "#overview/live", "food"],
-  [/result|1,?000|journey|ticket.*follow/i, "#overview/overview", "food"],
+  [/result|1,?000|journey|ticket.*follow/i, "#proof/results", "food"],
   [/problem|pattern/i, "#problems", "food"],
   [/forecast|48|next week/i, "#risks/next48", "food"],
   [/risk|late tickets|at risk/i, "#risks/atrisk", "food"],

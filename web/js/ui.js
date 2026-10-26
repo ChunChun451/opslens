@@ -50,6 +50,10 @@ export function factLine(items) {
     `<span class="fact"><b>${value}</b><span>${escapeHtml(label)}</span></span>`).join("")}</div>`;
 }
 
+export function proofLine(html, href) {
+  return `<p class="proof-line">${html} <a href="${href}">How we know →</a></p>`;
+}
+
 export function stat(label, valueHtml, subHtml = "", size = "") {
   return `<div class="stat">
       <div class="stat-label">${escapeHtml(label)}</div>
@@ -60,7 +64,7 @@ export function stat(label, valueHtml, subHtml = "", size = "") {
 
 export function missing(sectionName, milestone) {
   return card({ body: `<p class="muted"><strong>${escapeHtml(sectionName)}</strong> is not in the results file yet.
-    It is computed in ${escapeHtml(milestone)}.</p>` });
+    Run <code>make eval</code> to compute it.</p>` });
 }
 
 export function backendMissing(endpoint, detail) {

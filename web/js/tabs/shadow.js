@@ -32,9 +32,7 @@ export function render(section) {
       ${escapeHtml(d.weekday)} ${escapeHtml(prettyDate(d.date))}${d.date === sh.showcase ? " · busiest" : ""}</button>`).join("");
   section.innerHTML = `
     ${pageHeader("Shadow mode: a real day, replayed",
-      "Real incidents from a real IT desk, at their real times. One hour after each opens, OpsLens gives its warning next to the desk's own priority field; the real outcome appears when it really happened.")}
-    <div class="sh-honest"><b>Real incidents and real outcomes.</b> OpsLens only watched (shadow mode): a log cannot replay different decisions.
-      Models frozen, test months only. ${evText(`${S}.privacy`)}</div>
+      "Real incidents at their real times. OpsLens only watches and warns; the outcome is what really happened.")}
     <div class="sh-days">${chips}</div>
     <section class="card sh-stage">
       <div class="sh-top">
@@ -63,11 +61,10 @@ export function render(section) {
       </div>
       <div class="sh-final" id="sh-final"></div>
     </section>
-    ${card({ title: "If the desk had fast-tracked each picker's top 20% that day",
-      sub: `<b>Assumption:</b> ${evText(`${S}.assumption`)}`, body: `<div id="sh-fast"></div>
-        <p class="small muted">Per-day counts are small and close between pickers; the early-warning tally above is the story.</p>` })}
-    ${card({ title: "The other busy days", sub: evText(`${S}.others_why`), body: daysTable(sh) })}
-    ${fold("How shadow mode works", `<p>${evText(`${S}.how`)}</p>`)}`;
+    ${fold("If the desk had fast-tracked each picker's top 20% that day", `<p class="small"><b>Assumption:</b> ${evText(`${S}.assumption`)}</p>
+      <div id="sh-fast"></div><p class="small muted">Per-day counts are small and close between pickers; the early-warning tally above is the story.</p>`)}
+    ${fold("The other busy days", `<p class="small muted">${evText(`${S}.others_why`)}</p>${daysTable(sh)}`)}
+    ${fold("How shadow mode works", `<p>${evText(`${S}.how`)}</p><p class="small muted">Models frozen, test months only. ${evText(`${S}.privacy`)}</p>`)}`;
 
   section.querySelectorAll(".sh-day").forEach((b) => b.addEventListener("click", () => start(Number(b.dataset.i))));
   wireControls(section);
@@ -91,9 +88,8 @@ function renderFile(section) {
   const r = state.upload;
   const theirs = r.warning.vs.rival === "priority" ? "Your priority field" : "The rule of thumb";
   const head = pageHeader("Shadow mode: your busiest later day, replayed",
-    `Your own items, at their real times. As each one opens, OpsLens flags it or not, next to ${rivalWords(r)}; the real outcome appears when the item really ended.`);
-  const honest = `<div class="sh-honest"><b>Your items and your outcomes.</b> OpsLens only watched (shadow mode): a log cannot replay
-      different decisions. It learned on your first items; this day comes from the later ones it never saw.</div>`;
+    "Your items at their real times. OpsLens only watches and warns; the outcome is what really happened.");
+  const honest = "";
   if (!r.shadow.timeline) {
     section.innerHTML = head + honest + card({ body: `<p>${evText(`${F}.timeline_note`)}</p><div class="sh-final">${fileFinal()}</div>` });
     return;

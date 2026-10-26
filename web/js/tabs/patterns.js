@@ -1,7 +1,7 @@
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { makeChart, SLOTS } from "../charts.js";
-import { pageHeader, card, missing, backendMissing, postJson, showWaiting, fold, onFirstOpen, factLine } from "../ui.js";
+import { pageHeader, card, missing, backendMissing, postJson, showWaiting, fold, onFirstOpen, proofLine } from "../ui.js";
 import { escapeHtml, prettyKey, CATEGORIES } from "../format.js";
 
 export const CAUSE_LABELS = {
@@ -23,7 +23,7 @@ export function render(section) {
   const hasDelay = p && Object.keys(p.delay_decomposition).length;
   section.innerHTML = `
     ${pageHeader("Recurring problems",
-      "What keeps going wrong, and why. Strongest first; open a card for its proof.", plantButton)}
+      "Strongest first. Open a card for the tickets behind it.", plantButton)}
     ${p ? summaryStats(p) : ""}
     ${p ? `<div class="finding-grid">${findings(p, false)}</div>` : missing("Patterns", "M4")}
     ${p && p.cards.some((c) => c.cause_type === "other") ? fold("A weaker pattern with no clear cause yet",
@@ -42,13 +42,9 @@ export function render(section) {
 }
 
 function summaryStats(p) {
-  const b = p.blind_recall;
-  return factLine([
-    p.recall && [`${ev("patterns.recall.found", "int")} of ${ev("patterns.recall.planted", "int")}`, "hidden problems found"],
-    b && [ev("patterns.blind_recall.found_pct", "pct"), "of random problems found in data it never saw"],
-    b && typeof b.diagnosed_pct === "number" && [ev("patterns.blind_recall.diagnosed_pct", "pct"), "given the right cause"],
-    typeof p.live_detection_latency_min === "number" && [ev("patterns.live_detection_latency_min", "min"), "to catch a sudden surge"],
-  ]);
+  if (!p.recall) return "";
+  return proofLine(`Tested on hidden problems: <b>${ev("patterns.recall.found", "int")} of ${ev("patterns.recall.planted", "int")}</b> found.`,
+    "#proof/tested");
 }
 
 function findings(p, other) {
@@ -84,7 +80,7 @@ function findingCard(c, i) {
       </div>
       ${c.recommendation ? `<p class="finding-do"><span class="do-tag">Do</span>${evText(base + ".recommendation")}</p>` : ""}
       <details class="disclosure">
-        <summary>Proof: example tickets</summary>
+        <summary>Example tickets</summary>
         <p class="small">${evText(base + ".comparison_text")}</p>
         <div class="chips">${chips}</div>
         ${c.not_explained_by ? `<p class="small"><strong>Why it is not a known event:</strong> ${evText(base + ".not_explained_by")}</p>` : ""}
