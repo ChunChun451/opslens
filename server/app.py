@@ -195,15 +195,31 @@ async def anyfile_peek(file: UploadFile | None = File(None), example: str | None
         return JSONResponse({"error": str(exc)}, status_code=400)
 
 
+@app.post("/api/anyfile/check")
+def anyfile_check(request: dict) -> JSONResponse:
+    """Between steps 1 and 2: what will happen with a changed {token, mapping, target_min}, before
+    anything is learned (usable items, what counts as a miss and how many, the 70/30 split)."""
+    from server.anyfile_jobs import check
+
+    try:
+        target = request.get("target_min")
+        return JSONResponse(check(str(request["token"]), dict(request.get("mapping") or {}),
+                                  float(target) if target not in (None, "") else None))
+    except (ValueError, KeyError) as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
 @app.post("/api/anyfile/run")
 def anyfile_run(request: dict) -> JSONResponse:
-    """Step 2: start the report for {token, mapping, target_min}; returns {job}."""
+    """Step 2: start the report for {token, mapping, target_min, target_assumed}; returns {job}.
+    target_assumed = the promised time is OpsLens's assumption (the file's median, rounded up)."""
     from server.anyfile_jobs import start_job
 
     try:
         target = request.get("target_min")
         return JSONResponse(start_job(str(request["token"]), dict(request.get("mapping") or {}),
-                                      float(target) if target not in (None, "") else None))
+                                      float(target) if target not in (None, "") else None,
+                                      bool(request.get("target_assumed", False))))
     except (ValueError, KeyError) as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
 

@@ -50,3 +50,42 @@ def test_a_mapping_without_a_miss_rule_is_a_readable_error():
 def test_a_non_csv_is_refused():
     reply = client.post("/api/anyfile/peek", files={"file": ("photo.csv", b"\x89PNG\r\n\x1a\n\x00\x00", "text/csv")})
     assert reply.status_code == 400
+
+
+def test_the_report_carries_the_file_name_the_replay_and_the_forecast():
+    csv = delivery_file(n=9000, days=90).to_csv(index=False).encode()
+    peek = client.post("/api/anyfile/peek", files={"file": ("orders.csv", csv, "text/csv")}).json()
+    plan = peek["plan"]
+    assert peek["ask"] == [] and plan["miss"]["assumed"] and len(peek["preview"]) == 3
+    job = client.post("/api/anyfile/run", json={"token": peek["token"], "mapping": peek["suggested"],
+                                                 "target_min": plan["miss"]["target_min"], "target_assumed": True}).json()["job"]
+    state = poll(job)
+    assert state["status"] == "done", state.get("error")
+    r = state["result"]
+    assert r["file"] == "orders.csv" and state["file"] == "orders.csv" and r["rows"] == 9000
+    assert r["miss"] == {"rule": "promise", "column": None, "target_min": plan["miss"]["target_min"], "assumed": True}
+    assert len(r["shadow"]["timeline"]) == r["shadow"]["items"]
+    assert r["forecast"]["wape_learned"] > 0 and "forecast" not in r["needs"]
+    assert client.get(f"/api/anyfile/job/{job}").json()["result"] == r  # a page reload gets the same report back
+
+
+def test_check_says_what_a_changed_promise_does_before_anything_is_learned():
+    csv = delivery_file().to_csv(index=False).encode()
+    peek = client.post("/api/anyfile/peek", files={"file": ("orders.csv", csv, "text/csv")}).json()
+    tight = client.post("/api/anyfile/check", json={"token": peek["token"], "mapping": peek["suggested"], "target_min": 20}).json()
+    loose = client.post("/api/anyfile/check", json={"token": peek["token"], "mapping": peek["suggested"], "target_min": 30}).json()
+    assert tight["missed_pct"] > loose["missed_pct"] and not loose["miss"]["assumed"]
+    gone = client.post("/api/anyfile/check", json={"token": "nope", "mapping": {}})
+    assert gone.status_code == 400 and "upload has expired" in gone.json()["error"]
+
+
+def test_a_junk_file_is_refused_in_one_plain_sentence():
+    junk = "name,favourite_colour\n" + "\n".join(f"person {i},{'red' if i % 2 else 'blue'}" for i in range(800))
+    peek = client.post("/api/anyfile/peek", files={"file": ("people.csv", junk.encode(), "text/csv")}).json()
+    assert [q["role"] for q in peek["ask"]] == ["created_at", "end"] and peek["ask"][0]["options"] == []
+    job = client.post("/api/anyfile/run", json={"token": peek["token"], "mapping": {"created_at": "name"}, "target_min": 30}).json()["job"]
+    state = poll(job)
+    assert state["status"] == "error" and "result" not in state
+    assert state["error"].endswith("or try another file.") and "Traceback" not in state["error"] and "{" not in state["error"]
+    unknown = client.get("/api/anyfile/job/nothing:here")
+    assert unknown.status_code == 404 and unknown.json()["error"].startswith("This report is gone")

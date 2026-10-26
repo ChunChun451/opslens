@@ -1,29 +1,34 @@
 """OpsLens on your file: what OpsLens would have changed, on any relevant CSV of work items.
 
 What it does: a judge (or any company) uploads an export with one row per work item (a support
-ticket, an incident, a delivery order) and says which column is which. OpsLens then:
+ticket, an incident, a delivery order). OpsLens guesses which column is which (start, end or
+duration, what a miss is, priority, team, category) and says in plain words what it will do; the
+person can change any guess. Then it:
   1. checks the file is relevant: start times, an end or a duration, a way to tell a miss, and
-     enough items and days to learn from (otherwise it says exactly what is missing);
+     enough items and days to learn from (otherwise it says exactly what is missing, and the fix);
   2. learns on the first 70% of items (by start time) and scores the last 30% once;
   3. reports early warning (the chance each item misses, known the moment it opens, with reasons)
      against the file's own priority field and a rule of thumb; "shadow mode" on the busiest
-     later day (how many real misses each one flagged, same number of flags); and problem cards
-     found on the first 70%, each checked again on the last 30%.
+     later day, item by item so the screen can replay it; problem cards found on the first 70%,
+     each checked again on the last 30%; and a week-ahead workload forecast per team. Anything
+     that needs a column the file lacks says which one (`needs`) instead of staying blank.
 
 Why it is built this way: a log records what happened under ONE way of working. It cannot be
 replayed under another policy without the work times, rosters and skills it does not contain
 (our real-desk twin failed its gate for exactly that reason). So this module answers the honest
-question a log CAN answer: which items OpsLens would have warned about in time, and where the
-recurring problems are, scored on items it never learned from.
+questions a log CAN answer: which items OpsLens would have warned about in time, where the
+recurring problems are, and how much work each team gets a week ahead, scored on items and days
+it never learned from.
 
 No leakage: a feature for an item may only use what was known when it opened. Three guards:
 column-name rules (resolved, closed, sla, duration... are never features), the person mapping
 the file can untick any column, and a screen that drops any column which alone predicts the
 outcome almost perfectly on the learning items (AUC above 0.97: it was written after the fact).
+The forecast for a day only reads counts from a week or more before that day.
 
 Example (UCI ServiceNow log, one row per incident, 24,918 rows): learn on 17,442, score 7,476;
-early-warning AUC well above the priority field's; on the busiest later day OpsLens's top 20%
-catch more of the real misses than the priority field's top 20%.
+early-warning AUC 0.796 against 0.575 for the priority field; on the busiest later day (Thu 5 May
+2016, 403 incidents) OpsLens's 81 flags catch 50 of the 111 real misses, the priority field's 22.
 """
 
 from __future__ import annotations
@@ -37,12 +42,17 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
+from opslens.forecast import wape
+
 MIN_ROWS = 500
 MIN_DAYS = 7
 MIN_MISSES = 30
 LEARN_SHARE = 0.70
 FLAG_SHARE = 0.20
 LEAK_AUC = 0.97
+TIMELINE_MAX = 3000  # a shadow day with more items is summarised, not replayed item by item
+FORECAST_DAYS = 56  # 8 weeks: the forecast reads 1 to 4 weeks back and needs days left to learn and to score
+FORECAST_TEAMS = 8
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 # Column names that describe what happened AFTER an item opened; never used as features.
 # A word in the name that starts with one of these marks the column (so "end" catches "ended_at"
@@ -51,6 +61,11 @@ AFTER_WORDS = ("resolv", "close", "reopen", "transfer", "reassign", "sla", "made
                "taken", "wait", "handled", "resolution", "events", "updated", "mod", "status", "state",
                "outcome", "deliver", "pickup", "picked", "response", "responded", "assigned", "end", "ended",
                "finish", "rating", "satisf", "csat", "feedback", "solved", "escalat", "knowledge", "confirm")
+# What the person sees when a needed column is missing: one sentence and one fix.
+NO_START = "OpsLens cannot tell when each item started: pick the column, or try another file."
+NO_END = "This file has no time an item ended or took: tell OpsLens which column it is, or try another file."
+NO_MISS = ("OpsLens does not know what a miss is in this file: type a promised time in minutes, or pick the "
+           "column that says if an item was on time.")
 Progress = Callable[[str], None]
 
 
@@ -102,7 +117,9 @@ def column_kind(values: pd.Series) -> str:
         return "empty"
     if pd.to_numeric(sample, errors="coerce").notna().mean() >= 0.95:
         return "number"
-    if sample.str.contains(r"\d").mean() >= 0.9 and parse_times(sample).notna().mean() >= 0.9:
+    # A time has digits AND a date or clock separator: "T00042" (a ticket id) parses as ISO, but is not a time.
+    if sample.str.contains(r"\d").mean() >= 0.9 and sample.str.contains(r"[-/:.\s]").mean() >= 0.9 \
+            and parse_times(sample).notna().mean() >= 0.9:
         return "time"
     unique_share = values.nunique(dropna=True) / max(1, values.notna().sum())
     if sample.str.len().mean() > 40:
@@ -112,20 +129,35 @@ def column_kind(values: pd.Series) -> str:
     return "category"
 
 
+def name_words(name: str) -> list[str]:
+    """The words of a column name, lower case: "Time_taken (min)" -> ["time", "taken", "min"]."""
+    return [w for w in re.split(r"[^a-z0-9]+", str(name).lower()) if w]
+
+
+def has_word(name: str, hints: tuple[str, ...]) -> bool:
+    """True when a word of the name starts with a hint; hints under 4 letters must match a whole word.
+
+    Example: ("Date Created", ("creat",)) -> True; ("vendor", ("end",)) -> False.
+    """
+    return any(w == h or (len(h) >= 4 and w.startswith(h)) for w in name_words(name) for h in hints)
+
+
 def known_at_open(name: str) -> bool:
     """False for column names that describe what happened after an item opened.
 
     Example: "reassignment_count" -> False, "Time_taken(min)" -> False, "vendor" -> True.
     """
-    words = [w for w in re.split(r"[^a-z0-9]+", name.lower()) if w]
-    return not any(w == a or (len(a) >= 4 and w.startswith(a)) for w in words for a in AFTER_WORDS)
+    return not has_word(name, AFTER_WORDS)
 
 
 def peek(raw: pd.DataFrame) -> dict:
-    """What the mapping form needs: each column's kind, a few values, and a suggested mapping.
+    """What the upload card needs before anything is learned: each column's kind and a few values,
+    the suggested mapping (with the columns it would learn from), a 3-row preview, a question for
+    each needed column it could not guess, and what will happen with the suggestion (check_mapping).
 
-    Example: a UCI one-row export -> created_at = opened_at, resolved_at = resolved_at,
-    priority = priority, team = assignment_group, sla_met = made_sla; features = category, ...
+    Example: a UCI one-row export -> created_at = created_at, resolved_at = resolved_at,
+    priority = priority, team = first_team, sla_met = made_sla; nothing to ask; plan: 24,918 items,
+    a miss is the file's own made_sla column, learn on the first 17,442.
     """
     columns = []
     for name in raw.columns:
@@ -133,7 +165,11 @@ def peek(raw: pd.DataFrame) -> dict:
         columns.append({"name": str(name), "kind": kind, "unique": int(raw[name].nunique()),
                         "examples": [str(v) for v in raw[name].dropna().astype(str).unique()[:3]],
                         "feature": kind in ("number", "category") and known_at_open(str(name))})
-    return {"rows": int(len(raw)), "columns": columns, "suggested": suggest_mapping(raw, columns)}
+    suggested = suggest_mapping(raw, columns)
+    suggested["features"] = [c["name"] for c in columns if c["feature"] and c["name"] not in suggested.values()]
+    ask = questions(columns, suggested)
+    return {"rows": int(len(raw)), "columns": columns, "suggested": suggested, "preview": preview_rows(raw),
+            "ask": ask, "plan": None if ask else check_mapping(raw, suggested)}
 
 
 GUESSES = {
@@ -148,9 +184,30 @@ GUESSES = {
     "team": ["assignment_group", "team", "queue", "group", "first_team", "city"],  # never a "resolved by" column
     "category": ["category", "type", "issue_type", "type_of_order", "final_category"],
 }
+# For a role still empty after the known names: the first column of this kind whose name has one
+# of these words. Start, priority, team and category never take a name that sounds after the fact.
+WORD_HINTS = {
+    "id": (("id",), ("ticket", "case", "incident", "order", "number", "key", "ref")),
+    "created_at": (("time",), ("creat", "open", "start", "submit", "report", "logged", "receiv", "raised", "arriv",
+                               "placed", "order")),
+    "resolved_at": (("time",), ("resolv", "close", "end", "finish", "complet", "deliver", "done", "solved", "fixed")),
+    "duration_min": (("number",), ("duration", "minutes", "mins", "taken", "tat", "turnaround")),
+    "due_at": (("time",), ("due", "deadline", "promised", "expected")),
+    "priority": (("category", "number"), ("priorit", "severity", "urgency", "sev")),
+    "team": (("category",), ("team", "group", "queue", "department", "desk")),
+    "category": (("category",), ("categor", "type", "issue", "topic", "reason", "product", "service")),
+}
+ONE_END = {"resolved_at": "duration_min", "duration_min": "resolved_at"}  # either end is enough
 
 
 def suggest_mapping(raw: pd.DataFrame, columns: list[dict]) -> dict[str, str]:
+    """Known names first ("opened_at", "Time_taken(min)"...), compared without case, spaces or
+    underscores; then, for a role still empty, a column of the right kind with a telling word in
+    its name ("Date Created" is a start, "Closed On" an end, "SLA Breached" says it missed).
+
+    Example: the Kaggle delivery export -> created_at Order_Date + created_time Time_Orderd,
+    duration_min "Time_taken (min)", team City, category Type_of_order.
+    """
     # Compare names without case, spaces or underscores: "Time_taken (min)" matches "time_taken(min)".
     squash = lambda name: re.sub(r"[\s_]+", "", str(name).lower())  # noqa: E731
     lower = {squash(c): c for c in raw.columns}
@@ -161,13 +218,77 @@ def suggest_mapping(raw: pd.DataFrame, columns: list[dict]) -> dict[str, str]:
             if guess in lower:
                 out[key] = lower[guess]
                 break
+    for key, (kinds, hints) in WORD_HINTS.items():
+        if out.get(key) or out.get(ONE_END.get(key, "")) or (key == "due_at" and out.get("sla_met")):
+            continue
+        after_ok = key in ("resolved_at", "duration_min", "due_at")
+        for c in columns:
+            if c["kind"] in kinds and c["name"] not in out.values() and has_word(c["name"], hints) \
+                    and (after_ok or known_at_open(c["name"])) and not (key == "duration_min" and in_hours(c["name"])):
+                out[key] = c["name"]
+                break
+    guess_on_time(columns, out)
     return out
+
+
+def in_hours(name: str) -> bool:
+    """A duration in hours, days or seconds is not a duration in minutes ("Resolution time (hrs)")."""
+    return has_word(name, ("hour", "hours", "hrs", "hr", "h", "day", "days", "sec", "secs", "seconds"))
+
+
+def guess_on_time(columns: list[dict], out: dict) -> None:
+    """A two-valued column whose name says late ("SLA Breached", "is_late") or on time ("SLA Met")."""
+    if out.get("sla_met") or out.get("due_at"):
+        return
+    for c in columns:
+        if c["unique"] != 2 or c["name"] in out.values():
+            continue
+        if has_word(c["name"], ("breach", "violat", "overdue", "missed")) or "late" in name_words(c["name"]):
+            out["breached"] = c["name"]
+            return
+        if has_word(c["name"], ("sla", "ontime", "within", "met")):
+            out["sla_met"] = c["name"]
+            return
+
+
+def questions(columns: list[dict], m: dict) -> list[dict]:
+    """Ask only what cannot be guessed: the start, and the end or duration. Each question offers the
+    columns of the right kind as answers (each answer says which role it fills).
+
+    Example: two time columns "opened" and "logged", no known names -> one question,
+    "Which column is when each item started?" with the answers opened and logged.
+    """
+    used = set(v for v in m.values() if isinstance(v, str))
+    times = [c["name"] for c in columns if c["kind"] == "time" and c["name"] not in used]
+    asks = []
+    if not m.get("created_at"):
+        asks.append({"role": "created_at", "text": "Which column is when each item started?",
+                     "options": [{"column": n, "role": "created_at"} for n in times[:4]]})
+    if not m.get("resolved_at") and not m.get("duration_min"):
+        numbers = [c["name"] for c in columns if c["kind"] == "number" and c["name"] not in used]
+        options = [{"column": n, "role": "resolved_at"} for n in times[:4]] + \
+                  [{"column": n, "role": "duration_min"} for n in numbers[:3]]
+        asks.append({"role": "end", "text": "Which column is when each item ended, or how many minutes it took?",
+                     "options": options})
+    return asks
+
+
+def preview_rows(raw: pd.DataFrame, n: int = 3) -> list[dict[str, str]]:
+    """The first rows as short text, for the preview on the upload card (values cut at 32 letters)."""
+    return [{str(k): "" if pd.isna(v) else str(v)[:32] for k, v in row.items()} for _, row in raw.head(n).iterrows()]
 
 
 # ---- 2. Building the work items ---------------------------------------------------------------
 
 def truthy(values: pd.Series) -> pd.Series:
-    return values.astype(str).str.strip().str.lower().isin({"true", "1", "yes", "y", "met", "on time"})
+    return values.astype(str).str.strip().str.lower().isin({"true", "1", "yes", "y", "met", "on time", "within sla",
+                                                            "achieved", "in time", "ontime", "on-time"})
+
+
+def said_missed(values: pd.Series) -> pd.Series:
+    """For a "breached" column: True, yes, 1, breached, violated, missed or late mean the item missed."""
+    return values.astype(str).str.strip().str.lower().isin({"true", "1", "yes", "y", "breached", "violated", "missed",
+                                                            "late", "overdue", "sla violated", "failed"})
 
 
 def priority_rank(values: pd.Series) -> pd.Series:
@@ -186,25 +307,52 @@ def priority_rank(values: pd.Series) -> pd.Series:
     return pd.to_numeric(ranks, errors="coerce")
 
 
-def build_items(raw: pd.DataFrame, m: dict, target_min: float | None) -> tuple[pd.DataFrame, list[str]]:
-    """One row per work item: start, end, missed, and the columns the person mapped.
+def miss_rule(m: dict, target_min: float | None) -> dict:
+    """Which rule says an item missed, in the order build_items uses them: the file's own "SLA met"
+    column, a "breached" column, a due time, or a promised time in minutes (rule None: no way yet).
 
-    The miss comes from (in this order) an "SLA met" column, a due time, or a promised time in
-    minutes typed in the form (the same for every item, or per priority if a priority column exists).
+    Example: {"duration_min": "Time_taken(min)"} with 30 -> {"rule": "promise", "column": None, "target_min": 30.0}.
     """
-    notes: list[str] = []
+    for rule in ("sla_met", "breached", "due_at"):
+        if m.get(rule):
+            return {"rule": rule, "column": m[rule], "target_min": None}
+    if target_min:
+        return {"rule": "promise", "column": None, "target_min": float(target_min)}
+    return {"rule": None, "column": None, "target_min": None}
+
+
+def item_times(raw: pd.DataFrame, m: dict) -> tuple[pd.Series, pd.Series]:
+    """Start and end of every row (NaT where unreadable). The end is an end time, or the start plus a
+    duration in minutes ("(min) 24" reads as 24 minutes)."""
+    for key, name in m.items():
+        if key != "features" and name and name not in raw.columns:
+            raise ValueError(f'There is no column "{name}" in this file: pick another one.')
+    if not m.get("created_at"):
+        raise ValueError(NO_START)
     created = raw[m["created_at"]].astype(str)
     if m.get("created_time"):
         created = created + " " + clock_text(raw[m["created_time"]])
-    items = pd.DataFrame({"created_at": parse_times(created)})
-    items["id"] = raw[m["id"]].astype(str) if m.get("id") else [f"row {i + 1}" for i in range(len(raw))]
+    start = parse_times(created)
     if m.get("resolved_at"):
-        items["end_at"] = parse_times(raw[m["resolved_at"]])
-    elif m.get("duration_min"):
+        return start, parse_times(raw[m["resolved_at"]])
+    if m.get("duration_min"):
         minutes = pd.to_numeric(raw[m["duration_min"]].astype(str).str.extract(r"([\d.]+)")[0], errors="coerce")
-        items["end_at"] = items["created_at"] + pd.to_timedelta(minutes, unit="min")
-    else:
-        raise ValueError("map either an end time (resolved / closed) or a duration in minutes")
+        return start, start + pd.to_timedelta(minutes, unit="min")
+    raise ValueError(NO_END)
+
+
+def build_items(raw: pd.DataFrame, m: dict, target_min: float | None,
+                target_assumed: bool = False) -> tuple[pd.DataFrame, list[str]]:
+    """One row per work item: start, end, missed, and the columns the person mapped.
+
+    The miss comes from (in this order) an "SLA met" column, a "breached" column, a due time, or a
+    promised time in minutes (typed in the form, or OpsLens's assumption from the file's median).
+    """
+    notes: list[str] = []
+    start, end = item_times(raw, m)
+    items = pd.DataFrame({"created_at": start})
+    items["id"] = raw[m["id"]].astype(str) if m.get("id") else [f"row {i + 1}" for i in range(len(raw))]
+    items["end_at"] = end
     items["duration_min"] = (items["end_at"] - items["created_at"]).dt.total_seconds() / 60.0
     if m.get("priority"):
         items["priority"] = raw[m["priority"]].astype(str)
@@ -212,19 +360,27 @@ def build_items(raw: pd.DataFrame, m: dict, target_min: float | None) -> tuple[p
     for key in ("team", "category"):
         if m.get(key):
             items[key] = raw[m[key]].astype(str).fillna("(blank)")
-    if m.get("sla_met"):
+    rule = miss_rule(m, target_min)
+    if rule["rule"] == "sla_met":
         items["missed"] = ~truthy(raw[m["sla_met"]])
         notes.append(f"A miss is the file's own \"{m['sla_met']}\" column.")
-    elif m.get("due_at"):
-        due = parse_times(raw[m["due_at"]])
-        items["missed"] = items["end_at"] > due
+    elif rule["rule"] == "breached":
+        items["missed"] = said_missed(raw[m["breached"]])
+        notes.append(f"A miss is the file's own \"{m['breached']}\" column.")
+    elif rule["rule"] == "due_at":
+        items["missed"] = items["end_at"] > parse_times(raw[m["due_at"]])
         notes.append(f"A miss is finishing after \"{m['due_at']}\".")
-    elif target_min:
+    elif rule["rule"] == "promise" and target_assumed:
+        median = float(items["duration_min"][items["duration_min"] >= 0].median())
+        items["missed"] = items["duration_min"] > float(target_min)
+        notes.append(f"A miss is taking longer than {float(target_min):g} minutes. This is an assumption: the file has no "
+                     f"on-time column, so OpsLens took its median time ({median:.1f} min) rounded up.")
+    elif rule["rule"] == "promise":
         items["missed"] = items["duration_min"] > float(target_min)
         notes.append(f"A miss is taking longer than the promised {float(target_min):g} minutes you entered.")
     else:
-        raise ValueError("tell OpsLens what a miss is: an SLA-met column, a due time, or a promised time in minutes")
-    if m.get("sla_met"):
+        raise ValueError(NO_MISS)
+    if rule["rule"] in ("sla_met", "breached"):
         # The file says whether each item missed, so an item without an end is still known: it
         # counts as open until the last moment in the file (for the "open when it arrived" counts).
         last = items["end_at"].max()
@@ -241,9 +397,12 @@ def build_items(raw: pd.DataFrame, m: dict, target_min: float | None) -> tuple[p
     return items, notes
 
 
+OUTCOME_ROLES = ("resolved_at", "duration_min", "sla_met", "breached", "due_at", "id", "created_at", "created_time")
+
+
 def add_features(items: pd.DataFrame, raw: pd.DataFrame, m: dict) -> pd.DataFrame:
     """The columns the person ticked as known when an item opens (never the mapped outcome ones)."""
-    outcome = {m.get(k) for k in ("resolved_at", "duration_min", "sla_met", "due_at", "id", "created_at", "created_time")}
+    outcome = {m.get(k) for k in OUTCOME_ROLES}
     for name in m.get("features", []):
         if name in outcome or name not in raw.columns:
             continue
@@ -256,20 +415,84 @@ def add_features(items: pd.DataFrame, raw: pd.DataFrame, m: dict) -> pd.DataFram
     return items
 
 
-def relevance_problems(items: pd.DataFrame) -> list[str]:
-    """Why a file cannot be learned from, in plain words (an empty list means it can)."""
+def relevance_problems(items: pd.DataFrame) -> list[tuple[str, str]]:
+    """Why a file cannot be learned from, each with the one thing to try (an empty list means it can).
+
+    Example: 120 rows -> [("only 120 usable rows; OpsLens needs at least 500 to learn from",
+    "Try a longer export, a few months of items.")]
+    """
     problems = []
     if len(items) < MIN_ROWS:
-        problems.append(f"only {len(items)} usable rows; OpsLens needs at least {MIN_ROWS} to learn from")
+        problems.append((f"only {len(items)} usable rows; OpsLens needs at least {MIN_ROWS} to learn from",
+                         "Try a longer export, a few months of items."))
     days = items["created_at"].dt.normalize().nunique() if len(items) else 0
     if days < MIN_DAYS:
-        problems.append(f"the items cover {days} days; OpsLens needs at least {MIN_DAYS} to learn and then test")
+        problems.append((f"the items cover {days} days; OpsLens needs at least {MIN_DAYS} to learn and then test",
+                         "Try an export that covers at least a week."))
     if len(items) and (items["duration_min"] < 0).mean() > 0.1:
-        problems.append("more than 1 in 10 items end before they start: check the start and end columns")
+        problems.append(("more than 1 in 10 items end before they start", "Check which column is the start and which is the end."))
     misses = int(items["missed"].sum()) if len(items) else 0
     if misses < MIN_MISSES or len(items) - misses < MIN_MISSES:
-        problems.append(f"{misses} misses out of {len(items)} items; OpsLens needs at least {MIN_MISSES} misses and {MIN_MISSES} in time")
+        problems.append((f"{misses} misses out of {len(items)} items; OpsLens needs at least {MIN_MISSES} misses and {MIN_MISSES} in time",
+                         "Change what counts as a miss, or try a longer export."))
     return problems
+
+
+def refusal(problems: list[tuple[str, str]]) -> str:
+    """One readable refusal: every reason, then the first fix to try."""
+    return "This file cannot be analysed: " + "; ".join(reason for reason, _ in problems) + ". " + problems[0][1]
+
+
+ROUND_MINUTES = (5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 360, 480, 720, 1440, 2880, 4320, 7200, 10080)
+
+
+def round_promise(median_min: float) -> float:
+    """The file's median time rounded up to the next round number of minutes: OpsLens's assumed
+    promise when the file has no on-time column. Strictly above the median, so fewer than half the
+    items count as misses even when the median is itself round. Example: 21.4 -> 25, 20 -> 25,
+    26 -> 30, 50 -> 60, 700 -> 720 (12 hours), 2000 -> 2880 (2 days); beyond a week, whole weeks."""
+    for minutes in ROUND_MINUTES:
+        if median_min < minutes:
+            return float(minutes)
+    return float((np.floor(median_min / 10080) + 1) * 10080)
+
+
+def learned_columns(raw: pd.DataFrame, m: dict) -> list[str]:
+    """The file's own columns the model learns from: team, category, priority and the ticked ones."""
+    outcome = {m.get(k) for k in OUTCOME_ROLES}
+    chosen = {m.get(k) for k in ("team", "category", "priority")} | set(m.get("features", []))
+    return [str(c) for c in raw.columns if c in chosen and c not in outcome]
+
+
+def check_mapping(raw: pd.DataFrame, m: dict, target_min: float | None = None) -> dict:
+    """What will happen with this mapping, before anything is learned: how many items are usable,
+    how long they take, what counts as a miss (OpsLens assumes a promise when the file has no
+    on-time column) and how many misses that makes, and how the items split into the first 70% and
+    the rest. `problem` is one sentence and one fix when the file cannot be analysed this way.
+
+    Example (generated delivery orders): 3,000 items over 30 days, median 21.1 min; no on-time
+    column, so a miss is taking longer than 25 minutes (assumed); learn on 2,100, test on 900.
+    """
+    try:
+        start, end = item_times(raw, m)
+        minutes = ((end - start).dt.total_seconds() / 60.0).dropna()
+        median = float(minutes[minutes >= 0].median()) if (minutes >= 0).any() else None
+        assumed = miss_rule(m, target_min)["rule"] is None and median is not None
+        if assumed:
+            target_min = round_promise(median)
+        items, _ = build_items(raw, m, target_min, assumed)
+    except ValueError as exc:
+        return {"problem": str(exc)}
+    learn = int(len(items) * LEARN_SHARE)
+    problems = relevance_problems(items)
+    learns_from = learned_columns(raw, m)
+    return {"problem": refusal(problems) if problems else None, "items": int(len(items)), "rows": int(len(raw)),
+            "from": str(items["created_at"].min())[:10], "to": str(items["created_at"].max())[:10],
+            "days": int(items["created_at"].dt.normalize().nunique()), "median_min": round(median, 1) if median else None,
+            "miss": {**miss_rule(m, target_min), "assumed": assumed},
+            "missed_pct": round(100 * float(items["missed"].mean()), 1) if len(items) else None,
+            "learn_items": learn, "test_items": int(len(items)) - learn, "learns_from": learns_from,
+            "learns_from_count": len(learns_from)}
 
 
 # ---- 3. Features known at the moment an item opens --------------------------------------------
@@ -413,6 +636,8 @@ def describe(name: str, value, item: pd.Series) -> str:
 
 def reasons(booster: lgb.Booster, X: pd.DataFrame, items: pd.DataFrame, rows: np.ndarray) -> list[list[dict]]:
     """Top 3 pushes towards a miss per item, from LightGBM's own TreeSHAP split of the prediction."""
+    if len(rows) == 0:
+        return []
     contrib = booster.predict(X.iloc[rows], pred_contrib=True)[:, :-1]
     out = []
     for r, c in zip(rows, contrib):
@@ -451,22 +676,54 @@ def early_warning(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, test: np.
 def shadow_day(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, test: np.ndarray,
                scores: dict[str, np.ndarray], booster: lgb.Booster) -> dict:
     """The busiest later day, replayed: each picker flags 1 item in 5 as they open; who caught more
-    of the misses that really happened? Nothing is changed: the outcomes are the file's own."""
+    of the misses that really happened? Nothing is changed: the outcomes are the file's own.
+    `timeline` lists the day item by item, so the screen can replay it minute by minute."""
     opened_day = items["created_at"].dt.normalize()
     busiest = opened_day[test].value_counts().idxmax()
     rows = np.flatnonzero(test & (opened_day == busiest).to_numpy())
     same_day = np.zeros(len(rows))
     result = {"date": str(busiest)[:10], "weekday": WEEKDAYS[busiest.weekday()], "items": int(len(rows)),
               "misses": int(y[rows].sum()), "flags": max(1, int(round(FLAG_SHARE * len(rows)))), "caught": {}}
+    flagged = {}
     for name, score in scores.items():
-        flagged = flags_by_day(same_day, score[rows])
-        result["caught"][name] = int((flagged & (y[rows] == 1)).sum())
+        flagged[name] = flags_by_day(same_day, score[rows])
+        result["caught"][name] = int((flagged[name] & (y[rows] == 1)).sum())
     order = rows[np.argsort(-scores["opslens"][rows])[:6]]
     why = reasons(booster, X, items, order)
     result["examples"] = [{"id": str(items.at[r, "id"]), "opened": str(items.at[r, "created_at"])[11:16],
                            "risk": round(float(scores["opslens"][r]), 3), "missed": bool(y[r]), "reasons": why[i]}
                           for i, r in enumerate(order)]
+    if len(rows) <= TIMELINE_MAX:
+        result["timeline"] = day_timeline(items, X, y, rows, flagged, scores, booster, busiest)
+    else:
+        result["timeline_note"] = f"This day has {len(rows):,} items, too many to replay one by one, so only its totals are shown."
     return result
+
+
+def day_timeline(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, rows: np.ndarray, flagged: dict[str, np.ndarray],
+                 scores: dict[str, np.ndarray], booster: lgb.Booster, day: pd.Timestamp) -> list[dict]:
+    """The shadow day item by item, in opening order: the minute it opened and ended (minutes after
+    that day's midnight, so an end on a later day is above 1440), whether it really missed, which
+    pickers flagged it the moment it opened, OpsLens's risk, and its reasons when OpsLens flagged it.
+
+    Example: {"id": "0x0b2c", "opened_min": 754.2, "ended_min": 791.0, "missed": True,
+              "flagged": ["opslens", "rule"], "risk": 0.71, "reasons": [{"text": "Road_traffic_density: Jam ", ...}]}
+    """
+    opened = ((items["created_at"].iloc[rows] - day).dt.total_seconds() / 60.0).to_numpy()
+    ended = ((items["end_at"].iloc[rows] - day).dt.total_seconds() / 60.0).to_numpy()
+    ours = np.flatnonzero(flagged["opslens"])
+    why = dict(zip(ours.tolist(), reasons(booster, X, items, rows[ours])))
+    out = []
+    for k, r in enumerate(rows):
+        line = {"id": str(items.at[r, "id"]), "opened_min": round(float(opened[k]), 1), "ended_min": round(float(ended[k]), 1),
+                "missed": bool(y[r]), "flagged": [name for name in flagged if flagged[name][k]],
+                "risk": round(float(scores["opslens"][r]), 3)}
+        if "priority" in items:
+            line["priority"] = str(items.at[r, "priority"])
+        if k in why:
+            line["reasons"] = why[k]
+        out.append(line)
+    return out
 
 
 # ---- 6. Problem cards: found on the first 70%, checked again on the last 30% -------------------
@@ -497,6 +754,7 @@ def problem_cards(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, learn: np
                   limit: int = 6) -> list[dict]:
     """Groups that miss far more often than the rest on the first 70%, then the same gap measured on
     the last 30% with a 95% interval over days ("still true later" only if it stays above zero).
+    `test_misses` counts the real misses in the group on the last 30% (the Actions screen shows it).
 
     Example: team = Group 70 misses 61% vs 34% for the rest; later 58% vs 33%, gap +25 [18, 31] -> still true.
     """
@@ -522,11 +780,125 @@ def problem_cards(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, learn: np
                       "learn_items": int(n), "excess_misses": round(float(excess), 1),
                       "test_pct": round(100 * float(y[t_in].mean()), 1), "test_rest_pct": round(100 * float(y[t_rest].mean()), 1),
                       "test_items": int(t_in.sum()), "gap_ci": [round(lo, 1), round(hi, 1)], "still_true": bool(lo > 0),
-                      "examples": items.loc[t_in & (y == 1), "id"].astype(str).head(3).tolist()})
+                      "examples": items.loc[t_in & (y == 1), "id"].astype(str).head(3).tolist(),
+                      "test_misses": int(y[t_in].sum())})
     return cards
 
 
-# ---- 7. The whole report ----------------------------------------------------------------------
+# ---- 7. Workload a week ahead, per team --------------------------------------------------------
+
+FORECAST_LAGS = (7, 14, 21, 28)
+BLANKS = ("nan", "None", "(blank)", "")  # an empty team is not a team to forecast
+FORECAST_INPUTS = ["team", "weekday", "lag_7", "lag_14", "lag_21", "lag_28", "mean_4w"]
+FORECAST_PARAMS = {"objective": "poisson", "learning_rate": 0.05, "num_leaves": 15, "min_child_samples": 10,
+                   "feature_fraction": 0.9, "verbose": -1, "seed": 7, "deterministic": True, "num_threads": 1}
+
+
+def daily_team_counts(items: pd.DataFrame, teams: list[str], first: pd.Timestamp, days: int) -> pd.DataFrame:
+    """New items per team and calendar day (day 0 = the file's first day), zeros included."""
+    day = (items["created_at"].dt.normalize() - first).dt.days
+    counts = items.groupby([items["team"].astype(str), day]).size()
+    counts.index = counts.index.set_names(["team", "day"])
+    grid = pd.MultiIndex.from_product([teams, range(days)], names=["team", "day"])
+    return counts.reindex(grid, fill_value=0).rename("count").reset_index()
+
+
+def lag_features(counts: pd.DataFrame, first_weekday: int) -> pd.DataFrame:
+    """Weekday and the same weekday 1 to 4 weeks earlier, per team. Only the past: the row of day d
+    reads days d-7, d-14, d-21 and d-28 (empty before the file starts), never day d or later.
+
+    Example: 40, 38, 45 and 41 items on the four Mondays before -> lag_7 = 41, mean_4w = 41.0.
+    """
+    df = counts.sort_values(["team", "day"]).reset_index(drop=True)
+    df["weekday"] = (first_weekday + df["day"]) % 7
+    grouped = df.groupby("team")["count"]
+    for lag in FORECAST_LAGS:
+        df[f"lag_{lag}"] = grouped.shift(lag)
+    df["mean_4w"] = df[[f"lag_{lag}" for lag in FORECAST_LAGS]].mean(axis=1)
+    df["team"] = df["team"].astype("category")
+    return df
+
+
+def usual_ends(items: pd.DataFrame, teams: list[str], start: pd.Timestamp) -> pd.Series:
+    """What each team usually finishes in a day: the median over the 28 days before `start` (days
+    with none count as 0). Only ends before `start`, so it is known when the forecast is made."""
+    since = start - pd.Timedelta(days=28)
+    done = items[(items["end_at"] >= since) & (items["end_at"] < start) & items["team"].astype(str).isin(teams)]
+    if done.empty:
+        return pd.Series(0.0, index=teams)
+    per_day = done.groupby([done["team"].astype(str), (done["end_at"].dt.normalize() - since).dt.days]).size()
+    return per_day.unstack(fill_value=0).reindex(index=teams, columns=range(28), fill_value=0).median(axis=1)
+
+
+def team_forecast(items: pd.DataFrame, test: np.ndarray) -> dict:
+    """New items per team and day, a week ahead, on the first 4 weeks of the later 30%: learned
+    (LightGBM, Poisson, fixed settings) on the days before vs "same weekday last week". The last
+    fifth of the learning days (at least a week) picks which of the two to trust; the later days
+    only report. Four weeks, because a forecast is a near-term tool and the end of an export is
+    often a thin tail of stragglers. The file's last day is never scored (often cut short).
+    Needs a team column and 8 weeks of items; otherwise `needs` says what is missing.
+
+    Example (a 90-day file of generated delivery orders, 3 cities): learned WAPE 0.12 vs 0.18 for
+    same weekday last week; the check days had chosen the learned one (0.11 vs 0.15).
+    """
+    if "team" not in items:
+        return {"needs": "a team column"}
+    first = items["created_at"].min().normalize()
+    span = int((items["created_at"].max().normalize() - first).days) + 1
+    if span < FORECAST_DAYS:
+        return {"needs": f"at least 8 weeks of items; this file covers {span} days"}
+    test_day = int((items.loc[test, "created_at"].min().normalize() - first).days)
+    check_from = test_day - max(7, int(round(0.2 * (test_day - 7))))
+    last_scored = min(test_day + 28, span - 1)
+    if check_from - 7 < 14 or last_scored - test_day < 7:
+        return {"needs": "3 weeks of items before the later 30% begins and a week after it"}
+    names = items.loc[~test, "team"].astype(str)
+    teams = [str(t) for t in names[~names.isin(BLANKS)].value_counts().index[:FORECAST_TEAMS]]
+    rows = lag_features(daily_team_counts(items[items["team"].astype(str).isin(teams)], teams, first, span), first.weekday())
+    fit = rows[(rows["day"] >= 7) & (rows["day"] < check_from)]
+    check = rows[(rows["day"] >= check_from) & (rows["day"] < test_day)]
+    scored = rows[(rows["day"] >= test_day) & (rows["day"] < last_scored)].copy()
+    train = lgb.Dataset(fit[FORECAST_INPUTS], fit["count"])
+    booster = lgb.train(FORECAST_PARAMS, train, 300, valid_sets=[lgb.Dataset(check[FORECAST_INPUTS], check["count"], reference=train)],
+                        callbacks=[lgb.early_stopping(20, verbose=False)])
+    on_check = {"learned": wape(check["count"].to_numpy(), booster.predict(check[FORECAST_INPUTS])),
+                "same_weekday_last_week": wape(check["count"].to_numpy(), check["lag_7"].to_numpy())}
+    chosen = min(on_check, key=on_check.get)
+    scored["learned"] = booster.predict(scored[FORECAST_INPUTS])
+    scored["forecast"] = scored["learned"] if chosen == "learned" else scored["lag_7"]
+    scored["usual_ends"] = scored["team"].astype(str).map(usual_ends(items, teams, first + pd.Timedelta(days=test_day)))
+    scored["date"] = (first + pd.to_timedelta(scored["day"], unit="D")).dt.strftime("%a %d %b")
+    return {"teams": teams, "chosen_on_check": chosen, "wape_check": {k: round(v, 3) for k, v in on_check.items()},
+            "wape_learned": round(wape(scored["count"].to_numpy(), scored["learned"].to_numpy()), 3),
+            "wape_same_weekday_last_week": round(wape(scored["count"].to_numpy(), scored["lag_7"].to_numpy()), 3),
+            "learned_days": [str((first + pd.Timedelta(days=7)).date()), str((first + pd.Timedelta(days=test_day - 1)).date())],
+            "scored_days": [str((first + pd.Timedelta(days=test_day)).date()), str((first + pd.Timedelta(days=last_scored - 1)).date())],
+            "team_days": int(len(scored)), "items_scored": int(scored["count"].sum()),
+            "first_week": forecast_rows(scored[scored["day"] < test_day + 7]), "by_team": forecast_by_team(scored, teams)}
+
+
+def forecast_rows(week: pd.DataFrame) -> list[dict]:
+    """One row per team and day: the forecast it used, same weekday last week, what came, and what
+    the team usually finishes in a day."""
+    return [{"team": str(r["team"]), "date": r["date"], "forecast": round(float(r["forecast"]), 1),
+             "same_weekday_last_week": int(r["lag_7"]), "actual": int(r["count"]), "usual_ends": round(float(r["usual_ends"]), 1)}
+            for r in week.sort_values(["day", "team"]).to_dict("records")]
+
+
+def forecast_by_team(scored: pd.DataFrame, teams: list[str]) -> list[dict]:
+    """WAPE of both forecasts per team over the scored days (teams with under 7 items are left out)."""
+    out = []
+    for team in teams:
+        rows = scored[scored["team"].astype(str) == team]
+        if rows["count"].sum() < 7:
+            continue
+        out.append({"team": team, "items": int(rows["count"].sum()),
+                    "wape_learned": round(wape(rows["count"].to_numpy(), rows["learned"].to_numpy()), 3),
+                    "wape_same_weekday_last_week": round(wape(rows["count"].to_numpy(), rows["lag_7"].to_numpy()), 3)})
+    return out
+
+
+# ---- 8. The whole report ----------------------------------------------------------------------
 
 def floor_summary(items: pd.DataFrame) -> dict:
     """The plain facts of the file: size, dates, miss rate, how long items take, the worst groups."""
@@ -543,6 +915,23 @@ def floor_summary(items: pd.DataFrame) -> dict:
     return out
 
 
+def missing_columns(items: pd.DataFrame, scores: dict, forecast: dict) -> dict[str, str]:
+    """What the file lacks, for each part of the report that would use it, as the thing to add.
+
+    Example: a delivery file without priority or category -> {"priority": "a priority column",
+    "category": "a category column", "forecast": "at least 8 weeks of items; this file covers 30 days"}.
+    """
+    needs = {}
+    if "priority" not in scores:
+        needs["priority"] = "a priority column filled in for most items" if "priority_rank" in items else "a priority column"
+    for key in ("team", "category"):
+        if key not in items:
+            needs[key] = f"a {key} column"
+    if forecast.get("needs"):
+        needs["forecast"] = forecast["needs"]
+    return needs
+
+
 CANNOT = [
     "Replay your floor under OpsLens's dispatch: that needs how long each item was actually worked on, "
     "who was on shift and who can handle what. A log records one way of working, not those.",
@@ -550,8 +939,10 @@ CANNOT = [
 ]
 
 
-def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, progress: Progress | None = None) -> dict:
-    """Run the whole report on one file. `progress(step)` is called as each step starts."""
+def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, progress: Progress | None = None,
+            target_assumed: bool = False) -> dict:
+    """Run the whole report on one file. `progress(step)` is called as each step starts.
+    `target_assumed` says the promised time is OpsLens's assumption, not typed by the person."""
     steps: list[dict] = []
     started = time.perf_counter()
 
@@ -564,11 +955,11 @@ def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, p
             progress(name)
 
     step("Reading the file and the column mapping")
-    items, notes = build_items(raw, mapping, target_min)
+    items, notes = build_items(raw, mapping, target_min, target_assumed)
     step("Checking the file can be learned from")
     problems = relevance_problems(items)
     if problems:
-        raise ValueError("This file cannot be analysed: " + "; ".join(problems) + ".")
+        raise ValueError(refusal(problems))
     step("Building what was known when each item opened")
     y = items["missed"].to_numpy().astype(int)
     fit, check, test = split_masks(len(items))
@@ -586,7 +977,10 @@ def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, p
     shadow = shadow_day(items, X, y, test, scores, booster)
     step("Finding recurring problems, then checking them on later items")
     cards = problem_cards(items, X, y, learn, test)
+    step("Forecasting each team's workload a week ahead")
+    forecast = team_forecast(items, test)
     steps[-1]["seconds"] = round(time.perf_counter() - steps[-1].pop("_t"), 1)
+    rule = miss_rule(mapping, target_min)
     return {
         "summary": floor_summary(items), "notes": notes, "dropped_after_the_fact": dropped,
         "features": list(X.columns), "rule_column": rule_col,
@@ -596,4 +990,6 @@ def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, p
                  "to": str(items.loc[test, "created_at"].max())[:10]},
         "warning": warning, "shadow": shadow, "cards": cards, "flag_share_pct": int(100 * FLAG_SHARE),
         "steps": steps, "seconds": round(time.perf_counter() - started, 1), "cannot": CANNOT,
+        "miss": {**rule, "assumed": bool(target_assumed) and rule["rule"] == "promise"}, "forecast": forecast,
+        "needs": missing_columns(items, scores, forecast),
     }
