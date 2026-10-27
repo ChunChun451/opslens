@@ -138,6 +138,10 @@ def test_an_action_names_the_ticket_the_agent_is_on() -> None:
                 {"kind": "extra_time", "agent": "A01", "value": 500}, {"kind": "back", "agent": "A01"}, {"kind": "done", "agent": "Z"}):
         with pytest.raises(ValueError):
             _new_action(bad, live, 20.0)
+    away = [{"kind": "break", "agent": "A01", "minute": 15.0}]
+    assert _new_action({"kind": "back", "agent": "A01"}, live, 20.0, away)["kind"] == "back"
+    with pytest.raises(ValueError):
+        _new_action({"kind": "break", "agent": "A01"}, live, 20.0, away)
 
 
 def test_outcome_is_only_known_once_it_happened() -> None:

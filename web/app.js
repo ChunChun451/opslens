@@ -58,13 +58,16 @@ async function start() {
 function showStatus(isFixture) {
   const meta = state.results.meta;
   const onFile = state.world === "real" && state.realSource === "upload" && state.upload;
-  const where = onFile ? `<span>· your file, scored on items it never learned from</span>`
-    : state.world === "real" ? `<span>· real public data, scored on later months</span>`
-    : `<span>· simulated floor, held-out days ${ev("meta.test_days[0]", "int")}–${ev("meta.test_days[1]", "int")}</span>`;
-  document.getElementById("data-source").innerHTML = `
+  const where = onFile ? "your file, scored on items it never learned from"
+    : state.world === "real" ? "real public data, scored on later months"
+    : `simulated floor, held-out days ${meta.test_days ? meta.test_days.join("–") : ""}`;
+  const when = fmtDateTime(meta.generated_at);
+  const box = document.getElementById("data-source");
+  box.title = `${isFixture ? "Fixture data" : "Results"} from ${when}: ${where}`;
+  box.innerHTML = `
     <span class="status-dot ${isFixture ? "fixture" : ""}"></span>
-    <strong>${isFixture ? "Fixture data" : "Live results"}</strong>
-    <span>· ${evText("meta.generated_at", fmtDateTime(meta.generated_at))}</span>${where}`;
+    <strong>${isFixture ? "Fixture data" : "Results"}</strong>
+    <span>${evText("meta.generated_at", when.split(",")[0])}</span>`;
 }
 
 function initWorldSwitch() {

@@ -31,8 +31,8 @@ export function render(section) {
   const chips = sh.shown_days.map((d, i) => `<button type="button" class="sh-day" data-i="${i}">
       ${escapeHtml(d.weekday)} ${escapeHtml(prettyDate(d.date))}${d.date === sh.showcase ? " · busiest" : ""}</button>`).join("");
   section.innerHTML = `
-    ${pageHeader("Shadow mode: a real day, replayed",
-      "Real incidents at their real times. OpsLens only watches and warns; the outcome is what really happened.")}
+    ${pageHeader("Shadow mode: a later day, replayed",
+      "Real items at their real times. OpsLens only watches and warns; the outcome is what really happened.")}
     <div class="sh-days">${chips}</div>
     <section class="card sh-stage">
       <div class="sh-top">
@@ -87,8 +87,8 @@ function wireControls(section) {
 function renderFile(section) {
   const r = state.upload;
   const theirs = r.warning.vs.rival === "priority" ? "Your priority field" : "The rule of thumb";
-  const head = pageHeader("Shadow mode: your busiest later day, replayed",
-    "Your items at their real times. OpsLens only watches and warns; the outcome is what really happened.");
+  const head = pageHeader("Shadow mode: a later day, replayed",
+    "Real items at their real times. OpsLens only watches and warns; the outcome is what really happened.");
   const honest = "";
   if (!r.shadow.timeline) {
     section.innerHTML = head + honest + card({ body: `<p>${evText(`${F}.timeline_note`)}</p><div class="sh-final">${fileFinal()}</div>` });

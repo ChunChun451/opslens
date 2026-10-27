@@ -8,8 +8,7 @@ import * as whatif from "./tabs/whatif.js";
 import * as tested from "./tabs/tested.js";
 import * as ledger from "./tabs/ledger.js";
 import * as live from "./tabs/live.js";
-import * as realdesk from "./tabs/realdesk.js";
-import * as yourfile from "./tabs/yourfile.js";
+import * as realdata from "./tabs/realdata.js";
 import * as worlds from "./tabs/worlds.js";
 import * as shadow from "./tabs/shadow.js";
 import * as team from "./tabs/team.js";
@@ -29,9 +28,9 @@ const ICONS = {
 export const TABS = [
   { id: "overview", label: "Overview", views: {
     food: [{ id: "live", label: "Live now", module: live }],
-    real: [{ id: "rd-overview", label: "Overview", module: realdesk.overview },
+    real: [{ id: "rd-overview", label: "Overview", module: realdata.overview },
            { id: "rd-shadow", label: "Shadow mode", module: shadow }],
-    upload: [{ id: "up-overview", label: "Overview", module: yourfile.overview },
+    upload: [{ id: "up-overview", label: "Overview", module: realdata.overview },
              { id: "up-shadow", label: "Shadow mode", module: shadow }] } },
   { id: "team", label: "Team", views: {
     food: [{ id: "team", label: "Team", module: team }],
@@ -39,17 +38,17 @@ export const TABS = [
     upload: [{ id: "up-team", label: "Team", module: team.realNote }] } },
   { id: "problems", label: "Problems", views: {
     food: [{ id: "patterns", label: "Why it goes wrong", module: patterns }],
-    real: [{ id: "rd-problems", label: "Why it goes wrong", module: realdesk.problems }],
-    upload: [{ id: "up-problems", label: "Why it goes wrong", module: yourfile.problems }] } },
+    real: [{ id: "rd-problems", label: "Why it goes wrong", module: realdata.problems }],
+    upload: [{ id: "up-problems", label: "Why it goes wrong", module: realdata.problems }] } },
   { id: "risks", label: "Risks", views: {
     food: [{ id: "atrisk", label: "Tickets at risk", module: atrisk },
            { id: "forecast", label: "Next 48 hours", module: forecast }],
-    real: [{ id: "rd-risks", label: "At risk and next week", module: realdesk.risks }],
-    upload: [{ id: "up-risks", label: "At risk and next week", module: yourfile.risks }] } },
+    real: [{ id: "rd-risks", label: "At risk and next week", module: realdata.risks }],
+    upload: [{ id: "up-risks", label: "At risk and next week", module: realdata.risks }] } },
   { id: "actions", label: "Actions", views: {
     food: [{ id: "recommendations", label: "What to do", module: recommendations }],
-    real: [{ id: "rd-actions", label: "What to do", module: realdesk.actions }],
-    upload: [{ id: "up-actions", label: "What to do", module: yourfile.actions }] } },
+    real: [{ id: "rd-actions", label: "What to do", module: realdata.actions }],
+    upload: [{ id: "up-actions", label: "What to do", module: realdata.actions }] } },
   { id: "proof", label: "Proof", views: {
     food: [{ id: "results", label: "Results", module: overview },
            { id: "compare", label: "Side by side", module: compare },
@@ -57,9 +56,10 @@ export const TABS = [
            { id: "whatif", label: "Try a what-if", module: whatif },
            { id: "ledger", label: "Rules we wrote first", module: ledger },
            { id: "tested", label: "How we tested", module: tested }],
-    real: [{ id: "rd-proof", label: "Against the real desk", module: realdesk.proof },
+    real: [{ id: "rd-proof", label: "Does it work here?", module: realdata.proof },
            { id: "ledger", label: "Rules we wrote first", module: ledger }],
-    upload: [{ id: "up-proof", label: "Does it work on your file?", module: yourfile.proof }] } },
+    upload: [{ id: "up-proof", label: "Does it work here?", module: realdata.proof },
+             { id: "ledger", label: "Rules we wrote first", module: ledger }] } },
   { id: "agent", label: "Agent", views: {
     food: [{ id: "agent", label: "Agent", module: agent }],
     real: [{ id: "agent", label: "Agent", module: agent }],

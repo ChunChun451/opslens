@@ -10,6 +10,7 @@ export function initLiveTicker() {
   update(box);
   timer = setInterval(() => update(box), EVERY_MS);
   document.addEventListener("world-changed", () => update(box));
+  document.addEventListener("live-changed", () => update(box));
 }
 
 async function update(box) {
@@ -37,7 +38,7 @@ async function update(box) {
   box.innerHTML = `<span class="lt-head"><span class="live-dot"></span>Live today ${clock}</span>
     <span class="lt-row"><span>Industry standard</span><b class="lt-theirs">${theirs}</b></span>
     <span class="lt-row"><span>OpsLens</span><b class="lt-ours">${ours}</b></span>
-    <span class="lt-sub">promises missed so far, a normal day · open Live now</span>`;
+    <span class="lt-sub">promises missed so far, ${data.scenario && data.scenario.actions ? `${data.scenario.actions} agent action${data.scenario.actions === 1 ? "" : "s"} applied` : "a normal day"} · open Live now</span>`;
 }
 
 export function stopLiveTicker() {

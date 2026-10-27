@@ -329,7 +329,7 @@ def _wait_complete(key: tuple, seconds: float = 60.0):
     return _LIVE.get(key)
 
 
-def _new_action(request: dict, current, minute: float) -> dict:
+def _new_action(request: dict, current, minute: float, log: list[dict] | None = None) -> dict:
     from opslens.live import state_at
 
     kind, agent = request.get("kind"), str(request.get("agent") or "")
@@ -356,11 +356,16 @@ def _new_action(request: dict, current, minute: float) -> dict:
             raise ValueError("unknown ticket")
         action["ticket_id"] = ticket
         action["reason"] = str(request.get("reason") or "")[:60]
-    elif kind == "break" and row["status"] in ("off", "break"):
+    elif kind == "break" and (row["status"] in ("off", "break") or _on_break(log or [], agent)):
         raise ValueError("This agent is not on shift or is already on a break.")
-    elif kind == "back" and row["status"] != "break":
+    elif kind == "back" and not _on_break(log or [], agent):
         raise ValueError("This agent is not on a break.")
     return action
+
+
+def _on_break(log: list[dict], agent: str) -> bool:
+    moves = [a["kind"] for a in log if a["agent"] == agent and a["kind"] in ("break", "back")]
+    return bool(moves) and moves[-1] == "break"
 
 
 @app.post("/api/live/action")
@@ -377,7 +382,7 @@ def live_action(request: dict) -> JSONResponse:
         current = _wait_complete(key)
         if current is None:
             return JSONResponse({"error": "Today is still being simulated. Try again in a few seconds."}, status_code=409)
-        action = _new_action(request, current, minute)
+        action = _new_action(request, current, minute, log)
     except (TypeError, ValueError) as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
     started = time.perf_counter()
