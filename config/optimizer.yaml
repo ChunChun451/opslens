@@ -4,8 +4,8 @@ order_value_weight: 0.1
 rescue_floor: 0.2
 aging_per_hour: 1.0
 mismatch_penalty: 2.0
-cross_skill_min_rescue: 0.5
-scarcity_weight: 0.3
+cross_skill_min_rescue: 0.3
+scarcity_weight: 0.0
 max_wait_min: 240
 starvation_bonus: 50.0
 risk_refresh_min: 3
@@ -16,7 +16,7 @@ aging_in_sla_units: true
 aging_per_sla: 3.0
 aging_cap: 1.0
 max_late_min: 480
-aging_lost: 0.2
+aging_lost: 0.1
 guard_queue_limit: 150
 mismatch_cost: null
 roster_margin_min: 10

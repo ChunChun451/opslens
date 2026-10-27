@@ -1,0 +1,192 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "tie_points": 0.02,
+ "rule": "Coordinate search in the fixed order of GRID; for each weight, the value with the lowest mean validation breach among values whose mean P99 wait is at most the industry standard's; the current value stays unless another is better by more than tie_points. Test days never used.",
+ "baseline_d": {
+  "breach_pct": 13.296386991450788,
+  "p99_wait_min": 423.8599014050655
+ },
+ "before": {
+  "aging_per_sla": 3.0,
+  "aging_lost": 0.2,
+  "max_late_min": 480,
+  "guard_queue_limit": 150,
+  "cross_skill_min_rescue": 0.5,
+  "mismatch_penalty": 2.0,
+  "scarcity_weight": 0.3,
+  "rescue_floor": 0.2,
+  "roster_margin_min": 10
+ },
+ "chosen": {
+  "aging_per_sla": 3.0,
+  "aging_lost": 0.1,
+  "max_late_min": 480,
+  "guard_queue_limit": 150,
+  "cross_skill_min_rescue": 0.3,
+  "mismatch_penalty": 2.0,
+  "scarcity_weight": 0.0,
+  "rescue_floor": 0.2,
+  "roster_margin_min": 10
+ },
+ "history": [
+  {
+   "weight": "aging_per_sla",
+   "value": 3.0,
+   "breach_pct": 10.469562228809556,
+   "p99_wait_min": 200.34538293530707
+  },
+  {
+   "weight": "aging_per_sla",
+   "value": 1.5,
+   "breach_pct": 10.503930918932852,
+   "p99_wait_min": 225.29025744786873
+  },
+  {
+   "weight": "aging_per_sla",
+   "value": 6.0,
+   "breach_pct": 10.607036989302745,
+   "p99_wait_min": 190.1029781668187
+  },
+  {
+   "weight": "aging_lost",
+   "value": 0.2,
+   "breach_pct": 10.469562228809556,
+   "p99_wait_min": 200.34538293530707
+  },
+  {
+   "weight": "aging_lost",
+   "value": 0.1,
+   "breach_pct": 10.448081797482493,
+   "p99_wait_min": 188.94814921175535
+  },
+  {
+   "weight": "aging_lost",
+   "value": 0.5,
+   "breach_pct": 10.59844481677192,
+   "p99_wait_min": 182.87160460469417
+  },
+  {
+   "weight": "max_late_min",
+   "value": 480,
+   "breach_pct": 10.448081797482493,
+   "p99_wait_min": 188.94814921175535
+  },
+  {
+   "weight": "max_late_min",
+   "value": 120,
+   "breach_pct": 10.564076126648622,
+   "p99_wait_min": 174.29385506730486
+  },
+  {
+   "weight": "max_late_min",
+   "value": 240,
+   "breach_pct": 10.456673970013318,
+   "p99_wait_min": 192.45647596473682
+  },
+  {
+   "weight": "guard_queue_limit",
+   "value": 150,
+   "breach_pct": 10.448081797482493,
+   "p99_wait_min": 188.94814921175535
+  },
+  {
+   "weight": "guard_queue_limit",
+   "value": 100,
+   "breach_pct": 10.448081797482493,
+   "p99_wait_min": 188.94814921175535
+  },
+  {
+   "weight": "guard_queue_limit",
+   "value": 250,
+   "breach_pct": 10.448081797482493,
+   "p99_wait_min": 188.94814921175535
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.5,
+   "breach_pct": 10.448081797482493,
+   "p99_wait_min": 188.94814921175535
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.3,
+   "breach_pct": 9.945439704429264,
+   "p99_wait_min": 144.25579370704222
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.7,
+   "breach_pct": 10.98509258065902,
+   "p99_wait_min": 300.8928519205948
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 2.0,
+   "breach_pct": 9.945439704429264,
+   "p99_wait_min": 144.25579370704222
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 1.0,
+   "breach_pct": 10.40082484856296,
+   "p99_wait_min": 133.76692821527413
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 3.0,
+   "breach_pct": 9.93255144563303,
+   "p99_wait_min": 165.48314317951593
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 0.3,
+   "breach_pct": 9.945439704429264,
+   "p99_wait_min": 144.25579370704222
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 0.0,
+   "breach_pct": 9.76070799501654,
+   "p99_wait_min": 141.7958940165493
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 1.0,
+   "breach_pct": 9.842333634059372,
+   "p99_wait_min": 147.3693491247492
+  },
+  {
+   "weight": "rescue_floor",
+   "value": 0.2,
+   "breach_pct": 9.76070799501654,
+   "p99_wait_min": 141.7958940165493
+  },
+  {
+   "weight": "rescue_floor",
+   "value": 0.05,
+   "breach_pct": 10.027065343472097,
+   "p99_wait_min": 147.52464230935675
+  },
+  {
+   "weight": "roster_margin_min",
+   "value": 10,
+   "breach_pct": 9.76070799501654,
+   "p99_wait_min": 141.7958940165493
+  },
+  {
+   "weight": "roster_margin_min",
+   "value": 5,
+   "breach_pct": 9.786484512609013,
+   "p99_wait_min": 141.43804177053792
+  }
+ ],
+ "seconds": 727.6
+}
