@@ -209,7 +209,7 @@ function showClock() {
   const mm = String(Math.floor(m % 60)).padStart(2, "0");
   const ss = speed > 1 ? "00" : String(today.getSeconds()).padStart(2, "0");
   clock.textContent = `${hh}:${mm}:${ss}`;
-  document.getElementById("lv-mode").textContent = speed > 1 ? "Fast replay" : "Live";
+  document.getElementById("lv-mode").textContent = speed > 1 ? "Fast replay, simulated" : "Live, simulated";
   document.getElementById("lv-date").textContent = today.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 }
 
@@ -258,7 +258,7 @@ async function refresh() {
   loadMidnight();
   const acted = data.scenario && data.scenario.actions
     ? ` · ${data.scenario.actions} agent action${data.scenario.actions === 1 ? "" : "s"} on the OpsLens floor (see Team)` : "";
-  status.textContent = `Running on this laptop · ${describe(applied)} · practice customers, test day ${data.day} · luck ${data.seed}${acted}`;
+  status.textContent = `Running on this laptop · ${describe(applied)} · simulated customers, test day ${data.day} · luck ${data.seed}${acted}`;
   draw(data);
   poll = setTimeout(refresh, speed > 1 ? 1000 : POLL_MS);
 }

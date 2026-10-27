@@ -471,3 +471,4 @@ button[data-act]:disabled { opacity: 0.55; cursor: progress; }
 @media (max-width: 760px) {
   body[data-role="agent"] .sidebar::after { display: none; }
 }
+.ablation-verdict { margin: 0 0 14px; font-size: 0.92rem; line-height: 1.55; max-width: 92ch; }

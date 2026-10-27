@@ -525,6 +525,7 @@ function ablationsPanel() {
   }).join("");
   return `<section class="card" id="t-ablations"><div class="card-head"><div><h3 class="card-title">Ablations: take one part away at a time</h3>
       <div class="card-sub">Test days; how many more breaches without each part, with a paired 95% CI</div></div></div>
+      ${hasCi ? ablationVerdict(rows) : ""}
       <div class="grid cols-3-2">
         <div class="table-wrap"><table>
           <thead><tr><th>Variant</th><th class="num">Breach (%)</th><th class="num">P90 resolution (min)</th>
@@ -534,6 +535,24 @@ function ablationsPanel() {
         <div><div class="section-label">Extra breaches without each part (pts)${hasCi ? ", whiskers = 95% CI" : ""}</div>
           <div class="chart sm"><canvas id="ablation-chart"></canvas></div></div>
       </div></section>`;
+}
+
+function partName(row) {
+  if (row.key === "no_optimizer") return "the exact solver (min-cost flow instead of greedy)";
+  if (row.key === "no_risk") return "the breach predictions";
+  return `the ${row.label.replace(/^without /, "").replace(/ \(.*\)$/, "")}`;
+}
+
+function ablationVerdict(rows) {
+  const parts = rows.filter(({ row }) => row.key !== "full");
+  const works = parts.filter(({ row }) => row.ci_low > 0).sort((a, b) => b.row.delta_breach_vs_full - a.row.delta_breach_vs_full);
+  const unclear = parts.filter(({ row }) => row.ci_low <= 0);
+  const effect = ({ row, path }) => `removing ${escapeHtml(partName(row))} adds ${ev(path + ".delta_breach_vs_full", "pts", { signed: true })}
+    <span class="pm">[${ev(path + ".ci_low", "pts", { signed: true, bare: true })}, ${ev(path + ".ci_high", "pts", { signed: true, bare: true })}]</span>`;
+  const solver = unclear.some(({ row }) => row.key === "no_optimizer")
+    ? " So the gain comes from putting the predictions into the assignment value, not from which solver picks the assignment: exact and greedy give the same result, and the exact one stays for its guarantee, with greedy as the fallback." : "";
+  return `<p class="ablation-verdict"><b>What does the work:</b> ${works.length ? `${works.map(effect).join("; ")} of breaches.` : "no single part clearly."}
+    ${unclear.length ? ` No clear effect (the 95% interval includes zero), so we do not claim ${unclear.length === 1 ? "it" : "them"}: ${unclear.map(({ row }) => escapeHtml(partName(row))).join(", ")}.` : ""}${solver}</p>`;
 }
 
 function drawAblations() {
