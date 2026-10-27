@@ -145,7 +145,7 @@ def make_tickets(cfg: dict, bank: TextBank | None) -> pd.DataFrame:
 def one_ticket(cfg, rng, day, hour, category, cluster_weights_for_category) -> dict:
     channel = pick(rng, cfg["channels"])
     priority = ["P1", "P2", "P3"][int(rng.choice(3, p=cfg["priority_probs"][category]))]
-    if channel == "email" and priority == "P1":
+    if channel == "email" and priority == "P1" and category not in cfg.get("always_p1", []):
         priority = "P2"
     tier = "gold" if rng.random() < float(cfg["gold_share"]) else "normal"
     value = float(cfg["order_value_median_inr"]) * np.exp(rng.normal(0, float(cfg["order_value_sigma"])))

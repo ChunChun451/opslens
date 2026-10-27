@@ -26,14 +26,15 @@ peak_category_lift:
 channels: {chat: 0.65, call: 0.20, email: 0.15}
 
 priority_probs:
-  late_delivery:      [0.70, 0.25, 0.05]
-  missing_item:       [0.55, 0.40, 0.05]
-  wrong_item:         [0.30, 0.60, 0.10]
-  refund:             [0.10, 0.65, 0.25]
-  payment_failure:    [0.60, 0.35, 0.05]
-  app_bug:            [0.15, 0.45, 0.40]
-  account:            [0.02, 0.28, 0.70]
-  restaurant_partner: [0.20, 0.50, 0.30]
+  late_delivery:      [1.00, 0.00, 0.00]
+  payment_failure:    [1.00, 0.00, 0.00]
+  missing_item:       [0.00, 0.95, 0.05]
+  wrong_item:         [0.00, 0.95, 0.05]
+  refund:             [0.00, 0.85, 0.15]
+  app_bug:            [0.10, 0.20, 0.70]
+  account:            [0.02, 0.08, 0.90]
+  restaurant_partner: [0.05, 0.15, 0.80]
+always_p1: [late_delivery, payment_failure]
 
 languages: {en: 0.72, hi: 0.22, other: 0.06}
 gold_share: 0.15
