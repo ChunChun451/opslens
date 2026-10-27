@@ -304,22 +304,49 @@ _ACTIONS: dict = {}
 ACTION_KINDS = ("take", "decline", "done", "extra_time", "break", "back")
 ACTION_AHEAD_MIN = 60.0
 ACTION_DAYS_KEPT = 6
+_WAITING = {"actions": 0}
 
 
 def _log_key(log: list[dict]) -> tuple:
     return tuple(tuple(sorted(a.items())) for a in log)
 
 
+def _count_waiting(step: int) -> None:
+    with _LIVE_LOCK:
+        _WAITING["actions"] += step
+
+
+def _action_waiting() -> bool:
+    return _WAITING["actions"] > 0
+
+
 def _finish_live(key: tuple) -> None:
     from opslens.live import finish_day
 
     try:
-        with _LIVE_BUILD_ONE_AT_A_TIME:
-            partial = _LIVE.get(key)
-            if partial is not None and not partial.complete:
-                _LIVE[key] = finish_day(partial)
+        while True:
+            while _action_waiting():
+                time.sleep(0.05)
+            with _LIVE_BUILD_ONE_AT_A_TIME:
+                partial = _LIVE.get(key)
+                if partial is None or partial.complete:
+                    return
+                _LIVE[key] = finish_day(partial, _action_waiting)
+                if _LIVE[key].complete:
+                    _refresh_effects(key[0], key[1])
     finally:
         _LIVE_BUILDING.pop(key, None)
+
+
+def _refresh_effects(day: int, seed: int) -> None:
+    from opslens.live import relink
+
+    with _LIVE_LOCK:
+        mine = {k[4]: v for k, v in _LIVE.items() if len(k) == 5 and k[:4] == (day, seed, (), 1.0)}
+    for log in sorted(mine, key=len):
+        parent = mine.get(log[:-1]) if log else None
+        if parent is not None:
+            relink(mine[log], parent)
 
 
 def _wait_complete(key: tuple, seconds: float = 60.0):
@@ -370,7 +397,7 @@ def _on_break(log: list[dict], agent: str) -> bool:
 
 @app.post("/api/live/action")
 def live_action(request: dict) -> JSONResponse:
-    from opslens.live import outcome_at, with_actions
+    from opslens.live import outcome_at, simulated_until, with_actions
 
     try:
         weekday, seed, minute = int(request.get("weekday", -1)), int(request.get("seed", 1)), float(request.get("minute", -1))
@@ -379,15 +406,21 @@ def live_action(request: dict) -> JSONResponse:
         day, seed = _live_key(weekday, seed)
         log = list(_ACTIONS.get((day, seed), []))
         key = (day, seed, (), 1.0, _log_key(log))
-        current = _wait_complete(key)
+        current = _LIVE.get(key)
+        if current is None or simulated_until(current) < current.start + minute:
+            current = _wait_complete(key)
         if current is None:
             return JSONResponse({"error": "Today is still being simulated. Try again in a few seconds."}, status_code=409)
         action = _new_action(request, current, minute, log)
     except (TypeError, ValueError) as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
     started = time.perf_counter()
-    with _LIVE_BUILD_ONE_AT_A_TIME:
-        partial = with_actions(current, log + [action], ahead_min=ACTION_AHEAD_MIN)
+    _count_waiting(1)
+    try:
+        with _LIVE_BUILD_ONE_AT_A_TIME:
+            partial = with_actions(_LIVE.get(key) or current, log + [action], ahead_min=ACTION_AHEAD_MIN)
+    finally:
+        _count_waiting(-1)
     seconds = round(time.perf_counter() - started, 2)
     new_key = (day, seed, (), 1.0, _log_key(log + [action]))
     with _LIVE_LOCK:

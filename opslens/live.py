@@ -4,6 +4,7 @@ import math
 import re
 import threading
 from dataclasses import dataclass, field
+from typing import Callable
 
 import numpy as np
 import pandas as pd
@@ -40,6 +41,7 @@ class LiveDay:
     floors: dict[str, list[dict]] = field(default_factory=dict)
     tickets: dict[str, pd.DataFrame] = field(default_factory=dict)
     danger: list[dict] = field(default_factory=list)
+    risk_seen: list[tuple[float, dict]] = field(default_factory=list)
     decisions: list[dict] = field(default_factory=list)
     work: dict[str, list[dict]] = field(default_factory=dict)
     actions: tuple = ()
@@ -107,7 +109,8 @@ def _keep_floor(live: LiveDay, key: str, result) -> None:
     })
 
 
-def _run_opslens(live: LiveDay, policy, overrides: Overrides | None, resume, pause: float | None = None) -> None:
+def _run_opslens(live: LiveDay, policy, overrides: Overrides | None, resume, pause: float | None = None,
+                 pause_when: Callable[[], bool] | None = None) -> bool:
     ctx = live.context
     world, inputs, start, end = ctx["world"], ctx["inputs"], live.start, ctx["end"]
     capture = _CaptureFeatures(policies.features_for_snapshot)
@@ -123,7 +126,7 @@ def _run_opslens(live: LiveDay, policy, overrides: Overrides | None, resume, pau
     try:
         result = simulate(world, policy, ctx["warm"], end, metric_start_min=start, seed_label=str(live.seed),
                           floor_window=(start, end), overrides=overrides, checkpoint_at=marks,
-                          checkpoint_share=share, resume=resume, drain_min=0.0, pause_at=pause)
+                          checkpoint_share=share, resume=resume, drain_min=0.0, pause_at=pause, pause_when=pause_when)
     finally:
         policies.features_for_snapshot = capture.original
     _keep_floor(live, "opslens", result)
@@ -133,6 +136,7 @@ def _run_opslens(live: LiveDay, policy, overrides: Overrides | None, resume, pau
                        "agent": d["agent_id"], "reason": d["reason"]} for d in log]
     live.work = _work_by_agent(log, world, result.tickets, ctx["tickets_info"])
     live.checkpoints = live.checkpoints + result.checkpoints
+    return result.paused
 
 
 def overrides_from(live: LiveDay, actions) -> Overrides | None:
@@ -173,6 +177,7 @@ def with_actions(base: LiveDay, actions, ahead_min: float | None = None) -> Live
         cp = usable[-1]
         pause = first + ahead_min if ahead_min is not None and first + ahead_min < live.context["end"] else None
         live.danger = [d for d in base.danger if d["minute"] < cp.minute]
+        live.risk_seen = [r for r in base.risk_seen if r[0] < cp.minute]
         live.checkpoints = [c for c in base.checkpoints if c.minute < cp.minute]
         _run_opslens(live, cp.restore_policy(), overrides_from(live, actions), cp, pause)
         live.complete = pause is None
@@ -180,21 +185,34 @@ def with_actions(base: LiveDay, actions, ahead_min: float | None = None) -> Live
     return live
 
 
-def finish_day(partial: LiveDay) -> LiveDay:
+def finish_day(partial: LiveDay, should_pause: Callable[[], bool] | None = None) -> LiveDay:
     if partial.complete:
         return partial
     cp = partial.checkpoints[-1]
     live = _copy_day(partial, partial.actions, partial.parent)
     live.danger = [d for d in partial.danger if d["minute"] < cp.minute]
-    _run_opslens(live, cp.restore_policy(), overrides_from(live, live.actions), cp)
-    live.complete = True
+    live.risk_seen = [r for r in partial.risk_seen if r[0] < cp.minute]
+    paused = _run_opslens(live, cp.restore_policy(), overrides_from(live, live.actions), cp, pause_when=should_pause)
+    live.complete = not paused
     live.effects = _effects(live)
     return live
 
 
+def simulated_until(live: LiveDay) -> float:
+    if live.complete:
+        return live.start + MINUTES_PER_DAY
+    return live.checkpoints[-1].minute if live.checkpoints else live.start
+
+
+def relink(live: LiveDay, parent: LiveDay) -> None:
+    live.parent = parent
+    live.effects = _effects(live)
+
+
 def _copy_day(day: LiveDay, actions: tuple, parent: LiveDay | None) -> LiveDay:
     return LiveDay(day=day.day, seed=day.seed, start=day.start, agents=day.agents, floors=dict(day.floors),
-                   tickets=dict(day.tickets), danger=list(day.danger), decisions=day.decisions, work=day.work,
+                   tickets=dict(day.tickets), danger=list(day.danger), risk_seen=list(day.risk_seen),
+                   decisions=day.decisions, work=day.work,
                    actions=actions, context=day.context, checkpoints=list(day.checkpoints), parent=parent,
                    complete=day.complete)
 
@@ -233,18 +251,18 @@ def missed_today(live: LiveDay, key: str = "opslens") -> int | None:
 def measure_effect(before: LiveDay, after: LiveDay, action: dict) -> dict:
     at = after.start + float(action["minute"])
     out = {**action, "missed_before": missed_today(before), "missed_after": missed_today(after),
-           "complete": after.complete}
+           "complete": after.complete and before.complete}
     ticket = action.get("ticket_id")
     if action["kind"] in ("decline", "take") and ticket:
-        out["planned"] = _job_view(_first_job(before, ticket, at), after.start)
-        out["went_to"] = _job_view(_first_job(after, ticket, at), after.start)
+        out["planned"] = _job_view(_first_job(before, ticket, at), after.start, before)
+        out["went_to"] = _job_view(_first_job(after, ticket, at), after.start, after)
         if out["went_to"] is None:
             out["went_to"] = _ticket_view(after, ticket)
     elif action["kind"] in ("done", "extra_time") and ticket:
-        out["planned"] = _job_view(_job_of(before, action["agent"], ticket, at), after.start)
-        out["went_to"] = _job_view(_job_of(after, action["agent"], ticket, at), after.start)
+        out["planned"] = _job_view(_job_of(before, action["agent"], ticket, at), after.start, before)
+        out["went_to"] = _job_view(_job_of(after, action["agent"], ticket, at), after.start, after)
         later = next((j for j in after.work.get(action["agent"], []) if j["minute"] > at), None)
-        out["next_ticket"] = _job_view(later and {**later, "agent": action["agent"]}, after.start)
+        out["next_ticket"] = _job_view(later and {**later, "agent": action["agent"]}, after.start, after)
     return out
 
 
@@ -254,12 +272,23 @@ def _rel(value, start: float) -> float | None:
     return round(float(value) - start, 1)
 
 
-def _job_view(job: dict | None, start: float) -> dict | None:
+def _risk_when_decided(live: LiveDay, ticket_id: str, minute: float) -> float | None:
+    i = live.context.get("index", {}).get(ticket_id)
+    for at, risks in reversed(live.risk_seen):
+        if at <= minute:
+            p = risks.get(i)
+            return None if p is None else round(float(p), 2)
+    return None
+
+
+def _job_view(job: dict | None, start: float, live: LiveDay | None = None) -> dict | None:
     if job is None:
         return None
+    risk = _risk_in(job.get("reason"))
+    if risk is None and live is not None:
+        risk = _risk_when_decided(live, job["ticket_id"], job["minute"])
     return {"agent": job["agent"], "ticket_id": job["ticket_id"], "minute": _rel(job["minute"], start),
-            "deadline": _rel(job["deadline"], start), "resolved": _rel(job["resolved"], start),
-            "risk": _risk_in(job.get("reason"))}
+            "deadline": _rel(job["deadline"], start), "resolved": _rel(job["resolved"], start), "risk": risk}
 
 
 def _ticket_view(live: LiveDay, ticket_id: str) -> dict | None:
@@ -328,6 +357,8 @@ def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dic
 
     def refresh(state, now):
         original_refresh(state, now)
+        if start <= now < end:
+            live.risk_seen.append((now, policy.risk_wait))
         if not (start <= now < end) or now < next_at[0] or capture.last is None or capture.last.empty:
             return
         next_at[0] = now + RISK_EVERY_MIN

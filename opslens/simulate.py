@@ -4,7 +4,7 @@ import copy
 import heapq
 import math
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Callable, Protocol
 
 import numpy as np
 import pandas as pd
@@ -251,6 +251,7 @@ class SimResult:
     decisions: int
     floor: list[dict] = field(default_factory=list)
     checkpoints: list["Checkpoint"] = field(default_factory=list)
+    paused: bool = False
 
 
 @dataclass
@@ -327,6 +328,7 @@ def simulate(
     checkpoint_share: tuple = (),
     resume: Checkpoint | None = None,
     pause_at: float | None = None,
+    pause_when: Callable[[], bool] | None = None,
 ) -> SimResult:
     metric_start = start_min if metric_start_min is None else metric_start_min
     tickets = [TicketState() for _ in range(world.n_tickets)]
@@ -359,6 +361,7 @@ def simulate(
     changes = sorted(c for c in (overrides.finishes if overrides else []) if c[0] >= first)
     marks = sorted(m for m in checkpoint_at if m >= first)
     checkpoints: list[Checkpoint] = []
+    paused = False
 
     while heap:
         now, kind, _, payload = heapq.heappop(heap)
@@ -371,6 +374,10 @@ def simulate(
                                                    snapshots, next_snapshot, decisions, floor, next_floor,
                                                    policy, list(checkpoint_share)))
                 if pause_at is not None and checkpoints[-1].minute >= pause_at:
+                    paused = True
+                    break
+                if pause_when is not None and pause_when():
+                    paused = True
                     break
             else:
                 _change_finish(state, heap, changes.pop(0))
@@ -423,6 +430,7 @@ def simulate(
                       metric_start, end_min, decisions)
     result.floor = floor
     result.checkpoints = checkpoints
+    result.paused = paused
     return result
 
 

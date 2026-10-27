@@ -169,3 +169,34 @@ def test_overrides_from_turns_the_log_into_simulator_changes() -> None:
     assert out.finishes == [(s + 31, "A01", 0, "at", s + 31), (s + 32, "A01", 0, "extra", 10.0)]
     assert out.breaks == {"A02": [(s + 40, s + 55)]}
     assert overrides_from(live, log[-1:]) is None
+
+
+def test_risk_comes_from_the_reason_or_the_last_refresh_before_the_decision() -> None:
+    from opslens.live import _job_view
+
+    live = small_live_day()
+    s = live.start
+    live.risk_seen = [(s + 0.0, {0: 0.2}), (s + 9.0, {0: 0.35, 1: 1.0})]
+    job = {**live.work["A01"][0], "agent": "A01"}
+    assert _job_view(job, s, live)["risk"] == 0.35
+    assert _job_view({**job, "minute": s + 5}, s, live)["risk"] == 0.2
+    told = {**job, "reason": "P2 refund, English, waiting 5 min; breach risk 0.41 -> 0.12 if served now"}
+    assert _job_view(told, s, live)["risk"] == 0.41
+    assert _job_view({**job, "ticket_id": "T2", "minute": s + 5}, s, live)["risk"] is None
+    assert _job_view(job, s)["risk"] is None
+
+
+def test_pause_when_stops_at_the_next_checkpoint_and_resumes_to_the_same_day() -> None:
+    rng = np.random.default_rng(5)
+    created = np.sort(rng.uniform(0, 300, 40))
+    world = make_world(created, rng.uniform(5, 30, 40), [agent("X", "B", {"refund"}), agent("Y", "B", {"refund"})])
+    marks = (100.0, 200.0)
+    whole = simulate(world, baseline_b(), 0, 300, decide_every_min=1, checkpoint_at=marks)
+    never = simulate(world, baseline_b(), 0, 300, decide_every_min=1, checkpoint_at=marks, pause_when=lambda: False)
+    pd.testing.assert_frame_equal(whole.tickets, never.tickets)
+    assert not whole.paused and not never.paused
+    stopped = simulate(world, baseline_b(), 0, 300, decide_every_min=1, checkpoint_at=marks, pause_when=lambda: True)
+    assert stopped.paused and [c.minute for c in stopped.checkpoints] == [100.0]
+    cp = stopped.checkpoints[-1]
+    rest = simulate(world, cp.restore_policy(), 0, 300, decide_every_min=1, checkpoint_at=marks, resume=cp)
+    pd.testing.assert_frame_equal(whole.tickets, rest.tickets)

@@ -74,6 +74,11 @@ function outcomeText(e) {
   return `is due ${clockOf(to.deadline)}`;
 }
 
+function riskChange(was, to) {
+  if (!was || !known(was.risk) || !known(to.risk) || (was.risk >= 1 && to.risk >= 1)) return "";
+  return `, chance of missing its promise ${pctText(was.risk)} → ${to.risk >= 1 ? "already late" : pctText(to.risk)}`;
+}
+
 export function effectLines(e, nameOf) {
   const who = nameOf(e.agent);
   const to = e.went_to;
@@ -82,8 +87,7 @@ export function effectLines(e, nameOf) {
   if (e.kind === "decline") {
     const head = `${who} could not take ${e.ticket_id}${e.reason ? ` (${e.reason})` : ""}.`;
     if (to && to.agent) {
-      const risk = was && known(was.risk) && known(to.risk) ? `, chance of missing its promise ${pctText(was.risk)} → ${pctText(to.risk)}` : "";
-      lines.push(`${head} Re-routed to ${nameOf(to.agent)} at ${clockOf(to.minute)}${risk}.`);
+      lines.push(`${head} Re-routed to ${nameOf(to.agent)} at ${clockOf(to.minute)}${riskChange(was, to)}.`);
     } else {
       lines.push(`${head} ${e.complete ? "Nobody picked it up before midnight." : "Not picked up in the next hour yet; OpsLens keeps trying."}`);
     }

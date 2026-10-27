@@ -11,6 +11,7 @@ const MIN_SCALE = 2;
 const BUSY_WORDS = ["busy", "wrong", "cross"];
 
 let last = null;
+let shown = {};
 
 export function render(section) {
   section.innerHTML = `${pageHeader("Team", "Who is doing what right now. Click a person to open their screen.")}
@@ -60,12 +61,34 @@ function draw(section, d) {
   const busiest = teams.reduce((a, b) => (b.load > a.load ? b : a), teams[0]);
   const off = floor.filter((r) => r.status === "off");
   const wasOpen = Boolean(body.querySelector("#tm-offs[open]"));
-  body.innerHTML = `<p class="proof-line">Live at ${clockNow()} · simulated food floor, test day ${d.day} · routed by OpsLens.</p>
-    <div class="tm-tiles">${tiles.map(([label, value, sub]) => `<div class="tm-tile">
-      <span>${escapeHtml(label)}</span><b>${value}</b>${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</div>`).join("")}</div>
-    <div class="tm-teams">${teams.map((t) => teamCard(t, t === busiest && t.load > 0, Math.max(MIN_SCALE, busiest.load))).join("")}</div>
-    ${off.length ? fold(`Off shift now (${off.length})`, `<div class="tm-off">${off.map(offChip).join("")}</div>`, { id: "tm-offs", open: wasOpen }) : ""}
-    ${feedCard(d)}`;
+  const parts = {
+    head: `<p class="proof-line">Live at ${clockNow()} · simulated food floor, test day ${d.day} · routed by OpsLens.</p>`,
+    tiles: `<div class="tm-tiles">${tiles.map(([label, value, sub]) => `<div class="tm-tile">
+      <span>${escapeHtml(label)}</span><b>${value}</b>${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</div>`).join("")}</div>`,
+    off: off.length ? fold(`Off shift now (${off.length})`, `<div class="tm-off">${off.map(offChip).join("")}</div>`, { id: "tm-offs", open: wasOpen }) : "",
+    feed: feedCard(d),
+  };
+  const scale = Math.max(MIN_SCALE, busiest.load);
+  teams.forEach((t) => { parts[`team-${t.team}`] = teamCard(t, t === busiest && t.load > 0, scale); });
+  patch(body, parts);
+}
+
+function part(key) {
+  return `<div class="tm-part" data-part="${key}"></div>`;
+}
+
+function patch(body, parts) {
+  if (!body.querySelector(".tm-part")) {
+    shown = {};
+    body.innerHTML = `${part("head")}${part("tiles")}
+      <div class="tm-teams">${Object.keys(TEAM_NAMES).map((team) => part(`team-${team}`)).join("")}</div>
+      ${part("off")}${part("feed")}`;
+  }
+  for (const [key, html] of Object.entries(parts)) {
+    if (shown[key] === html) continue;
+    body.querySelector(`[data-part="${key}"]`).innerHTML = html;
+    shown[key] = html;
+  }
 }
 
 function teamCard(t, busiest, scale) {

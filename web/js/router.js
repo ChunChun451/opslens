@@ -141,6 +141,7 @@ export function setSource(source, { force = false, screen = "" } = {}) {
   clearScreens();
   document.dispatchEvent(new CustomEvent("source-changed", { detail: source }));
   if (state.world === "real") showTab(screen || current, screen ? undefined : twin);
+  else showTab(current, view);
 }
 
 function openUpload() {

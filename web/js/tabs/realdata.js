@@ -24,6 +24,10 @@ function capital(text) {
   return text ? text[0].toUpperCase() + text.slice(1) : text;
 }
 
+function lowerFirst(text) {
+  return /^[A-Z]{2}/.test(text) ? text : text.charAt(0).toLowerCase() + text.slice(1);
+}
+
 function uciModel() {
   const d = state.results[R];
   if (!d) return null;
@@ -36,7 +40,7 @@ function uciModel() {
   const shares = Object.entries(d.summary.open_time_share_pct || {});
   const [triage, ...fixes] = realPlanItems();
   return {
-    key: "rd", items: "items", team: "team", proofHref: "#proof/rd-proof", shadowHref: "#overview/rd-shadow",
+    key: "rd", items: "incidents", team: "team", proofHref: "#proof/rd-proof", shadowHref: "#overview/rd-shadow",
     title: "A real service desk",
     sub: `A real company's IT service desk (UCI ServiceNow log, CC BY 4.0). Learned on ${evText(`${R}.summary.learning_period[0]`)} to
       ${evText(`${R}.summary.learning_period[1]`)}; scored on later incidents.`,
@@ -70,8 +74,8 @@ function uciModel() {
         examples: c.examples.map((x, k) => evText(`${b}.examples[${k}].ticket_id`)).join(", "),
       };
     }),
-    worst: ["team", "category", "priority"].map((key) => ({ key, word: key, body: note("Not available for this source: the cards above come from the event log instead.") })),
-    riskProof: `Its riskiest 20% hold <b>${ev(`${ew}.caught_top20_opslens_pct`, "pct")}</b> of SLA misses; the desk's priority field, ${ev(`${ew}.caught_top20_priority_pct`, "pct")}.`,
+    worst: ["team", "category", "priority"].map((key) => ({ key, word: key, empty: true, body: note("Not available for this source: the cards above come from the event log instead.") })),
+    riskProof: `Flagging the riskiest 1 in 5 one hour after opening, OpsLens caught <b>${ev(`${ew}.caught_top20_opslens_pct`, "pct")}</b> of the later SLA misses; the desk's priority field, ${ev(`${ew}.caught_top20_priority_pct`, "pct")}.`,
     riskSub: "Scored one hour after opening. From later months, so you can see if each one missed.",
     atRisk: d.early_warning.at_risk.map((x, i) => ({
       id: evText(`${ew}.at_risk[${i}].ticket_id`), meta: `${evText(`${ew}.at_risk[${i}].priority`)} · ${evText(`${ew}.at_risk[${i}].team_now`)}`,
@@ -82,7 +86,7 @@ function uciModel() {
       cells: [evText(`${fc}.next_week[${i}].team`), evText(`${fc}.next_week[${i}].date`), ev(`${fc}.next_week[${i}].forecast`, "num"),
               ev(`${fc}.next_week[${i}].usual_closures`, "num"), ev(`${fc}.next_week[${i}].actual`, "int")] })) },
     plan: [triage, ...fixes],
-    planEvidence: [`riskiest 20% hold ${ev(`${ew}.caught_top20_opslens_pct`, "pct")} of SLA misses vs ${ev(`${ew}.caught_top20_priority_pct`, "pct")}`,
+    planEvidence: [`flagging the riskiest 1 in 5 one hour after opening caught ${ev(`${ew}.caught_top20_opslens_pct`, "pct")} of the later SLA misses; the desk's priority field, ${ev(`${ew}.caught_top20_priority_pct`, "pct")}`,
       ...d.cards.map((c, i) => `${evText(`${R}.cards[${i}].title`)}`)],
     notOnList: "Not on this list: letting OpsLens pick the team at opening time. It is only right more often than the real desk when it is very sure, and even then the gain is tiny (see Proof).",
     proofRows: [
@@ -100,7 +104,7 @@ function uciModel() {
         ${ev(`${R}.summary.test_incidents`, "int")} incidents from ${evText(`${R}.summary.test_period[0]`)} to ${evText(`${R}.summary.test_period[1]`)}.`,
       "Scored one hour after each incident opened, from what the event log knew at that moment.",
       "Choices were made on the last weeks of the learning period, never on the later months."],
-    cannot: [`Right team first time: only when OpsLens is very sure (${ev(`${R}.routing.test.sure_share_pct`, "pct")} of incidents) is it right
+    cannot: [`Right team first time: OpsLens is very sure on ${ev(`${R}.routing.test.sure_share_pct`, "pct")} of incidents, and there it is right
         ${ev(`${R}.routing.test.opslens_sure_right_pct`, "pct")} of the time, vs ${ev(`${R}.routing.test.desk_on_same_right_pct`, "pct")} for the desk. No real gain.`,
       "What would have happened under other decisions: an event log cannot be replayed." + (d.twin ? ` A digital twin of this desk failed its own check
         (${evText(`${R}.twin.status`)}), so no twin number appears anywhere.` : "")],
@@ -123,8 +127,8 @@ function fileModel() {
     sub: `${evText(`${U}.summary.from`)} to ${evText(`${U}.summary.to`)}. ${missWords(r)}`,
     headline: `Flagging ${oneIn(r)} items as they opened, OpsLens caught
       <b class="t-ours">${ev(`${w}.caught_pct.opslens`, "pct", { key: true, title: "Real misses caught", explain: "Of the items in the later part of your file that really missed, the share OpsLens had flagged as they opened (the same 1 in 5 of each day's items for every picker)." })}</b>
-      of the real misses on your later items; ${rivalWords(r)} caught ${ev(`${w}.caught_pct.${rival}`, "pct")}.`
-      + (rival === "priority" ? "" : ` <span class="needs">The comparison with your priority field needs ${evText(`${U}.needs.priority`) || "a priority column"}.</span>`),
+      of the real misses on your later items; ${rivalWords(r)} caught ${ev(`${w}.caught_pct.${rival}`, "pct")}.`,
+    headlineNote: rival === "priority" ? "" : `The comparison with your priority field needs ${evText(`${U}.needs.priority`) || "a priority column"}.`,
     tiles: [
       ["Items", ev(`${U}.summary.items`, "int"), `over ${ev(`${U}.summary.days`, "int")} days`],
       ["Missed their promise", ev(`${U}.summary.missed_pct`, "pct"), "of all items"],
@@ -188,8 +192,8 @@ function fileModel() {
 function worstTable(r, key) {
   const rows = r.summary[`by_${key}`];
   const word = readable(key);
-  if (!rows) return { key, word: key, body: note(`Needs ${evText(`${U}.needs.${key}`) || escapeHtml(`a ${key} column`)}.`) };
-  if (!rows.length) return { key, word, body: note(`No ${escapeHtml(word)} has enough items to compare.`) };
+  if (!rows) return { key, word: key, empty: true, body: note(`Needs ${evText(`${U}.needs.${key}`) || escapeHtml(`a ${key} column`)}.`) };
+  if (!rows.length) return { key, word, empty: true, body: note(`No ${escapeHtml(word)} has enough items to compare.`) };
   const p = `${U}.summary.by_${key}`;
   const body = rows.map((x, i) => `<tr><td>${evText(`${p}[${i}].name`)}</td><td class="num">${ev(`${p}[${i}].items`, "int")}</td>
       <td class="num">${ev(`${p}[${i}].missed_pct`, "pct")}</td></tr>`).join("");
@@ -210,28 +214,34 @@ function missing(section) {
 }
 
 function slot(title, sub, html, empty) {
-  return card({ title, sub: html ? sub : "", body: html || note(empty) });
+  return html ? card({ title, sub, body: html }) : emptyCard(title, empty);
 }
+
+function emptyCard(title, text) {
+  return card({ cls: "rd-empty", title, body: note(text) });
+}
+
+const BIGGEST = ["The biggest problems", "The biggest problem", "The two biggest problems", "The three biggest problems"];
 
 function problemsList(m) {
   if (!m.cards.length) return `<p class="muted">No group misses clearly more often than the rest.</p>`;
   return `<ol class="issues up-issues">${m.cards.slice(0, 3).map((c) => `<li class="issue" data-goto-tab="problems" data-goto-id="${escapeHtml(c.id)}">
       <span class="issue-title">${c.title}</span>${c.stamp === null ? "" : stampHtml(c.stamp)}
-      <span class="issue-text">${c.bars[0][2]} ${escapeHtml(c.metric.toLowerCase())} vs ${c.bars[1][2]} for ${escapeHtml(c.bars[1][0].toLowerCase())}</span></li>`).join("")}</ol>`;
+      <span class="issue-text">${c.bars[0][2]} ${escapeHtml(lowerFirst(c.metric))} vs ${c.bars[1][2]} for ${escapeHtml(lowerFirst(c.bars[1][0]))}</span></li>`).join("")}</ol>`;
 }
 
 export const overview = { render(section) {
   const m = modelFor(section);
   if (!m) return missing(section);
   section.innerHTML = `${pageHeader(m.title, m.sub)}
-    ${card({ cls: "up-headline", body: `<p class="lead-line">${m.headline}</p>
+    ${card({ cls: "up-headline", body: `<p class="lead-line">${m.headline}</p>${m.headlineNote ? `<p class="needs">${m.headlineNote}</p>` : ""}
       <div class="btn-row"><a class="btn" href="#risks/${m.key}-risks">See the ${m.items} at risk</a><a class="btn" href="${m.proofHref}">How it was tested</a></div>` })}
     <section class="card stat-card"><div class="grid cols-4">${m.tiles.map(([label, value, sub]) => stat(label, value, sub)).join("")}</div></section>
     <div class="grid cols-2 rd-pair">
       ${slot("The busiest later day, replayed", "Each picker flags the same number as they open.",
         m.shadow && `${m.shadow}<div class="btn-row"><a class="btn btn-primary" href="${m.shadowHref}">Watch it in Shadow mode</a></div>`,
         "Not available for this source: it needs a later day with enough items.")}
-      ${card({ title: "The three biggest problems", sub: "Open Problems for the evidence.", body: problemsList(m) })}
+      ${card({ title: BIGGEST[Math.min(m.cards.length, 3)], sub: m.cards.length ? "Open Problems for the evidence." : "", body: problemsList(m) })}
     </div>
     <div class="grid cols-2 rd-pair">
       ${m.fasttrack || slot("If a fifth of each day's items were fast-tracked", "", "",
@@ -258,10 +268,18 @@ export const problems = { render(section) {
       <p class="small"><b>What to do:</b> ${c.todo}</p>
       ${c.examples ? `<p class="small muted">Examples: ${c.examples}</p>` : ""}
     </article>`).join("");
-  section.innerHTML = `${pageHeader("Why it goes wrong", "Groups that miss far more often than the rest, checked again on later items.")}
-    ${m.cards.length ? `<div class="finding-grid">${cards}</div>` : card({ body: `<p class="muted">No group misses clearly more often than the rest.</p>` })}
-    <div class="grid cols-3 up-worst">${m.worst.map((t) => card({ title: `Missed most, by ${t.word}`, body: t.body })).join("")}</div>`;
+  section.innerHTML = `${pageHeader("Why it goes wrong", `Groups that miss far more often than the rest, checked again on later ${m.items}.`)}
+    ${m.cards.length ? `<div class="finding-grid rd-findings">${cards}</div>` : card({ body: `<p class="muted">No group misses clearly more often than the rest.</p>` })}
+    ${worstCards(m.worst)}`;
 } };
+
+function worstCards(worst) {
+  const words = worst.map((t) => t.word);
+  if (worst.every((t) => t.empty && t.body === worst[0].body)) {
+    return `<div class="up-worst">${card({ cls: "rd-empty", title: `Missed most, by ${words.slice(0, -1).join(", ")} or ${words[words.length - 1]}`, body: worst[0].body })}</div>`;
+  }
+  return `<div class="grid cols-3 up-worst">${worst.map((t) => card({ cls: t.empty ? "rd-empty" : "", title: `Missed most, by ${t.word}`, body: t.body })).join("")}</div>`;
+}
 
 export const risks = { render(section) {
   const m = modelFor(section);
@@ -280,7 +298,7 @@ export const risks = { render(section) {
 
 function forecastCard(m) {
   const title = `Workload a week ahead, per ${m.team}`;
-  if (m.forecast.needs) return card({ title, body: note(m.forecast.needs) });
+  if (m.forecast.needs) return emptyCard(title, m.forecast.needs);
   const hot = m.forecast.rows.filter((x) => x.over > 0).sort((a, b) => b.over - a.over);
   const table = (list) => `<div class="table-wrap"><table><thead><tr><th>${escapeHtml(capital(m.team))}</th><th>Day</th>
       <th class="num">Forecast new</th><th class="num">Usually finishes</th><th class="num">Actually came</th></tr></thead><tbody>${list.map((x) =>
@@ -314,11 +332,11 @@ export const proof = { render(section) {
     ? `<tr><td>${escapeHtml(who)}</td><td colspan="2"><span class="needs">${why || "not available for this source"}</span></td></tr>`
     : `<tr class="${ours ? "is-chosen" : ""}"><td>${escapeHtml(who)}</td><td class="num">${auc}</td><td class="num">${caught}</td></tr>`).join("");
   section.innerHTML = `${pageHeader("Does it work here?", `Each picker flags the same share of each day's ${m.items} as they open, scored once on later ${m.items} OpsLens never saw.`)}
-    ${card({ title: "Early warning, scored once on later items", body: `<div class="table-wrap"><table>
+    ${card({ title: `Early warning, scored once on later ${m.items}`, body: `<div class="table-wrap"><table>
         <thead><tr><th>Who flags</th><th class="num">How well it ranks (AUC)</th><th class="num">Real misses caught (1 in 5 flagged)</th></tr></thead>
         <tbody>${rows}</tbody></table></div><p class="small">${m.proofFoot}</p>` })}
-    ${m.forecastProof || card({ title: `Workload forecast per ${m.team}`, body: note(m.forecast.needs || "Not available for this source.") })}
-    ${m.fasttrackProof || card({ title: "Who should be fast-tracked?", body: note("Not available for this source: it needs each item's pickup time after opening, from an event log.") })}
+    ${m.forecastProof || emptyCard(`Workload forecast per ${m.team}`, m.forecast.needs || "Not available for this source.")}
+    ${m.fasttrackProof || emptyCard("Who should be fast-tracked?", "Not available for this source: it needs each item's pickup time after opening, from an event log.")}
     <div class="grid cols-2 rd-pair">
       ${card({ title: "How it learned", body: `<ul class="list">${m.learned.map((x) => `<li>${x}</li>`).join("")}</ul>` })}
       ${card({ title: "What this source cannot tell you", body: `<ul class="list">${m.cannot.map((x) => `<li>${x}</li>`).join("")}</ul>` })}
