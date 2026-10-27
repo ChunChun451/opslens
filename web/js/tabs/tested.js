@@ -124,20 +124,21 @@ const BASELINES = [
 function baselinesPanel() {
   const r = state.results;
   const m = "baseline_c.test.means";
-  const sealed = r.sealed_world && r.sealed_world.test.means;
+  const sealedKey = r.sealed_world_new && r.sealed_world_new.test ? "sealed_world_new" : "sealed_world";
+  const sealed = r[sealedKey] && r[sealedKey].test.means;
   const rows = BASELINES.filter(([key]) => r.baseline_c.test.means[key]).map(([key, name, what]) => `
       <tr class="${key === "opslens" ? "is-ours" : ""}">
         <td><strong>${escapeHtml(name)}</strong><div class="small muted">${escapeHtml(what)}</div></td>
         <td class="num">${ev(`${m}.${key}.turnaround.breach_pct`, "pct")}</td>
         <td class="num">${ev(`${m}.${key}.segment.p1_breach_pct`, "pct")}</td>
         <td class="num">${ev(`${m}.${key}.quality.late_minutes_per_100`, "int")}</td>
-        <td class="num">${sealed && sealed[key] ? ev(`sealed_world.test.means.${key}.turnaround.breach_pct`, "pct") : '<span class="muted">not run</span>'}</td>
+        <td class="num">${sealed && sealed[key] ? ev(`${sealedKey}.test.means.${key}.turnaround.breach_pct`, "pct") : '<span class="muted">not run</span>'}</td>
       </tr>`).join("");
   return `<section class="card" id="t-baselines">
       <div class="card-head"><div><h3 class="card-title">Every baseline we beat, weakest to strongest</h3>
         <div class="card-sub">Held-out test days, 5 seeds, same tickets and luck. Baselines have no weights, so nothing
-          was tuned: each ran on validation days first, then once on test days. The sealed world was generated after the
-          policy freeze and evaluated once (the industry-standard baseline was added after that run).</div></div></div>
+          was tuned: each ran on validation days first, then once on test days. The sealed world (seed ${evText(`${sealedKey}.data_seed`)})
+          was generated after the policy freeze and evaluated once.</div></div></div>
       <div class="table-wrap"><table>
         <thead><tr><th>Policy</th><th class="num">SLA breaches</th><th class="num">P1 breaches</th>
           <th class="num">Minutes late / 100 tickets</th><th class="num">Sealed world: breaches</th></tr></thead>

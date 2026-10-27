@@ -21,6 +21,8 @@ class Meta(Strict):
     validation_days: list[int]
     test_days: list[int]
     run_seconds: float = 0.0
+    sla_minutes: dict[str, float] = {}
+    earlier_sla_minutes: dict[str, float] = {}
 
 
 class MeanStd(Strict):

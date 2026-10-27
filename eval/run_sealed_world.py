@@ -85,8 +85,8 @@ def run_new(dest: Path, seed: int, no_llm: list[str]) -> None:
     load = lambda name: json.loads((parts / name).read_text(encoding="utf-8"))
     best = load("best_baselines.json")
     out = {"data_seed": seed, "classifier": "local only" if no_llm else "cascade (local + LLM)",
-           "note": ("New world (unused seed) generated after OpsLens v5 was frozen, under the corrected simulator "
-                    "(work draws no longer shifted by transfers); weights unchanged, routine retraining; run once."),
+           "note": ("New world (unused seed) generated after the weights for the food-delivery promises were frozen "
+                    "(eval/PREREG_SLA.md); weights unchanged, routine retraining; run once."),
            "risk_auc": (load("risk.json").get("test") or {}).get("auc"), "test": load("baseline_c.json")["test"],
            "best_baselines_test": best["test"], "rescue_test": (best.get("rescue") or {}).get("test"),
            "floor": load("floor.json")}

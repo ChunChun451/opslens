@@ -107,7 +107,9 @@ def assemble(timings: dict[str, float]) -> dict:
                  "start_date": cal["start_date"], "days": cal["days"], "train_days": [1, sp["train_last_day"]],
                  "validation_days": [sp["train_last_day"] + 1, sp["validation_last_day"]],
                  "test_days": [sp["validation_last_day"] + 1, sp["test_last_day"]],
-                 "run_seconds": float(sum(timings.values()))},
+                 "run_seconds": float(sum(timings.values())),
+                 "sla_minutes": load_config("sla")["sla_minutes"],
+                 "earlier_sla_minutes": load_config("sla").get("earlier_sla_minutes", {})},
         "sim": {"seeds": sim["seeds"], "test_days": sim["test_days"], "policies": sim["policies"],
                 "comparisons": sim["comparisons"], "replay": replay},
         "patterns": {"cards": pat["cards"], "recall": pat["recall"],
@@ -157,6 +159,7 @@ def assemble(timings: dict[str, float]) -> dict:
             "forecast": {**fc["metrics"], "plans": fc["plans"]},
             "ablations": abl["ablations"],
             "tuning": tuning,
+            "tuning_sla": part("tuning_sla") if (PARTS / "tuning_sla.json").exists() else {},
             "weights": sim["weights"],
             "v1_record": version_record("v1", "aged tickets per hour; under +25% volume old lost tickets crowded out savable P1s."),
             "v2_record": version_record("v2", "aged tickets in SLA units but a lost ticket kept its full age value; still lost "
@@ -177,8 +180,11 @@ def assemble(timings: dict[str, float]) -> dict:
                                "(work-time draws no longer shifted by transfers; off-shift starts refused) and every "
                                "number was regenerated (v3 before the correction: v3_before_sim_fix). v4 was tested on "
                                "validation days and not adopted (design_v4). v5 passed a pre-registered confirmation on "
-                               "20 fresh seeds (confirm_v5). Sealed worlds: 4242 (v3, old simulator), 5151 (v3, run "
-                               "once), 6262 (v5, generated after v5 was frozen, run once)."),
+                               "20 fresh seeds (confirm_v5). On 27 Oct the food floor moved to food-delivery promises "
+                               "(P1 15 min, P2 1 h, P3 4 h; before: 1 h, 4 h, 24 h): the roster was recalibrated, the "
+                               "weights re-chosen on validation days (tuning_sla) and the test days run once "
+                               "(eval/PREREG_SLA.md). The v1-v3 records, v4, the v5 confirmation, the CP-SAT roster "
+                               "test, v6 and sealed worlds 4242 and 5151 were measured on the earlier promises."),
         },
     }
     if (PARTS / "playbooks.json").exists():

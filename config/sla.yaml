@@ -2,3 +2,7 @@ sla_minutes:
   P1: 15
   P2: 60
   P3: 240
+earlier_sla_minutes:
+  P1: 60
+  P2: 240
+  P3: 1440

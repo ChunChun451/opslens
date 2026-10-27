@@ -2,6 +2,7 @@ import { state, lookup } from "../data.js";
 import { ev } from "../evidence.js";
 import { pageHeader } from "../ui.js";
 import { escapeHtml } from "../format.js";
+import { duration } from "../floornow.js";
 
 const REPO = "https://github.com/ChunChun451/opslens/commit/";
 const BREACH = "turnaround.breach_pct";
@@ -22,7 +23,7 @@ function chosenV4Row() {
 
 const ENTRIES = [
   {
-    when: "18 Oct 19:50", commit: "7f42f68",
+    when: "18 Oct 19:50", commit: "7f42f68", promises: "earlier",
     claim: "Pricing cross-skill work in breach-probability units (policy v4) beats v3",
     rule: "Adopt only if the gain over v3 on validation days has a 95% interval entirely below zero.",
     show: () => chosenV4Row() >= 0,
@@ -33,7 +34,7 @@ const ENTRIES = [
     },
   },
   {
-    when: "18 Oct 21:50", commit: "7871e05",
+    when: "18 Oct 21:50", commit: "7871e05", promises: "earlier",
     claim: "Roster-aware rescue (policy v5) beats v3 on 20 seeds it had never used",
     rule: "One candidate fixed in advance; adopt only if its 95% interval vs v3 is entirely below zero.",
     show: () => lookup("details.confirm_v5.v5_minus_v3") !== undefined,
@@ -44,7 +45,7 @@ const ENTRIES = [
     },
   },
   {
-    when: "18 Oct 23:19", commit: "eede459",
+    when: "18 Oct 23:19", commit: "eede459", promises: "remeasured",
     claim: "A world generated after the freeze, run once",
     rule: "New seed, routine retraining, frozen weights, every baseline; report whatever happens.",
     show: () => lookup(`sealed_world_new.test.opslens_minus_d.${BREACH}`) !== undefined,
@@ -55,7 +56,7 @@ const ENTRIES = [
     },
   },
   {
-    when: "19 Oct 15:08", commit: "60f359d",
+    when: "19 Oct 15:08", commit: "60f359d", promises: "remeasured",
     claim: "OpsLens has the lowest missed-SLA rate in at least 27 of 30 random worlds",
     rule: "30 worlds drawn from wide, fixed ranges; nothing tuned per world.",
     show: () => lookup("worlds.rule_passed") !== undefined,
@@ -65,7 +66,7 @@ const ENTRIES = [
       ${ev("worlds.breakdown.of", "int")}.`,
   },
   {
-    when: "19 Oct 15:08", commit: "60f359d",
+    when: "19 Oct 15:08", commit: "60f359d", promises: "remeasured",
     claim: "OpsLens still beats the industry standard when agents hold 2 or 3 chats at once",
     rule: "All four settings, at equal load, each with a 95% interval below zero.",
     show: () => lookup("concurrency.rule_passed") !== undefined,
@@ -138,7 +139,7 @@ const ENTRIES = [
       rules ${ev("nlp_bench.attribution.rules.correct", "int")}. We keep the LLM for the readable sentence only.`,
   },
   {
-    when: "22 Oct 21:34", commit: "f51c5a8",
+    when: "22 Oct 21:34", commit: "f51c5a8", promises: "remeasured",
     claim: "Does a simple model rank risk as well as ours?",
     rule: "Logistic regression and a time-left rule on the same rows, and inside the dispatcher; report all.",
     show: () => lookup("prediction_baselines.risk_in_dispatch") !== undefined,
@@ -150,7 +151,7 @@ const ENTRIES = [
     },
   },
   {
-    when: "22 Oct 21:37", commit: "da4a9a1",
+    when: "22 Oct 21:37", commit: "da4a9a1", promises: "remeasured",
     claim: "The reasons we show are the reasons the model uses",
     rule: "Removing the top reason lowers the risk more than a random feature in at least 80% of tickets.",
     show: () => lookup("faithfulness.deletion.rule_faithful") !== undefined,
@@ -159,7 +160,7 @@ const ENTRIES = [
       of ${ev("faithfulness.deletion.rows", "int")} at-risk tickets.`,
   },
   {
-    when: "22 Oct 21:53", commit: "56ab3f5",
+    when: "22 Oct 21:53", commit: "56ab3f5", promises: "earlier",
     claim: "An exact roster optimiser (CP-SAT) beats our greedy staffing moves",
     rule: "Adopt only if better with a 95% interval below zero on validation and again on 20 fresh seeds.",
     show: () => lookup("staffing_opt.confirm.adopted") !== undefined,
@@ -259,6 +260,22 @@ export function render(section) {
   pressStamps(section);
 }
 
+function promiseText(key) {
+  const m = lookup(`meta.${key}`);
+  if (!m || typeof m.P1 !== "number") return "";
+  return `P1 ${duration(m.P1)}, P2 ${duration(m.P2)}, P3 ${duration(m.P3)}`;
+}
+
+function promiseNote(e) {
+  const earlier = promiseText("earlier_sla_minutes");
+  const now = promiseText("sla_minutes");
+  if (!e.promises || !earlier || !now) return "";
+  const text = e.promises === "earlier"
+    ? `Sealed and measured when the food floor promised ${earlier}. Not re-run on today's promises (${now}).`
+    : `Sealed when the food floor promised ${earlier}. Re-measured on today's promises (${now}); the rule was not changed.`;
+  return `<p class="ledger-rule ledger-promises">${escapeHtml(text)}</p>`;
+}
+
 function entryHtml(e) {
   return `<li class="ledger-entry is-${e.v}">
       <div class="ledger-when">
@@ -268,6 +285,7 @@ function entryHtml(e) {
       <div class="ledger-body">
         <h3 class="ledger-claim">${escapeHtml(e.claim)}</h3>
         <p class="ledger-rule">${escapeHtml(e.rule)}</p>
+        ${promiseNote(e)}
         <p class="ledger-measured">${e.measured()}</p>
       </div>
       <div class="ledger-stamp" aria-label="Verdict: ${STAMP[e.v]}"><span>${STAMP[e.v]}</span></div>
