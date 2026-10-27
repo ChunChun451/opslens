@@ -1,389 +1,419 @@
 {
  "test": {
-  "auc": 0.9764389846669059,
-  "pr_auc": 0.9554843748297424,
-  "top10_precision": 0.9955240581872435,
-  "brier": 0.05543983349601183,
-  "base_rate": 0.3340792958114207,
-  "n": 26811,
+  "auc": 0.9486945794825723,
+  "pr_auc": 0.9392343078707376,
+  "top10_precision": 0.9987714987714987,
+  "brier": 0.08604318837251912,
+  "base_rate": 0.43618065783014237,
+  "n": 8148,
   "calibration": [
    {
-    "predicted": 0.00021099655573736712,
-    "observed": 0.0011429659967615963,
-    "n": 10499
+    "predicted": 0.0030452131791339184,
+    "observed": 0.0,
+    "n": 678
    },
    {
-    "predicted": 0.02136939330310272,
-    "observed": 0.03978779840848806,
-    "n": 2262
+    "predicted": 0.020140285714008305,
+    "observed": 0.00821917808219178,
+    "n": 730
    },
    {
-    "predicted": 0.0845162659150613,
-    "observed": 0.12010705921712947,
-    "n": 2989
+    "predicted": 0.05071641334652346,
+    "observed": 0.044058744993324434,
+    "n": 749
    },
    {
-    "predicted": 0.28608975008439436,
-    "observed": 0.3187991422444603,
-    "n": 2798
+    "predicted": 0.11283516922499327,
+    "observed": 0.1232876712328767,
+    "n": 949
    },
    {
-    "predicted": 0.7370339340128426,
-    "observed": 0.7785429503443276,
-    "n": 2759
+    "predicted": 0.18439982168329055,
+    "observed": 0.16770186335403728,
+    "n": 966
    },
    {
-    "predicted": 0.9850870808637262,
-    "observed": 0.9838872104733132,
-    "n": 1986
+    "predicted": 0.3738058244829627,
+    "observed": 0.3738601823708207,
+    "n": 658
    },
    {
-    "predicted": 0.9984494406731457,
-    "observed": 0.9954519613416714,
-    "n": 3518
+    "predicted": 0.6584551954755375,
+    "observed": 0.6156316916488223,
+    "n": 934
+   },
+   {
+    "predicted": 0.9203521632090729,
+    "observed": 0.9334126040428062,
+    "n": 841
+   },
+   {
+    "predicted": 0.9851326333736065,
+    "observed": 0.9757085020242915,
+    "n": 494
+   },
+   {
+    "predicted": 1.0,
+    "observed": 0.999129677980853,
+    "n": 1149
    }
   ]
  },
  "at_arrival": {
-  "auc": 0.9658010061281674,
-  "pr_auc": 0.9238600990069411,
-  "top10_precision": 0.9922048997772829,
-  "brier": 0.0605731647287392,
-  "base_rate": 0.27466043197506124,
-  "n": 8982,
+  "auc": 0.9360726652105361,
+  "pr_auc": 0.901849882705398,
+  "top10_precision": 0.9977578475336323,
+  "brier": 0.09224372666951348,
+  "base_rate": 0.3573028673835125,
+  "n": 4464,
   "calibration": [
    {
-    "predicted": 0.00033619051453421324,
-    "observed": 0.0014858841010401188,
-    "n": 3365
+    "predicted": 1.1800925294413652e-05,
+    "observed": 0.0,
+    "n": 354
    },
    {
-    "predicted": 0.021501717599797306,
-    "observed": 0.04055299539170507,
-    "n": 1085
+    "predicted": 0.008250573596787951,
+    "observed": 0.0030864197530864196,
+    "n": 324
    },
    {
-    "predicted": 0.051075078604913074,
-    "observed": 0.08801020408163265,
-    "n": 784
+    "predicted": 0.03809865530948935,
+    "observed": 0.02821316614420063,
+    "n": 638
    },
    {
-    "predicted": 0.14067284104462485,
-    "observed": 0.17917917917917917,
-    "n": 999
+    "predicted": 0.08690072201769712,
+    "observed": 0.1048951048951049,
+    "n": 429
    },
    {
-    "predicted": 0.374801261285937,
-    "observed": 0.4358353510895884,
-    "n": 826
+    "predicted": 0.15090962598617466,
+    "observed": 0.12943632567849686,
+    "n": 479
    },
    {
-    "predicted": 0.8294584819097808,
-    "observed": 0.8776722090261283,
-    "n": 842
+    "predicted": 0.24940674260726717,
+    "observed": 0.22172949002217296,
+    "n": 451
    },
    {
-    "predicted": 0.9971669401039421,
-    "observed": 0.9907493061979649,
-    "n": 1081
+    "predicted": 0.4616949258194886,
+    "observed": 0.39655172413793105,
+    "n": 406
+   },
+   {
+    "predicted": 0.7152178829183555,
+    "observed": 0.680365296803653,
+    "n": 438
+   },
+   {
+    "predicted": 0.9444977713863782,
+    "observed": 0.9288702928870293,
+    "n": 478
+   },
+   {
+    "predicted": 1.0,
+    "observed": 0.9978586723768736,
+    "n": 467
    }
   ]
  },
  "rules": {
-  "time_left_auc": 0.883754494905204,
-  "priority_auc": 0.7895909528240418
+  "time_left_auc": 0.7955569019216913,
+  "priority_auc": 0.6560612567737175
  },
- "demo_minute": 69030.0,
+ "demo_minute": 80520.0,
  "at_risk": [
   {
-   "ticket_id": "T060758",
-   "created_at": "2026-10-17 21:36",
+   "ticket_id": "T064093",
+   "created_at": "2026-10-25 21:58",
    "category": "payment_failure",
    "priority": "P1",
    "language": "hi",
-   "text": "UPI se payment kiya, paise kat gaye, order fail",
-   "probability": 1.0,
-   "minutes_to_sla": 6.8,
+   "text": "25 wait, no food, money gone. Fix it.",
+   "probability": 0.9,
+   "minutes_to_sla": 13.7,
    "reasons": [
     {
      "feature": "time_left_min",
-     "contribution": 0.585,
-     "text": "7 min left of 60 min SLA \u2014 58% of the push"
+     "contribution": 0.548,
+     "text": "14 min left of 15 min SLA \u2014 55% of the push"
     },
     {
-     "feature": "capable_on_shift",
-     "contribution": 0.165,
-     "text": "no agent on shift can serve Hindi payment failure \u2014 17% of the push"
+     "feature": "category_pred",
+     "contribution": 0.129,
+     "text": "payment failure ticket \u2014 13% of the push"
     },
     {
-     "feature": "priority",
-     "contribution": 0.078,
-     "text": "priority P1 \u2014 8% of the push"
+     "feature": "ahead_in_team_queue",
+     "contribution": 0.098,
+     "text": "9 tickets ahead in Team B's queue \u2014 10% of the push"
     }
    ],
    "action": "assign now to a free agent who handles payment failure in Hindi",
-   "probability_after_action": 0.996
+   "probability_after_action": 0.541
   },
   {
-   "ticket_id": "T060763",
-   "created_at": "2026-10-17 21:38",
+   "ticket_id": "T064073",
+   "created_at": "2026-10-25 21:46",
+   "category": "wrong_item",
+   "priority": "P2",
+   "language": "hi",
+   "text": "veg manga tha non veg aa gaya, bahut galat hai, aur bahut late bhi aaya",
+   "probability": 0.21,
+   "minutes_to_sla": 46.2,
+   "reasons": [
+    {
+     "feature": "time_left_min",
+     "contribution": 0.26,
+     "text": "46 min left of 60 min SLA \u2014 26% of the push"
+    },
+    {
+     "feature": "language",
+     "contribution": 0.202,
+     "text": "Hindi customer \u2014 20% of the push"
+    },
+    {
+     "feature": "queue_total",
+     "contribution": 0.164,
+     "text": "64 tickets waiting on the floor \u2014 16% of the push"
+    }
+   ],
+   "action": "assign now to a free agent who handles wrong item in Hindi",
+   "probability_after_action": 0.21
+  },
+  {
+   "ticket_id": "T063961",
+   "created_at": "2026-10-25 20:47",
    "category": "restaurant_partner",
-   "priority": "P1",
-   "language": "en",
-   "text": "restaurant is closed but still showing open in app",
-   "probability": 1.0,
-   "minutes_to_sla": 8.8,
-   "reasons": [
-    {
-     "feature": "time_left_min",
-     "contribution": 0.656,
-     "text": "9 min left of 60 min SLA \u2014 66% of the push"
-    },
-    {
-     "feature": "queue_team_language",
-     "contribution": 0.094,
-     "text": "33 Team D tickets waiting in this language \u2014 9% of the push"
-    },
-    {
-     "feature": "priority",
-     "contribution": 0.092,
-     "text": "priority P1 \u2014 9% of the push"
-    }
-   ],
-   "action": "assign now to a free agent who handles restaurant partner",
-   "probability_after_action": 0.787
-  },
-  {
-   "ticket_id": "T060582",
-   "created_at": "2026-10-17 20:23",
-   "category": "refund",
-   "priority": "P2",
+   "priority": "P3",
    "language": "hi",
-   "text": "mera paisa wapas karo please",
-   "probability": 0.997,
-   "minutes_to_sla": 113.4,
+   "text": "veg thali mein baal mila, bahut ganda",
+   "probability": 0.21,
+   "minutes_to_sla": 168.0,
    "reasons": [
     {
-     "feature": "capable_on_shift",
-     "contribution": 0.396,
-     "text": "no agent on shift can serve Hindi refund \u2014 40% of the push"
-    },
-    {
-     "feature": "time_left_min",
-     "contribution": 0.227,
-     "text": "113 min left of 240 min SLA \u2014 23% of the push"
+     "feature": "ahead_in_team_queue",
+     "contribution": 0.375,
+     "text": "20 tickets ahead in Team D's queue \u2014 38% of the push"
     },
     {
      "feature": "language",
-     "contribution": 0.108,
-     "text": "Hindi customer \u2014 11% of the push"
-    }
-   ],
-   "action": "assign now to a free agent who handles refund in Hindi",
-   "probability_after_action": 0.29
-  },
-  {
-   "ticket_id": "T060781",
-   "created_at": "2026-10-17 21:51",
-   "category": "payment_failure",
-   "priority": "P2",
-   "language": "hi",
-   "text": "Payment failed but 558 deducted. Order my order not placed.",
-   "probability": 0.997,
-   "minutes_to_sla": 201.2,
-   "reasons": [
-    {
-     "feature": "capable_on_shift",
-     "contribution": 0.384,
-     "text": "no agent on shift can serve Hindi payment failure \u2014 38% of the push"
-    },
-    {
-     "feature": "language",
-     "contribution": 0.154,
-     "text": "Hindi customer \u2014 15% of the push"
-    },
-    {
-     "feature": "ahead_in_team_queue",
-     "contribution": 0.093,
-     "text": "31 tickets ahead in Team B's queue \u2014 9% of the push"
-    }
-   ],
-   "action": "assign now to a free agent who handles payment failure in Hindi",
-   "probability_after_action": 0.473
-  },
-  {
-   "ticket_id": "T060792",
-   "created_at": "2026-10-17 21:57",
-   "category": "refund",
-   "priority": "P2",
-   "language": "hi",
-   "text": "Mujhe laga refund aa gaya tha lekin bank statement mein kuch nahi dikha. 1025 ka piasa kahan hai?",
-   "probability": 0.997,
-   "minutes_to_sla": 207.2,
-   "reasons": [
-    {
-     "feature": "capable_on_shift",
-     "contribution": 0.384,
-     "text": "no agent on shift can serve Hindi refund \u2014 38% of the push"
-    },
-    {
-     "feature": "language",
-     "contribution": 0.159,
-     "text": "Hindi customer \u2014 16% of the push"
-    },
-    {
-     "feature": "ahead_in_team_queue",
-     "contribution": 0.111,
-     "text": "36 tickets ahead in Team B's queue \u2014 11% of the push"
-    }
-   ],
-   "action": "assign now to a free agent who handles refund in Hindi",
-   "probability_after_action": 0.373
-  },
-  {
-   "ticket_id": "T060789",
-   "created_at": "2026-10-17 21:55",
-   "category": "refund",
-   "priority": "P2",
-   "language": "hi",
-   "text": "order cancel kiya tha paisa wapas nahi aaya",
-   "probability": 0.997,
-   "minutes_to_sla": 205.6,
-   "reasons": [
-    {
-     "feature": "capable_on_shift",
-     "contribution": 0.393,
-     "text": "no agent on shift can serve Hindi refund \u2014 39% of the push"
-    },
-    {
-     "feature": "language",
-     "contribution": 0.162,
-     "text": "Hindi customer \u2014 16% of the push"
-    },
-    {
-     "feature": "ahead_in_team_queue",
-     "contribution": 0.1,
-     "text": "33 tickets ahead in Team B's queue \u2014 10% of the push"
-    }
-   ],
-   "action": "assign now to a free agent who handles refund in Hindi",
-   "probability_after_action": 0.373
-  },
-  {
-   "ticket_id": "T060816",
-   "created_at": "2026-10-17 22:09",
-   "category": "restaurant_partner",
-   "priority": "P1",
-   "language": "en",
-   "text": "hair in my fries, disgusting",
-   "probability": 0.997,
-   "minutes_to_sla": 39.3,
-   "reasons": [
-    {
-     "feature": "time_left_min",
-     "contribution": 0.491,
-     "text": "39 min left of 60 min SLA \u2014 49% of the push"
-    },
-    {
-     "feature": "ahead_in_team_queue",
      "contribution": 0.21,
-     "text": "38 tickets ahead in Team D's queue \u2014 21% of the push"
+     "text": "Hindi customer \u2014 21% of the push"
     },
     {
-     "feature": "queue_team_language",
-     "contribution": 0.124,
-     "text": "33 Team D tickets waiting in this language \u2014 12% of the push"
+     "feature": "channel",
+     "contribution": 0.157,
+     "text": "call ticket \u2014 16% of the push"
     }
    ],
-   "action": "assign now to a free agent who handles restaurant partner",
-   "probability_after_action": 0.114
+   "action": "assign now to a free agent who handles restaurant partner in Hindi",
+   "probability_after_action": 0.047
   },
   {
-   "ticket_id": "T060798",
-   "created_at": "2026-10-17 21:59",
+   "ticket_id": "T064085",
+   "created_at": "2026-10-25 21:55",
    "category": "payment_failure",
    "priority": "P2",
-   "language": "hi",
-   "text": "Order my order failed but bank shows 293 debit.",
-   "probability": 0.997,
-   "minutes_to_sla": 210.0,
+   "language": "other",
+   "text": "is this masala dosa from Biryani Junction? looks off",
+   "probability": 0.21,
+   "minutes_to_sla": 55.6,
    "reasons": [
     {
-     "feature": "capable_on_shift",
-     "contribution": 0.394,
-     "text": "no agent on shift can serve Hindi payment failure \u2014 39% of the push"
+     "feature": "language",
+     "contribution": 0.391,
+     "text": "regional-language customer \u2014 39% of the push"
+    },
+    {
+     "feature": "category_pred",
+     "contribution": 0.274,
+     "text": "payment failure ticket \u2014 27% of the push"
+    },
+    {
+     "feature": "queue_total",
+     "contribution": 0.173,
+     "text": "64 tickets waiting on the floor \u2014 17% of the push"
+    }
+   ],
+   "action": "assign now to a free agent who handles payment failure in regional-language",
+   "probability_after_action": 0.167
+  },
+  {
+   "ticket_id": "T063953",
+   "created_at": "2026-10-25 20:43",
+   "category": "account",
+   "priority": "P3",
+   "language": "hi",
+   "text": "mobile number change karna hai account mein",
+   "probability": 0.151,
+   "minutes_to_sla": 163.4,
+   "reasons": [
+    {
+     "feature": "ahead_in_team_queue",
+     "contribution": 0.543,
+     "text": "19 tickets ahead in Team D's queue \u2014 54% of the push"
     },
     {
      "feature": "language",
-     "contribution": 0.161,
-     "text": "Hindi customer \u2014 16% of the push"
+     "contribution": 0.221,
+     "text": "Hindi customer \u2014 22% of the push"
     },
     {
-     "feature": "ahead_in_team_queue",
-     "contribution": 0.14,
-     "text": "39 tickets ahead in Team B's queue \u2014 14% of the push"
+     "feature": "queue_total",
+     "contribution": 0.189,
+     "text": "64 tickets waiting on the floor \u2014 19% of the push"
     }
    ],
-   "action": "assign now to a free agent who handles payment failure in Hindi",
-   "probability_after_action": 0.373
+   "action": "assign now to a free agent who handles account in Hindi",
+   "probability_after_action": 0.009
   },
   {
-   "ticket_id": "T060825",
-   "created_at": "2026-10-17 22:14",
-   "category": "app_bug",
-   "priority": "P1",
-   "language": "en",
-   "text": "the map zooms in and out randomly, i cant see the driver location for my veg burger, very poor experience",
-   "probability": 0.997,
-   "minutes_to_sla": 44.4,
+   "ticket_id": "T064010",
+   "created_at": "2026-10-25 21:10",
+   "category": "restaurant_partner",
+   "priority": "P3",
+   "language": "hi",
+   "text": "Hygiene? extra chutney mein dirt tha. Very bad.",
+   "probability": 0.151,
+   "minutes_to_sla": 190.2,
    "reasons": [
     {
-     "feature": "time_left_min",
-     "contribution": 0.465,
-     "text": "44 min left of 60 min SLA \u2014 46% of the push"
+     "feature": "ahead_in_team_queue",
+     "contribution": 0.561,
+     "text": "34 tickets ahead in Team D's queue \u2014 56% of the push"
     },
     {
-     "feature": "ahead_in_team_queue",
-     "contribution": 0.231,
-     "text": "39 tickets ahead in Team D's queue \u2014 23% of the push"
+     "feature": "language",
+     "contribution": 0.21,
+     "text": "Hindi customer \u2014 21% of the push"
     },
+    {
+     "feature": "queue_total",
+     "contribution": 0.132,
+     "text": "64 tickets waiting on the floor \u2014 13% of the push"
+    }
+   ],
+   "action": "assign now to a free agent who handles restaurant partner in Hindi",
+   "probability_after_action": 0.009
+  },
+  {
+   "ticket_id": "T064091",
+   "created_at": "2026-10-25 21:58",
+   "category": "wrong_item",
+   "priority": "P2",
+   "language": "hi",
+   "text": "Bhai, Spice Route Kitcehn ne toh upra galat order bheja hai. Main butter chicken maang raha tha. Ab kya karun? Please osrt this out fast.",
+   "probability": 0.151,
+   "minutes_to_sla": 58.0,
+   "reasons": [
+    {
+     "feature": "language",
+     "contribution": 0.273,
+     "text": "Hindi customer \u2014 27% of the push"
+    },
+    {
+     "feature": "queue_total",
+     "contribution": 0.263,
+     "text": "64 tickets waiting on the floor \u2014 26% of the push"
+    },
+    {
+     "feature": "category_pred",
+     "contribution": 0.214,
+     "text": "wrong item ticket \u2014 21% of the push"
+    }
+   ],
+   "action": "assign now to a free agent who handles wrong item in Hindi",
+   "probability_after_action": 0.151
+  },
+  {
+   "ticket_id": "T063994",
+   "created_at": "2026-10-25 21:01",
+   "category": "restaurant_partner",
+   "priority": "P3",
+   "language": "hi",
+   "text": "restaurant menu se zyada paise le raha hai",
+   "probability": 0.151,
+   "minutes_to_sla": 181.7,
+   "reasons": [
+    {
+     "feature": "ahead_in_team_queue",
+     "contribution": 0.547,
+     "text": "30 tickets ahead in Team D's queue \u2014 55% of the push"
+    },
+    {
+     "feature": "language",
+     "contribution": 0.209,
+     "text": "Hindi customer \u2014 21% of the push"
+    },
+    {
+     "feature": "queue_total",
+     "contribution": 0.127,
+     "text": "64 tickets waiting on the floor \u2014 13% of the push"
+    }
+   ],
+   "action": "assign now to a free agent who handles restaurant partner in Hindi",
+   "probability_after_action": 0.009
+  },
+  {
+   "ticket_id": "T063944",
+   "created_at": "2026-10-25 20:38",
+   "category": "restaurant_partner",
+   "priority": "P3",
+   "language": "en",
+   "text": "found hair in my idli sambar from Thali Express",
+   "probability": 0.151,
+   "minutes_to_sla": 158.6,
+   "reasons": [
     {
      "feature": "queue_team_language",
-     "contribution": 0.124,
-     "text": "33 Team D tickets waiting in this language \u2014 12% of the push"
-    }
-   ],
-   "action": "assign now to a free agent who handles app bug",
-   "probability_after_action": 0.089
-  },
-  {
-   "ticket_id": "T060776",
-   "created_at": "2026-10-17 21:50",
-   "category": "payment_failure",
-   "priority": "P1",
-   "language": "en",
-   "text": "want assistance reporting an error with payments",
-   "probability": 0.996,
-   "minutes_to_sla": 20.1,
-   "reasons": [
-    {
-     "feature": "time_left_min",
-     "contribution": 0.69,
-     "text": "20 min left of 60 min SLA \u2014 69% of the push"
+     "contribution": 0.454,
+     "text": "34 Team D tickets waiting in this language \u2014 45% of the push"
     },
     {
      "feature": "ahead_in_team_queue",
-     "contribution": 0.126,
-     "text": "29 tickets ahead in Team B's queue \u2014 13% of the push"
+     "contribution": 0.383,
+     "text": "17 tickets ahead in Team D's queue \u2014 38% of the push"
     },
     {
-     "feature": "priority",
-     "contribution": 0.11,
-     "text": "priority P1 \u2014 11% of the push"
+     "feature": "queue_total",
+     "contribution": 0.131,
+     "text": "64 tickets waiting on the floor \u2014 13% of the push"
     }
    ],
-   "action": "assign now to a free agent who handles payment failure",
-   "probability_after_action": 0.196
+   "action": "assign now to a free agent who handles restaurant partner",
+   "probability_after_action": 0.025
+  },
+  {
+   "ticket_id": "T063937",
+   "created_at": "2026-10-25 20:33",
+   "category": "restaurant_partner",
+   "priority": "P3",
+   "language": "en",
+   "text": "also it came very late. my phone number changed last week but app still asks for old one, how do i update it without losing history?",
+   "probability": 0.151,
+   "minutes_to_sla": 153.3,
+   "reasons": [
+    {
+     "feature": "queue_team_language",
+     "contribution": 0.456,
+     "text": "34 Team D tickets waiting in this language \u2014 46% of the push"
+    },
+    {
+     "feature": "ahead_in_team_queue",
+     "contribution": 0.381,
+     "text": "16 tickets ahead in Team D's queue \u2014 38% of the push"
+    },
+    {
+     "feature": "queue_total",
+     "contribution": 0.131,
+     "text": "64 tickets waiting on the floor \u2014 13% of the push"
+    }
+   ],
+   "action": "assign now to a free agent who handles restaurant partner",
+   "probability_after_action": 0.025
   }
  ],
  "realdata": {
@@ -394,29 +424,29 @@
   "base_rate": 0.23287854467629748,
   "priority_rule_auc": 0.55150358525875
  },
- "best_iteration": 259,
+ "best_iteration": 136,
  "feature_gain": {
-  "category_pred": 0.0165,
-  "priority": 0.0625,
-  "channel": 0.0042,
-  "language": 0.0317,
-  "tier": 0.0006,
-  "team": 0.0012,
-  "hour_band": 0.0227,
-  "age_min": 0.0237,
-  "time_left_min": 0.3861,
-  "sla_min": 0.0021,
-  "order_value_inr": 0.0155,
-  "hour": 0.0407,
-  "is_weekend": 0.0056,
-  "queue_total": 0.0246,
-  "queue_team": 0.0393,
-  "queue_team_language": 0.0831,
-  "ahead_in_team_queue": 0.0716,
-  "on_shift_team": 0.0328,
-  "capable_on_shift": 0.1151,
-  "in_progress_team": 0.0115,
-  "arrivals_team_last_hour": 0.0092,
+  "category_pred": 0.0254,
+  "priority": 0.0279,
+  "channel": 0.0044,
+  "language": 0.0345,
+  "tier": 0.0014,
+  "team": 0.0031,
+  "hour_band": 0.0121,
+  "age_min": 0.0372,
+  "time_left_min": 0.3471,
+  "sla_min": 0.0,
+  "order_value_inr": 0.0177,
+  "hour": 0.0473,
+  "is_weekend": 0.0034,
+  "queue_total": 0.0251,
+  "queue_team": 0.0187,
+  "queue_team_language": 0.0761,
+  "ahead_in_team_queue": 0.0864,
+  "on_shift_team": 0.0196,
+  "capable_on_shift": 0.1723,
+  "in_progress_team": 0.0169,
+  "arrivals_team_last_hour": 0.0232,
   "transfers_so_far": 0.0
  }
 }

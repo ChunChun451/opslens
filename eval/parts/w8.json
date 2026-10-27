@@ -1,41 +1,41 @@
 {
  "shown_threshold": 0.5,
- "shown_rows": 8264,
+ "shown_rows": 3420,
  "deletion": {
   "rows": 3000,
-  "tickets": 1719,
+  "tickets": 1669,
   "background_rows": 30,
   "top1_vs_random1": {
-   "share_top_drops_more_logodds": 0.989,
-   "share_top_drops_more_probability": 0.983,
-   "mean_drop_top_logodds": 3.1807,
-   "mean_drop_random_logodds": 0.1675,
-   "mean_drop_top_probability": 0.3737,
-   "mean_drop_random_probability": 0.0182,
+   "share_top_drops_more_logodds": 0.9887,
+   "share_top_drops_more_probability": 0.986,
+   "mean_drop_top_logodds": 2.3102,
+   "mean_drop_random_logodds": 0.0789,
+   "mean_drop_top_probability": 0.3201,
+   "mean_drop_random_probability": 0.0108,
    "top_minus_random_logodds": {
-    "mean": 3.0132,
+    "mean": 2.2313,
     "ci95": [
-     2.9535,
-     3.0783
+     2.1702,
+     2.2919
     ]
    },
    "share_ci95": [
-    0.9852,
-    0.9923
+    0.9848,
+    0.9921
    ]
   },
   "top3_vs_random3": {
    "share_top_drops_more_logodds": 1.0,
-   "share_top_drops_more_probability": 0.9987,
-   "mean_drop_top_logodds": 5.2087,
-   "mean_drop_random_logodds": 0.1171,
-   "mean_drop_top_probability": 0.5631,
-   "mean_drop_random_probability": 0.0137,
+   "share_top_drops_more_probability": 1.0,
+   "mean_drop_top_logodds": 3.689,
+   "mean_drop_random_logodds": 0.0151,
+   "mean_drop_top_probability": 0.51,
+   "mean_drop_random_probability": 0.0032,
    "top_minus_random_logodds": {
-    "mean": 5.0916,
+    "mean": 3.6739,
     "ci95": [
-     5.0098,
-     5.1709
+     3.6087,
+     3.7442
     ]
    },
    "share_ci95": [
@@ -47,21 +47,21 @@
  },
  "reasons_vs_plant": {
   "planted_hindi_refund_payment": {
-   "rows": 1499,
-   "tickets": 296,
-   "share_skill_reason_in_top3": 0.986,
+   "rows": 596,
+   "tickets": 317,
+   "share_skill_reason_in_top3": 0.9396,
    "ci95": [
-    0.9797,
-    0.9917
+    0.9183,
+    0.9593
    ]
   },
   "control_team_b_not_hindi": {
-   "rows": 637,
-   "tickets": 260,
-   "share_skill_reason_in_top3": 0.6295,
+   "rows": 273,
+   "tickets": 223,
+   "share_skill_reason_in_top3": 0.4469,
    "ci95": [
-    0.5658,
-    0.6852
+    0.3668,
+    0.5255
    ]
   },
   "skill_features": [
@@ -70,13 +70,13 @@
    "queue_team_language"
   ],
   "planted_top1_reason_counts": {
-   "capable_on_shift": 811,
-   "time_left_min": 659,
-   "queue_team_language": 15,
-   "language": 12,
-   "ahead_in_team_queue": 2
+   "capable_on_shift": 283,
+   "time_left_min": 250,
+   "queue_team_language": 33,
+   "language": 16,
+   "ahead_in_team_queue": 11
   }
  },
- "runner_up": "opslens/optimize.py with_runner_up, called in policies.py; regression: tests/test_w8.py (same assignments)",
- "seconds": 113.4
+ "runner_up": "opslens/policies.py with_runner_up; regression: tests/test_w8.py (same assignments)",
+ "seconds": 35.5
 }

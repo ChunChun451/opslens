@@ -206,6 +206,17 @@ const ENTRIES = [
       of deadlines, the real desk ${ev("realdesk.twin.validation.real.check.missed_pct", "pct")}. Not close enough:
       no twin result is shown anywhere; Shadow mode stays the real-desk benchmark.`,
   },
+  {
+    when: "27 Oct 13:43", commit: "db6e781",
+    claim: "On food-delivery promises (P1 15 min, P2 1 h, P3 4 h), OpsLens still beats the industry standard",
+    rule: "Roster recalibrated and weights re-chosen on validation days only; the test days run once; report whatever happens.",
+    show: () => lookup(`baseline_c.test.opslens_minus_d.${BREACH}`) !== undefined && lookup("meta.earlier_sla_minutes.P1") !== undefined,
+    verdict: () => "reported",
+    measured: () => {
+      const p = `baseline_c.test.opslens_minus_d.${BREACH}`;
+      return `Missed promises, OpsLens vs the industry standard: ${pts(p + ".mean_diff")} ${ci(p + ".ci_low", p + ".ci_high")}.`;
+    },
+  },
 ];
 
 function ciWords(path) {

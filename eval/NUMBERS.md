@@ -1,129 +1,129 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-25T13:35:59 (commit 8316048). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-27T16:02:39 (commit e7960ab). Do not edit by hand: run `mingw32-make eval`.
 
-Data: 71,530 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
+Data: 64,257 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
 ## Baseline vs OpsLens (test days, mean ± std over seeds)
 
 | KPI | Baseline A (FIFO) | Baseline B (priority) | Industry standard (skills routing) | OpsLens | OpsLens − industry standard (95% CI) | OpsLens − B (95% CI) |
 |---|---|---|---|---|---|---|
-| SLA breach % | 13.08 ± 2.24 | 6.77 ± 1.25 | 5.51 ± 1.35 | **2.05** ± 0.36 | -3.46 [-4.77, -2.15] | -4.72 [-5.98, -3.46] |
-| P90 resolution (min) | 183.49 ± 36.55 | 196.17 ± 37.61 | 203.55 ± 58.73 | **140.44** ± 30.42 | -63.11 [-99.18, -27.03] | -55.73 [-65.00, -46.46] |
-| Mean wait (min) | 64.02 ± 14.04 | 68.03 ± 15.68 | 65.74 ± 17.61 | **45.05** ± 12.79 | -20.70 [-26.96, -14.44] | -22.98 [-28.69, -17.28] |
-| Max backlog (tickets) | 224.80 ± 49.65 | 236.20 ± 51.87 | 220.40 ± 48.03 | **209.00** ± 75.65 | -11.40 [-72.10, +49.30] | -27.20 [-85.47, +31.07] |
-| Transfers per 100 | 4.63 ± 0.04 | 4.62 ± 0.04 | 1.01 ± 0.01 | **0.97** ± 0.02 | -0.05 [-0.07, -0.03] | -3.66 [-3.70, -3.61] |
-| Tickets per agent-hour | 5.29 ± 0.10 | 5.29 ± 0.10 | 5.29 ± 0.10 | **5.30** ± 0.10 | +0.00 [-0.00, +0.01] | +0.00 [-0.00, +0.01] |
-| Reopen rate % | 3.93 ± 0.15 | 3.93 ± 0.15 | 3.93 ± 0.15 | **4.44** ± 0.18 | +0.50 [+0.41, +0.59] | +0.50 [+0.41, +0.59] |
-| P99 wait (min) | 817.16 ± 91.73 | 1,009.15 ± 162.70 | 941.19 ± 199.63 | **728.39** ± 187.94 | -212.80 [-278.87, -146.73] | -280.76 [-403.08, -158.43] |
-| Load fairness (std of utilisation) | 0.12 ± 0.01 | 0.12 ± 0.00 | 0.14 ± 0.00 | **0.13** ± 0.01 | -0.01 [-0.02, +0.00] | +0.01 [+0.00, +0.02] |
-| P1 breach % | 27.25 ± 4.44 | 9.01 ± 1.50 | 7.50 ± 1.12 | **4.84** ± 0.35 | -2.65 [-3.68, -1.63] | -4.16 [-5.66, -2.67] |
-| Hindi customers' breach % | 22.15 ± 3.35 | 16.17 ± 2.83 | 13.32 ± 2.55 | **2.72** ± 0.54 | -10.60 [-13.27, -7.93] | -13.45 [-16.51, -10.38] |
+| SLA breach % | 20.10 ± 3.24 | 17.33 ± 3.01 | 16.26 ± 3.27 | **11.66** ± 1.67 | -4.61 [-6.61, -2.60] | -5.68 [-7.38, -3.97] |
+| P90 resolution (min) | 114.40 ± 39.24 | 117.97 ± 33.11 | 129.55 ± 33.68 | **82.65** ± 17.59 | -46.90 [-68.80, -25.00] | -35.32 [-56.87, -13.76] |
+| Mean wait (min) | 35.38 ± 12.22 | 37.37 ± 12.93 | 39.96 ± 14.90 | **19.87** ± 6.51 | -20.09 [-30.88, -9.30] | -17.50 [-25.59, -9.42] |
+| Max backlog (tickets) | 166.20 ± 79.85 | 168.20 ± 79.18 | 154.20 ± 62.25 | **144.80** ± 51.80 | -9.40 [-31.93, +13.13] | -23.40 [-60.95, +14.15] |
+| Transfers per 100 | 4.27 ± 0.07 | 4.47 ± 0.10 | 1.31 ± 0.02 | **1.18** ± 0.05 | -0.12 [-0.19, -0.05] | -3.29 [-3.45, -3.12] |
+| Tickets per agent-hour | 4.76 ± 0.09 | 4.76 ± 0.09 | 4.76 ± 0.09 | **4.76** ± 0.09 | -0.00 [-0.01, +0.01] | -0.00 [-0.01, +0.01] |
+| Reopen rate % | 4.01 ± 0.09 | 4.01 ± 0.09 | 4.01 ± 0.09 | **4.64** ± 0.15 | +0.63 [+0.54, +0.71] | +0.63 [+0.54, +0.71] |
+| P99 wait (min) | 613.15 ± 180.60 | 703.69 ± 253.37 | 680.98 ± 230.45 | **334.73** ± 197.75 | -346.25 [-504.07, -188.43] | -368.96 [-547.10, -190.83] |
+| Load fairness (std of utilisation) | 0.12 ± 0.00 | 0.12 ± 0.01 | 0.13 ± 0.01 | **0.13** ± 0.01 | -0.00 [-0.02, +0.01] | +0.01 [-0.00, +0.02] |
+| P1 breach % | 30.45 ± 1.98 | 24.51 ± 1.92 | 22.51 ± 1.53 | **22.73** ± 1.71 | +0.22 [-0.44, +0.89] | -1.78 [-2.21, -1.34] |
+| Hindi customers' breach % | 29.40 ± 3.83 | 27.83 ± 3.95 | 26.41 ± 4.06 | **16.66** ± 2.83 | -9.75 [-11.53, -7.97] | -11.17 [-12.97, -9.37] |
 
-OpsLens − Baseline A, breach %: -11.03 [-13.48, -8.58].
+OpsLens − Baseline A, breach %: -8.45 [-10.42, -6.47].
 
 ## Which part creates the gain (ablations, test days)
 
 | Variant | Breach % | Δ vs full | P90 (min) |
 |---|---|---|---|
-| OpsLens (full) | 2.05 | +0.00 [+0.00, +0.00] | 140.4 |
-| without staffing plan | 2.11 | +0.06 [-0.02, +0.14] | 151.3 |
-| without risk scores | 4.19 | +2.15 [+1.66, +2.63] | 169.8 |
-| without optimiser (greedy per agent) | 2.03 | -0.02 [-0.04, +0.01] | 139.3 |
-| without classifier (menu choice routing) | 2.21 | +0.16 [+0.06, +0.27] | 154.2 |
-| without scarcity cost | 2.06 | +0.01 [-0.07, +0.09] | 142.9 |
+| OpsLens (full) | 11.66 | +0.00 [+0.00, +0.00] | 82.7 |
+| without staffing plan | 11.90 | +0.24 [+0.03, +0.45] | 85.4 |
+| without risk scores | 12.97 | +1.31 [+0.17, +2.46] | 95.0 |
+| without optimiser (greedy per agent) | 11.67 | +0.01 [-0.35, +0.38] | 82.6 |
+| without classifier (menu choice routing) | 12.15 | +0.50 [+0.26, +0.73] | 91.3 |
+| without scarcity cost | 11.63 | -0.03 [-0.10, +0.05] | 82.1 |
 
 ## Stress tests (conditions never seen in training)
 
 | Scenario | Baseline A | Baseline B | OpsLens | OpsLens − B |
 |---|---|---|---|---|
-| +25% volume | 53.60% | 28.86% | **10.53%** | -18.33 [-21.65, -15.00] |
-| 10% absenteeism | 20.21% | 9.84% | **2.94%** | -6.90 [-8.17, -5.64] |
+| +25% volume | 48.23% | 42.94% | **22.06%** | -20.88 [-24.80, -16.96] |
+| 10% absenteeism | 27.00% | 23.62% | **14.61%** | -9.00 [-11.26, -6.75] |
 
 ## Gold-customer weight sensitivity
 
 | Gold weight | Breach % (all) | Breach % (gold) |
 |---|---|---|
-| ×1.0 | 2.03 | 1.98 |
-| ×1.5 | 2.05 | 1.79 |
-| ×2.0 | 2.07 | 1.83 |
+| ×1.0 | 11.47 | 11.27 |
+| ×1.5 | 11.66 | 10.10 |
+| ×2.0 | 11.73 | 10.03 |
 
 ## Patterns
 
-- Planted problems (main data): found 5/5, diagnosed 5/5; false alarms 1.
-- Blind test: 57/60 random plants found (95.0%) over 20 datasets; diagnosed 95.0%.
-- Live detection of the unseen day-47 surge: 45 min; false alerts 0.5 per week.
+- Planted problems (main data): found 5/5, diagnosed 5/5; false alarms 0.
+- Blind test: 48/60 random plants found (80.0%) over 20 datasets; diagnosed 78.3%.
+- Live detection of the unseen day-47 surge: 60 min; false alerts 0.5 per week.
 
 ## Classification (test days)
 
-- Menu choice 90.9% → local 97.97% → cascade 98.08%; LLM alone 90.0% (400 tickets).
-- Sent to the LLM: 1.54%. Wrong-team routing per 100: 5.71 → 1.20.
+- Menu choice 91.0% → local 97.67% → cascade 97.88%; LLM alone 90.8% (400 tickets).
+- Sent to the LLM: 1.58%. Wrong-team routing per 100: 5.76 → 1.59.
 
 ## Risk model (test days)
 
-- AUC 0.976 (time-left rule 0.884), PR-AUC 0.955, top-10% precision 0.996, Brier 0.0554; at arrival AUC 0.966.
+- AUC 0.949 (time-left rule 0.796), PR-AUC 0.939, top-10% precision 0.999, Brier 0.0860; at arrival AUC 0.936.
 - Real ServiceNow data (UCI, 7,476 test incidents): AUC 0.857 vs priority rule 0.552.
 
 ## Forecast (test days)
 
-- WAPE 0.305 vs same-hour-last-week 0.415 (Poisson floor 0.280).
-- Conformal coverage: 80% range 79.2%, 90% range 90.0%.
+- WAPE 0.322 vs same-hour-last-week 0.422 (Poisson floor 0.298).
+- Conformal coverage: 80% range 79.9%, 90% range 89.3%.
 
 ## A stronger baseline: the "SLA due" sort, and how late the late customers are (test days)
 
 | KPI | Baseline A (FIFO) | Baseline B (priority) | Baseline C (SLA due) | Industry standard (skills routing) | OpsLens | OpsLens − C (95% CI) |
 |---|---|---|---|---|---|---|
-| SLA breach % | 13.08 | 6.77 | 5.38 | 5.51 | 2.05 | -3.33 [-3.97, -2.69] |
-| P1 breach % | 27.25 | 9.01 | 8.87 | 7.50 | 4.84 | -4.03 [-5.42, -2.63] |
-| Minutes late, mean over breached tickets | 210.91 | 328.11 | 772.71 | 261.87 | 223.82 | -548.89 [-713.03, -384.75] |
-| Minutes late per 100 tickets (all customers) | 2,789.67 | 2,255.96 | 4,206.04 | 1,432.37 | 482.68 | -3723.37 [-4999.63, -2447.10] |
-| P99 wait (min) | 817.16 | 1,009.15 | 1,422.47 | 941.19 | 728.39 | -694.08 [-1075.03, -313.12] |
+| SLA breach % | 20.10 | 17.33 | 14.25 | 16.26 | 11.66 | -2.59 [-2.98, -2.19] |
+| P1 breach % | 30.45 | 24.51 | 22.69 | 22.51 | 22.73 | +0.05 [-1.05, +1.15] |
+| Minutes late, mean over breached tickets | 126.21 | 146.90 | 217.94 | 147.88 | 108.63 | -109.31 [-162.80, -55.82] |
+| Minutes late per 100 tickets (all customers) | 2,609.97 | 2,625.64 | 3,179.91 | 2,492.53 | 1,302.96 | -1876.95 [-2915.19, -838.71] |
+| P99 wait (min) | 613.15 | 703.69 | 891.61 | 680.98 | 334.73 | -556.88 [-849.48, -264.28] |
 
 - Baselines C and D have no weights, so nothing was tuned; they ran on validation days first, then once on test days.
-- OpsLens − industry standard, breach %: -3.46 [-4.77, -2.15].
+- OpsLens − industry standard, breach %: -4.61 [-6.61, -2.60].
 
 ## The strongest published rules, and what perfect information buys them (test days)
 
 | KPI | C: SLA due (EDF) | D: industry standard | Least slack first | Generalized c-mu | OpsLens | Clairvoyant least slack* | Clairvoyant least slack + staffing* |
 |---|---|---|---|---|---|---|---|
-| SLA breach % | 5.38 | 5.51 | 3.94 | 5.27 | 2.05 | 3.81 | 3.81 |
-| P1 breach % | 8.87 | 7.50 | 6.97 | 7.99 | 4.84 | 6.71 | 6.83 |
-| Minutes late, mean over breached tickets | 772.71 | 261.87 | 891.73 | 238.33 | 223.82 | 876.45 | 833.21 |
-| Minutes late per 100 tickets | 4,206.04 | 1,432.37 | 3,552.01 | 1,237.68 | 482.68 | 3,380.06 | 3,247.22 |
-| P99 wait (min) | 1,422.47 | 941.19 | 1,386.21 | 905.22 | 728.39 | 1,373.25 | 1,456.91 |
+| SLA breach % | 14.25 | 16.26 | 12.11 | 16.38 | 11.66 | 10.55 | 10.53 |
+| P1 breach % | 22.69 | 22.51 | 20.82 | 24.58 | 22.73 | 17.70 | 17.84 |
+| Minutes late, mean over breached tickets | 217.94 | 147.88 | 251.35 | 126.75 | 108.63 | 259.30 | 278.41 |
+| Minutes late per 100 tickets | 3,179.91 | 2,492.53 | 3,094.13 | 2,135.69 | 1,302.96 | 2,775.37 | 2,954.73 |
+| P99 wait (min) | 891.61 | 680.98 | 945.01 | 630.99 | 334.73 | 842.42 | 956.83 |
 
 *Not implementable: knows each ticket's true category and true handle time. Not the optimum either (the true optimum for this many tickets cannot be computed).
 
 | OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) |
 |---|---|---|
-| C: SLA due (EDF) | -3.33 [-3.97, -2.69] | -3723 [-5000, -2447] |
-| D: industry standard | -3.46 [-4.77, -2.15] | -950 [-1364, -535] |
-| Least slack first | -1.89 [-2.18, -1.61] | -3069 [-4286, -1853] |
-| Generalized c-mu | -3.23 [-4.57, -1.88] | -755 [-1158, -352] |
-| Clairvoyant least slack* | -1.77 [-2.06, -1.48] | -2897 [-4024, -1771] |
-| Clairvoyant least slack + staffing* | -1.76 [-1.94, -1.58] | -2765 [-4355, -1174] |
+| C: SLA due (EDF) | -2.59 [-2.98, -2.19] | -1877 [-2915, -839] |
+| D: industry standard | -4.61 [-6.61, -2.60] | -1190 [-2060, -319] |
+| Least slack first | -0.45 [-1.36, +0.46] | -1791 [-2677, -905] |
+| Generalized c-mu | -4.72 [-7.23, -2.22] | -833 [-1395, -271] |
+| Clairvoyant least slack* | +1.11 [-0.11, +2.33] | -1472 [-2147, -798] |
+| Clairvoyant least slack + staffing* | +1.13 [-0.07, +2.33] | -1652 [-2777, -527] |
 
-- What perfect information buys the best rule (clairvoyant − least slack), breach %: -0.13 [-0.25, +0.00].
-- Chosen on validation days 36-42 only: c-mu tau 0.25, beta 1.0 (of 8 shapes; lowest validation breach %, ties broken by fewer late minutes per 100). Validation breach %: OpsLens 2.02, least slack 3.68, c-mu 4.34 → gate passed; test days run once.
+- What perfect information buys the best rule (clairvoyant − least slack), breach %: -1.56 [-1.95, -1.16].
+- Chosen on validation days 36-42 only: c-mu tau 0.25, beta 1.0 (of 8 shapes; lowest validation breach %, ties broken by fewer late minutes per 100). Validation breach %: OpsLens 9.76, least slack 11.19, c-mu 13.34 → gate passed; test days run once.
 
 ### Least slack + cross-skill rescue (the same freedom as OpsLens)
 
 | KPI | Least slack first | Least slack + cross-skill rescue | OpsLens |
 |---|---|---|---|
-| SLA breach % | 3.94 | 2.98 | 2.05 |
-| P1 breach % | 6.97 | 5.52 | 4.84 |
-| Minutes late, mean over breached tickets | 891.73 | 649.20 | 223.82 |
-| Minutes late per 100 tickets | 3,552.01 | 1,969.19 | 482.68 |
-| P99 wait (min) | 1,386.21 | 930.08 | 728.39 |
-| Reopen rate % | 3.93 | 4.10 | 4.44 |
+| SLA breach % | 12.11 | 11.28 | 11.66 |
+| P1 breach % | 20.82 | 22.06 | 22.73 |
+| Minutes late, mean over breached tickets | 251.35 | 165.03 | 108.63 |
+| Minutes late per 100 tickets | 3,094.13 | 1,897.09 | 1,302.96 |
+| P99 wait (min) | 945.01 | 472.36 | 334.73 |
+| Reopen rate % | 4.01 | 4.80 | 4.64 |
 
 | OpsLens − … | Breach % (95% CI) | Late minutes per 100 (95% CI) | Reopen rate % (95% CI) |
 |---|---|---|---|
-| Least slack + cross-skill rescue | -0.94 [-1.14, -0.73] | -1487 [-2110, -863] | +0.33 [+0.24, +0.43] |
-| Least slack first | -1.89 [-2.18, -1.61] | -3069 [-4286, -1853] | +0.50 [+0.41, +0.59] |
+| Least slack + cross-skill rescue | +0.38 [-0.55, +1.32] | -594 [-927, -261] | -0.15 [-0.27, -0.04] |
+| Least slack first | -0.45 [-1.36, +0.46] | -1791 [-2677, -905] | +0.63 [+0.54, +0.71] |
 
-- What the rescue buys least slack (rescue − plain), breach %: -0.96 [-1.14, -0.77].
-- Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. Threshold chosen on validation days 36-42 only (lowest validation breach %, ties broken by fewer late minutes per 100): 30 min. Validation breach %: 10 min 3.22%, 20 min 2.97%, 30 min 2.81%, 60 min 3.27%, 120 min 3.18%, 240 min 2.98%; OpsLens 2.02 → gate passed; test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: yes.
+- What the rescue buys least slack (rescue − plain), breach %: -0.83 [-1.01, -0.65].
+- Rule: when no skilled agent is free and a ticket's slack is below the threshold but a 1.6× slower job can still make the SLA, a free agent with the language takes it as a deliberate cross-skill job. Threshold chosen on validation days 36-42 only (lowest validation breach %, ties broken by fewer late minutes per 100): 30 min. Validation breach %: 10 min 10.81%, 20 min 10.44%, 30 min 10.41%, 60 min 12.39%, 120 min 12.19%, 240 min 12.94%; OpsLens 9.76 → gate passed; test days run once. OpsLens and plain least slack were run again beside it and reproduced exactly: yes.
 
 ## The real public service desk (UCI ServiceNow log, CC BY 4.0)
 
@@ -161,8 +161,8 @@ Assumption: A log cannot be replayed. We assume a fast-tracked incident is picke
 
 ## How close to perfect (test days)
 
-- Physical floor: 1.31% of tickets breach even with unlimited agents and perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).
-- OpsLens is 0.74 points above that floor and captures 83% ± 4 of the improvement possible over the industry standard: (D − OpsLens) ÷ (D − floor), per seed.
+- Physical floor: 5.84% of tickets breach even with unlimited agents and perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).
+- OpsLens is 5.82 points above that floor and captures 44% ± 2 of the improvement possible over the industry standard: (D − OpsLens) ÷ (D − floor), per seed.
 
 ## New sealed world (data seed 6262, corrected simulator, run once)
 
@@ -213,42 +213,42 @@ Least slack + cross-skill rescue (added after the re-run; this world built a thi
 
 | Playbook | Owner | Tickets prevented | Breaches: priority-first | Breaches: OpsLens | Agent-hours (OpsLens) |
 |---|---|---|---|---|---|
-| Fix the phone menu (IVR) | Product / IVR team | 0 | -39.0 [-56.4, -21.6] | -0.4 [-13.1, +12.3] | -3.5 |
-| Cross-train 2 Hindi-speaking agents on payment failure and refund | Training / workforce | 0 | -79.0 [-131.4, -26.6] | -33.6 [-44.3, -22.9] | -21.5 |
-| Self-serve instant refund on weekend dinner (Team C) | Product | 83 | -12.6 [-22.3, -2.9] | -5.0 [-10.3, +0.3] | -10.7 |
-| Status banner the moment a spike alert fires | Product / customer comms | 30 | -5.0 [-13.9, +3.9] | -4.2 [-10.5, +2.1] | -7.4 |
-| Kitchen order-check for restaurant cluster 17 | Partner operations | 67 | -9.2 [-25.7, +7.3] | -3.4 [-14.6, +7.8] | -10.2 |
-| Self-serve instant refund on weekday night (Team B) | Product | 23 | -16.8 [-29.9, -3.7] | -1.4 [-8.5, +5.7] | -1.7 |
-| **All together** | | 206 | -162.6 [-200.6, -124.6] | -38.0 [-50.6, -25.4] | -59.4 |
+| Fix the phone menu (IVR) | Product / IVR team | 0 | -123.4 [-200.2, -46.6] | -20.4 [-42.2, +1.4] | -5.3 |
+| Cross-train 2 Hindi-speaking agents on payment failure and refund | Training / workforce | 0 | -96.8 [-124.5, -69.1] | -44.2 [-75.5, -12.9] | -11.5 |
+| Self-serve instant refund on weekend dinner (Team C) | Product | 70 | -10.0 [-25.2, +5.2] | -10.0 [-15.0, -5.0] | -10.1 |
+| Status banner the moment a spike alert fires | Product / customer comms | 29 | -90.6 [-129.3, -51.9] | -20.2 [-39.3, -1.1] | -9.2 |
+| Self-serve instant refund on weekday night (Team B) | Product | 26 | -13.6 [-20.4, -6.8] | -1.6 [-13.8, +10.6] | -4.3 |
+| Kitchen order-check for restaurant cluster 17 | Partner operations | 57 | -16.6 [-40.4, +7.2] | -20.8 [-43.3, +1.7] | -6.7 |
+| **All together** | | 187 | -341.8 [-435.8, -247.8] | -106.4 [-121.5, -91.3] | -51.7 |
 
-- OpsLens with every playbook vs priority-first today: breaches -889.2 [-1119.4, -659.0] (of 1220), breach % -4.9 [-6.2, -3.6] points.
+- OpsLens with every playbook vs priority-first today: breaches -1025.0 [-1301.4, -748.6] (of 2805), breach % -6.2 [-7.9, -4.5] points.
 - Assumptions (labelled in config/playbooks.yaml) were re-run at their low and high values; see `playbooks[].sensitivity` in results.json.
 
 ## Your plan: each recommendation alone (test days, change vs OpsLens with nothing accepted)
 
-Without the plan: breach 2.11%. Change with 95% CI over the seeds.
+Without the plan: breach 11.90%. Change with 95% CI over the seeds.
 
 | Item | Missed SLA (customers) | Mean resolution (min) | Agent-hours | Minutes past SLA per 100 |
 |---|---|---|---|---|
-| Deepak W. (C02, Team C): start 07:00 instead of 08:00 (days 43-49) | -1.2 [-5.4, +3.0] | -0.5 [-0.9, -0.0] | -0.9 [-3.8, +1.9] | -2 [-10, +6] |
-| Vikram P. (A03, Team A): start 07:00 instead of 08:00 (days 43-49) | -0.4 [-3.0, +2.2] | -0.5 [-1.2, +0.2] | -1.1 [-2.6, +0.5] | -6 [-15, +3] |
-| Arjun N. (B02, Team B): day off on Mon instead of Fri (days 43-49) | -7.6 [-15.0, -0.2] | -2.6 [-4.6, -0.7] | -3.2 [-5.4, -1.0] | -28 [-65, +10] |
-| Lata I. (C05, Team C): day off on Mon instead of Sat (days 43-49) | -3.0 [-9.4, +3.4] | -0.7 [-1.3, -0.1] | -0.0 [-0.6, +0.6] | +2 [-27, +32] |
-| Harsh U. (C06, Team C): day off on Fri instead of Tue (days 43-49) | +1.4 [-5.3, +8.1] | +1.5 [+0.3, +2.7] | -1.6 [-4.2, +1.0] | +16 [-12, +45] |
-| Sana K. (A02, Team A): start 07:00 instead of 08:00 (days 43-49) | +1.8 [-5.1, +8.7] | -0.6 [-1.3, +0.1] | -1.5 [-3.1, +0.2] | -2 [-28, +25] |
-| Deepak W. (C02, Team C): start 07:00 instead of 08:00 (days 50-56) | -1.6 [-8.9, +5.7] | -0.1 [-0.2, +0.0] | -0.5 [-1.1, +0.1] | -3 [-11, +5] |
-| Sana K. (A02, Team A): start 07:00 instead of 08:00 (days 50-56) | -0.2 [-8.6, +8.2] | +0.3 [-0.7, +1.3] | -0.9 [-2.6, +0.9] | +17 [-38, +73] |
-| Arjun N. (B02, Team B): day off on Thu instead of Fri (days 50-56) | -6.2 [-19.3, +6.9] | -0.6 [-1.6, +0.4] | -1.3 [-3.5, +0.9] | -6 [-28, +16] |
-| Lata I. (C05, Team C): day off on Fri instead of Sat (days 50-56) | +4.0 [-1.6, +9.6] | +0.1 [-0.5, +0.6] | +0.1 [-0.6, +0.8] | +10 [-4, +25] |
-| Sneh Y. (C03, Team C): start 07:00 instead of 08:00 (days 50-56) | -0.4 [-9.8, +9.0] | -0.2 [-0.9, +0.6] | -1.1 [-2.3, +0.2] | +11 [-5, +28] |
-| Kavita D. (B01, Team B): start 08:00 instead of 10:00 (days 50-56) | +5.2 [-0.2, +10.6] | -0.1 [-1.1, +0.9] | +0.5 [-1.2, +2.1] | +20 [-43, +83] |
-| Fix the phone menu (IVR) (days 43-56) | -2.0 [-12.8, +8.8] | -0.9 [-1.8, +0.0] | -4.6 [-6.3, -2.9] | -15 [-32, +1] |
-| Cross-train 2 Hindi-speaking agents on payment failure and refund (days 43-56) | -26.8 [-39.0, -14.6] | -3.2 [-4.6, -1.9] | -22.8 [-26.8, -18.8] | -87 [-137, -37] |
-| Self-serve instant refund on weekend dinner (Team C) (days 43-56) | -4.8 [-16.5, +6.9] | -1.1 [-2.0, -0.2] | -11.1 [-12.3, -9.9] | +1 [-16, +18] |
-| Status banner the moment a spike alert fires (days 43-56) | -6.8 [-11.5, -2.1] | -2.7 [-3.5, -2.0] | -8.5 [-11.0, -5.9] | -23 [-44, -1] |
-| Kitchen order-check for restaurant cluster 17 (days 43-56) | -10.6 [-30.4, +9.2] | -1.6 [-2.3, -0.8] | -11.9 [-13.1, -10.7] | -28 [-61, +5] |
-| Self-serve instant refund on weekday night (Team B) (days 43-56) | -8.0 [-16.2, +0.2] | -1.3 [-2.3, -0.3] | -6.4 [-8.3, -4.5] | -16 [-42, +10] |
-| **All items together** | -48.8 [-63.1, -34.5] | -12.5 [-14.9, -10.2] | -66.3 [-71.5, -61.1] | -162 [-255, -68] |
+| Yash X. (C08, Team C): start 16:00 instead of 18:00 (days 43-49) | +6.4 [+2.0, +10.8] | +0.1 [-0.1, +0.3] | -0.1 [-1.1, +1.0] | +7 [-7, +21] |
+| Ruchi P. (C09, Team C): start 14:00 instead of 16:00 (days 43-49) | +4.6 [-2.6, +11.8] | +0.1 [-0.1, +0.3] | -0.3 [-1.3, +0.6] | +3 [-10, +15] |
+| Bhavna S. (D05, Team D): start 07:00 instead of 08:00 (days 43-49) | +3.8 [-7.5, +15.1] | -0.1 [-0.2, +0.1] | +0.8 [-0.6, +2.2] | -4 [-22, +15] |
+| Gita K. (D09, Team D): start 15:00 instead of 17:00 (days 43-49) | -0.2 [-14.8, +14.4] | +0.0 [-0.2, +0.3] | -0.2 [-0.8, +0.3] | +0 [-16, +16] |
+| Kavita D. (B01, Team B): start 15:00 instead of 14:00 (days 43-49) | -7.8 [-16.1, +0.5] | -0.2 [-0.4, -0.1] | -1.3 [-2.1, -0.5] | -15 [-17, -13] |
+| Amit T. (D04, Team D): start 07:00 instead of 09:00 (days 43-49) | -2.0 [-15.8, +11.8] | +0.1 [-0.5, +0.8] | -0.7 [-1.9, +0.6] | +13 [-30, +56] |
+| Yash X. (C08, Team C): start 16:00 instead of 18:00 (days 50-56) | -2.4 [-12.2, +7.4] | -0.1 [-0.5, +0.2] | -0.2 [-1.2, +0.9] | -12 [-49, +24] |
+| Ruchi P. (C09, Team C): start 14:00 instead of 16:00 (days 50-56) | +3.6 [-16.4, +23.6] | +0.2 [-0.9, +1.3] | -0.9 [-2.7, +0.8] | +22 [-70, +113] |
+| Kavita D. (B01, Team B): day off on Thu instead of Mon (days 50-56) | -23.2 [-70.7, +24.3] | -1.7 [-4.8, +1.4] | +1.1 [-1.6, +3.7] | -145 [-442, +152] |
+| Aditya B. (B06, Team B): start 07:00 instead of 09:00 (days 50-56) | -10.6 [-22.0, +0.8] | -0.2 [-0.7, +0.2] | -1.1 [-2.7, +0.6] | -17 [-49, +15] |
+| Anjali F. (C01, Team B): start 16:00 instead of 18:00 (days 50-56) | +1.2 [-3.4, +5.8] | -0.0 [-0.2, +0.1] | +0.7 [-0.7, +2.0] | -4 [-14, +7] |
+| Shreya L. (B07, Team B): start 15:00 instead of 14:00 (days 50-56) | -2.8 [-36.0, +30.4] | -0.2 [-1.5, +1.1] | -0.9 [-2.2, +0.3] | -18 [-145, +108] |
+| Fix the phone menu (IVR) (days 43-56) | -24.4 [-51.1, +2.3] | -0.6 [-1.5, +0.3] | -6.5 [-11.2, -1.8] | -42 [-113, +29] |
+| Cross-train 2 Hindi-speaking agents on payment failure and refund (days 43-56) | -44.6 [-75.8, -13.4] | -2.6 [-4.3, -0.9] | -13.9 [-17.6, -10.2] | -259 [-425, -93] |
+| Self-serve instant refund on weekend dinner (Team C) (days 43-56) | -9.2 [-15.7, -2.7] | -0.2 [-0.3, -0.1] | -10.2 [-11.1, -9.2] | +2 [-2, +6] |
+| Status banner the moment a spike alert fires (days 43-56) | -16.2 [-27.8, -4.6] | -0.8 [-1.0, -0.5] | -9.9 [-13.4, -6.5] | -18 [-29, -7] |
+| Self-serve instant refund on weekday night (Team B) (days 43-56) | -4.2 [-13.6, +5.2] | -0.1 [-0.2, +0.1] | -5.8 [-6.9, -4.8] | -3 [-25, +18] |
+| Kitchen order-check for restaurant cluster 17 (days 43-56) | -4.4 [-15.9, +7.1] | -0.4 [-1.2, +0.3] | -8.2 [-12.8, -3.6] | -21 [-83, +41] |
+| **All items together** | -145.0 [-190.5, -99.5] | -6.5 [-10.1, -3.0] | -56.0 [-58.5, -53.5] | -510 [-877, -143] |
 
 ## Day by day (test days, 5 seeds)
 
@@ -256,20 +256,20 @@ OpsLens missed fewer deadlines than the industry standard on 14 of 14 days. Dail
 
 | Day | Tickets | Industry standard | OpsLens |
 |---|---|---|---|
-| Mon 12 Oct | 1,073 | 2.89% | 1.85% |
-| Tue 13 Oct | 1,159 | 6.33% | 1.76% |
-| Wed 14 Oct | 1,216 | 4.39% | 1.81% |
-| Thu 15 Oct | 1,259 | 5.07% | 1.76% |
-| Fri 16 Oct | 1,314 | 7.70% | 2.12% |
-| Sat 17 Oct | 1,456 | 4.57% | 1.85% |
-| Sun 18 Oct | 1,297 | 2.45% | 1.57% |
-| Mon 19 Oct | 1,694 | 10.60% | 3.98% |
-| Tue 20 Oct | 1,246 | 7.45% | 2.36% |
-| Wed 21 Oct | 1,203 | 3.64% | 1.70% |
-| Thu 22 Oct | 1,212 | 6.44% | 2.10% |
-| Fri 23 Oct | 1,173 | 5.88% | 1.45% |
-| Sat 24 Oct | 1,314 | 5.62% | 2.01% |
-| Sun 25 Oct | 1,416 | 2.46% | 1.65% |
+| Mon 12 Oct | 983 | 11.37% | 9.07% |
+| Tue 13 Oct | 1,029 | 15.12% | 11.91% |
+| Wed 14 Oct | 1,067 | 16.57% | 11.42% |
+| Thu 15 Oct | 1,083 | 11.78% | 8.99% |
+| Fri 16 Oct | 1,124 | 17.35% | 10.98% |
+| Sat 17 Oct | 1,278 | 17.07% | 10.70% |
+| Sun 18 Oct | 1,264 | 11.80% | 8.84% |
+| Mon 19 Oct | 1,527 | 32.01% | 23.03% |
+| Tue 20 Oct | 1,114 | 19.98% | 12.96% |
+| Wed 21 Oct | 1,029 | 18.43% | 11.68% |
+| Thu 22 Oct | 1,118 | 14.11% | 10.93% |
+| Fri 23 Oct | 1,014 | 10.99% | 9.31% |
+| Sat 24 Oct | 1,255 | 12.78% | 10.60% |
+| Sun 25 Oct | 1,297 | 12.88% | 9.07% |
 
 ## Agents with several chats at once (test days, 5 seeds)
 
@@ -278,22 +278,21 @@ the volume by k/(1+s(k-1)) so the floor is as busy as today.
 
 | Chats (k) | Slowdown (s) | Load | Volume | First come | Urgent first | SLA due | Industry std | OpsLens | OpsLens - industry [95% CI] |
 |---|---|---|---|---|---|---|---|---|---|
-| 2 | 0.25 | equal load | x1.60 | 13.02% | 6.82% | 5.49% | 5.42% | 2.14% | -3.29 [-4.56, -2.01] |
-| 2 | 0.25 | today | x1.00 | 4.23% | 3.78% | 3.53% | 3.64% | 1.49% | -2.15 [-2.47, -1.83] |
-| 2 | 0.50 | equal load | x1.33 | 12.87% | 6.79% | 5.48% | 5.42% | 2.16% | -3.26 [-4.60, -1.93] |
-| 2 | 0.50 | today | x1.00 | 5.24% | 4.34% | 3.80% | 3.91% | 1.58% | -2.33 [-2.68, -1.97] |
-| 3 | 0.25 | equal load | x2.00 | 12.81% | 6.81% | 5.49% | 5.44% | 2.31% | -3.13 [-4.31, -1.95] |
-| 3 | 0.25 | today | x1.00 | 3.80% | 3.66% | 3.49% | 3.55% | 1.49% | -2.07 [-2.35, -1.78] |
-| 3 | 0.50 | equal load | x1.50 | 12.78% | 6.80% | 5.59% | 5.46% | 2.32% | -3.14 [-4.33, -1.94] |
-| 3 | 0.50 | today | x1.00 | 4.59% | 4.00% | 3.70% | 3.80% | 1.64% | -2.16 [-2.45, -1.88] |
+| 2 | 0.25 | equal load | x1.60 | 20.15% | 17.65% | 15.50% | 16.64% | 12.41% | -4.23 [-5.91, -2.55] |
+| 2 | 0.25 | today | x1.00 | 11.39% | 11.07% | 10.70% | 10.54% | 8.36% | -2.18 [-2.55, -1.81] |
+| 2 | 0.50 | equal load | x1.33 | 22.55% | 20.74% | 18.51% | 19.48% | 15.37% | -4.11 [-5.75, -2.48] |
+| 2 | 0.50 | today | x1.00 | 15.05% | 14.49% | 13.91% | 13.70% | 11.20% | -2.50 [-3.13, -1.88] |
+| 3 | 0.25 | equal load | x2.00 | 21.46% | 19.64% | 17.76% | 18.39% | 14.34% | -4.05 [-5.77, -2.34] |
+| 3 | 0.25 | today | x1.00 | 12.13% | 12.05% | 11.80% | 11.57% | 9.23% | -2.34 [-2.74, -1.93] |
+| 3 | 0.50 | equal load | x1.50 | 26.05% | 24.91% | 23.16% | 23.32% | 19.58% | -3.74 [-5.10, -2.38] |
+| 3 | 0.50 | today | x1.00 | 17.50% | 17.32% | 17.04% | 16.54% | 13.57% | -2.97 [-3.38, -2.56] |
 
-Pre-registered rule (OpsLens beats industry standard in all four equal-load settings): PASSED. Optimiser ablation at k = 3, s = 0.25: greedy - min-cost flow +0.01 [-0.06, +0.07] points.
+Pre-registered rule (OpsLens beats industry standard in all four equal-load settings): PASSED. Optimiser ablation at k = 3, s = 0.25: greedy - min-cost flow +0.34 [+0.18, +0.49] points.
 
 ## 30 random worlds we did not design (test days, 3 seeds each)
 
 OpsLens lowest (within 0.05 points) in 19 of 30 worlds (rule needs 27); median OpsLens - industry standard -8.19 points, 95% CI [-12.20, -3.28]. Rule NOT passed.
 Breakdown (from the same runs, added after them): OpsLens beats the industry standard in 29 of 30; it is lowest in 13 of 13 worlds up to x1.05 today's load and 6 of 17 heavier ones. All 11 losses are to least_slack, at x1.06 load or more; in 10 of them OpsLens keeps late customers less late.
-Diagnosis of the 11 losses (same worlds rebuilt, reproduced exactly: True; analysis after the result): OpsLens misses fewer gold customers in 11, keeps late customers less late in 11, fewer P1 in 4, fewer Hindi in 5.
 
 | World | Volume | Chats | Mismatch | Industry std | Least slack | OpsLens | Best other |
 |---|---|---|---|---|---|---|---|
@@ -339,6 +338,6 @@ Main validation days, 20 fresh seeds: v6 - v5 -0.006 [-0.028, +0.017] points (ga
 
 ## Speed
 
-- Optimiser per decision: median 0.07 ms, max 1.5 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.052 s.
-- Full evaluation pipeline: 48.5 min.
+- Optimiser per decision: median 0.06 ms, max 2.2 ms.
+- Scale test: 5,000 tickets × 500 agents solved in 0.063 s.
+- Full evaluation pipeline: 103.4 min.

@@ -2,39 +2,39 @@
  "cards": [
   {
    "id": "F1",
-   "title": "phone (IVR) tickets are transferred 5.1\u00d7 more",
+   "title": "phone (IVR) tickets are transferred 5.4\u00d7 more",
    "cause_type": "process",
    "metric": "transfers per 100 tickets",
-   "value": 13.01,
-   "comparison_value": 2.56,
-   "comparison_text": "13.0 transfers per 100 phone (IVR) tickets vs 2.6 for the rest",
+   "value": 11.67,
+   "comparison_value": 2.16,
+   "comparison_text": "11.7 transfers per 100 phone (IVR) tickets vs 2.2 for the rest",
    "segment": {
     "channel": "call"
    },
-   "affected_tickets": 10788,
-   "affected_share_pct": 20.17,
-   "strength": 20.46,
+   "affected_tickets": 9725,
+   "affected_share_pct": 20.23,
+   "strength": 21.5,
    "not_explained_by": "",
    "examples": [
     {
      "ticket_id": "T000039",
      "created_at": "2026-08-31 01:22",
      "text": "I have a problem with my order",
-     "wait_min": 398.1,
-     "breached": false
-    },
-    {
-     "ticket_id": "T000137",
-     "created_at": "2026-08-31 09:00",
-     "text": "veg manga tha non veg aa gaya, bahut galat hai",
-     "wait_min": 3.0,
+     "wait_min": 366.1,
      "breached": true
     },
     {
-     "ticket_id": "T000188",
-     "created_at": "2026-08-31 10:03",
-     "text": "delivery boy ka phone anhi lag raha, order late hai",
-     "wait_min": 288.3,
+     "ticket_id": "T000103",
+     "created_at": "2026-08-31 08:06",
+     "text": "I have a problem with my order",
+     "wait_min": 2.3,
+     "breached": false
+    },
+    {
+     "ticket_id": "T000108",
+     "created_at": "2026-08-31 08:20",
+     "text": "rider phone off, veg thali not arriving, and one item was missing too",
+     "wait_min": 21.6,
      "breached": true
     }
    ],
@@ -42,40 +42,40 @@
   },
   {
    "id": "F2",
-   "title": "Hindi \u00d7 Team B wait 5.1\u00d7 longer",
+   "title": "Hindi \u00d7 Team B wait 6.1\u00d7 longer",
    "cause_type": "skill_gap",
    "metric": "mean wait (min)",
-   "value": 336.42,
-   "comparison_value": 65.53,
-   "comparison_text": "Hindi \u00d7 Team B: 336 min mean wait vs 66 min (Hindi, other team) and 55 min (Team B, other language)",
+   "value": 180.95,
+   "comparison_value": 29.86,
+   "comparison_text": "Hindi \u00d7 Team B: 181 min mean wait vs 30 min (Hindi, other team) and 12 min (Team B, other language)",
    "segment": {
     "language": "hi",
     "team": "B"
    },
-   "affected_tickets": 2871,
-   "affected_share_pct": 5.37,
-   "strength": 17.75,
+   "affected_tickets": 2568,
+   "affected_share_pct": 5.34,
+   "strength": 20.66,
    "not_explained_by": "only 3 agents (B01, B02, B05) speak hi and handle refund, payment failure",
    "examples": [
     {
-     "ticket_id": "T004740",
-     "created_at": "2026-09-03 23:12",
-     "text": "aapne bola tha 5 din mein refund, ek hafta ho agya",
-     "wait_min": 1907.1,
+     "ticket_id": "T031950",
+     "created_at": "2026-09-27 21:46",
+     "text": "Arre yaar, 45 se pending hai. 1060 debit hua but order status 'failed' dikh raha hai. Kya karein?",
+     "wait_min": 1326.1,
      "breached": true
     },
     {
-     "ticket_id": "T004793",
-     "created_at": "2026-09-04 00:06",
-     "text": "Bilkul nahi khaya, paneer butter masala garam nahi tha, paisa do.",
-     "wait_min": 1892.6,
+     "ticket_id": "T031943",
+     "created_at": "2026-09-27 21:41",
+     "text": "roder cancel kiya tha paisa wapas nahi aaya",
+     "wait_min": 1324.7,
      "breached": true
     },
     {
-     "ticket_id": "T004773",
-     "created_at": "2026-09-03 23:41",
-     "text": "bahut bura experience tha aaj",
-     "wait_min": 1889.5,
+     "ticket_id": "T031932",
+     "created_at": "2026-09-27 21:34",
+     "text": "Refund 270 pending, kya kar rahe ho aap?. call me on [PHONE]",
+     "wait_min": 1322.2,
      "breached": true
     }
    ],
@@ -83,40 +83,40 @@
   },
   {
    "id": "F3",
-   "title": "Team C overloaded on weekend dinner (work 1.45\u00d7 agent-time)",
+   "title": "Team C overloaded on weekend dinner (work 1.55\u00d7 agent-time)",
    "cause_type": "capacity",
    "metric": "work \u00f7 agent-time (rho)",
-   "value": 1.45,
+   "value": 1.55,
    "comparison_value": 1.0,
-   "comparison_text": "Team C gets 1.45\u00d7 more work than its agents' time on weekend dinner (3.5 agents on shift); its tickets wait 58 min then and 322 min on weekend late while the backlog clears (usual 52 min)",
+   "comparison_text": "Team C gets 1.55\u00d7 more work than its agents' time on weekend dinner (3.0 agents on shift); its tickets wait 22 min then and 27 min on weekend late while the backlog clears (usual 23 min)",
    "segment": {
     "team": "C",
     "when": "weekend dinner"
    },
-   "affected_tickets": 1887,
-   "affected_share_pct": 3.53,
-   "strength": 14.5,
+   "affected_tickets": 1700,
+   "affected_share_pct": 3.54,
+   "strength": 15.49,
    "not_explained_by": "recurs every weekend, not a one-off",
    "examples": [
     {
-     "ticket_id": "T006878",
-     "created_at": "2026-09-05 19:31",
-     "text": "and my payment also showed failed. order id [ORDER_ID] issue. shawarma roll not delivered. i waited 50 and the rider left. please contact Spice Route Kitchen and resolve.",
-     "wait_min": 48.8,
+     "ticket_id": "T006352",
+     "created_at": "2026-09-05 19:43",
+     "text": "please refund my money for the wrong masala dosa i received. the fries was cold and tasted weird too.",
+     "wait_min": 0.0,
      "breached": false
     },
     {
-     "ticket_id": "T007077",
-     "created_at": "2026-09-05 20:57",
-     "text": "they sent the wrong items, please fix",
-     "wait_min": 108.4,
-     "breached": true
+     "ticket_id": "T006360",
+     "created_at": "2026-09-05 19:50",
+     "text": "where is my salad? it was in the bill but not delivered, the restaurant quality is also bad",
+     "wait_min": 0.0,
+     "breached": false
     },
     {
-     "ticket_id": "T007114",
-     "created_at": "2026-09-05 21:16",
-     "text": "completely different food delivered to me",
-     "wait_min": 23.1,
+     "ticket_id": "T006428",
+     "created_at": "2026-09-05 20:34",
+     "text": "the order belongs to someone else, wrong naem on the ibll",
+     "wait_min": 4.6,
      "breached": false
     }
    ],
@@ -127,9 +127,9 @@
    "title": "Payment failure spike on Thu 17 Sep",
    "cause_type": "volume_spike",
    "metric": "tickets per day",
-   "value": 254.0,
-   "comparison_value": 117.0,
-   "comparison_text": "254 payment failure tickets on Thu 17 Sep vs 117 on a usual day (robust z 7.7), concentrated 17:00-23:00",
+   "value": 240.0,
+   "comparison_value": 100.0,
+   "comparison_text": "240 payment failure tickets on Thu 17 Sep vs 100 on a usual day (robust z 13.5), concentrated 17:00-23:00",
    "segment": {
     "category": "payment_failure",
     "day": 18,
@@ -142,163 +142,368 @@
      22
     ]
    },
-   "affected_tickets": 254,
-   "affected_share_pct": 0.47,
-   "strength": 7.7,
+   "affected_tickets": 240,
+   "affected_share_pct": 0.5,
+   "strength": 13.49,
    "not_explained_by": "not a known sale or event day",
    "examples": [
     {
-     "ticket_id": "T021107",
-     "created_at": "2026-09-17 00:08",
-     "text": "money debited but order not placed",
-     "wait_min": 5.4,
-     "breached": false
+     "ticket_id": "T019056",
+     "created_at": "2026-09-17 04:33",
+     "text": "amount cut from wallet, no order created",
+     "wait_min": 3.5,
+     "breached": true
     },
     {
-     "ticket_id": "T021363",
-     "created_at": "2026-09-17 11:10",
-     "text": "help, 94 gone, no confirmation",
-     "wait_min": 5.0,
-     "breached": false
+     "ticket_id": "T019281",
+     "created_at": "2026-09-17 11:50",
+     "text": "UPI payment stuck in pending, order not confirmed. call me on [PHONE]",
+     "wait_min": 2.2,
+     "breached": true
     },
     {
-     "ticket_id": "T021517",
-     "created_at": "2026-09-17 13:26",
-     "text": "i am waiting for 30 and still no food. i paid 206 for butter chicken frmo Biryani Junction. refund please.",
-     "wait_min": 25.7,
-     "breached": false
+     "ticket_id": "T019394",
+     "created_at": "2026-09-17 13:15",
+     "text": "payment went through but app shows payment failed",
+     "wait_min": 4.6,
+     "breached": true
     }
    ],
    "recommendation": "Check what changed that day (app release, payment gateway, outage)"
   },
   {
    "id": "F5",
-   "title": "Restaurant cluster 17: 2.5\u00d7 more wrong item tickets",
-   "cause_type": "partner_issue",
-   "metric": "share of tickets that are wrong item",
-   "value": 24.51,
-   "comparison_value": 9.61,
-   "comparison_text": "24.5% of cluster 17's tickets are wrong item vs 9.6% for other clusters",
+   "title": "Team D overloaded on weekend dinner (work 1.30\u00d7 agent-time)",
+   "cause_type": "capacity",
+   "metric": "work \u00f7 agent-time (rho)",
+   "value": 1.3,
+   "comparison_value": 1.0,
+   "comparison_text": "Team D gets 1.30\u00d7 more work than its agents' time on weekend dinner (3.1 agents on shift); its tickets wait 57 min then and 98 min on weekend late while the backlog clears (usual 33 min)",
    "segment": {
-    "category": "wrong_item",
-    "restaurant_cluster_id": 17
+    "team": "D",
+    "when": "weekend dinner"
    },
-   "affected_tickets": 264,
-   "affected_share_pct": 0.49,
-   "strength": 6.17,
-   "not_explained_by": "",
+   "affected_tickets": 1186,
+   "affected_share_pct": 2.47,
+   "strength": 12.96,
+   "not_explained_by": "recurs every weekend, not a one-off",
    "examples": [
     {
-     "ticket_id": "T002455",
-     "created_at": "2026-09-01 23:41",
-     "text": "got rajma chawal instead of what I ordered, order id [ORDER_ID]",
-     "wait_min": 30.2,
+     "ticket_id": "T006320",
+     "created_at": "2026-09-05 19:23",
+     "text": "i paid 434 but the receipt says 434, please explain this discrepancy",
+     "wait_min": 3.1,
      "breached": false
     },
     {
-     "ticket_id": "T005202",
-     "created_at": "2026-09-04 13:53",
-     "text": "the order belongs to someone else, wrong name on the bill",
-     "wait_min": 23.7,
+     "ticket_id": "T006382",
+     "created_at": "2026-09-05 20:04",
+     "text": "hair in my garlic naan, disgusting",
+     "wait_min": 0.0,
      "breached": false
     },
     {
-     "ticket_id": "T010123",
-     "created_at": "2026-09-08 12:39",
-     "text": "aur ek item bhi imssing tha. Momo Street ne galat khana bhej diya",
-     "wait_min": 33.5,
-     "breached": true
+     "ticket_id": "T006398",
+     "created_at": "2026-09-05 20:14",
+     "text": "this is the third time Spice Route Kitchen has messed up, the food quality is dropping every week",
+     "wait_min": 2.9,
+     "breached": false
     }
    ],
-   "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
+   "recommendation": "Add Team D capacity on weekend dinner: move agents trained on account, app bug, restaurant partner from a quieter team (see Recommendations)"
   },
   {
    "id": "F6",
-   "title": "Team B \u00d7 weekday night wait 2.1\u00d7 longer",
+   "title": "Team B \u00d7 weekday late wait 3.9\u00d7 longer",
+   "cause_type": "other",
+   "metric": "mean wait (min)",
+   "value": 172.08,
+   "comparison_value": 44.44,
+   "comparison_text": "Team B \u00d7 weekday late: 172 min mean wait vs 44 min (Team B, other when) and 23 min (weekday late, other team)",
+   "segment": {
+    "team": "B",
+    "when": "weekday late"
+   },
+   "affected_tickets": 379,
+   "affected_share_pct": 0.79,
+   "strength": 9.98,
+   "not_explained_by": "",
+   "examples": [
+    {
+     "ticket_id": "T033258",
+     "created_at": "2026-09-28 23:12",
+     "text": "please jaldi call karo",
+     "wait_min": 933.4,
+     "breached": true
+    },
+    {
+     "ticket_id": "T033244",
+     "created_at": "2026-09-28 23:01",
+     "text": "UPI se payment kiya, paise kat gaye, order fail",
+     "wait_min": 932.3,
+     "breached": true
+    },
+    {
+     "ticket_id": "T033252",
+     "created_at": "2026-09-28 23:10",
+     "text": "Aapke app mein refund policy clear nahi hai. 60 ghante ho gaye hain, abhi bhi status 'processing' hai.",
+     "wait_min": 930.9,
+     "breached": true
+    }
+   ],
+   "recommendation": "Review this group with the team lead"
+  },
+  {
+   "id": "F7",
+   "title": "Team B \u00d7 weekday night wait 3.4\u00d7 longer",
    "cause_type": "capacity",
    "metric": "mean wait (min)",
-   "value": 227.83,
-   "comparison_value": 109.21,
-   "comparison_text": "Team B \u00d7 weekday night: 228 min mean wait vs 109 min (Team B, other when) and 88 min (weekday night, other team)",
+   "value": 144.62,
+   "comparison_value": 42.9,
+   "comparison_text": "Team B \u00d7 weekday night: 145 min mean wait vs 43 min (Team B, other when) and 27 min (weekday night, other team)",
    "segment": {
     "team": "B",
     "when": "weekday night"
    },
-   "affected_tickets": 744,
-   "affected_share_pct": 1.39,
-   "strength": 5.99,
-   "not_explained_by": "on average only 0.8 agents who handle refund, payment failure are on shift on weekday night",
+   "affected_tickets": 656,
+   "affected_share_pct": 1.36,
+   "strength": 9.5,
+   "not_explained_by": "on average only 1.1 agents who handle refund, payment failure are on shift on weekday night",
    "examples": [
     {
-     "ticket_id": "T004793",
-     "created_at": "2026-09-04 00:06",
-     "text": "Bilkul nahi khaya, paneer butter masala garam nahi tha, paisa do.",
-     "wait_min": 1892.6,
+     "ticket_id": "T032216",
+     "created_at": "2026-09-28 05:51",
+     "text": "bahut bura experience tha aaj",
+     "wait_min": 890.4,
      "breached": true
     },
     {
-     "ticket_id": "T004808",
-     "created_at": "2026-09-04 00:38",
-     "text": "aur mera number bhi update karo. aapne bola tha 5 din mein refund, ek hafta ho gaya",
-     "wait_min": 1868.3,
+     "ticket_id": "T027224",
+     "created_at": "2026-09-24 00:01",
+     "text": "UPI se payment kiya, paise kat gaye, ordre fail",
+     "wait_min": 876.3,
      "breached": true
     },
     {
-     "ticket_id": "T004827",
-     "created_at": "2026-09-04 01:27",
-     "text": "Refund 156 abhi tak nahi aaya, kya baat hai?",
-     "wait_min": 1828.2,
+     "ticket_id": "T025014",
+     "created_at": "2026-09-22 00:09",
+     "text": "refund ka status batao order id [ORDER_ID]",
+     "wait_min": 874.5,
      "breached": true
     }
    ],
    "recommendation": "Put at least one agent who can handle refund, payment failure on shift on weekday night"
   },
   {
-   "id": "F7",
-   "title": "regional-language \u00d7 weekday morning wait 2.3\u00d7 longer",
-   "cause_type": "other",
+   "id": "F8",
+   "title": "regional-language \u00d7 weekday morning wait 3.5\u00d7 longer",
+   "cause_type": "capacity",
    "metric": "mean wait (min)",
-   "value": 171.19,
-   "comparison_value": 73.76,
-   "comparison_text": "regional-language \u00d7 weekday morning: 171 min mean wait vs 74 min (regional-language, other when) and 40 min (weekday morning, other language)",
+   "value": 160.37,
+   "comparison_value": 46.2,
+   "comparison_text": "regional-language \u00d7 weekday morning: 160 min mean wait vs 46 min (regional-language, other when) and 23 min (weekday morning, other language)",
    "segment": {
     "language": "other",
     "when": "weekday morning"
    },
-   "affected_tickets": 371,
-   "affected_share_pct": 0.69,
-   "strength": 5.96,
+   "affected_tickets": 346,
+   "affected_share_pct": 0.72,
+   "strength": 8.81,
+   "not_explained_by": "on average only 1.1 agents who speak regional-language are on shift on weekday morning",
+   "examples": [
+    {
+     "ticket_id": "T009158",
+     "created_at": "2026-09-08 09:38",
+     "text": "help me retrieve the password of my user profile",
+     "wait_min": 741.1,
+     "breached": true
+    },
+    {
+     "ticket_id": "T009233",
+     "created_at": "2026-09-08 11:16",
+     "text": "changed my number but app still old",
+     "wait_min": 643.1,
+     "breached": true
+    },
+    {
+     "ticket_id": "T009265",
+     "created_at": "2026-09-08 11:56",
+     "text": "why is my chicken biryani so salty?",
+     "wait_min": 613.9,
+     "breached": true
+    }
+   ],
+   "recommendation": "Put at least one agent who can speak regional-language on shift on weekday morning"
+  },
+  {
+   "id": "F9",
+   "title": "regional-language \u00d7 Team D wait 2.9\u00d7 longer",
+   "cause_type": "other",
+   "metric": "mean wait (min)",
+   "value": 120.52,
+   "comparison_value": 41.78,
+   "comparison_text": "regional-language \u00d7 Team D: 121 min mean wait vs 42 min (regional-language, other team) and 28 min (Team D, other language)",
+   "segment": {
+    "language": "other",
+    "team": "D"
+   },
+   "affected_tickets": 662,
+   "affected_share_pct": 1.38,
+   "strength": 8.14,
    "not_explained_by": "",
    "examples": [
     {
-     "ticket_id": "T013648",
-     "created_at": "2026-09-11 07:04",
-     "text": "showing me purchase [PHONE] status. call me on [PHONE]",
-     "wait_min": 895.0,
+     "ticket_id": "T004287",
+     "created_at": "2026-09-03 22:16",
+     "text": "unable to track my order, map not loading",
+     "wait_min": 1003.4,
      "breached": true
     },
     {
-     "ticket_id": "T013655",
-     "created_at": "2026-09-11 07:18",
-     "text": "the restaruant quality is also bad. i do not know how to see hwen my delivery is gonna arrive",
-     "wait_min": 893.5,
+     "ticket_id": "T004342",
+     "created_at": "2026-09-03 22:46",
+     "text": "could ya help me cancel the business account",
+     "wait_min": 975.4,
      "breached": true
     },
     {
-     "ticket_id": "T001309",
-     "created_at": "2026-09-01 07:48",
-     "text": "hello? is anyone there?",
-     "wait_min": 851.8,
-     "breached": false
+     "ticket_id": "T004375",
+     "created_at": "2026-09-03 23:08",
+     "text": "address not saving in the app",
+     "wait_min": 960.9,
+     "breached": true
     }
    ],
    "recommendation": "Review this group with the team lead"
+  },
+  {
+   "id": "F10",
+   "title": "Hindi \u00d7 weekday late wait 3.1\u00d7 longer",
+   "cause_type": "other",
+   "metric": "mean wait (min)",
+   "value": 192.25,
+   "comparison_value": 62.48,
+   "comparison_text": "Hindi \u00d7 weekday late: 192 min mean wait vs 62 min (Hindi, other when) and 22 min (weekday late, other language)",
+   "segment": {
+    "language": "hi",
+    "when": "weekday late"
+   },
+   "affected_tickets": 338,
+   "affected_share_pct": 0.7,
+   "strength": 7.78,
+   "not_explained_by": "",
+   "examples": [
+    {
+     "ticket_id": "T033258",
+     "created_at": "2026-09-28 23:12",
+     "text": "please jaldi call karo",
+     "wait_min": 933.4,
+     "breached": true
+    },
+    {
+     "ticket_id": "T033244",
+     "created_at": "2026-09-28 23:01",
+     "text": "UPI se payment kiya, paise kat gaye, order fail",
+     "wait_min": 932.3,
+     "breached": true
+    },
+    {
+     "ticket_id": "T033252",
+     "created_at": "2026-09-28 23:10",
+     "text": "Aapke app mein refund policy clear nahi hai. 60 ghante ho gaye hain, abhi bhi status 'processing' hai.",
+     "wait_min": 930.9,
+     "breached": true
+    }
+   ],
+   "recommendation": "Review this group with the team lead"
+  },
+  {
+   "id": "F11",
+   "title": "Hindi \u00d7 weekday night wait 2.4\u00d7 longer",
+   "cause_type": "other",
+   "metric": "mean wait (min)",
+   "value": 150.87,
+   "comparison_value": 62.15,
+   "comparison_text": "Hindi \u00d7 weekday night: 151 min mean wait vs 62 min (Hindi, other when) and 33 min (weekday night, other language)",
+   "segment": {
+    "language": "hi",
+    "when": "weekday night"
+   },
+   "affected_tickets": 534,
+   "affected_share_pct": 1.11,
+   "strength": 6.62,
+   "not_explained_by": "",
+   "examples": [
+    {
+     "ticket_id": "T001209",
+     "created_at": "2026-09-01 05:54",
+     "text": "Mujhe hakka noodles nahi chahiye, yeh kya hai?",
+     "wait_min": 1065.6,
+     "breached": true
+    },
+    {
+     "ticket_id": "T032216",
+     "created_at": "2026-09-28 05:51",
+     "text": "bahut bura experience tha aaj",
+     "wait_min": 890.4,
+     "breached": true
+    },
+    {
+     "ticket_id": "T027224",
+     "created_at": "2026-09-24 00:01",
+     "text": "UPI se payment kiya, paise kat gaye, ordre fail",
+     "wait_min": 876.3,
+     "breached": true
+    }
+   ],
+   "recommendation": "Review this group with the team lead"
+  },
+  {
+   "id": "F12",
+   "title": "Restaurant cluster 17: 2.6\u00d7 more wrong item tickets",
+   "cause_type": "partner_issue",
+   "metric": "share of tickets that are wrong item",
+   "value": 24.64,
+   "comparison_value": 9.38,
+   "comparison_text": "24.6% of cluster 17's tickets are wrong item vs 9.4% for other clusters",
+   "segment": {
+    "category": "wrong_item",
+    "restaurant_cluster_id": 17
+   },
+   "affected_tickets": 224,
+   "affected_share_pct": 0.47,
+   "strength": 6.17,
+   "not_explained_by": "",
+   "examples": [
+    {
+     "ticket_id": "T000220",
+     "created_at": "2026-08-31 11:11",
+     "text": "they sent the wrong items, please fix. call me on [PHONE]",
+     "wait_min": 0.6,
+     "breached": false
+    },
+    {
+     "ticket_id": "T002192",
+     "created_at": "2026-09-01 22:19",
+     "text": "i waited 40 for veg thali, got garlic naan",
+     "wait_min": 53.0,
+     "breached": true
+    },
+    {
+     "ticket_id": "T006201",
+     "created_at": "2026-09-05 17:53",
+     "text": "hello koi hai? reply karo",
+     "wait_min": 0.0,
+     "breached": false
+    }
+   ],
+   "recommendation": "Raise with the partner team: check packing and order accuracy at these restaurants"
   }
  ],
  "recall": {
   "planted": 5,
   "found": 5,
-  "false_alarms": 1,
+  "false_alarms": 0,
   "details": [
    {
     "id": "P1",
@@ -326,7 +531,7 @@
     "name": "Wrong items from one restaurant cluster",
     "found": true,
     "diagnosed": true,
-    "card": "F5"
+    "card": "F12"
    },
    {
     "id": "P5",
@@ -340,90 +545,86 @@
  "diagnosed": 5,
  "unplanted_findings": [
   {
+   "id": "F5",
+   "title": "Team D overloaded on weekend dinner (work 1.30\u00d7 agent-time)",
+   "replicated": true,
+   "why": "rho 1.24 on test days"
+  },
+  {
    "id": "F6",
-   "title": "Team B \u00d7 weekday night wait 2.1\u00d7 longer",
-   "replicated": "False",
-   "why": "wait 1.2x the worse parent on test days"
+   "title": "Team B \u00d7 weekday late wait 3.9\u00d7 longer",
+   "replicated": "True",
+   "why": "wait 2.2x the worse parent on test days"
   },
   {
    "id": "F7",
-   "title": "regional-language \u00d7 weekday morning wait 2.3\u00d7 longer",
+   "title": "Team B \u00d7 weekday night wait 3.4\u00d7 longer",
+   "replicated": "True",
+   "why": "wait 3.6x the worse parent on test days"
+  },
+  {
+   "id": "F8",
+   "title": "regional-language \u00d7 weekday morning wait 3.5\u00d7 longer",
+   "replicated": "True",
+   "why": "wait 3.4x the worse parent on test days"
+  },
+  {
+   "id": "F9",
+   "title": "regional-language \u00d7 Team D wait 2.9\u00d7 longer",
    "replicated": "True",
    "why": "wait 2.0x the worse parent on test days"
-  }
- ],
- "explained_anomalies": [
-  {
-   "category": "missing_item",
-   "day": 25,
-   "z": 3.9
   },
   {
-   "category": "restaurant_partner",
-   "day": 25,
-   "z": 3.6
+   "id": "F10",
+   "title": "Hindi \u00d7 weekday late wait 3.1\u00d7 longer",
+   "replicated": "True",
+   "why": "wait 4.0x the worse parent on test days"
   },
   {
-   "category": "wrong_item",
-   "day": 25,
-   "z": 3.6
+   "id": "F11",
+   "title": "Hindi \u00d7 weekday night wait 2.4\u00d7 longer",
+   "replicated": "True",
+   "why": "wait 2.5x the worse parent on test days"
   }
  ],
- "live_detection_latency_min": 45.0,
+ "explained_anomalies": [],
+ "live_detection_latency_min": 60.0,
  "live_false_alerts_per_week": 0.5,
  "live_alerts": [
   {
-   "minute": 67365,
+   "minute": 67380,
    "day": 47,
    "category": "app_bug",
-   "count_last_hour": 14,
+   "count_last_hour": 15,
    "usual": 3.5,
-   "z": 5.6,
+   "z": 6.1,
    "explained": false
   },
   {
-   "minute": 67485,
+   "minute": 67635,
    "day": 47,
    "category": "app_bug",
-   "count_last_hour": 25,
-   "usual": 6.5,
-   "z": 7.3,
+   "count_last_hour": 17,
+   "usual": 4.0,
+   "z": 6.5,
    "explained": false
   },
   {
-   "minute": 71265,
+   "minute": 71430,
    "day": 50,
-   "category": "restaurant_partner",
-   "count_last_hour": 13,
-   "usual": 4.0,
-   "z": 4.5,
-   "explained": true
-  },
-  {
-   "minute": 71775,
-   "day": 50,
-   "category": "wrong_item",
-   "count_last_hour": 19,
-   "usual": 6.5,
-   "z": 4.9,
-   "explained": true
-  },
-  {
-   "minute": 71940,
-   "day": 50,
-   "category": "app_bug",
-   "count_last_hour": 11,
-   "usual": 3.0,
-   "z": 4.6,
+   "category": "late_delivery",
+   "count_last_hour": 40,
+   "usual": 18.0,
+   "z": 5.2,
    "explained": true
   },
   {
    "minute": 72015,
    "day": 51,
-   "category": "payment_failure",
-   "count_last_hour": 13,
-   "usual": 3.0,
-   "z": 5.8,
+   "category": "missing_item",
+   "count_last_hour": 17,
+   "usual": 5.5,
+   "z": 4.9,
    "explained": false
   }
  ]
