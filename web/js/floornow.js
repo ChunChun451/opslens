@@ -50,8 +50,15 @@ export function notReady(data) {
     <span class="wait-text">Simulating today on this laptop, every customer and every agent…</span></div>`;
 }
 
+export function duration(minutes) {
+  const m = Math.round(Math.abs(minutes));
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  return m % 60 ? `${h} h ${m % 60} min` : `${h} h`;
+}
+
 export function minutesLeft(m) {
-  return m >= 0 ? `${Math.round(m)} min left` : `${Math.round(-m)} min late`;
+  return m >= 0 ? `${duration(m)} left` : `${duration(m)} late`;
 }
 
 export function ticketLine(t) {

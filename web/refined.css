@@ -375,3 +375,4 @@ body[data-role="agent"] .sidebar::after { content: "Agent screen: your own work 
   .tm-teams, .ag-cards { grid-template-columns: minmax(0, 1fr); }
   .tm-row { grid-template-columns: 34px minmax(0, 1fr) auto; grid-template-areas: "av name status" "av now now" "av day day"; }
 }
+.ag-left small { font-weight: 400; color: var(--muted); font-size: 0.8rem; }

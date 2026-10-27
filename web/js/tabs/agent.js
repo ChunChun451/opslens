@@ -1,7 +1,7 @@
 import { state, store } from "../data.js";
 import { escapeHtml, prettyKey } from "../format.js";
 import {
-  TEAM_NAMES, LANGUAGE, STATUS_TEXT, clockNow, keepFresh, notReady, minutesLeft,
+  TEAM_NAMES, LANGUAGE, STATUS_TEXT, clockNow, keepFresh, notReady, minutesLeft, duration,
 } from "../floornow.js";
 
 const CANT = ["Not my skill", "Language", "On a break", "Customer needs a callback", "Other"];
@@ -77,7 +77,7 @@ function draw(section, d) {
     : `<h3 class="card-title">Now working on</h3><p class="muted">${row.status === "off" ? "You are off shift." : "Nothing right now."}</p>`;
   if (row.next && shown.next === row.next.ticket_id) {
     const left = body.querySelector("#ag-next .ag-left");
-    if (left) left.textContent = minutesLeft(row.next.minutes_left);
+    if (left) left.firstChild.textContent = minutesLeft(row.next.minutes_left);
   } else {
     shown.next = row.next ? row.next.ticket_id : "";
     body.querySelector("#ag-next").innerHTML = row.next
@@ -121,7 +121,8 @@ function statusHtml(row, agent) {
 function ticketHtml(title, t, actions) {
   const why = whyLines(t.reason).map((line) => `<li>${escapeHtml(line)}</li>`).join("");
   return `<div class="card-head"><h3 class="card-title">${escapeHtml(title)}</h3>
-      <span class="ag-left ${t.minutes_left < 15 ? "is-urgent" : ""}">${minutesLeft(t.minutes_left)}</span></div>
+      <span class="ag-left ${t.minutes_left < 15 ? "is-urgent" : ""}">${minutesLeft(t.minutes_left)}${t.promise_min
+        ? `<small> of a ${duration(t.promise_min)} promise</small>` : ""}</span></div>
     <div class="chips"><span class="pill ${t.priority === "P1" ? "p1" : ""}">${escapeHtml(t.priority)}</span>
       <span class="pill">${escapeHtml(prettyKey(t.category))}</span><span class="pill">${escapeHtml(LANGUAGE[t.language] || t.language)}</span>
       <span class="muted small">${escapeHtml(t.ticket_id)}</span></div>

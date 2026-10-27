@@ -128,7 +128,7 @@ def _work_by_agent(decision_log: list[dict], world, tickets: pd.DataFrame, ticke
 def _ticket_now(job: dict, now: float, start: float) -> dict:
     return {"ticket_id": job["ticket_id"], "priority": job["priority"], "category": job["category"],
             "language": job["language"], "text": job["text"], "reason": job["reason"],
-            "minutes_left": round(job["deadline"] - now, 1), "waited": round(min(job["minute"], now) - job["created"], 1),
+            "minutes_left": round(job["deadline"] - now, 1), "promise_min": round(job["deadline"] - job["created"], 1), "waited": round(min(job["minute"], now) - job["created"], 1),
             "assigned_at": round(job["minute"] - start, 1)}
 
 
