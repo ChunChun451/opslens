@@ -208,7 +208,7 @@ const ENTRIES = [
   },
   {
     when: "27 Oct 13:43", commit: "db6e781",
-    claim: "On food-delivery promises (P1 15 min, P2 1 h, P3 4 h), OpsLens still beats the industry standard",
+    claim: "On food-delivery promises, OpsLens still beats the industry standard",
     rule: "Roster recalibrated and weights re-chosen on validation days only; the test days run once; report whatever happens.",
     show: () => lookup(`baseline_c.test.opslens_minus_d.${BREACH}`) !== undefined && lookup("meta.earlier_sla_minutes.P1") !== undefined,
     verdict: () => "reported",
