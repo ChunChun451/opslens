@@ -87,7 +87,7 @@ export function initTabs() {
       <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[tab.id] || ""}</svg>${tab.label}</a>`).join("");
   panels.innerHTML = `<div id="source-bar" class="source-bar" hidden><div class="sb-row" id="sb-row"></div><div id="upload-card"></div></div>`
     + TABS.map((tab) => `<section id="tab-${tab.id}" class="tab-panel" hidden></section>`).join("");
-  window.addEventListener("hashchange", () => showTab(...fromHash()));
+  window.addEventListener("hashchange", () => showTab(...fromHash(), true));
   document.addEventListener("click", (event) => {
     const link = event.target.closest("[data-goto-tab]");
     if (!link || event.target.closest("[data-path]")) return;
@@ -99,7 +99,7 @@ export function initTabs() {
     const sub = event.target.closest("[data-view]");
     if (sub) showTab(sub.dataset.screen, sub.dataset.view);
   });
-  showTab(...fromHash());
+  showTab(...fromHash(), true);
 }
 
 function fromHash() {
@@ -134,11 +134,13 @@ export function setWorld(world) {
 export function setSource(source, { force = false, screen = "" } = {}) {
   if (source === state.realSource && !force) return;
   const [current, view] = fromHash();
+  const wantsFile = source === "upload";
+  const twin = view && OTHER_SOURCE_VIEW[view] && view.startsWith("up-") !== wantsFile ? OTHER_SOURCE_VIEW[view] : view;
   state.realSource = source;
   storeSession("opslens-real-source", source);
   clearScreens();
   document.dispatchEvent(new CustomEvent("source-changed", { detail: source }));
-  if (state.world === "real") showTab(screen || current, screen ? undefined : view);
+  if (state.world === "real") showTab(screen || current, screen ? undefined : twin);
 }
 
 function openUpload() {
@@ -148,7 +150,7 @@ function openUpload() {
   document.dispatchEvent(new CustomEvent("upload-open"));
 }
 
-export function showTab(id, viewId) {
+export function showTab(id, viewId, fromLink = false) {
   if (id === "upload") {
     openUpload();
     return;
@@ -159,7 +161,7 @@ export function showTab(id, viewId) {
     viewId = viewId || id;
   }
   viewId = VIEW_ALIAS[viewId] || viewId;
-  if (viewId && viewId.startsWith("up-") && state.world === "real" && state.upload && state.realSource !== "upload") {
+  if (fromLink && viewId && viewId.startsWith("up-") && state.world === "real" && state.upload && state.realSource !== "upload") {
     state.realSource = "upload";
     storeSession("opslens-real-source", "upload");
     clearScreens();
