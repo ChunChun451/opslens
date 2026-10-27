@@ -1,6 +1,6 @@
 # OpsLens — the numbers
 
-Generated from `eval/results.json` on 2026-10-27T16:02:39 (commit e7960ab). Do not edit by hand: run `mingw32-make eval`.
+Generated from `eval/results.json` on 2026-10-27T16:28:19 (commit f321134). Do not edit by hand: run `mingw32-make eval`.
 
 Data: 64,257 tickets over 56 days; train days [1, 35], validation [36, 42], test [43, 56]. Simulator seeds [1, 2, 3, 4, 5].
 
@@ -164,14 +164,14 @@ Assumption: A log cannot be replayed. We assume a fast-tracked incident is picke
 - Physical floor: 5.84% of tickets breach even with unlimited agents and perfect routing (their own work and reopens exceed the SLA, or nobody on shift speaks their language).
 - OpsLens is 5.82 points above that floor and captures 44% ± 2 of the improvement possible over the industry standard: (D − OpsLens) ÷ (D − floor), per seed.
 
-## New sealed world (data seed 6262, corrected simulator, run once)
+## New sealed world (data seed 8383, corrected simulator, run once)
 
 | KPI | Industry standard | Least slack first | Least slack + rescue | Generalized c-mu | OpsLens | Floor |
 |---|---|---|---|---|---|---|
-| SLA breach % | 5.84 | 4.04 | 3.11 | 5.71 | 2.20 | 1.31 |
-| Minutes late per 100 tickets | 1,616.95 | 3,659.50 | 2,396.43 | 1,228.59 | 569.49 | — |
+| SLA breach % | 18.49 | 12.23 | 11.40 | 17.17 | 11.58 | 5.86 |
+| Minutes late per 100 tickets | 2,853.55 | 3,428.89 | 2,071.78 | 2,094.78 | 1,278.17 | — |
 
-- Share of the possible improvement captured: 81% ± 4. Retrained risk AUC 0.982. New world (unused seed) generated after OpsLens v5 was frozen, under the corrected simulator (work draws no longer shifted by transfers); weights unchanged, routine retraining; run once.
+- Share of the possible improvement captured: 55% ± 3. Retrained risk AUC 0.952. New world (unused seed) generated after the weights for the food-delivery promises were frozen (eval/PREREG_SLA.md); weights unchanged, routine retraining; run once.
 
 ## Sealed second world (data seed 4242, generated after the freeze, run once)
 
@@ -339,5 +339,5 @@ Main validation days, 20 fresh seeds: v6 - v5 -0.006 [-0.028, +0.017] points (ga
 ## Speed
 
 - Optimiser per decision: median 0.06 ms, max 2.2 ms.
-- Scale test: 5,000 tickets × 500 agents solved in 0.063 s.
+- Scale test: 5,000 tickets × 500 agents solved in 0.047 s.
 - Full evaluation pipeline: 103.4 min.
