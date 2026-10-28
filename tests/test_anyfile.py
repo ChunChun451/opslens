@@ -229,3 +229,12 @@ def test_a_refusal_is_one_sentence_and_one_fix():
     assert plan["problem"].endswith("Try a longer export, a few months of items.")
     junk = pd.DataFrame({"name": ["a", "b"] * 400, "colour": ["red", "blue"] * 400})
     assert A.check_mapping(junk, {"created_at": "name"}, 30)["problem"] == A.NO_END
+
+
+@pytest.mark.parametrize("unit", ["ns", "us", "s"])
+def test_hour_before_and_open_counts_do_not_depend_on_the_time_unit(unit: str) -> None:
+    created = pd.to_datetime(["2026-10-01 10:00", "2026-10-01 10:30", "2026-10-01 10:50", "2026-10-01 12:00"]).as_unit(unit)
+    items = pd.DataFrame({"created_at": created, "end_at": created + pd.Timedelta(minutes=45)})
+    X = A.feature_frame(items)
+    assert X["arrived in the hour before"].tolist() == [0, 1, 2, 0]
+    assert X["open when it arrived"].tolist() == [0, 1, 1, 0]

@@ -1,10 +1,11 @@
 import { state, store } from "../data.js";
 import { escapeHtml, prettyKey } from "../format.js";
 import {
-  TEAM_NAMES, LANGUAGE, STATUS_TEXT, clockNow, keepFresh, notReady, minutesLeft, duration,
+  TEAM_NAMES, LANGUAGE, STATUS_TEXT, clockNow, keepFresh, notReady, minutesLeft, duration, postAction, effectLines, floorEffect,
 } from "../floornow.js";
 
-const CANT = ["Not my skill", "Language", "On a break", "Customer needs a callback", "Other"];
+const CANT = ["Not my skill", "Language", "Needs a callback first", "Other"];
+const EXTRA = [5, 10, 20];
 const PLAIN = [
   [/^already past its SLA - served so no customer is left behind$/, () => "Already late: served so no customer is left behind"],
   [/^breach risk ([\d.]+) -> ([\d.]+) if served now$/, (m) => `Chance of missing the promise: ${pct(m[1])} if it waits, ${pct(m[2])} if you take it now`],
@@ -14,8 +15,9 @@ const PLAIN = [
   [/^no other free agent could take it now$/, () => "No one else free could take it"],
 ];
 
-let taken = new Set();
-let shown = { now: "", next: "" };
+let last = null;
+let busy = false;
+let problem = "";
 
 function pct(text) {
   return `${Math.round(Number(text) * 100)}%`;
@@ -33,31 +35,30 @@ function whyLines(reason) {
 }
 
 export function render(section) {
-  shown = { now: "", next: "" };
   section.innerHTML = `<div id="ag-body"></div>`;
   section.addEventListener("change", (event) => {
     if (event.target.id !== "ag-pick") return;
     state.agent = event.target.value;
     store("opslens-agent", state.agent);
-    shown = { now: "", next: "" };
+    problem = "";
     section.querySelector("#ag-body").dataset.agent = "";
-    keepDrawing(section);
+    if (last) draw(section, last);
   });
   section.addEventListener("click", (event) => onClick(section, event));
-  document.addEventListener("role-changed", () => { shown = { now: "", next: "" }; keepDrawing(section); });
+  document.addEventListener("role-changed", () => { if (last) draw(section, last); });
   keepFresh(section, "agent", (data) => { last = data; draw(section, data); });
 }
 
-let last = null;
-
-function keepDrawing(section) {
-  if (last) draw(section, last);
+function nameOf(id) {
+  const a = last && last.agents ? last.agents.find((x) => x.id === id) : null;
+  return a ? a.name : id;
 }
 
 function draw(section, d) {
   const body = section.querySelector("#ag-body");
   if (!d.ready) {
     body.innerHTML = notReady(d);
+    body.dataset.agent = "";
     return;
   }
   const ids = d.agents.map((a) => a.id);
@@ -71,20 +72,28 @@ function draw(section, d) {
     body.dataset.agent = agent.id;
     body.innerHTML = frame(d, agent);
   }
-  body.querySelector("#ag-status").innerHTML = statusHtml(row, agent);
-  body.querySelector("#ag-now").innerHTML = row.current
-    ? ticketHtml("Now working on", row.current, "")
-    : `<h3 class="card-title">Now working on</h3><p class="muted">${row.status === "off" ? "You are off shift." : "Nothing right now."}</p>`;
-  if (row.next && shown.next === row.next.ticket_id) {
+  const mine = (d.actions || []).filter((e) => e.agent === agent.id);
+  const taken = new Set(mine.filter((e) => e.kind === "take").map((e) => e.ticket_id));
+  const moves = mine.filter((e) => e.kind === "break" || e.kind === "back");
+  const away = moves.length > 0 && moves[moves.length - 1].kind === "break";
+  body.querySelector("#ag-status").innerHTML = statusHtml(row, agent, away);
+  body.querySelector("#ag-news").innerHTML = newsHtml(mine[mine.length - 1]);
+  const openFold = body.querySelector("#ag-next details[open]");
+  if (!openFold || !row.next || openFold.dataset.ticket !== row.next.ticket_id) {
+    body.querySelector("#ag-next").innerHTML = row.next
+      ? ticketHtml("Next for you", row.next, taken.has(row.next.ticket_id) ? `<p class="ag-done">Yours. OpsLens hands it over the moment you finish.</p>` : nextActions(row.next))
+      : `<div class="card-head"><h3 class="card-title">Next for you</h3></div>
+        <p class="ag-empty">Nothing lined up for you right now. OpsLens hands you a ticket the moment one fits.</p>`;
+  } else {
     const left = body.querySelector("#ag-next .ag-left");
     if (left) left.firstChild.textContent = minutesLeft(row.next.minutes_left);
-  } else {
-    shown.next = row.next ? row.next.ticket_id : "";
-    body.querySelector("#ag-next").innerHTML = row.next
-      ? ticketHtml("Next for you", row.next, nextActions(row.next))
-      : `<h3 class="card-title">Next for you</h3><p class="muted">Nothing is lined up for you yet. OpsLens hands you a ticket the moment you are free.</p>`;
   }
+  body.querySelector("#ag-now").innerHTML = row.current
+    ? ticketHtml("Now working on", row.current, nowActions(), true)
+    : `<div class="card-head"><h3 class="card-title">Now working on</h3></div>
+      <p class="ag-empty">${row.status === "off" ? "You are off shift." : row.status === "break" ? "You are on a break." : "Nothing right now."}</p>`;
   body.querySelector("#ag-day").innerHTML = dayTiles(row);
+  setBusy(body, busy);
 }
 
 function frame(d, agent) {
@@ -103,43 +112,70 @@ function frame(d, agent) {
       <label class="ag-pick"><span>You are</span><select id="ag-pick">${options}</select></label>
     </header>
     <div id="ag-status" class="ag-status"></div>
+    <div id="ag-news" class="ag-news" aria-live="polite"></div>
     <div class="ag-cards">
-      <section class="card ag-card" id="ag-next"></section>
-      <section class="card ag-card" id="ag-now"></section>
+      <section class="card ag-card ag-next" id="ag-next"></section>
+      <section class="card ag-card ag-nowcard" id="ag-now"></section>
     </div>
-    <div class="brief-tiles" id="ag-day"></div>`;
+    <div class="ag-day-title">Your day</div>
+    <div class="ag-day" id="ag-day"></div>`;
 }
 
-function statusHtml(row, agent) {
-  const text = row.status === "off" ? `Off shift. Your shift: ${agent.shift}.`
+function statusHtml(row, agent, away) {
+  const text = row.status === "off" ? `Your shift: ${agent.shift}.`
     : row.status === "idle" ? "Free. The next ticket comes to you the moment it fits."
-    : STATUS_TEXT[row.status];
+    : row.status === "break" ? "No new tickets come to you until you are back."
+    : away ? "Your break starts when you finish this ticket. No new tickets come to you."
+    : `Live at ${clockNow()}`;
+  const button = row.status === "break" || away
+    ? `<button type="button" class="btn btn-primary" data-act="back">I'm back</button>`
+    : row.status === "off" ? "" : `<button type="button" class="btn" data-act="break">On a break</button>`;
   return `<span class="tm-status is-${row.status}">${escapeHtml(STATUS_TEXT[row.status])}</span>
-    <span>${escapeHtml(text === STATUS_TEXT[row.status] ? `Live at ${clockNow()}` : text)}</span>`;
+    <span>${escapeHtml(text)}</span><span class="ag-bar-fill"></span>${button}`;
 }
 
-function ticketHtml(title, t, actions) {
+function newsHtml(e) {
+  if (problem) return `<p class="ag-problem" role="alert">${escapeHtml(problem)}</p>`;
+  if (busy) return `<p class="ag-update"><span class="spinner" aria-hidden="true"></span> Updating the floor…</p>`;
+  if (!e) return "";
+  const lines = effectLines(e, nameOf);
+  const floor = floorEffect(e);
+  return `<div class="ag-update"><b>What changed</b>${lines.map((l) => `<span>${escapeHtml(l)}</span>`).join("")}
+    ${floor ? `<span class="muted">${escapeHtml(floor)}</span>` : ""}</div>`;
+}
+
+function promiseLeft(t) {
+  return t.promise_min ? t.minutes_left < t.promise_min / 4 : t.minutes_left < 15;
+}
+
+function ticketHtml(title, t, actions, compact = false) {
   const why = whyLines(t.reason).map((line) => `<li>${escapeHtml(line)}</li>`).join("");
   return `<div class="card-head"><h3 class="card-title">${escapeHtml(title)}</h3>
-      <span class="ag-left ${t.minutes_left < 15 ? "is-urgent" : ""}">${minutesLeft(t.minutes_left)}${t.promise_min
+      <span class="ag-left ${promiseLeft(t) ? "is-urgent" : ""}">${minutesLeft(t.minutes_left)}${t.promise_min
         ? `<small> of a ${duration(t.promise_min)} promise</small>` : ""}</span></div>
     <div class="chips"><span class="pill ${t.priority === "P1" ? "p1" : ""}">${escapeHtml(t.priority)}</span>
       <span class="pill">${escapeHtml(prettyKey(t.category))}</span><span class="pill">${escapeHtml(LANGUAGE[t.language] || t.language)}</span>
       <span class="muted small">${escapeHtml(t.ticket_id)}</span></div>
     <p class="ag-quote">“${escapeHtml(t.text)}”</p>
-    <div class="ag-why"><b>Why you</b><ul>${why}</ul></div>
+    ${compact ? "" : `<div class="ag-why"><b>Why you</b><ul>${why}</ul></div>`}
     ${actions}`;
 }
 
 function nextActions(t) {
-  if (taken.has(t.ticket_id)) {
-    return `<p class="ag-done">Yours. OpsLens hands it over the moment you finish.</p>`;
-  }
   return `<div class="ag-actions">
-      <button type="button" class="btn btn-primary" data-take="${escapeHtml(t.ticket_id)}">Take it</button>
-      <details class="ag-cant"><summary class="btn">Can't take it</summary>
-        <div class="ag-reasons">${CANT.map((r) => `<button type="button" class="chip-btn" data-cant="${escapeHtml(r)}">${escapeHtml(r)}</button>`).join("")}</div>
+      <button type="button" class="btn btn-primary" data-act="take" data-ticket="${escapeHtml(t.ticket_id)}">Take it</button>
+      <details class="ag-cant" data-ticket="${escapeHtml(t.ticket_id)}"><summary class="btn">Can't take it</summary>
+        <div class="ag-reasons"><span class="muted small">Why not?</span>${CANT.map((r) => `<button type="button" class="btn btn-sm" data-act="decline"
+          data-ticket="${escapeHtml(t.ticket_id)}" data-reason="${escapeHtml(r)}">${escapeHtml(r)}</button>`).join("")}</div>
       </details>
+    </div>`;
+}
+
+function nowActions() {
+  return `<div class="ag-actions">
+      <button type="button" class="btn btn-primary" data-act="done">Done</button>
+      <span class="ag-more"><span class="muted small">Need more time</span>${EXTRA.map((m) =>
+        `<button type="button" class="btn btn-sm" data-act="extra_time" data-value="${m}">+${m} min</button>`).join("")}</span>
     </div>`;
 }
 
@@ -149,27 +185,32 @@ function dayTiles(row) {
     ["Handled today", row.done, ""],
     ["On time", onTime, row.done ? `${row.kept} of ${row.done}` : ""],
     ["Rescues for other teams", row.rescues, ""],
-  ].map(([label, value, sub]) => `<div class="brief-tile"><div class="brief-label">${escapeHtml(label)}</div>
-      <div class="brief-value">${escapeHtml(String(value))}</div>${sub ? `<div class="brief-sub">${escapeHtml(sub)}</div>` : ""}</div>`).join("");
+  ].map(([label, value, sub]) => `<div class="ag-tile"><span>${escapeHtml(label)}</span>
+      <b>${escapeHtml(String(value))}</b>${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</div>`).join("");
 }
 
-function onClick(section, event) {
-  const take = event.target.closest("[data-take]");
-  const cant = event.target.closest("[data-cant]");
-  const box = section.querySelector("#ag-next");
-  if (take) {
-    taken.add(take.dataset.take);
-    box.querySelector(".ag-actions").outerHTML = `<p class="ag-done">Yours. OpsLens hands it over the moment you finish.</p>`;
-  }
-  if (cant) {
-    const agent = last.agents.find((a) => a.id === state.agent);
-    const t = last.floor.find((r) => r.id === state.agent).next;
-    state.feedback = [...state.feedback, {
-      agent: agent.id, name: agent.name, ticket_id: t.ticket_id,
-      ticket: `${t.priority} ${prettyKey(t.category)}, ${LANGUAGE[t.language] || t.language}`,
-      reason: cant.dataset.cant, at: clockNow(),
-    }].slice(-50);
-    store("opslens-agent-feedback", state.feedback);
-    box.querySelector(".ag-actions").outerHTML = `<p class="ag-done">Logged: “${escapeHtml(cant.dataset.cant)}”. Your team lead sees it on Team.</p>`;
+function setBusy(body, on) {
+  body.querySelectorAll("[data-act]").forEach((b) => { b.disabled = on; });
+}
+
+async function onClick(section, event) {
+  const button = event.target.closest("[data-act]");
+  if (!button || busy || !last) return;
+  const body = section.querySelector("#ag-body");
+  const act = button.dataset.act;
+  const request = { kind: act, agent: state.agent };
+  if (button.dataset.ticket) request.ticket_id = button.dataset.ticket;
+  if (button.dataset.reason) request.reason = button.dataset.reason;
+  if (button.dataset.value) request.value = Number(button.dataset.value);
+  busy = true;
+  problem = "";
+  setBusy(body, true);
+  body.querySelector("#ag-news").innerHTML = newsHtml(null);
+  const result = await postAction(request);
+  busy = false;
+  problem = result.error || "";
+  if (problem) {
+    body.querySelector("#ag-news").innerHTML = newsHtml(null);
+    setBusy(body, false);
   }
 }

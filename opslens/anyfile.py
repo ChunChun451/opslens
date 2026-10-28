@@ -377,8 +377,9 @@ def open_counts(created: np.ndarray, ended: np.ndarray) -> np.ndarray:
 
 
 def feature_frame(items: pd.DataFrame) -> pd.DataFrame:
-    t = items["created_at"].astype("int64").to_numpy() / 6e10
-    e = items["end_at"].astype("int64").to_numpy() / 6e10
+    origin = items["created_at"].min()
+    t = ((items["created_at"] - origin) / pd.Timedelta(minutes=1)).to_numpy()
+    e = ((items["end_at"] - origin) / pd.Timedelta(minutes=1)).to_numpy()
     X = pd.DataFrame(index=items.index)
     X["opened at hour"] = items["created_at"].dt.hour
     X["weekday"] = items["created_at"].dt.weekday
