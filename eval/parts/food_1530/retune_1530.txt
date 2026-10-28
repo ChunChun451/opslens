@@ -1,0 +1,41 @@
+validation days 36-42, industry standard: breach 14.61%, P99 wait 625 min
+  aging_per_sla=3.0: breach 7.739%  P1 8.239%  P99 wait 219 min
+  aging_per_sla=1.5: breach 8.135%  P1 8.223%  P99 wait 286 min
+  aging_per_sla=6.0: breach 7.643%  P1 8.573%  P99 wait 211 min
+-> aging_per_sla = 6.0
+  aging_lost=0.2: breach 7.643%  P1 8.573%  P99 wait 211 min
+  aging_lost=0.1: breach 7.783%  P1 8.679%  P99 wait 224 min
+  aging_lost=0.5: breach 7.871%  P1 8.581%  P99 wait 221 min
+-> aging_lost = 0.2
+  max_late_min=480: breach 7.643%  P1 8.573%  P99 wait 211 min
+  max_late_min=120: breach 8.388%  P1 8.916%  P99 wait 210 min
+  max_late_min=240: breach 7.944%  P1 8.790%  P99 wait 204 min
+-> max_late_min = 480
+  guard_queue_limit=150: breach 7.643%  P1 8.573%  P99 wait 211 min
+  guard_queue_limit=100: breach 7.671%  P1 8.581%  P99 wait 211 min
+  guard_queue_limit=250: breach 7.643%  P1 8.573%  P99 wait 211 min
+-> guard_queue_limit = 150
+  cross_skill_min_rescue=0.5: breach 7.643%  P1 8.573%  P99 wait 211 min
+  cross_skill_min_rescue=0.3: breach 8.118%  P1 9.065%  P99 wait 137 min
+  cross_skill_min_rescue=0.7: breach 8.363%  P1 9.384%  P99 wait 423 min
+-> cross_skill_min_rescue = 0.5
+  mismatch_penalty=2.0: breach 7.643%  P1 8.573%  P99 wait 211 min
+  mismatch_penalty=1.0: breach 8.033%  P1 8.888%  P99 wait 246 min
+  mismatch_penalty=3.0: breach 7.738%  P1 8.549%  P99 wait 213 min
+-> mismatch_penalty = 2.0
+  scarcity_weight=0.3: breach 7.643%  P1 8.573%  P99 wait 211 min
+  scarcity_weight=0.0: breach 7.770%  P1 8.573%  P99 wait 217 min
+  scarcity_weight=1.0: breach 7.820%  P1 8.687%  P99 wait 233 min
+-> scarcity_weight = 0.3
+  rescue_floor=0.2: breach 7.643%  P1 8.573%  P99 wait 211 min
+  rescue_floor=0.05: breach 7.773%  P1 8.569%  P99 wait 219 min
+-> rescue_floor = 0.2
+  roster_margin_min=10: breach 7.643%  P1 8.573%  P99 wait 211 min
+  roster_margin_min=5: breach 7.671%  P1 8.581%  P99 wait 214 min
+-> roster_margin_min = 10
+  urgency_weight={'P1': 3.0, 'P2': 1.5, 'P3': 1.0}: breach 7.643%  P1 8.573%  P99 wait 211 min
+  urgency_weight={'P1': 5.0, 'P2': 1.5, 'P3': 1.0}: breach 7.836%  P1 8.254%  P99 wait 232 min
+  urgency_weight={'P1': 2.0, 'P2': 1.5, 'P3': 1.0}: breach 7.841%  P1 9.309%  P99 wait 201 min
+-> urgency_weight = {'P1': 3.0, 'P2': 1.5, 'P3': 1.0}
+changed: {'aging_per_sla': {'before': 3.0, 'after': 6.0}}
+re-chosen - current (in sample): breach -0.097 [-0.223, +0.029]  P1 +0.335 [+0.113, +0.557]

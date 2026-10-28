@@ -1,0 +1,324 @@
+{
+ "validation_days": [
+  36,
+  42
+ ],
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "tie_points": 0.02,
+ "staffing_plan": true,
+ "rule": "Coordinate search in the fixed order of GRID (the 15/60/240 re-tune grid plus the P1 urgency weight); for each weight, the value with the lowest mean validation breach among values whose mean P99 wait is at most the industry standard's; the current value stays unless another is better by more than tie_points. Test days never used. Reported only, not adopted.",
+ "baseline_d": {
+  "breach_pct": 14.609617569102614,
+  "p99_wait_min": 625.2151614071258
+ },
+ "before": {
+  "aging_per_sla": 3.0,
+  "aging_lost": 0.2,
+  "max_late_min": 480,
+  "guard_queue_limit": 150,
+  "cross_skill_min_rescue": 0.5,
+  "mismatch_penalty": 2.0,
+  "scarcity_weight": 0.3,
+  "rescue_floor": 0.2,
+  "roster_margin_min": 10,
+  "urgency_weight": {
+   "P1": 3.0,
+   "P2": 1.5,
+   "P3": 1.0
+  }
+ },
+ "chosen": {
+  "aging_per_sla": 6.0,
+  "aging_lost": 0.2,
+  "max_late_min": 480,
+  "guard_queue_limit": 150,
+  "cross_skill_min_rescue": 0.5,
+  "mismatch_penalty": 2.0,
+  "scarcity_weight": 0.3,
+  "rescue_floor": 0.2,
+  "roster_margin_min": 10,
+  "urgency_weight": {
+   "P1": 3.0,
+   "P2": 1.5,
+   "P3": 1.0
+  }
+ },
+ "changed": {
+  "aging_per_sla": {
+   "before": 3.0,
+   "after": 6.0
+  }
+ },
+ "rechosen_minus_current_in_sample": {
+  "turnaround.breach_pct": {
+   "mean_diff": -0.09693297993184391,
+   "ci_low": -0.2229618645349658,
+   "ci_high": 0.029095904671277983,
+   "n": 5
+  },
+  "segment.p1_breach_pct": {
+   "mean_diff": 0.334579807124582,
+   "ci_low": 0.11265173576786647,
+   "ci_high": 0.5565078784812976,
+   "n": 5
+  },
+  "quality.p99_wait_min": {
+   "mean_diff": -7.800509122481037,
+   "ci_low": -49.39250807763662,
+   "ci_high": 33.79148983267454,
+   "n": 5
+  },
+  "quality.late_minutes_per_100": {
+   "mean_diff": 53.48847255419912,
+   "ci_low": 17.990558213221618,
+   "ci_high": 88.98638689517662,
+   "n": 5
+  }
+ },
+ "in_sample_note": "the re-chosen weights are scored on the same days and seeds they were chosen on, so this difference is optimistic",
+ "history": [
+  {
+   "weight": "aging_per_sla",
+   "value": 3.0,
+   "turnaround.breach_pct": 7.739492616433168,
+   "segment.p1_breach_pct": 8.238535721314701,
+   "quality.p99_wait_min": 218.8540198524086,
+   "quality.late_minutes_per_100": 1145.4938441717854
+  },
+  {
+   "weight": "aging_per_sla",
+   "value": 1.5,
+   "turnaround.breach_pct": 8.13479742521772,
+   "segment.p1_breach_pct": 8.222790789214722,
+   "quality.p99_wait_min": 286.47204933853675,
+   "quality.late_minutes_per_100": 1187.140617264292
+  },
+  {
+   "weight": "aging_per_sla",
+   "value": 6.0,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "aging_lost",
+   "value": 0.2,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "aging_lost",
+   "value": 0.1,
+   "turnaround.breach_pct": 7.783415372964785,
+   "segment.p1_breach_pct": 8.679393820114152,
+   "quality.p99_wait_min": 223.51570867895276,
+   "quality.late_minutes_per_100": 1227.734796498938
+  },
+  {
+   "weight": "aging_lost",
+   "value": 0.5,
+   "turnaround.breach_pct": 7.87126088602802,
+   "segment.p1_breach_pct": 8.580987994489274,
+   "quality.p99_wait_min": 221.0022682771542,
+   "quality.late_minutes_per_100": 1167.0011717353373
+  },
+  {
+   "weight": "max_late_min",
+   "value": 480,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "max_late_min",
+   "value": 120,
+   "turnaround.breach_pct": 8.387731919727376,
+   "segment.p1_breach_pct": 8.915567801613857,
+   "quality.p99_wait_min": 209.9428526331561,
+   "quality.late_minutes_per_100": 1142.2066791035893
+  },
+  {
+   "weight": "max_late_min",
+   "value": 240,
+   "turnaround.breach_pct": 7.9439606209769025,
+   "segment.p1_breach_pct": 8.789608344814013,
+   "quality.p99_wait_min": 203.63607846966156,
+   "quality.late_minutes_per_100": 1189.3572117475528
+  },
+  {
+   "weight": "guard_queue_limit",
+   "value": 150,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "guard_queue_limit",
+   "value": 100,
+   "turnaround.breach_pct": 7.67133661491859,
+   "segment.p1_breach_pct": 8.580987994489274,
+   "quality.p99_wait_min": 210.92813456228401,
+   "quality.late_minutes_per_100": 1216.9856953061437
+  },
+  {
+   "weight": "guard_queue_limit",
+   "value": 250,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.5,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.3,
+   "turnaround.breach_pct": 8.118137069291937,
+   "segment.p1_breach_pct": 9.065144656563668,
+   "quality.p99_wait_min": 137.05969616822307,
+   "quality.late_minutes_per_100": 1088.3590150424054
+  },
+  {
+   "weight": "cross_skill_min_rescue",
+   "value": 0.7,
+   "turnaround.breach_pct": 8.363498674744415,
+   "segment.p1_breach_pct": 9.38397953158827,
+   "quality.p99_wait_min": 423.2824998612441,
+   "quality.late_minutes_per_100": 1590.0076284125978
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 2.0,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 1.0,
+   "turnaround.breach_pct": 8.03332071185157,
+   "segment.p1_breach_pct": 8.88801417043889,
+   "quality.p99_wait_min": 246.2381459424784,
+   "quality.late_minutes_per_100": 1274.704434530732
+  },
+  {
+   "weight": "mismatch_penalty",
+   "value": 3.0,
+   "turnaround.breach_pct": 7.737978038621735,
+   "segment.p1_breach_pct": 8.549498130289313,
+   "quality.p99_wait_min": 212.97687154372352,
+   "quality.late_minutes_per_100": 1184.790816334561
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 0.3,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 0.0,
+   "turnaround.breach_pct": 7.76978417266187,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 216.55405235542042,
+   "quality.late_minutes_per_100": 1199.45682219671
+  },
+  {
+   "weight": "scarcity_weight",
+   "value": 1.0,
+   "turnaround.breach_pct": 7.819765240439227,
+   "segment.p1_breach_pct": 8.687266286164142,
+   "quality.p99_wait_min": 233.3899840536773,
+   "quality.late_minutes_per_100": 1215.8454076797545
+  },
+  {
+   "weight": "rescue_floor",
+   "value": 0.2,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "rescue_floor",
+   "value": 0.05,
+   "turnaround.breach_pct": 7.772813328284741,
+   "segment.p1_breach_pct": 8.56917929541429,
+   "quality.p99_wait_min": 218.54057161770797,
+   "quality.late_minutes_per_100": 1199.3978071798897
+  },
+  {
+   "weight": "roster_margin_min",
+   "value": 10,
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "roster_margin_min",
+   "value": 5,
+   "turnaround.breach_pct": 7.671336614918592,
+   "segment.p1_breach_pct": 8.580987994489274,
+   "quality.p99_wait_min": 214.46538317425538,
+   "quality.late_minutes_per_100": 1212.269400880126
+  },
+  {
+   "weight": "urgency_weight",
+   "value": {
+    "P1": 3.0,
+    "P2": 1.5,
+    "P3": 1.0
+   },
+   "turnaround.breach_pct": 7.642559636501325,
+   "segment.p1_breach_pct": 8.573115528439285,
+   "quality.p99_wait_min": 211.05351072992758,
+   "quality.late_minutes_per_100": 1198.9823167259844
+  },
+  {
+   "weight": "urgency_weight",
+   "value": {
+    "P1": 5.0,
+    "P2": 1.5,
+    "P3": 1.0
+   },
+   "turnaround.breach_pct": 7.836425596365014,
+   "segment.p1_breach_pct": 8.254280653414682,
+   "quality.p99_wait_min": 231.8365461629845,
+   "quality.late_minutes_per_100": 1201.1957011397596
+  },
+  {
+   "weight": "urgency_weight",
+   "value": {
+    "P1": 2.0,
+    "P2": 1.5,
+    "P3": 1.0
+   },
+   "turnaround.breach_pct": 7.840969329799319,
+   "segment.p1_breach_pct": 9.309191104113363,
+   "quality.p99_wait_min": 201.43410662358366,
+   "quality.late_minutes_per_100": 1158.0659142087181
+  }
+ ],
+ "seconds": 857.1
+}

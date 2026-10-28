@@ -1,0 +1,15 @@
+runs done in 101s
+opslens              breach   7.74  P1   8.24  Hindi  12.04
+opslens_live         breach   8.14  P1   7.67  Hindi  11.30
+opslens_nostaff      breach   7.74  P1   8.24  Hindi  12.04
+least_slack_rescue   breach   7.82  P1   9.32  Hindi  12.33
+baseline_d           breach  14.61  P1   9.94  Hindi  25.06
+  opslens - least_slack_rescue           -0.08 [-0.51, +0.36]  P1 -1.09 [-1.78, -0.39]
+  opslens_live - least_slack_rescue      +0.33 [-0.23, +0.89]  P1 -1.66 [-2.16, -1.16]
+  opslens_live - opslens                 +0.41 [+0.22, +0.59]  P1 -0.57 [-0.98, -0.16]
+  opslens - opslens_nostaff              +0.00 [+0.00, +0.00]  P1 +0.00 [+0.00, +0.00]
+  opslens_nostaff - least_slack_rescue   -0.08 [-0.51, +0.36]  P1 -1.09 [-1.78, -0.39]
+  opslens - baseline_d                   -6.87 [-7.99, -5.75]  P1 -1.70 [-2.73, -0.68]
+opslens {'busy_when_it_landed': 31.2, 'congestion_more_urgent_work': 57.4, 'cross_skill_too_slow': 24.0, 'passed_over_cross_job': 4.2, 'passed_over_lost_ticket': 123.2, 'passed_over_lower_priority': 11.4, 'passed_over_same_priority_more_slack': 33.6, 'reopen': 28.0, 'skill_gap': 92.8, 'transfer': 12.4, 'unavoidable': 603.8}
+opslens_live {'busy_when_it_landed': 29.4, 'congestion_more_urgent_work': 84.4, 'cross_skill_too_slow': 4.6, 'passed_over_cross_job': 6.0, 'passed_over_lost_ticket': 247.0, 'passed_over_lower_priority': 15.2, 'passed_over_same_priority_more_slack': 40.2, 'reopen': 8.2, 'skill_gap': 20.6, 'transfer': 16.2, 'unavoidable': 603.8}
+least_slack_rescue {'busy_when_it_landed': 18.6, 'congestion_more_urgent_work': 113.2, 'cross_skill_too_slow': 74.6, 'reopen': 92.0, 'skill_gap': 119.6, 'transfer': 10.2, 'unavoidable': 603.8}
