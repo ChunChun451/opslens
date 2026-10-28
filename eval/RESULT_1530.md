@@ -42,8 +42,8 @@ Rule: `eval/PREREG_1530.md` (commit c5f5f70, before any run). Validation days 36
 
 ## Next (owner's call)
 
-The test-day run (43-56, once, frozen code) under the ship bar in section 5 of the pre-registration.
-Not run yet.
+The test-day run below was approved by the owner and run once. The full re-run of the rest (sealed world,
+30 worlds, playbooks, plan, results.json, README and answers, dashboard) waits for the owner.
 
 ## Test days 43-56 (run once, 28 Oct, frozen S2; harness commit c6e5ffd)
 
