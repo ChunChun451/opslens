@@ -25,6 +25,9 @@ MODELS = ROOT / "data" / "generated" / "models"
 PRIORITY_SCORE = {"P1": 3, "P2": 2, "P3": 1}
 
 
+SNAPSHOT_EVERY_MIN = 10.0
+
+
 def history_with_predictions() -> pd.DataFrame:
     h = load_history()
     preds = pd.read_csv(ROOT / "data" / "generated" / "predictions.csv", usecols=["ticket_id", "pred_final"])
@@ -87,7 +90,8 @@ def main() -> int:
     h = history_with_predictions()
 
     def snaps(first: int, last: int) -> pd.DataFrame:
-        return snapshots_from_history(h, agents, TEAM_OF, first, last, first_weekday=first_weekday)
+        return snapshots_from_history(h, agents, TEAM_OF, first, last, every_min=SNAPSHOT_EVERY_MIN,
+                                      first_weekday=first_weekday)
 
     train_f = snaps(1, splits["train_last_day"])
     valid_f = snaps(splits["train_last_day"] + 1, splits["validation_last_day"])
