@@ -25,8 +25,10 @@ FORECAST_TEAMS = 8
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 AFTER_WORDS = ("resolv", "close", "reopen", "transfer", "reassign", "sla", "made", "breach", "duration",
                "taken", "wait", "handled", "resolution", "events", "updated", "mod", "status", "state",
-               "outcome", "deliver", "pickup", "picked", "response", "responded", "assigned", "end", "ended",
+               "outcome", "delivered", "picked", "response", "responded", "assigned", "end", "ended",
                "finish", "rating", "satisf", "csat", "feedback", "solved", "escalat", "knowledge", "confirm")
+WHEN_WORDS = ("deliver", "pickup")
+TIME_WORDS = ("time", "at", "date", "ts", "timestamp", "min", "mins", "minutes", "delay", "late", "done", "eta")
 NO_START = "OpsLens cannot tell when each item started: pick the column, or try another file."
 NO_END = "This file has no time an item ended or took: tell OpsLens which column it is, or try another file."
 NO_MISS = ("OpsLens does not know what a miss is in this file: type a promised time in minutes, or pick the "
@@ -90,7 +92,11 @@ def has_word(name: str, hints: tuple[str, ...]) -> bool:
 
 
 def known_at_open(name: str) -> bool:
-    return not has_word(name, AFTER_WORDS)
+    if has_word(name, AFTER_WORDS):
+        return False
+    if has_word(name, WHEN_WORDS):
+        return len(name_words(name)) > 1 and not has_word(name, TIME_WORDS)
+    return True
 
 
 def peek(raw: pd.DataFrame) -> dict:
@@ -99,7 +105,8 @@ def peek(raw: pd.DataFrame) -> dict:
         kind = column_kind(raw[name])
         columns.append({"name": str(name), "kind": kind, "unique": int(raw[name].nunique()),
                         "examples": [str(v) for v in raw[name].dropna().astype(str).unique()[:3]],
-                        "feature": kind in ("number", "category") and known_at_open(str(name))})
+                        "feature": kind in ("number", "category") and known_at_open(str(name))
+                                   and "id" not in name_words(str(name))})
     suggested = suggest_mapping(raw, columns)
     suggested["features"] = [c["name"] for c in columns if c["feature"] and c["name"] not in suggested.values()]
     ask = questions(columns, suggested)
