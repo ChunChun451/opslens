@@ -145,12 +145,12 @@
  },
  "warning": {
   "auc": {
-   "opslens": 0.796,
+   "opslens": 0.788,
    "rule": 0.688,
    "priority": 0.575
   },
   "caught_pct": {
-   "opslens": 48.9,
+   "opslens": 48.2,
    "rule": 39.1,
    "priority": 25.5
   },
@@ -158,170 +158,170 @@
   "items": 7476,
   "vs": {
    "rival": "priority",
-   "gap_pts": 23.4,
+   "gap_pts": 22.7,
    "ci": [
-    20.1,
-    26.3
+    18.8,
+    26.1
    ]
   },
   "at_risk": [
    {
-    "id": "INC0031766",
-    "opened": "2016-05-20 17:13",
-    "risk": 0.988,
+    "id": "INC0025782",
+    "opened": "2016-05-04 10:56",
+    "risk": 0.997,
+    "missed": false,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.67
+     },
+     {
+      "text": "team: Group 55",
+      "share": 0.15
+     },
+     {
+      "text": "category: Category 8",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0109599",
+    "opened": "2017-01-18 08:42",
+    "risk": 0.997,
     "missed": true,
     "reasons": [
      {
       "text": "priority 2 - High",
-      "share": 0.76
+      "share": 0.5
      },
      {
-      "text": "team: Group 65",
-      "share": 0.15
+      "text": "1589 open when it arrived",
+      "share": 0.37
      },
      {
-      "text": "urgency: 1 - High",
-      "share": 0.03
+      "text": "team: Group 74",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0104905",
+    "opened": "2017-01-06 11:31",
+    "risk": 0.997,
+    "missed": true,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.45
+     },
+     {
+      "text": "1582 open when it arrived",
+      "share": 0.35
+     },
+     {
+      "text": "team: Group 10",
+      "share": 0.13
+     }
+    ]
+   },
+   {
+    "id": "INC0069274",
+    "opened": "2016-09-21 09:50",
+    "risk": 0.996,
+    "missed": true,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.51
+     },
+     {
+      "text": "1696 open when it arrived",
+      "share": 0.34
+     },
+     {
+      "text": "team: Group 57",
+      "share": 0.08
+     }
+    ]
+   },
+   {
+    "id": "INC0068424",
+    "opened": "2016-09-19 11:20",
+    "risk": 0.996,
+    "missed": true,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.5
+     },
+     {
+      "text": "1703 open when it arrived",
+      "share": 0.34
+     },
+     {
+      "text": "team: Group 57",
+      "share": 0.08
      }
     ]
    },
    {
     "id": "INC0031344",
     "opened": "2016-05-19 15:42",
-    "risk": 0.987,
+    "risk": 0.996,
     "missed": true,
     "reasons": [
      {
       "text": "priority 1 - Critical",
-      "share": 0.75
+      "share": 0.73
+     },
+     {
+      "text": "team: Group 55",
+      "share": 0.15
+     },
+     {
+      "text": "location: Location 18",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0027865",
+    "opened": "2016-05-10 11:36",
+    "risk": 0.996,
+    "missed": true,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.74
      },
      {
       "text": "team: Group 55",
       "share": 0.13
      },
      {
-      "text": "location: Location 18",
-      "share": 0.05
+      "text": "location: Location 15",
+      "share": 0.06
      }
     ]
    },
    {
-    "id": "INC0030083",
-    "opened": "2016-05-17 00:17",
-    "risk": 0.987,
-    "missed": true,
-    "reasons": [
-     {
-      "text": "priority 2 - High",
-      "share": 0.75
-     },
-     {
-      "text": "team: Group 65",
-      "share": 0.15
-     },
-     {
-      "text": "urgency: 1 - High",
-      "share": 0.03
-     }
-    ]
-   },
-   {
-    "id": "INC0030920",
-    "opened": "2016-05-18 15:46",
-    "risk": 0.987,
+    "id": "INC0118633",
+    "opened": "2017-02-09 18:39",
+    "risk": 0.996,
     "missed": true,
     "reasons": [
      {
       "text": "priority 1 - Critical",
-      "share": 0.77
+      "share": 0.49
      },
      {
-      "text": "team: Group 65",
-      "share": 0.14
+      "text": "1553 open when it arrived",
+      "share": 0.35
      },
      {
-      "text": "urgency: 1 - High",
-      "share": 0.03
-     }
-    ]
-   },
-   {
-    "id": "INC0033896",
-    "opened": "2016-05-30 15:40",
-    "risk": 0.986,
-    "missed": true,
-    "reasons": [
-     {
-      "text": "priority 1 - Critical",
-      "share": 0.76
-     },
-     {
-      "text": "team: Group 65",
-      "share": 0.14
-     },
-     {
-      "text": "urgency: 1 - High",
-      "share": 0.03
-     }
-    ]
-   },
-   {
-    "id": "INC0031809",
-    "opened": "2016-05-20 20:19",
-    "risk": 0.986,
-    "missed": true,
-    "reasons": [
-     {
-      "text": "priority 2 - High",
-      "share": 0.78
-     },
-     {
-      "text": "team: Group 65",
-      "share": 0.15
-     },
-     {
-      "text": "urgency: 1 - High",
-      "share": 0.04
-     }
-    ]
-   },
-   {
-    "id": "INC0029503",
-    "opened": "2016-05-15 01:44",
-    "risk": 0.986,
-    "missed": true,
-    "reasons": [
-     {
-      "text": "priority 2 - High",
-      "share": 0.78
-     },
-     {
-      "text": "team: Group 65",
-      "share": 0.15
-     },
-     {
-      "text": "urgency: 1 - High",
-      "share": 0.04
-     }
-    ]
-   },
-   {
-    "id": "INC0026626",
-    "opened": "2016-05-06 00:59",
-    "risk": 0.985,
-    "missed": true,
-    "reasons": [
-     {
-      "text": "priority 1 - Critical",
-      "share": 0.79
-     },
-     {
-      "text": "team: Group 55",
-      "share": 0.14
-     },
-     {
-      "text": "urgency: 1 - High",
-      "share": 0.04
+      "text": "team: Group 22",
+      "share": 0.1
      }
     ]
    }
@@ -340,9 +340,29 @@
   },
   "examples": [
    {
+    "id": "INC0026422",
+    "opened": "13:34",
+    "risk": 0.988,
+    "missed": true,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.67
+     },
+     {
+      "text": "team: Group 72",
+      "share": 0.15
+     },
+     {
+      "text": "location: Location 44",
+      "share": 0.09
+     }
+    ]
+   },
+   {
     "id": "INC0026571",
     "opened": "17:19",
-    "risk": 0.972,
+    "risk": 0.987,
     "missed": true,
     "reasons": [
      {
@@ -351,10 +371,10 @@
      },
      {
       "text": "team: Group 20",
-      "share": 0.13
+      "share": 0.12
      },
      {
-      "text": "location: (other)",
+      "text": "108 open in its team",
       "share": 0.03
      }
     ]
@@ -362,27 +382,47 @@
    {
     "id": "INC0026103",
     "opened": "01:00",
-    "risk": 0.972,
+    "risk": 0.985,
     "missed": true,
     "reasons": [
      {
       "text": "priority 2 - High",
-      "share": 0.67
+      "share": 0.7
      },
      {
       "text": "team: Group 10",
-      "share": 0.29
+      "share": 0.25
      },
      {
       "text": "58 open in its team",
-      "share": 0.03
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026258",
+    "opened": "10:12",
+    "risk": 0.985,
+    "missed": true,
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.82
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.06
+     },
+     {
+      "text": "location: Location 37",
+      "share": 0.04
      }
     ]
    },
    {
     "id": "INC0026286",
     "opened": "10:39",
-    "risk": 0.97,
+    "risk": 0.985,
     "missed": false,
     "reasons": [
      {
@@ -394,7 +434,7 @@
       "share": 0.15
      },
      {
-      "text": "urgency: 1 - High",
+      "text": "110 open in its team",
       "share": 0.03
      }
     ]
@@ -402,62 +442,5200 @@
    {
     "id": "INC0026418",
     "opened": "13:26",
-    "risk": 0.969,
+    "risk": 0.982,
     "missed": true,
     "reasons": [
      {
       "text": "priority 2 - High",
-      "share": 0.67
+      "share": 0.7
      },
      {
       "text": "team: Group 31",
-      "share": 0.18
+      "share": 0.16
      },
      {
       "text": "subcategory: Subcategory 88",
-      "share": 0.07
+      "share": 0.05
+     }
+    ]
+   }
+  ],
+  "timeline": [
+   {
+    "id": "INC0026097",
+    "opened_min": 1.0,
+    "ended_min": 9627.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.512,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.56
+     },
+     {
+      "text": "category: Category 28",
+      "share": 0.22
+     },
+     {
+      "text": "location: Location 143",
+      "share": 0.1
      }
     ]
    },
    {
-    "id": "INC0026304",
-    "opened": "10:54",
-    "risk": 0.968,
+    "id": "INC0026099",
+    "opened_min": 11.0,
+    "ended_min": 9554.0,
     "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.512,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.56
+     },
+     {
+      "text": "category: Category 28",
+      "share": 0.22
+     },
+     {
+      "text": "location: Location 143",
+      "share": 0.1
+     }
+    ]
+   },
+   {
+    "id": "INC0026101",
+    "opened_min": 52.0,
+    "ended_min": 2434.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.052,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026102",
+    "opened_min": 54.0,
+    "ended_min": 57.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.029,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026103",
+    "opened_min": 60.0,
+    "ended_min": 684.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.985,
+    "priority": "2 - High",
     "reasons": [
      {
       "text": "priority 2 - High",
-      "share": 0.69
+      "share": 0.7
      },
      {
-      "text": "team: Group 72",
-      "share": 0.21
+      "text": "team: Group 10",
+      "share": 0.25
      },
      {
-      "text": "subcategory: Subcategory 163",
+      "text": "58 open in its team",
       "share": 0.04
      }
     ]
    },
    {
-    "id": "INC0026340",
-    "opened": "11:31",
-    "risk": 0.967,
+    "id": "INC0026104",
+    "opened_min": 71.0,
+    "ended_min": 325.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.077,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026105",
+    "opened_min": 76.0,
+    "ended_min": 29365.0,
     "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.077,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026106",
+    "opened_min": 84.0,
+    "ended_min": 87.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026107",
+    "opened_min": 89.0,
+    "ended_min": 140.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.075,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026109",
+    "opened_min": 95.0,
+    "ended_min": 155.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.069,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026110",
+    "opened_min": 96.0,
+    "ended_min": 99.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026112",
+    "opened_min": 101.0,
+    "ended_min": 104.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.115,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026114",
+    "opened_min": 172.0,
+    "ended_min": 255.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.061,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026115",
+    "opened_min": 192.0,
+    "ended_min": 196.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.045,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026117",
+    "opened_min": 257.0,
+    "ended_min": 2369.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.248,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026118",
+    "opened_min": 307.0,
+    "ended_min": 310.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.036,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026119",
+    "opened_min": 318.0,
+    "ended_min": 586.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.616,
+    "priority": "3 - Moderate",
     "reasons": [
      {
-      "text": "priority 2 - High",
-      "share": 0.68
+      "text": "team: Group 72",
+      "share": 0.66
      },
+     {
+      "text": "category: Category 61",
+      "share": 0.19
+     },
+     {
+      "text": "7 open in its team",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026120",
+    "opened_min": 325.0,
+    "ended_min": 326.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026123",
+    "opened_min": 390.0,
+    "ended_min": 2379.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.536,
+    "priority": "3 - Moderate",
+    "reasons": [
      {
       "text": "team: Group 72",
-      "share": 0.22
+      "share": 0.86
      },
      {
-      "text": "subcategory: Subcategory 163",
+      "text": "8 open in its team",
+      "share": 0.06
+     },
+     {
+      "text": "subcategory: (other)",
       "share": 0.05
      }
     ]
+   },
+   {
+    "id": "INC0026124",
+    "opened_min": 417.0,
+    "ended_min": 420.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.078,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026127",
+    "opened_min": 436.0,
+    "ended_min": 439.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.072,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026128",
+    "opened_min": 459.0,
+    "ended_min": 2392.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.089,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026129",
+    "opened_min": 460.0,
+    "ended_min": 463.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.044,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026130",
+    "opened_min": 463.0,
+    "ended_min": 6651.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.321,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 65",
+      "share": 0.66
+     },
+     {
+      "text": "44 open in its team",
+      "share": 0.14
+     },
+     {
+      "text": "category: Category 57",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026133",
+    "opened_min": 472.0,
+    "ended_min": 475.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.121,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026135",
+    "opened_min": 482.0,
+    "ended_min": 6752.0,
+    "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.291,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026136",
+    "opened_min": 485.0,
+    "ended_min": 501.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.071,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026142",
+    "opened_min": 495.0,
+    "ended_min": 42747.0,
+    "missed": true,
+    "flagged": [
+     "rule",
+     "priority"
+    ],
+    "risk": 0.184,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026143",
+    "opened_min": 495.0,
+    "ended_min": 559.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.125,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026144",
+    "opened_min": 497.0,
+    "ended_min": 518.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.079,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026148",
+    "opened_min": 502.0,
+    "ended_min": 559.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.07,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026147",
+    "opened_min": 502.0,
+    "ended_min": 946.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.316,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 56",
+      "share": 0.74
+     },
+     {
+      "text": "category: Category 57",
+      "share": 0.12
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026149",
+    "opened_min": 504.0,
+    "ended_min": 678.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.095,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026152",
+    "opened_min": 509.0,
+    "ended_min": 2567.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.361,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 29",
+      "share": 0.7
+     },
+     {
+      "text": "category: Category 28",
+      "share": 0.22
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026153",
+    "opened_min": 510.0,
+    "ended_min": 7877.0,
+    "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.205,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026154",
+    "opened_min": 510.0,
+    "ended_min": 513.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.036,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026156",
+    "opened_min": 514.0,
+    "ended_min": 1053.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.299,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026159",
+    "opened_min": 515.0,
+    "ended_min": 972.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.193,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026161",
+    "opened_min": 518.0,
+    "ended_min": 530.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.096,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026162",
+    "opened_min": 520.0,
+    "ended_min": 9776.0,
+    "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.092,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026164",
+    "opened_min": 520.0,
+    "ended_min": 2098.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.182,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026167",
+    "opened_min": 521.0,
+    "ended_min": 42748.0,
+    "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.142,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026166",
+    "opened_min": 521.0,
+    "ended_min": 9618.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.347,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 65",
+      "share": 0.68
+     },
+     {
+      "text": "47 open in its team",
+      "share": 0.12
+     },
+     {
+      "text": "category: Category 57",
+      "share": 0.1
+     }
+    ]
+   },
+   {
+    "id": "INC0026165",
+    "opened_min": 521.0,
+    "ended_min": 1004.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.093,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026168",
+    "opened_min": 522.0,
+    "ended_min": 551.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.084,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026169",
+    "opened_min": 523.0,
+    "ended_min": 547.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.095,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026170",
+    "opened_min": 525.0,
+    "ended_min": 642.0,
+    "missed": false,
+    "flagged": [
+     "rule",
+     "priority"
+    ],
+    "risk": 0.27,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026171",
+    "opened_min": 526.0,
+    "ended_min": 36951.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.34,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.37
+     },
+     {
+      "text": "location: (other)",
+      "share": 0.33
+     },
+     {
+      "text": "47 open in its team",
+      "share": 0.18
+     }
+    ]
+   },
+   {
+    "id": "INC0026173",
+    "opened_min": 528.0,
+    "ended_min": 545.0,
+    "missed": false,
+    "flagged": [
+     "rule",
+     "priority"
+    ],
+    "risk": 0.203,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026174",
+    "opened_min": 528.0,
+    "ended_min": 537.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.032,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026175",
+    "opened_min": 528.0,
+    "ended_min": 778.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.116,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026176",
+    "opened_min": 529.0,
+    "ended_min": 553.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.049,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026177",
+    "opened_min": 530.0,
+    "ended_min": 545.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.038,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026178",
+    "opened_min": 532.0,
+    "ended_min": 1966.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.054,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026180",
+    "opened_min": 533.0,
+    "ended_min": 16790.0,
+    "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.268,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026179",
+    "opened_min": 533.0,
+    "ended_min": 2348.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.157,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026183",
+    "opened_min": 538.0,
+    "ended_min": 921.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.166,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026184",
+    "opened_min": 539.0,
+    "ended_min": 6658.0,
+    "missed": true,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.285,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026185",
+    "opened_min": 541.0,
+    "ended_min": 2130.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.469,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "subcategory: Subcategory 16",
+      "share": 0.42
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.31
+     },
+     {
+      "text": "location: Location 204",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026186",
+    "opened_min": 542.0,
+    "ended_min": 1003.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.04,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026187",
+    "opened_min": 542.0,
+    "ended_min": 551.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.038,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026189",
+    "opened_min": 545.0,
+    "ended_min": 593.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.207,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026191",
+    "opened_min": 545.0,
+    "ended_min": 585.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.088,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026194",
+    "opened_min": 547.0,
+    "ended_min": 550.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.051,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026195",
+    "opened_min": 547.0,
+    "ended_min": 554.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.032,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026196",
+    "opened_min": 548.0,
+    "ended_min": 552.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.04,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026197",
+    "opened_min": 550.0,
+    "ended_min": 2070.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.156,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026198",
+    "opened_min": 551.0,
+    "ended_min": 565.0,
+    "missed": false,
+    "flagged": [
+     "rule",
+     "priority"
+    ],
+    "risk": 0.107,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026199",
+    "opened_min": 552.0,
+    "ended_min": 1000.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.547,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 3",
+      "share": 0.47
+     },
+     {
+      "text": "subcategory: Subcategory 31",
+      "share": 0.29
+     },
+     {
+      "text": "13 open in its team",
+      "share": 0.08
+     }
+    ]
+   },
+   {
+    "id": "INC0026200",
+    "opened_min": 557.0,
+    "ended_min": 752.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.036,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026201",
+    "opened_min": 557.0,
+    "ended_min": 566.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.099,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026203",
+    "opened_min": 561.0,
+    "ended_min": 2056.0,
+    "missed": false,
+    "flagged": [
+     "priority"
+    ],
+    "risk": 0.095,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026204",
+    "opened_min": 562.0,
+    "ended_min": 575.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026205",
+    "opened_min": 563.0,
+    "ended_min": 57027.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.083,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026206",
+    "opened_min": 564.0,
+    "ended_min": 9600.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.463,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 65",
+      "share": 0.51
+     },
+     {
+      "text": "location: Location 54",
+      "share": 0.24
+     },
+     {
+      "text": "category: Category 57",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026207",
+    "opened_min": 565.0,
+    "ended_min": 570.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026209",
+    "opened_min": 567.0,
+    "ended_min": 578.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.032,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026213",
+    "opened_min": 568.0,
+    "ended_min": 943.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.168,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026214",
+    "opened_min": 569.0,
+    "ended_min": 39531.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.638,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.48
+     },
+     {
+      "text": "category: Category 28",
+      "share": 0.15
+     },
+     {
+      "text": "location: (other)",
+      "share": 0.15
+     }
+    ]
+   },
+   {
+    "id": "INC0026215",
+    "opened_min": 570.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.063,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026216",
+    "opened_min": 573.0,
+    "ended_min": 577.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026217",
+    "opened_min": 574.0,
+    "ended_min": 591.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.102,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026219",
+    "opened_min": 574.0,
+    "ended_min": 687.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.056,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026220",
+    "opened_min": 574.0,
+    "ended_min": 991.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.031,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026221",
+    "opened_min": 574.0,
+    "ended_min": 18175.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.101,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026222",
+    "opened_min": 575.0,
+    "ended_min": 7845.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.503,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.67
+     },
+     {
+      "text": "category: Category 24",
+      "share": 0.12
+     },
+     {
+      "text": "106 open in its team",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026224",
+    "opened_min": 577.0,
+    "ended_min": 589.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.033,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026225",
+    "opened_min": 578.0,
+    "ended_min": 6648.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.209,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026226",
+    "opened_min": 578.0,
+    "ended_min": 49552.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.06,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026229",
+    "opened_min": 580.0,
+    "ended_min": 596.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.043,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026231",
+    "opened_min": 583.0,
+    "ended_min": 2346.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.114,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026232",
+    "opened_min": 585.0,
+    "ended_min": 2336.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.16,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026233",
+    "opened_min": 587.0,
+    "ended_min": 611.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.163,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026234",
+    "opened_min": 590.0,
+    "ended_min": 42748.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.081,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026235",
+    "opened_min": 591.0,
+    "ended_min": 71465.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.124,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026236",
+    "opened_min": 591.0,
+    "ended_min": 602.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.048,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026237",
+    "opened_min": 595.0,
+    "ended_min": 662.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.348,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 74",
+      "share": 0.45
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.36
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026238",
+    "opened_min": 595.0,
+    "ended_min": 599.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.037,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026239",
+    "opened_min": 596.0,
+    "ended_min": 633.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.316,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 33",
+      "share": 0.63
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.14
+     },
+     {
+      "text": "location: (other)",
+      "share": 0.13
+     }
+    ]
+   },
+   {
+    "id": "INC0026241",
+    "opened_min": 598.0,
+    "ended_min": 620.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.214,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026242",
+    "opened_min": 598.0,
+    "ended_min": 603.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.064,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026244",
+    "opened_min": 599.0,
+    "ended_min": 601.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026245",
+    "opened_min": 600.0,
+    "ended_min": 16437.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.309,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026246",
+    "opened_min": 602.0,
+    "ended_min": 46755.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.217,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026248",
+    "opened_min": 603.0,
+    "ended_min": 710.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.098,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026250",
+    "opened_min": 603.0,
+    "ended_min": 621.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026251",
+    "opened_min": 604.0,
+    "ended_min": 26578.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.138,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026252",
+    "opened_min": 604.0,
+    "ended_min": 21202.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.662,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 75",
+      "share": 0.7
+     },
+     {
+      "text": "category: Category 22",
+      "share": 0.16
+     },
+     {
+      "text": "12 open in its team",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026253",
+    "opened_min": 610.0,
+    "ended_min": 199413.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.937,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 9",
+      "share": 0.56
+     },
+     {
+      "text": "subcategory: Subcategory 154",
+      "share": 0.15
+     },
+     {
+      "text": "category: Category 34",
+      "share": 0.14
+     }
+    ]
+   },
+   {
+    "id": "INC0026254",
+    "opened_min": 610.0,
+    "ended_min": 22181.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.751,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 9",
+      "share": 0.79
+     },
+     {
+      "text": "173 open in its team",
+      "share": 0.11
+     },
+     {
+      "text": "category: Category 9",
+      "share": 0.05
+     }
+    ]
+   },
+   {
+    "id": "INC0026255",
+    "opened_min": 610.0,
+    "ended_min": 621.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026256",
+    "opened_min": 611.0,
+    "ended_min": 613.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.36,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "location: Location 128",
+      "share": 0.22
+     },
+     {
+      "text": "category: Category 9",
+      "share": 0.2
+     },
+     {
+      "text": "subcategory: Subcategory 164",
+      "share": 0.19
+     }
+    ]
+   },
+   {
+    "id": "INC0026257",
+    "opened_min": 611.0,
+    "ended_min": 714.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.101,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026258",
+    "opened_min": 612.0,
+    "ended_min": 1024.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.985,
+    "priority": "1 - Critical",
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.82
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.06
+     },
+     {
+      "text": "location: Location 37",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026259",
+    "opened_min": 613.0,
+    "ended_min": 89899.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.468,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.57
+     },
+     {
+      "text": "category: Category 24",
+      "share": 0.12
+     },
+     {
+      "text": "106 open in its team",
+      "share": 0.12
+     }
+    ]
+   },
+   {
+    "id": "INC0026261",
+    "opened_min": 616.0,
+    "ended_min": 669.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.981,
+    "priority": "2 - High",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.87
+     },
+     {
+      "text": "team: Group 69",
+      "share": 0.09
+     },
+     {
+      "text": "11 open in its team",
+      "share": 0.03
+     }
+    ]
+   },
+   {
+    "id": "INC0026260",
+    "opened_min": 616.0,
+    "ended_min": 669.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.306,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026263",
+    "opened_min": 618.0,
+    "ended_min": 722.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.32,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 74",
+      "share": 0.45
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.34
+     },
+     {
+      "text": "9 open in its team",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026264",
+    "opened_min": 620.0,
+    "ended_min": 46756.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.798,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 9",
+      "share": 0.73
+     },
+     {
+      "text": "175 open in its team",
+      "share": 0.11
+     },
+     {
+      "text": "location: Location 143",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026265",
+    "opened_min": 620.0,
+    "ended_min": 17853.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.255,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026266",
+    "opened_min": 620.0,
+    "ended_min": 2015.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.703,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 10",
+      "share": 0.78
+     },
+     {
+      "text": "59 open in its team",
+      "share": 0.06
+     },
+     {
+      "text": "location: Location 39",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026268",
+    "opened_min": 621.0,
+    "ended_min": 686.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.383,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.52
+     },
+     {
+      "text": "location: Location 111",
+      "share": 0.26
+     },
+     {
+      "text": "109 open in its team",
+      "share": 0.12
+     }
+    ]
+   },
+   {
+    "id": "INC0026269",
+    "opened_min": 622.0,
+    "ended_min": 632.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.098,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026272",
+    "opened_min": 623.0,
+    "ended_min": 9640.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.138,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026273",
+    "opened_min": 623.0,
+    "ended_min": 879.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.055,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026275",
+    "opened_min": 624.0,
+    "ended_min": 848.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.068,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026276",
+    "opened_min": 625.0,
+    "ended_min": 12108.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.255,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026277",
+    "opened_min": 627.0,
+    "ended_min": 12567.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.422,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 76",
+      "share": 0.91
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.03
+     },
+     {
+      "text": "23 open in its team",
+      "share": 0.02
+     }
+    ]
+   },
+   {
+    "id": "INC0026278",
+    "opened_min": 629.0,
+    "ended_min": 679.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.104,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026279",
+    "opened_min": 630.0,
+    "ended_min": 2008.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.168,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026280",
+    "opened_min": 632.0,
+    "ended_min": 36695.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.527,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 10",
+      "share": 0.87
+     },
+     {
+      "text": "60 open in its team",
+      "share": 0.08
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.02
+     }
+    ]
+   },
+   {
+    "id": "INC0026282",
+    "opened_min": 636.0,
+    "ended_min": 12433.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.462,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 80",
+      "share": 0.47
+     },
+     {
+      "text": "subcategory: Subcategory 164",
+      "share": 0.22
+     },
+     {
+      "text": "opened at 10:00",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026283",
+    "opened_min": 636.0,
+    "ended_min": 8132.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.309,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "subcategory: Subcategory 16",
+      "share": 0.5
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.35
+     },
+     {
+      "text": "25 open in its team",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026284",
+    "opened_min": 637.0,
+    "ended_min": 895.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.296,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026286",
+    "opened_min": 639.0,
+    "ended_min": 768.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.985,
+    "priority": "1 - Critical",
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.78
+     },
+     {
+      "text": "team: Group 20",
+      "share": 0.15
+     },
+     {
+      "text": "110 open in its team",
+      "share": 0.03
+     }
+    ]
+   },
+   {
+    "id": "INC0026287",
+    "opened_min": 640.0,
+    "ended_min": 647.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.04,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026288",
+    "opened_min": 640.0,
+    "ended_min": 647.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.041,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026289",
+    "opened_min": 640.0,
+    "ended_min": 1005.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.244,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026290",
+    "opened_min": 641.0,
+    "ended_min": 2426.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.227,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026292",
+    "opened_min": 644.0,
+    "ended_min": 988.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.161,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026294",
+    "opened_min": 648.0,
+    "ended_min": 672.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.029,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026295",
+    "opened_min": 650.0,
+    "ended_min": 2318.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.324,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 55",
+      "share": 0.67
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.17
+     },
+     {
+      "text": "23 open in its team",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026296",
+    "opened_min": 650.0,
+    "ended_min": 658.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.101,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026298",
+    "opened_min": 651.0,
+    "ended_min": 715.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.036,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026299",
+    "opened_min": 652.0,
+    "ended_min": 9283.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.127,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026300",
+    "opened_min": 653.0,
+    "ended_min": 10710.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.041,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026301",
+    "opened_min": 653.0,
+    "ended_min": 2122.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.297,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026303",
+    "opened_min": 653.0,
+    "ended_min": 21112.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.887,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.38
+     },
+     {
+      "text": "subcategory: Subcategory 220",
+      "share": 0.36
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.12
+     }
+    ]
+   },
+   {
+    "id": "INC0026304",
+    "opened_min": 654.0,
+    "ended_min": 2159.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.978,
+    "priority": "2 - High",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.73
+     },
+     {
+      "text": "team: Group 72",
+      "share": 0.17
+     },
+     {
+      "text": "8 open in its team",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026305",
+    "opened_min": 654.0,
+    "ended_min": 1001.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.151,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026306",
+    "opened_min": 655.0,
+    "ended_min": 22502.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.902,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.37
+     },
+     {
+      "text": "subcategory: Subcategory 220",
+      "share": 0.35
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026309",
+    "opened_min": 656.0,
+    "ended_min": 51110.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.901,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.37
+     },
+     {
+      "text": "subcategory: Subcategory 220",
+      "share": 0.35
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026307",
+    "opened_min": 656.0,
+    "ended_min": 36966.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.902,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 66",
+      "share": 0.37
+     },
+     {
+      "text": "subcategory: Subcategory 220",
+      "share": 0.35
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026308",
+    "opened_min": 656.0,
+    "ended_min": 874.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.151,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026311",
+    "opened_min": 657.0,
+    "ended_min": 752.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.297,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026312",
+    "opened_min": 659.0,
+    "ended_min": 670.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.076,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026313",
+    "opened_min": 660.0,
+    "ended_min": 749.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.127,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026314",
+    "opened_min": 660.0,
+    "ended_min": 12391.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.152,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026316",
+    "opened_min": 661.0,
+    "ended_min": 7890.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.768,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 12",
+      "share": 0.8
+     },
+     {
+      "text": "12 open in its team",
+      "share": 0.08
+     },
+     {
+      "text": "subcategory: Subcategory 174",
+      "share": 0.03
+     }
+    ]
+   },
+   {
+    "id": "INC0026317",
+    "opened_min": 661.0,
+    "ended_min": 979.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.254,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026318",
+    "opened_min": 662.0,
+    "ended_min": 748.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.154,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026319",
+    "opened_min": 664.0,
+    "ended_min": 10689.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.055,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026320",
+    "opened_min": 666.0,
+    "ended_min": 946.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.174,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026322",
+    "opened_min": 668.0,
+    "ended_min": 42748.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.063,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026323",
+    "opened_min": 669.0,
+    "ended_min": 12253.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.375,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 76",
+      "share": 0.85
+     },
+     {
+      "text": "subcategory: (other)",
+      "share": 0.04
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.03
+     }
+    ]
+   },
+   {
+    "id": "INC0026325",
+    "opened_min": 670.0,
+    "ended_min": 2092.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.32,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "category: Category 61",
+      "share": 0.46
+     },
+     {
+      "text": "location: Location 204",
+      "share": 0.19
+     },
+     {
+      "text": "opened at 11:00",
+      "share": 0.12
+     }
+    ]
+   },
+   {
+    "id": "INC0026328",
+    "opened_min": 673.0,
+    "ended_min": 677.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.179,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026330",
+    "opened_min": 676.0,
+    "ended_min": 679.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026331",
+    "opened_min": 677.0,
+    "ended_min": 17856.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.072,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026332",
+    "opened_min": 680.0,
+    "ended_min": 699.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.092,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026336",
+    "opened_min": 684.0,
+    "ended_min": 16799.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.131,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026337",
+    "opened_min": 684.0,
+    "ended_min": 19656.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.204,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026334",
+    "opened_min": 684.0,
+    "ended_min": 701.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.131,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026335",
+    "opened_min": 684.0,
+    "ended_min": 1974.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.047,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026338",
+    "opened_min": 686.0,
+    "ended_min": 687.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.051,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026339",
+    "opened_min": 687.0,
+    "ended_min": 800.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.181,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026340",
+    "opened_min": 691.0,
+    "ended_min": 2099.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.98,
+    "priority": "2 - High",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.72
+     },
+     {
+      "text": "team: Group 72",
+      "share": 0.18
+     },
+     {
+      "text": "9 open in its team",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026341",
+    "opened_min": 693.0,
+    "ended_min": 982.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.9,
+    "priority": "2 - High",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.92
+     },
+     {
+      "text": "subcategory: (other)",
+      "share": 0.04
+     },
+     {
+      "text": "urgency: 1 - High",
+      "share": 0.02
+     }
+    ]
+   },
+   {
+    "id": "INC0026343",
+    "opened_min": 698.0,
+    "ended_min": 982.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.164,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026344",
+    "opened_min": 698.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.071,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026345",
+    "opened_min": 699.0,
+    "ended_min": 984.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.304,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026346",
+    "opened_min": 699.0,
+    "ended_min": 339014.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.269,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026347",
+    "opened_min": 699.0,
+    "ended_min": 9307.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.797,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "subcategory: Subcategory 231",
+      "share": 0.39
+     },
+     {
+      "text": "team: Group 22",
+      "share": 0.38
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026349",
+    "opened_min": 702.0,
+    "ended_min": 6769.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.154,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026350",
+    "opened_min": 702.0,
+    "ended_min": 983.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.219,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026351",
+    "opened_min": 704.0,
+    "ended_min": 742.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.05,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026352",
+    "opened_min": 705.0,
+    "ended_min": 11053.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.256,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026353",
+    "opened_min": 706.0,
+    "ended_min": 6613.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.245,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026354",
+    "opened_min": 707.0,
+    "ended_min": 8107.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.112,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026356",
+    "opened_min": 709.0,
+    "ended_min": 7759.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.302,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026357",
+    "opened_min": 710.0,
+    "ended_min": 19367.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.761,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "subcategory: Subcategory 150",
+      "share": 0.43
+     },
+     {
+      "text": "team: Group 22",
+      "share": 0.34
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.09
+     }
+    ]
+   },
+   {
+    "id": "INC0026358",
+    "opened_min": 711.0,
+    "ended_min": 712.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.051,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026359",
+    "opened_min": 713.0,
+    "ended_min": 2173.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.327,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 25",
+      "share": 0.39
+     },
+     {
+      "text": "category: Category 9",
+      "share": 0.31
+     },
+     {
+      "text": "opened at 11:00",
+      "share": 0.1
+     }
+    ]
+   },
+   {
+    "id": "INC0026360",
+    "opened_min": 714.0,
+    "ended_min": 734.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.113,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026362",
+    "opened_min": 715.0,
+    "ended_min": 716.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.056,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026363",
+    "opened_min": 717.0,
+    "ended_min": 736.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.146,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026364",
+    "opened_min": 717.0,
+    "ended_min": 48128.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.197,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026365",
+    "opened_min": 717.0,
+    "ended_min": 67142.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.15,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026368",
+    "opened_min": 722.0,
+    "ended_min": 852.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026370",
+    "opened_min": 725.0,
+    "ended_min": 749.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.043,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026369",
+    "opened_min": 725.0,
+    "ended_min": 2183.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026372",
+    "opened_min": 727.0,
+    "ended_min": 855.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.17,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026375",
+    "opened_min": 728.0,
+    "ended_min": 743.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.083,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026376",
+    "opened_min": 729.0,
+    "ended_min": 967.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.17,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026377",
+    "opened_min": 729.0,
+    "ended_min": 2330.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.1,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026378",
+    "opened_min": 729.0,
+    "ended_min": 2328.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.476,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 22",
+      "share": 0.53
+     },
+     {
+      "text": "subcategory: Subcategory 251",
+      "share": 0.21
+     },
+     {
+      "text": "22 open in its team",
+      "share": 0.08
+     }
+    ]
+   },
+   {
+    "id": "INC0026379",
+    "opened_min": 730.0,
+    "ended_min": 7859.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.164,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026380",
+    "opened_min": 732.0,
+    "ended_min": 16539.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.297,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026381",
+    "opened_min": 732.0,
+    "ended_min": 864.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.163,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026382",
+    "opened_min": 736.0,
+    "ended_min": 946.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.071,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026385",
+    "opened_min": 737.0,
+    "ended_min": 860.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026387",
+    "opened_min": 738.0,
+    "ended_min": 8079.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.349,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 33",
+      "share": 0.64
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.17
+     },
+     {
+      "text": "opened at 12:00",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026386",
+    "opened_min": 738.0,
+    "ended_min": 928.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.059,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026388",
+    "opened_min": 739.0,
+    "ended_min": 7909.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026392",
+    "opened_min": 742.0,
+    "ended_min": 857.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026393",
+    "opened_min": 743.0,
+    "ended_min": 757.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.091,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026394",
+    "opened_min": 744.0,
+    "ended_min": 958.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.166,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026395",
+    "opened_min": 746.0,
+    "ended_min": 863.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026396",
+    "opened_min": 747.0,
+    "ended_min": 799.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.168,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026397",
+    "opened_min": 748.0,
+    "ended_min": 1112.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.189,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026398",
+    "opened_min": 748.0,
+    "ended_min": 862.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.165,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026399",
+    "opened_min": 750.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.034,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026400",
+    "opened_min": 751.0,
+    "ended_min": 855.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.166,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026401",
+    "opened_min": 752.0,
+    "ended_min": 764.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026402",
+    "opened_min": 753.0,
+    "ended_min": 21139.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.166,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026403",
+    "opened_min": 754.0,
+    "ended_min": 10598.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.233,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026405",
+    "opened_min": 757.0,
+    "ended_min": 62468.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.348,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 33",
+      "share": 0.64
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.19
+     },
+     {
+      "text": "opened at 12:00",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026407",
+    "opened_min": 757.0,
+    "ended_min": 767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.07,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026408",
+    "opened_min": 758.0,
+    "ended_min": 42748.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.147,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026409",
+    "opened_min": 760.0,
+    "ended_min": 7821.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.197,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026411",
+    "opened_min": 766.0,
+    "ended_min": 2087.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.147,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026413",
+    "opened_min": 776.0,
+    "ended_min": 17858.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.516,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 76",
+      "share": 0.66
+     },
+     {
+      "text": "subcategory: Subcategory 82",
+      "share": 0.21
+     },
+     {
+      "text": "opened on a Thu",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026414",
+    "opened_min": 783.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.164,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026415",
+    "opened_min": 791.0,
+    "ended_min": 10673.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.535,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 76",
+      "share": 0.64
+     },
+     {
+      "text": "subcategory: Subcategory 82",
+      "share": 0.24
+     },
+     {
+      "text": "opened at 13:00",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026416",
+    "opened_min": 797.0,
+    "ended_min": 803.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.056,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026417",
+    "opened_min": 802.0,
+    "ended_min": 26801.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.362,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 3",
+      "share": 0.69
+     },
+     {
+      "text": "14 open in its team",
+      "share": 0.08
+     },
+     {
+      "text": "location: Location 97",
+      "share": 0.08
+     }
+    ]
+   },
+   {
+    "id": "INC0026418",
+    "opened_min": 806.0,
+    "ended_min": 976.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.982,
+    "priority": "2 - High",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.7
+     },
+     {
+      "text": "team: Group 31",
+      "share": 0.16
+     },
+     {
+      "text": "subcategory: Subcategory 88",
+      "share": 0.05
+     }
+    ]
+   },
+   {
+    "id": "INC0026419",
+    "opened_min": 809.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.07,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026420",
+    "opened_min": 811.0,
+    "ended_min": 26833.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.203,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026421",
+    "opened_min": 811.0,
+    "ended_min": 820.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.103,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026422",
+    "opened_min": 814.0,
+    "ended_min": 2165.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule",
+     "priority"
+    ],
+    "risk": 0.988,
+    "priority": "1 - Critical",
+    "reasons": [
+     {
+      "text": "priority 1 - Critical",
+      "share": 0.67
+     },
+     {
+      "text": "team: Group 72",
+      "share": 0.15
+     },
+     {
+      "text": "location: Location 44",
+      "share": 0.09
+     }
+    ]
+   },
+   {
+    "id": "INC0026423",
+    "opened_min": 815.0,
+    "ended_min": 822.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.062,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026425",
+    "opened_min": 817.0,
+    "ended_min": 1049.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.841,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 10",
+      "share": 0.7
+     },
+     {
+      "text": "subcategory: Subcategory 191",
+      "share": 0.09
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026426",
+    "opened_min": 817.0,
+    "ended_min": 827.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.104,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026428",
+    "opened_min": 819.0,
+    "ended_min": 837.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.509,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "location: Location 33",
+      "share": 0.43
+     },
+     {
+      "text": "team: Group 20",
+      "share": 0.35
+     },
+     {
+      "text": "106 open in its team",
+      "share": 0.1
+     }
+    ]
+   },
+   {
+    "id": "INC0026430",
+    "opened_min": 826.0,
+    "ended_min": 862.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.501,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 29",
+      "share": 0.58
+     },
+     {
+      "text": "category: Category 34",
+      "share": 0.19
+     },
+     {
+      "text": "subcategory: (other)",
+      "share": 0.08
+     }
+    ]
+   },
+   {
+    "id": "INC0026431",
+    "opened_min": 826.0,
+    "ended_min": 2445.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.033,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026432",
+    "opened_min": 827.0,
+    "ended_min": 11015.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.061,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026434",
+    "opened_min": 833.0,
+    "ended_min": 984.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.179,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026435",
+    "opened_min": 836.0,
+    "ended_min": 2458.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.87,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 10",
+      "share": 0.59
+     },
+     {
+      "text": "location: Location 42",
+      "share": 0.19
+     },
+     {
+      "text": "category: Category 44",
+      "share": 0.08
+     }
+    ]
+   },
+   {
+    "id": "INC0026436",
+    "opened_min": 837.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.07,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026437",
+    "opened_min": 843.0,
+    "ended_min": 48272.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.703,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.38
+     },
+     {
+      "text": "location: Location 34",
+      "share": 0.25
+     },
+     {
+      "text": "category: Category 9",
+      "share": 0.14
+     }
+    ]
+   },
+   {
+    "id": "INC0026438",
+    "opened_min": 844.0,
+    "ended_min": 7821.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.124,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026440",
+    "opened_min": 847.0,
+    "ended_min": 867.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.13,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026441",
+    "opened_min": 847.0,
+    "ended_min": 881.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026442",
+    "opened_min": 849.0,
+    "ended_min": 91255.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.869,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "subcategory: Subcategory 220",
+      "share": 0.35
+     },
+     {
+      "text": "team: Group 66",
+      "share": 0.34
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.1
+     }
+    ]
+   },
+   {
+    "id": "INC0026444",
+    "opened_min": 850.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.072,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026446",
+    "opened_min": 853.0,
+    "ended_min": 1980.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.371,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.43
+     },
+     {
+      "text": "subcategory: Subcategory 75",
+      "share": 0.28
+     },
+     {
+      "text": "107 open in its team",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026447",
+    "opened_min": 856.0,
+    "ended_min": 878.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.11,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026449",
+    "opened_min": 857.0,
+    "ended_min": 862.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.249,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026451",
+    "opened_min": 860.0,
+    "ended_min": 896.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.287,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026453",
+    "opened_min": 862.0,
+    "ended_min": 9225.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.149,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026455",
+    "opened_min": 863.0,
+    "ended_min": 872.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.112,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026457",
+    "opened_min": 865.0,
+    "ended_min": 310214.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.55,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.5
+     },
+     {
+      "text": "subcategory: Subcategory 164",
+      "share": 0.16
+     },
+     {
+      "text": "108 open in its team",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026459",
+    "opened_min": 867.0,
+    "ended_min": 7942.0,
+    "missed": true,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.334,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "subcategory: Subcategory 164",
+      "share": 0.26
+     },
+     {
+      "text": "team: Group 30",
+      "share": 0.22
+     },
+     {
+      "text": "opened at 14:00",
+      "share": 0.14
+     }
+    ]
+   },
+   {
+    "id": "INC0026461",
+    "opened_min": 869.0,
+    "ended_min": 896.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.106,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026462",
+    "opened_min": 870.0,
+    "ended_min": 884.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.157,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026464",
+    "opened_min": 874.0,
+    "ended_min": 888.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.375,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "category: Category 34",
+      "share": 0.38
+     },
+     {
+      "text": "team: Group 25",
+      "share": 0.26
+     },
+     {
+      "text": "45 open in its team",
+      "share": 0.17
+     }
+    ]
+   },
+   {
+    "id": "INC0026465",
+    "opened_min": 881.0,
+    "ended_min": 890.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.049,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026466",
+    "opened_min": 882.0,
+    "ended_min": 1016.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.24,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026467",
+    "opened_min": 883.0,
+    "ended_min": 956.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.34,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "category: Category 61",
+      "share": 0.46
+     },
+     {
+      "text": "location: Location 204",
+      "share": 0.17
+     },
+     {
+      "text": "opened at 14:00",
+      "share": 0.15
+     }
+    ]
+   },
+   {
+    "id": "INC0026468",
+    "opened_min": 885.0,
+    "ended_min": 260169.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.187,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026469",
+    "opened_min": 888.0,
+    "ended_min": 930.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.145,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026471",
+    "opened_min": 889.0,
+    "ended_min": 892.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.075,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026470",
+    "opened_min": 889.0,
+    "ended_min": 16805.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.4,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 76",
+      "share": 0.83
+     },
+     {
+      "text": "opened at 14:00",
+      "share": 0.07
+     },
+     {
+      "text": "subcategory: (other)",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026472",
+    "opened_min": 890.0,
+    "ended_min": 891.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.052,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026473",
+    "opened_min": 890.0,
+    "ended_min": 906.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.036,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026474",
+    "opened_min": 890.0,
+    "ended_min": 6598.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.177,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026475",
+    "opened_min": 892.0,
+    "ended_min": 894.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.055,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026476",
+    "opened_min": 896.0,
+    "ended_min": 898.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.044,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026477",
+    "opened_min": 896.0,
+    "ended_min": 10815.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.319,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 20",
+      "share": 0.46
+     },
+     {
+      "text": "subcategory: Subcategory 75",
+      "share": 0.24
+     },
+     {
+      "text": "109 open in its team",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026478",
+    "opened_min": 898.0,
+    "ended_min": 917.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.209,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026479",
+    "opened_min": 898.0,
+    "ended_min": 900.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.076,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026480",
+    "opened_min": 900.0,
+    "ended_min": 2346.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.293,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026481",
+    "opened_min": 901.0,
+    "ended_min": 903.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.067,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026482",
+    "opened_min": 904.0,
+    "ended_min": 905.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.067,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026484",
+    "opened_min": 906.0,
+    "ended_min": 926.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.039,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026483",
+    "opened_min": 906.0,
+    "ended_min": 907.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.067,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026486",
+    "opened_min": 908.0,
+    "ended_min": 910.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026487",
+    "opened_min": 910.0,
+    "ended_min": 913.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.059,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026488",
+    "opened_min": 913.0,
+    "ended_min": 915.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.056,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026490",
+    "opened_min": 917.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.048,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026491",
+    "opened_min": 917.0,
+    "ended_min": 925.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.239,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026492",
+    "opened_min": 919.0,
+    "ended_min": 921.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026493",
+    "opened_min": 921.0,
+    "ended_min": 923.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.067,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026494",
+    "opened_min": 922.0,
+    "ended_min": 69953.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.275,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026495",
+    "opened_min": 923.0,
+    "ended_min": 925.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026496",
+    "opened_min": 925.0,
+    "ended_min": 927.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.089,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026498",
+    "opened_min": 927.0,
+    "ended_min": 929.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.067,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026497",
+    "opened_min": 927.0,
+    "ended_min": 6741.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.143,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026499",
+    "opened_min": 928.0,
+    "ended_min": 1994.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.289,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026500",
+    "opened_min": 930.0,
+    "ended_min": 933.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026501",
+    "opened_min": 931.0,
+    "ended_min": 991.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.058,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026502",
+    "opened_min": 932.0,
+    "ended_min": 947.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.062,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026504",
+    "opened_min": 933.0,
+    "ended_min": 935.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.067,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026505",
+    "opened_min": 934.0,
+    "ended_min": 2421.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.299,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026506",
+    "opened_min": 935.0,
+    "ended_min": 937.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.068,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026507",
+    "opened_min": 936.0,
+    "ended_min": 19221.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.097,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026508",
+    "opened_min": 937.0,
+    "ended_min": 965.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.14,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026510",
+    "opened_min": 938.0,
+    "ended_min": 943.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.054,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026511",
+    "opened_min": 941.0,
+    "ended_min": 943.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.061,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026514",
+    "opened_min": 943.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.171,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026512",
+    "opened_min": 943.0,
+    "ended_min": 1009.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.169,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026516",
+    "opened_min": 948.0,
+    "ended_min": 952.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.156,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026517",
+    "opened_min": 948.0,
+    "ended_min": 997.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.05,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026518",
+    "opened_min": 950.0,
+    "ended_min": 955.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.06,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026519",
+    "opened_min": 950.0,
+    "ended_min": 956.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.084,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026524",
+    "opened_min": 954.0,
+    "ended_min": 8268.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.822,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 37",
+      "share": 0.47
+     },
+     {
+      "text": "subcategory: Subcategory 231",
+      "share": 0.32
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.1
+     }
+    ]
+   },
+   {
+    "id": "INC0026525",
+    "opened_min": 954.0,
+    "ended_min": 956.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.092,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026526",
+    "opened_min": 955.0,
+    "ended_min": 956.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.161,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026527",
+    "opened_min": 956.0,
+    "ended_min": 961.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.133,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026529",
+    "opened_min": 956.0,
+    "ended_min": 36997.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.131,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026532",
+    "opened_min": 957.0,
+    "ended_min": 959.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.043,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026530",
+    "opened_min": 957.0,
+    "ended_min": 10921.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.05,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026531",
+    "opened_min": 957.0,
+    "ended_min": 6737.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.135,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026533",
+    "opened_min": 960.0,
+    "ended_min": 964.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.052,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026534",
+    "opened_min": 962.0,
+    "ended_min": 6615.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.349,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "category: Category 61",
+      "share": 0.43
+     },
+     {
+      "text": "subcategory: Subcategory 36",
+      "share": 0.15
+     },
+     {
+      "text": "team: (blank)",
+      "share": 0.15
+     }
+    ]
+   },
+   {
+    "id": "INC0026535",
+    "opened_min": 962.0,
+    "ended_min": 964.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.044,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026536",
+    "opened_min": 965.0,
+    "ended_min": 967.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.042,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026537",
+    "opened_min": 967.0,
+    "ended_min": 17862.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.354,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 76",
+      "share": 0.84
+     },
+     {
+      "text": "subcategory: (other)",
+      "share": 0.05
+     },
+     {
+      "text": "opened at 16:00",
+      "share": 0.04
+     }
+    ]
+   },
+   {
+    "id": "INC0026538",
+    "opened_min": 969.0,
+    "ended_min": 971.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026539",
+    "opened_min": 971.0,
+    "ended_min": 6780.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.217,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026540",
+    "opened_min": 971.0,
+    "ended_min": 973.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026541",
+    "opened_min": 973.0,
+    "ended_min": 2069.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.048,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026542",
+    "opened_min": 973.0,
+    "ended_min": 975.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.035,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026544",
+    "opened_min": 976.0,
+    "ended_min": 1988.0,
+    "missed": false,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.542,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 57",
+      "share": 0.56
+     },
+     {
+      "text": "subcategory: Subcategory 251",
+      "share": 0.12
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.11
+     }
+    ]
+   },
+   {
+    "id": "INC0026543",
+    "opened_min": 976.0,
+    "ended_min": 978.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.058,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026545",
+    "opened_min": 978.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.198,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026546",
+    "opened_min": 978.0,
+    "ended_min": 22555.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.755,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 75",
+      "share": 0.63
+     },
+     {
+      "text": "category: Category 61",
+      "share": 0.16
+     },
+     {
+      "text": "subcategory: Subcategory 16",
+      "share": 0.12
+     }
+    ]
+   },
+   {
+    "id": "INC0026547",
+    "opened_min": 984.0,
+    "ended_min": 996.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.066,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026548",
+    "opened_min": 985.0,
+    "ended_min": 1021.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.053,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026550",
+    "opened_min": 987.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.191,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026552",
+    "opened_min": 989.0,
+    "ended_min": 2402.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.327,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 50",
+      "share": 0.55
+     },
+     {
+      "text": "location: (other)",
+      "share": 0.29
+     },
+     {
+      "text": "4 open in its team",
+      "share": 0.06
+     }
+    ]
+   },
+   {
+    "id": "INC0026553",
+    "opened_min": 990.0,
+    "ended_min": 2089.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.44,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 57",
+      "share": 0.77
+     },
+     {
+      "text": "39 open in its team",
+      "share": 0.07
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026554",
+    "opened_min": 992.0,
+    "ended_min": 2092.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.175,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026556",
+    "opened_min": 996.0,
+    "ended_min": 69778.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.817,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 37",
+      "share": 0.47
+     },
+     {
+      "text": "subcategory: Subcategory 231",
+      "share": 0.32
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.09
+     }
+    ]
+   },
+   {
+    "id": "INC0026557",
+    "opened_min": 997.0,
+    "ended_min": 1975.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.074,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026558",
+    "opened_min": 1004.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.09,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026559",
+    "opened_min": 1005.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.095,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026560",
+    "opened_min": 1005.0,
+    "ended_min": 61481.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.135,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026561",
+    "opened_min": 1007.0,
+    "ended_min": 1017.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.044,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026563",
+    "opened_min": 1012.0,
+    "ended_min": 1016.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.046,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026565",
+    "opened_min": 1016.0,
+    "ended_min": 1041.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.06,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026566",
+    "opened_min": 1030.0,
+    "ended_min": 7738.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.198,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026568",
+    "opened_min": 1034.0,
+    "ended_min": 73008.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.523,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 22",
+      "share": 0.52
+     },
+     {
+      "text": "subcategory: Subcategory 251",
+      "share": 0.19
+     },
+     {
+      "text": "category: Category 46",
+      "share": 0.12
+     }
+    ]
+   },
+   {
+    "id": "INC0026569",
+    "opened_min": 1035.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.047,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026570",
+    "opened_min": 1035.0,
+    "ended_min": 12379.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.084,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026571",
+    "opened_min": 1039.0,
+    "ended_min": 2352.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "priority"
+    ],
+    "risk": 0.987,
+    "priority": "2 - High",
+    "reasons": [
+     {
+      "text": "priority 2 - High",
+      "share": 0.81
+     },
+     {
+      "text": "team: Group 20",
+      "share": 0.12
+     },
+     {
+      "text": "108 open in its team",
+      "share": 0.03
+     }
+    ]
+   },
+   {
+    "id": "INC0026574",
+    "opened_min": 1052.0,
+    "ended_min": 7938.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.307,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026575",
+    "opened_min": 1056.0,
+    "ended_min": 38095.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.184,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026576",
+    "opened_min": 1057.0,
+    "ended_min": 1123.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.573,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "location: Location 33",
+      "share": 0.42
+     },
+     {
+      "text": "team: Group 5",
+      "share": 0.27
+     },
+     {
+      "text": "category: Category 44",
+      "share": 0.15
+     }
+    ]
+   },
+   {
+    "id": "INC0026577",
+    "opened_min": 1058.0,
+    "ended_min": 42750.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.09,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026578",
+    "opened_min": 1072.0,
+    "ended_min": 1078.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.047,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026579",
+    "opened_min": 1100.0,
+    "ended_min": 1107.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.036,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026580",
+    "opened_min": 1101.0,
+    "ended_min": 1931.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.254,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026581",
+    "opened_min": 1135.0,
+    "ended_min": 1157.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.054,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026582",
+    "opened_min": 1142.0,
+    "ended_min": 1296.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.205,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026583",
+    "opened_min": 1154.0,
+    "ended_min": 19234.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.288,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026584",
+    "opened_min": 1168.0,
+    "ended_min": 6398.0,
+    "missed": false,
+    "flagged": [
+     "opslens"
+    ],
+    "risk": 0.325,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 65",
+      "share": 0.72
+     },
+     {
+      "text": "46 open in its team",
+      "share": 0.15
+     },
+     {
+      "text": "category: Category 57",
+      "share": 0.07
+     }
+    ]
+   },
+   {
+    "id": "INC0026585",
+    "opened_min": 1185.0,
+    "ended_min": 1208.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.127,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026586",
+    "opened_min": 1195.0,
+    "ended_min": 1240.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.248,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026587",
+    "opened_min": 1196.0,
+    "ended_min": 38067.0,
+    "missed": true,
+    "flagged": [
+     "opslens",
+     "rule"
+    ],
+    "risk": 0.498,
+    "priority": "3 - Moderate",
+    "reasons": [
+     {
+      "text": "team: Group 3",
+      "share": 0.45
+     },
+     {
+      "text": "subcategory: Subcategory 31",
+      "share": 0.23
+     },
+     {
+      "text": "location: Location 15",
+      "share": 0.19
+     }
+    ]
+   },
+   {
+    "id": "INC0026588",
+    "opened_min": 1198.0,
+    "ended_min": 1234.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.082,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026589",
+    "opened_min": 1204.0,
+    "ended_min": 17871.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.218,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026590",
+    "opened_min": 1209.0,
+    "ended_min": 1431.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.098,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026592",
+    "opened_min": 1258.0,
+    "ended_min": 414767.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.085,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026593",
+    "opened_min": 1287.0,
+    "ended_min": 1289.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.122,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026596",
+    "opened_min": 1289.0,
+    "ended_min": 1298.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.122,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026597",
+    "opened_min": 1298.0,
+    "ended_min": 1299.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.068,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026598",
+    "opened_min": 1298.0,
+    "ended_min": 1299.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.122,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026599",
+    "opened_min": 1300.0,
+    "ended_min": 1301.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.122,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026600",
+    "opened_min": 1301.0,
+    "ended_min": 1302.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.122,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026602",
+    "opened_min": 1302.0,
+    "ended_min": 1303.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.068,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026601",
+    "opened_min": 1302.0,
+    "ended_min": 1303.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.124,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026603",
+    "opened_min": 1303.0,
+    "ended_min": 1304.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.072,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026604",
+    "opened_min": 1304.0,
+    "ended_min": 1305.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.126,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026605",
+    "opened_min": 1305.0,
+    "ended_min": 1305.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.074,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026607",
+    "opened_min": 1305.0,
+    "ended_min": 1307.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.134,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026608",
+    "opened_min": 1306.0,
+    "ended_min": 1306.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.074,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026609",
+    "opened_min": 1306.0,
+    "ended_min": 1308.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.074,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026610",
+    "opened_min": 1307.0,
+    "ended_min": 1308.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.134,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026611",
+    "opened_min": 1309.0,
+    "ended_min": 1310.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.14,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026612",
+    "opened_min": 1311.0,
+    "ended_min": 1312.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.14,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026613",
+    "opened_min": 1312.0,
+    "ended_min": 2345.0,
+    "missed": false,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.188,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026615",
+    "opened_min": 1317.0,
+    "ended_min": 1318.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.079,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026616",
+    "opened_min": 1319.0,
+    "ended_min": 1320.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.079,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026617",
+    "opened_min": 1320.0,
+    "ended_min": 1322.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.081,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026618",
+    "opened_min": 1322.0,
+    "ended_min": 1323.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.081,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026619",
+    "opened_min": 1324.0,
+    "ended_min": 1326.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.081,
+    "priority": "4 - Low"
+   },
+   {
+    "id": "INC0026621",
+    "opened_min": 1337.0,
+    "ended_min": 17874.0,
+    "missed": true,
+    "flagged": [
+     "rule"
+    ],
+    "risk": 0.289,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026622",
+    "opened_min": 1347.0,
+    "ended_min": 17939.0,
+    "missed": true,
+    "flagged": [],
+    "risk": 0.039,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026623",
+    "opened_min": 1348.0,
+    "ended_min": 1353.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.071,
+    "priority": "3 - Moderate"
+   },
+   {
+    "id": "INC0026624",
+    "opened_min": 1412.0,
+    "ended_min": 7588.0,
+    "missed": false,
+    "flagged": [],
+    "risk": 0.111,
+    "priority": "3 - Moderate"
    }
   ]
  },
@@ -481,7 +5659,8 @@
     "INC0024858",
     "INC0024958",
     "INC0024983"
-   ]
+   ],
+   "test_misses": 288
   },
   {
    "column": "urgency",
@@ -502,7 +5681,8 @@
     "INC0024983",
     "INC0025009",
     "INC0025032"
-   ]
+   ],
+   "test_misses": 149
   },
   {
    "column": "category",
@@ -523,7 +5703,8 @@
     "INC0026826",
     "INC0041123",
     "INC0047485"
-   ]
+   ],
+   "test_misses": 43
   },
   {
    "column": "priority",
@@ -544,7 +5725,8 @@
     "INC0024983",
     "INC0025085",
     "INC0025176"
-   ]
+   ],
+   "test_misses": 119
   },
   {
    "column": "impact",
@@ -565,7 +5747,8 @@
     "INC0025009",
     "INC0025032",
     "INC0025096"
-   ]
+   ],
+   "test_misses": 140
   },
   {
    "column": "team",
@@ -586,7 +5769,8 @@
     "INC0025378",
     "INC0025396",
     "INC0025402"
-   ]
+   ],
+   "test_misses": 80
   }
  ],
  "flag_share_pct": 20,
@@ -601,11 +5785,11 @@
   },
   {
    "name": "Building what was known when each item opened",
-   "seconds": 0.2
+   "seconds": 0.3
   },
   {
    "name": "Learning on the first 70% of items",
-   "seconds": 0.4
+   "seconds": 0.5
   },
   {
    "name": "Scoring the last 30%, which it never saw",
@@ -613,21 +5797,561 @@
   },
   {
    "name": "Shadow mode on the busiest later day",
-   "seconds": 0.0
+   "seconds": 0.1
   },
   {
    "name": "Finding recurring problems, then checking them on later items",
-   "seconds": 0.5
+   "seconds": 0.4
+  },
+  {
+   "name": "Forecasting each team's workload a week ahead",
+   "seconds": 0.1
   }
  ],
- "seconds": 1.5,
+ "seconds": 1.8,
  "cannot": [
   "Replay your floor under OpsLens's dispatch: that needs how long each item was actually worked on, who was on shift and who can handle what. A log records one way of working, not those.",
   "Say what would have happened to an item OpsLens flagged: every outcome shown is your file's own."
  ],
+ "miss": {
+  "rule": "sla_met",
+  "column": "made_sla",
+  "target_min": null,
+  "assumed": false
+ },
+ "forecast": {
+  "teams": [
+   "Group 70",
+   "Group 20",
+   "Group 25",
+   "Group 24",
+   "Group 64",
+   "Group 55",
+   "Group 39",
+   "Group 66"
+  ],
+  "chosen_on_check": "learned",
+  "wape_check": {
+   "learned": 0.439,
+   "same_weekday_last_week": 0.731
+  },
+  "wape_learned": 0.378,
+  "wape_same_weekday_last_week": 0.356,
+  "learned_days": [
+   "2016-03-07",
+   "2016-05-01"
+  ],
+  "scored_days": [
+   "2016-05-02",
+   "2016-05-29"
+  ],
+  "team_days": 224,
+  "items_scored": 4759,
+  "first_week": [
+   {
+    "team": "Group 20",
+    "date": "Mon 02 May",
+    "forecast": 19.6,
+    "same_weekday_last_week": 38,
+    "actual": 41,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Mon 02 May",
+    "forecast": 12.7,
+    "same_weekday_last_week": 9,
+    "actual": 11,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Mon 02 May",
+    "forecast": 10.1,
+    "same_weekday_last_week": 11,
+    "actual": 4,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Mon 02 May",
+    "forecast": 7.8,
+    "same_weekday_last_week": 4,
+    "actual": 9,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Mon 02 May",
+    "forecast": 7.6,
+    "same_weekday_last_week": 8,
+    "actual": 5,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Mon 02 May",
+    "forecast": 13.7,
+    "same_weekday_last_week": 23,
+    "actual": 5,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Mon 02 May",
+    "forecast": 7.7,
+    "same_weekday_last_week": 8,
+    "actual": 6,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Mon 02 May",
+    "forecast": 215.1,
+    "same_weekday_last_week": 221,
+    "actual": 277,
+    "usual_ends": 184.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Tue 03 May",
+    "forecast": 12.8,
+    "same_weekday_last_week": 18,
+    "actual": 20,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Tue 03 May",
+    "forecast": 8.1,
+    "same_weekday_last_week": 4,
+    "actual": 8,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Tue 03 May",
+    "forecast": 11.7,
+    "same_weekday_last_week": 6,
+    "actual": 4,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Tue 03 May",
+    "forecast": 6.5,
+    "same_weekday_last_week": 4,
+    "actual": 5,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Tue 03 May",
+    "forecast": 6.2,
+    "same_weekday_last_week": 3,
+    "actual": 3,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Tue 03 May",
+    "forecast": 9.2,
+    "same_weekday_last_week": 4,
+    "actual": 1,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Tue 03 May",
+    "forecast": 9.0,
+    "same_weekday_last_week": 7,
+    "actual": 3,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Tue 03 May",
+    "forecast": 201.7,
+    "same_weekday_last_week": 189,
+    "actual": 214,
+    "usual_ends": 184.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Wed 04 May",
+    "forecast": 25.5,
+    "same_weekday_last_week": 27,
+    "actual": 33,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Wed 04 May",
+    "forecast": 10.7,
+    "same_weekday_last_week": 9,
+    "actual": 9,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Wed 04 May",
+    "forecast": 14.7,
+    "same_weekday_last_week": 18,
+    "actual": 6,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Wed 04 May",
+    "forecast": 6.8,
+    "same_weekday_last_week": 2,
+    "actual": 4,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Wed 04 May",
+    "forecast": 7.2,
+    "same_weekday_last_week": 2,
+    "actual": 4,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Wed 04 May",
+    "forecast": 6.3,
+    "same_weekday_last_week": 3,
+    "actual": 0,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Wed 04 May",
+    "forecast": 5.6,
+    "same_weekday_last_week": 3,
+    "actual": 1,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Wed 04 May",
+    "forecast": 205.5,
+    "same_weekday_last_week": 208,
+    "actual": 209,
+    "usual_ends": 184.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Thu 05 May",
+    "forecast": 13.6,
+    "same_weekday_last_week": 30,
+    "actual": 25,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Thu 05 May",
+    "forecast": 9.6,
+    "same_weekday_last_week": 13,
+    "actual": 8,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Thu 05 May",
+    "forecast": 9.6,
+    "same_weekday_last_week": 5,
+    "actual": 23,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Thu 05 May",
+    "forecast": 7.5,
+    "same_weekday_last_week": 4,
+    "actual": 1,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Thu 05 May",
+    "forecast": 4.6,
+    "same_weekday_last_week": 1,
+    "actual": 3,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Thu 05 May",
+    "forecast": 11.1,
+    "same_weekday_last_week": 21,
+    "actual": 0,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Thu 05 May",
+    "forecast": 6.7,
+    "same_weekday_last_week": 4,
+    "actual": 11,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Thu 05 May",
+    "forecast": 193.5,
+    "same_weekday_last_week": 193,
+    "actual": 197,
+    "usual_ends": 184.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Fri 06 May",
+    "forecast": 10.1,
+    "same_weekday_last_week": 15,
+    "actual": 31,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Fri 06 May",
+    "forecast": 9.6,
+    "same_weekday_last_week": 10,
+    "actual": 8,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Fri 06 May",
+    "forecast": 10.3,
+    "same_weekday_last_week": 14,
+    "actual": 11,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Fri 06 May",
+    "forecast": 4.9,
+    "same_weekday_last_week": 5,
+    "actual": 1,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Fri 06 May",
+    "forecast": 6.0,
+    "same_weekday_last_week": 3,
+    "actual": 3,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Fri 06 May",
+    "forecast": 11.8,
+    "same_weekday_last_week": 24,
+    "actual": 0,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Fri 06 May",
+    "forecast": 6.1,
+    "same_weekday_last_week": 5,
+    "actual": 6,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Fri 06 May",
+    "forecast": 161.4,
+    "same_weekday_last_week": 207,
+    "actual": 208,
+    "usual_ends": 184.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Sat 07 May",
+    "forecast": 5.6,
+    "same_weekday_last_week": 4,
+    "actual": 2,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Sat 07 May",
+    "forecast": 2.6,
+    "same_weekday_last_week": 1,
+    "actual": 3,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Sat 07 May",
+    "forecast": 2.2,
+    "same_weekday_last_week": 2,
+    "actual": 1,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Sat 07 May",
+    "forecast": 1.8,
+    "same_weekday_last_week": 1,
+    "actual": 0,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Sat 07 May",
+    "forecast": 2.2,
+    "same_weekday_last_week": 2,
+    "actual": 1,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Sat 07 May",
+    "forecast": 1.8,
+    "same_weekday_last_week": 0,
+    "actual": 0,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Sat 07 May",
+    "forecast": 2.7,
+    "same_weekday_last_week": 2,
+    "actual": 1,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Sat 07 May",
+    "forecast": 28.4,
+    "same_weekday_last_week": 33,
+    "actual": 35,
+    "usual_ends": 184.0
+   },
+   {
+    "team": "Group 20",
+    "date": "Sun 08 May",
+    "forecast": 7.9,
+    "same_weekday_last_week": 8,
+    "actual": 2,
+    "usual_ends": 22.0
+   },
+   {
+    "team": "Group 24",
+    "date": "Sun 08 May",
+    "forecast": 2.2,
+    "same_weekday_last_week": 1,
+    "actual": 2,
+    "usual_ends": 7.5
+   },
+   {
+    "team": "Group 25",
+    "date": "Sun 08 May",
+    "forecast": 2.8,
+    "same_weekday_last_week": 0,
+    "actual": 0,
+    "usual_ends": 9.5
+   },
+   {
+    "team": "Group 39",
+    "date": "Sun 08 May",
+    "forecast": 1.8,
+    "same_weekday_last_week": 1,
+    "actual": 1,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 55",
+    "date": "Sun 08 May",
+    "forecast": 2.2,
+    "same_weekday_last_week": 1,
+    "actual": 0,
+    "usual_ends": 4.0
+   },
+   {
+    "team": "Group 64",
+    "date": "Sun 08 May",
+    "forecast": 10.1,
+    "same_weekday_last_week": 17,
+    "actual": 0,
+    "usual_ends": 2.5
+   },
+   {
+    "team": "Group 66",
+    "date": "Sun 08 May",
+    "forecast": 1.8,
+    "same_weekday_last_week": 1,
+    "actual": 0,
+    "usual_ends": 3.0
+   },
+   {
+    "team": "Group 70",
+    "date": "Sun 08 May",
+    "forecast": 22.3,
+    "same_weekday_last_week": 33,
+    "actual": 26,
+    "usual_ends": 184.0
+   }
+  ],
+  "by_team": [
+   {
+    "team": "Group 70",
+    "items": 3611,
+    "wape_learned": 0.261,
+    "wape_same_weekday_last_week": 0.233
+   },
+   {
+    "team": "Group 20",
+    "items": 433,
+    "wape_learned": 0.349,
+    "wape_same_weekday_last_week": 0.42
+   },
+   {
+    "team": "Group 25",
+    "items": 171,
+    "wape_learned": 0.616,
+    "wape_same_weekday_last_week": 0.708
+   },
+   {
+    "team": "Group 24",
+    "items": 170,
+    "wape_learned": 0.583,
+    "wape_same_weekday_last_week": 0.594
+   },
+   {
+    "team": "Group 64",
+    "items": 110,
+    "wape_learned": 1.998,
+    "wape_same_weekday_last_week": 2.545
+   },
+   {
+    "team": "Group 55",
+    "items": 73,
+    "wape_learned": 1.283,
+    "wape_same_weekday_last_week": 0.466
+   },
+   {
+    "team": "Group 39",
+    "items": 87,
+    "wape_learned": 1.115,
+    "wape_same_weekday_last_week": 0.759
+   },
+   {
+    "team": "Group 66",
+    "items": 104,
+    "wape_learned": 0.872,
+    "wape_same_weekday_last_week": 0.683
+   }
+  ]
+ },
+ "needs": {},
  "scale": {
   "rows": 100000,
-  "seconds": 2.9,
+  "seconds": 4.3,
   "file": "generated delivery orders (tests/test_anyfile.py), 90 days"
  }
 }

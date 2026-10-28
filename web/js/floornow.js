@@ -105,7 +105,7 @@ export function effectLines(e, nameOf) {
   } else if (e.kind === "back") {
     lines.push(`${who} came back at ${clockOf(e.minute)}.`);
   }
-  const outcome = ["decline", "take", "extra_time"].includes(e.kind) ? outcomeText(e) : "";
+  const outcome = e.complete !== false && ["decline", "take", "extra_time"].includes(e.kind) ? outcomeText(e) : "";
   if (outcome) lines.push(`The ticket ${outcome}.`);
   return lines;
 }

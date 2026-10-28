@@ -430,7 +430,7 @@ often on normal weeks. v5 stays; it still beat the industry standard in 30 of 30
 
 **Q85. Can I upload my own CSV and see what OpsLens would have done?**
 Yes. Map start, end or duration, and what a miss is. OpsLens learns on your first 70% and scores the rest once. On the UCI log
-as a plain CSV it took 1.5 s: flagging 1 item in 5 as they opened, it caught 48.9% of the real misses; the priority field 25.5%.
+as a plain CSV it took 1.8 s: flagging 1 item in 5 as they opened, it caught 48.2% of the real misses; the priority field 25.5%.
 
 **Q86. (Attack) Then tell me how many SLA breaches I would have had with OpsLens.**
 Not from a log, honestly. Replaying your floor needs how long each item was worked on, who was on shift and who can handle
@@ -449,7 +449,7 @@ start. A 100,000-row file takes 2.9 s.
 **Q89. I uploaded my own CSV. Is every screen really about my file?**
 Yes. Real data has two sources: the UCI example and your file. After *Analyse my file*, Overview, Shadow mode, Problems,
 Risks, Actions and Proof are all drawn from the report on your file, learned on your first 70% and scored once on the rest,
-and every number clicks to its source. On the UCI log as a plain CSV: OpsLens caught 48.9% of real misses, the priority field 25.5%.
+and every number clicks to its source. On the UCI log as a plain CSV: OpsLens caught 48.2% of real misses, the priority field 25.5%.
 
 **Q90. (Attack) My file has no priority or SLA column. Then you just make something up?**
 No. Without an on-time column, a miss is taking longer than your file's median time rounded up, labelled as OpsLens's
