@@ -92,6 +92,22 @@ def test_column_names_written_after_an_item_opened_are_not_features():
     assert A.known_at_open("Road_traffic_density")
 
 
+def test_who_and_where_of_a_delivery_are_known_when_it_is_ordered_but_not_when_it_arrived():
+    for known in ("Delivery_person_Age", "Delivery_location_latitude", "multiple_deliveries", "pickup_location"):
+        assert A.known_at_open(known), known
+    for after in ("Delivery_person_Ratings", "delivery_time", "Delivery Date", "delivered_at", "Delivered",
+                  "pickup_time", "delivery_status", "Time_taken(min)"):
+        assert not A.known_at_open(after), after
+
+
+def test_an_id_column_is_not_learned_from_unless_ticked():
+    raw = delivery_file()
+    raw["Delivery_person_ID"] = [f"RES{i % 400:03d}DEL0{i % 3}" for i in range(len(raw))]
+    raw["Delivery_person_Age"] = (20 + np.arange(len(raw)) % 20).astype(float)
+    features = {c["name"]: c["feature"] for c in A.peek(raw)["columns"]}
+    assert features["Delivery_person_Age"] and not features["Delivery_person_ID"]
+
+
 def test_every_picker_gets_the_same_number_of_flags_each_day():
     day = np.repeat([1, 2, 3], [10, 20, 30])
     rng = np.random.default_rng(1)
