@@ -197,6 +197,17 @@ def anyfile_job(job_id: str) -> JSONResponse:
         return JSONResponse({"error": str(exc)}, status_code=404)
 
 
+@app.post("/api/anyfile/effect")
+def anyfile_effect(request: dict) -> JSONResponse:
+    from server.anyfile_jobs import effect
+
+    try:
+        return JSONResponse(effect(str(request["job"]), list(request.get("groups") or []), bool(request.get("warn", False)),
+                                   float(request.get("save", 0.5))))
+    except (ValueError, KeyError, TypeError) as exc:
+        return JSONResponse({"error": str(exc)}, status_code=400)
+
+
 @app.post("/api/plant")
 def plant(request: dict) -> JSONResponse:
     from server.plant_demo import run_plant

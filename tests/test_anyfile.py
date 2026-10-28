@@ -238,3 +238,39 @@ def test_hour_before_and_open_counts_do_not_depend_on_the_time_unit(unit: str) -
     X = A.feature_frame(items)
     assert X["arrived in the hour before"].tolist() == [0, 1, 2, 0]
     assert X["open when it arrived"].tolist() == [0, 1, 1, 0]
+
+
+def test_plan_effect_adds_up_on_the_later_items_and_counts_an_overlap_once():
+    cells = [[0, 0, 600, 60], [0, 1, 100, 40], [1, 0, 150, 45], [1, 1, 50, 35], [3, 0, 80, 40], [2, 1, 20, 10]]
+    alone = A.plan_effect(cells, [], False, 0.5)
+    assert alone["before"] == alone["after"] == 230 and alone["fewer"] == 0 and alone["items"] == 1000
+    warn = A.plan_effect(cells, [], True, 0.5)
+    assert warn["flagged_misses"] == 85 and warn["fewer"] == round(0.5 * 85)
+    group = A.plan_effect(cells, [0], False, 0.5)
+    rest = (60 + 40 + 10) / (600 + 100 + 20)
+    assert group["after"] == round(110 + rest * (150 + 50 + 80))
+    other = A.plan_effect(cells, [1], False, 0.5)
+    both = A.plan_effect(cells, [0, 1], False, 0.5)
+    assert both["fixed_items"] == 150 + 50 + 80 + 20
+    assert max(group["fewer"], other["fewer"]) <= both["fewer"] < group["fewer"] + other["fewer"]
+    plan = A.plan_effect(cells, [0], True, 0.5)
+    assert plan["fewer"] == plan["from_fixes"] + plan["from_warning"]
+    assert plan["after"] < min(group["after"], warn["after"])
+
+
+def test_a_group_that_misses_less_than_the_rest_is_never_made_worse():
+    cells = [[0, 0, 100, 50], [1, 0, 100, 5]]
+    assert A.plan_effect(cells, [0], False, 0.5)["after"] == 55
+
+
+def test_the_report_effects_match_its_own_measured_numbers():
+    raw = delivery_file()
+    report = A.analyse(raw, mapping_for(raw), target_min=30)
+    w, impact = report["warning"], report["impact"]
+    assert impact["warn"]["before"] == w["misses"] and impact["warn"]["items"] == w["items"]
+    assert impact["warn"]["flagged_misses"] == round(w["caught_pct"]["opslens"] * w["misses"] / 100)
+    for card, single in zip(report["cards"], impact["cards"]):
+        assert single["fixed_items"] == card["test_items"]
+        assert single["rest_pct"] == card["test_rest_pct"]
+        gap = card["test_items"] * max(0.0, card["test_pct"] - card["test_rest_pct"]) / 100
+        assert abs(single["fewer"] - gap) <= max(1.0, 0.001 * card["test_items"])

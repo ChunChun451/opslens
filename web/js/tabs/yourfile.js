@@ -84,12 +84,13 @@ export function filePlanItems() {
   const source = `upload:${meta.token}`;
   const w = `${U}.warning`;
   const rival = r.warning.vs.rival;
-  const warn = { id: `file-${meta.token}-warn`, world: "real", source, owner: "Team lead",
+  const warn = { id: `file-${meta.token}-warn`, world: "real", source, owner: "Team lead", fileIndex: 0,
     title: `Flag the riskiest 1 in ${Math.round(100 / r.flag_share_pct)} new items as they open, and look at them first`,
     effects: [{ label: "Real misses caught on your later items, OpsLens", path: `${w}.caught_pct.opslens`, unit: "pct" },
               { label: `The same, ${r.warning.vs.rival === "priority" ? "your priority field" : "a rule of thumb"}`, path: `${w}.caught_pct.${rival}`, unit: "pct" }],
     note: "Measured on your later items, which OpsLens never learned from." };
   const fixes = r.cards.map((c, i) => ({ id: `file-${meta.token}-fix-${i}`, world: "real", source, owner: "Process owner",
+    fileIndex: i + 1, groupWord: `${readable(c.column)} = ${String(c.value).trim()}`,
     title: `Look at ${readable(c.column)} = ${String(c.value).trim()}`,
     effects: [{ label: "Real misses in this group, on your later items", path: `${U}.cards[${i}].test_misses`, unit: "int" },
               { label: "Missed in this group, later", path: `${U}.cards[${i}].test_pct`, unit: "pct" },

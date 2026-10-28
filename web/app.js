@@ -3,6 +3,7 @@ import { initEvidence, ev, evText } from "./js/evidence.js";
 import { setChartDefaults } from "./js/charts.js";
 import { initTabs, setWorld } from "./js/router.js";
 import { initPlan } from "./js/plan.js";
+import { initFilePlan } from "./js/fileplan.js";
 import { realPlanItems } from "./js/tabs/realdesk.js";
 import { initStory } from "./js/story.js";
 import { initAsk } from "./js/ask.js";
@@ -47,6 +48,7 @@ async function start() {
   initTabs();
   initRole();
   initPlan(realPlanItems());
+  initFilePlan();
   initStory();
   initAsk();
   initLiveTicker();

@@ -4,6 +4,7 @@ import { pageHeader, card, stat, fold, proofLine } from "../ui.js";
 import { escapeHtml } from "../format.js";
 import { planButtons, registerItem } from "../plan.js";
 import { realPlanItems, fastTrackLead, fastTrackProof, alertsCard, impactCard, plantsCard } from "./realdesk.js";
+import { fileActionEffect, filePlanTotal, refreshFileEffect } from "../fileplan.js";
 import { filePlanItems, readable, plainReason, rivalWords, stampHtml, missWords, oneIn, groupName, forecastProof } from "./yourfile.js";
 
 const R = "realdesk";
@@ -88,6 +89,9 @@ function uciModel() {
     plan: [triage, ...fixes],
     planEvidence: [`flagging the riskiest 1 in 5 one hour after opening caught ${ev(`${ew}.caught_top20_opslens_pct`, "pct")} of the later SLA misses; the desk's priority field, ${ev(`${ew}.caught_top20_priority_pct`, "pct")}`,
       ...d.cards.map((c, i) => `${evText(`${R}.cards[${i}].title`)}`)],
+    effect: (item, i) => (i === 0 ? triageEffect() : `<p class="fx-none">No effect measured: an event log cannot replay what would have happened
+      after this change, so only the evidence above is shown.</p>`),
+    actionsSub: "Each action shows what was measured on later months. Accept adds it to Your plan; Override says why not.",
     notOnList: "Not on this list: letting OpsLens pick the team at opening time. It is only right more often than the real desk when it is very sure, and even then the gain is tiny (see Proof).",
     proofRows: [
       ["OpsLens", ev(`${ew}.auc_opslens`, "ratio"), ev(`${ew}.caught_top20_opslens_pct`, "pct"), true],
@@ -166,7 +170,10 @@ function fileModel() {
     planEvidence: [`flagging ${oneIn(r)} as they opened caught ${ev(`${w}.caught_pct.opslens`, "pct")} of the real misses on your later items; ${rivalWords(r)}, ${ev(`${w}.caught_pct.${rival}`, "pct")}`,
       ...r.cards.map((c, i) => `${ev(`${U}.cards[${i}].test_pct`, "pct")} missed on your later items vs ${ev(`${U}.cards[${i}].test_rest_pct`, "pct")} for the rest;
         ${ev(`${U}.cards[${i}].test_misses`, "int")} real misses in this group ${stampHtml(c.still_true)}`)],
-    notOnList: "Not on this list: Simulate. A log cannot be replayed under different decisions, so every number above is measured in your file.",
+    effect: (item, i) => fileActionEffect(i, item.groupWord),
+    planTotal: () => filePlanTotal(),
+    actionsSub: "Each action shows what it would change on your later items. Accept adds it to Your plan; Override says why not.",
+    notOnList: "How the effects are worked out: on your later items, which OpsLens never learned from. A log cannot be replayed, so a fix is assumed to bring its group down to the rest's miss rate, and looking first is assumed to save the share you pick.",
     proofRows: ["opslens", "priority", "rule"].map((k) => {
       const name = k === "opslens" ? "OpsLens" : k === "priority" ? "Your priority field"
         : `A rule of thumb${r.rule_column ? ` (past miss rate by ${readable(r.rule_column)})` : " (past miss rate)"}`;
@@ -309,21 +316,57 @@ function forecastCard(m) {
       : `<p class="muted">No ${escapeHtml(m.team)} is forecast above what it usually finishes.</p>` });
 }
 
+function triageEffect() {
+  const ft = `${R}.fasttrack`;
+  const d = state.results[R].fasttrack;
+  if (!d || !d.results || !d.results["20"] || !d.results["20"].opslens) return "";
+  const ours = d.results["20"].opslens;
+  const before = d.population.missed_by_rule_pct;
+  const width = (v) => `${(100 * v / before).toFixed(1)}%`;
+  return `<div class="fx"><div class="fx-head">If the desk fast-tracks them, on later months (${ev(`${ft}.population.scored`, "int")} incidents)</div>
+    <div class="fx-line"><span class="fx-nums">${ev(`${ft}.population.missed_by_rule_pct`, "pct")} <span class="fx-arrow">→</span> <b>${ev(`${ft}.results.20.opslens.missed_pct_after`, "pct")}</b> missed</span>
+      <span class="fx-delta is-good">−${ev(`${ft}.results.20.opslens.saved`, "int")} missed deadlines</span></div>
+    <div class="fx-bar" aria-hidden="true"><i style="width:${width(ours.missed_pct_after)}"></i><s style="width:${width(before - ours.missed_pct_after)}"></s></div>
+    <p class="fx-how">A replay of the real log: a fast-tracked incident is picked up when its first hour ends, and everything after happened as it really did.
+      Fast-tracking the oldest unassigned ones instead saves about as many (${ev(`${ft}.results.20.unassigned.saved`, "int")}), see Proof.</p></div>`;
+}
+
+function paintEffects(section, m) {
+  section.querySelectorAll("[data-action-index]").forEach((el) => {
+    el.querySelector(".action-fx").innerHTML = m.effect(m.plan[Number(el.dataset.actionIndex)], Number(el.dataset.actionIndex));
+  });
+  const total = section.querySelector("[data-plan-total]");
+  if (total && m.planTotal) total.innerHTML = m.planTotal();
+}
+
 export const actions = { render(section) {
   const m = modelFor(section);
   if (!m) return missing(section);
   m.plan.forEach(registerItem);
   const [first, ...fixes] = m.plan;
-  const box = (item, evidence) => `<div class="action-item"><div>
-      <div class="action-title">${escapeHtml(item.title)}</div><div class="small muted">${escapeHtml(item.owner)} · ${evidence}</div></div>
+  const box = (item, evidence, i) => `<div class="action-item" data-action-index="${i}"><div class="action-main">
+      <div class="action-title">${escapeHtml(item.title)}</div><div class="small muted">${escapeHtml(item.owner)} · ${evidence}</div>
+      <div class="action-fx">${m.effect(item, i)}</div></div>
       ${planButtons(item.id)}</div>`;
-  section.innerHTML = `${pageHeader("What to do", "Accept adds an action to Your plan; Override says why not.")}
-    ${card({ title: "Early warning", body: box(first, m.planEvidence[0]) })}
+  section.innerHTML = `${pageHeader("What to do", m.actionsSub)}
+    ${m.planTotal ? `<section class="card fx-card" data-plan-total>${m.planTotal()}</section>` : ""}
+    ${card({ title: "Early warning", body: box(first, m.planEvidence[0], 0) })}
     ${card({ title: "Fix first", sub: "The groups that miss most, biggest first.",
-      body: fixes.length ? fixes.map((f, i) => box(f, m.planEvidence[i + 1])).join("")
+      body: fixes.length ? fixes.map((f, i) => box(f, m.planEvidence[i + 1], i + 1)).join("")
         : `<p class="muted">No group misses clearly more often than the rest, so nothing needs fixing first.</p>` })}
     <p class="up-oneline">${escapeHtml(m.notOnList)}</p>`;
+  if (m.planTotal) {
+    section.onfileplan = () => paintEffects(section, modelFor(section) || m);
+    refreshFileEffect();
+  }
 } };
+
+document.addEventListener("fileplan-changed", () => {
+  document.querySelectorAll("[data-plan-total]").forEach((el) => {
+    const section = el.closest(".view");
+    if (section && section.onfileplan) section.onfileplan();
+  });
+});
 
 export const proof = { render(section) {
   const m = modelFor(section);

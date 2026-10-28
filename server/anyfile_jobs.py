@@ -127,3 +127,20 @@ def job_state(job_id: str) -> dict:
         if job is None:
             raise ValueError("This report is gone (the server restarted): upload the file again.")
         return {k: v for k, v in job.items() if k != "started"} | {"elapsed": round(time.time() - job["started"], 1)}
+
+
+def effect(job_id: str, groups: list[int], warn: bool, save: float) -> dict:
+    with _lock:
+        job = _jobs.get(job_id)
+    if job is None or job.get("status") != "done":
+        raise ValueError("This report is gone (the server restarted): upload the file again.")
+    result = job["result"]
+    n_cards = len(result["cards"])
+    if save not in anyfile.SAVE_CHOICES:
+        raise ValueError("Pick how many of the flagged misses looking first saves: 1 in 4, 1 in 2 or 3 in 4.")
+    chosen = sorted({int(g) for g in groups})
+    if any(g < 0 or g >= n_cards for g in chosen):
+        raise ValueError("That group is not in this report.")
+    return json_safe({"job": job_id, "accepted": {"groups": chosen, "warn": bool(warn)}, "save": save,
+                      "plan": anyfile.plan_effect(result["effect_cells"], chosen, bool(warn), save),
+                      **anyfile.single_effects(result["effect_cells"], n_cards, save)})

@@ -1,6 +1,7 @@
 import { state, store, lookup } from "./data.js";
 import { ev, evText } from "./evidence.js";
 import { escapeHtml } from "./format.js";
+import { filePlanTotal, fileActionEffect } from "./fileplan.js";
 
 const items = {};
 const choosing = new Set();
@@ -80,7 +81,7 @@ export function initPlan(startItems = []) {
   if (stale.length) store("opslens-plan", state.plan);
   document.addEventListener("click", onClick);
   document.getElementById("plan-button").addEventListener("click", () => togglePanel());
-  ["world-changed", "source-changed"].forEach((type) => document.addEventListener(type, () => { refreshCount(); if (panelOpen()) renderPanel(); }));
+  ["world-changed", "source-changed", "fileplan-changed"].forEach((type) => document.addEventListener(type, () => { refreshCount(); if (panelOpen()) renderPanel(); }));
   refreshCount();
 }
 
@@ -114,6 +115,7 @@ function onClick(event) {
   document.querySelectorAll(`[data-plan-item="${CSS.escape(id)}"]`).forEach((el) => { el.innerHTML = decisionHtml(id); });
   refreshCount();
   if (panelOpen()) renderPanel();
+  if (act !== "override") document.dispatchEvent(new CustomEvent("plan-changed", { detail: { id } }));
 }
 
 function mine(status) {
@@ -136,6 +138,7 @@ function togglePanel(open = !panelOpen()) {
 }
 
 function effectsHtml(item) {
+  if (item && item.fileIndex !== undefined && state.upload && state.upload.impact) return fileActionEffect(item.fileIndex, item.groupWord);
   if (item && planIndex(item.id) >= 0) {
     return `<div class="small muted">Alone, over the 14 held-out days (5 seeds), against today's roster with nothing accepted:</div>
       ${planEffectHtml(item.id)}${item.note ? `<div class="small muted">${escapeHtml(item.note)}</div>` : ""}`;
@@ -158,12 +161,12 @@ function renderPanel() {
     <div class="plan-head"><h3>Your plan</h3>
       <button type="button" class="link-btn" id="plan-close" aria-label="Close your plan">Close</button></div>
     <p class="small muted">Recommendations you accepted or overrode for ${world}. ${onFile
-      ? "Each one keeps the facts measured in your file." : "Accepting shows what each one changes, measured on days OpsLens never saw."}
+      ? "Each effect is worked out on your file's later items, which OpsLens never learned from." : "Accepting shows what each one changes, measured on days OpsLens never saw."}
       Kept in this browser only.</p>
+    ${onFile ? filePlanTotal(true) : ""}
     <h4>Accepted (${accepted.length})</h4>
     ${accepted.length ? accepted.map(acceptedHtml).join("")
       : `<p class="small muted">Nothing yet. Open Actions and press Accept on a recommendation.</p>`}
-    ${onFile ? `<p class="small muted">No Simulate for a file: a log cannot be replayed under different decisions.</p>` : ""}
     ${simulable ? `<div class="plan-sim"><label class="small" for="plan-day">Day</label>
         <select id="plan-day">${dayOptions()}</select>
         <button type="button" class="btn btn-primary" id="plan-simulate">Simulate this day with your plan</button></div>
