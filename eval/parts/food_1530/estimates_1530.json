@@ -1,0 +1,19 @@
+{
+ "estimates": {
+  "cross_factor": 1.6086376748378237,
+  "reopen_trained": 0.040879529266026636,
+  "reopen_cross": 0.14890662964248524,
+  "reopen_handle_factor": 0.6073451012044377
+ },
+ "true_values_for_reporting_only": {
+  "cross_factor": 1.6,
+  "reopen_trained": 0.04,
+  "reopen_cross": 0.15,
+  "reopen_handle_factor": 0.6
+ },
+ "sources": {
+  "reopen_trained, reopen_handle_factor": "history.csv days 1-35 (64,580 tickets, 2,640 reopened)",
+  "cross_factor, reopen_cross": "training-days pilot: OpsLens today, days 1-35, seed 0, 2,881 cross-skill first services (2,452 without reopen or transfer used for the slowdown)"
+ },
+ "seconds": 80.6
+}

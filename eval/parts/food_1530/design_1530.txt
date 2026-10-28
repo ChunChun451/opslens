@@ -1,0 +1,21 @@
+opslens              breach   7.66  P1   8.46  P99 wait  221.0  late/100  1146.1  Hindi  11.95  reopen  4.47
+baseline_d           breach  13.87  P1  10.76  P99 wait  615.9  late/100  2577.4  Hindi  23.71  reopen  3.98
+least_slack_rescue   breach   7.69  P1   9.35  P99 wait  231.5  late/100  1256.3  Hindi  12.00  reopen  4.90
+S1                   breach   7.33  P1   7.50  P99 wait  123.0  late/100   968.9  Hindi  10.15  reopen  4.56
+S2 w=0.25            breach   6.93  P1   6.99  P99 wait   96.1  late/100   948.6  Hindi   9.39  reopen  4.60
+S2 w=0.5             breach   6.90  P1   7.00  P99 wait   96.7  late/100   942.1  Hindi   9.38  reopen  4.60
+S2 w=0.75            breach   6.91  P1   7.01  P99 wait   96.0  late/100   940.7  Hindi   9.26  reopen  4.60
+S2                   breach   6.90  P1   7.00  P99 wait   96.7  late/100   942.1  Hindi   9.38  reopen  4.60
+S3                   breach   6.92  P1   6.92  P99 wait  102.2  late/100   943.8  Hindi   9.30  reopen  4.58
+  S1 - OpsLens today: breach -0.33 [-0.46, -0.20]  P1 -0.96 [-1.27, -0.65]  {'breach_ci_below_0': True, 'p1_not_up': True, 'p99_wait_not_above_industry': True, 'late_min_per_100_below_industry': True}  PASS
+  S2 - OpsLens today: breach -0.76 [-0.90, -0.63]  P1 -1.45 [-1.71, -1.20]  {'breach_ci_below_0': True, 'p1_not_up': True, 'p99_wait_not_above_industry': True, 'late_min_per_100_below_industry': True}  PASS
+  S3 - OpsLens today: breach -0.74 [-0.88, -0.60]  P1 -1.53 [-1.77, -1.30]  {'breach_ci_below_0': True, 'p1_not_up': True, 'p99_wait_not_above_industry': True, 'late_min_per_100_below_industry': True}  PASS
+  opslens - baseline_d               breach -6.22 [-7.12, -5.31]  P1 -2.31 [-3.18, -1.44]
+  opslens - least_slack_rescue       breach -0.03 [-0.22, +0.15]  P1 -0.90 [-1.24, -0.55]
+  S1 - baseline_d                    breach -6.55 [-7.49, -5.61]  P1 -3.27 [-4.08, -2.45]
+  S1 - least_slack_rescue            breach -0.36 [-0.59, -0.14]  P1 -1.85 [-2.04, -1.67]
+  S2 - baseline_d                    breach -6.98 [-7.96, -6.00]  P1 -3.76 [-4.74, -2.78]
+  S2 - least_slack_rescue            breach -0.80 [-1.00, -0.59]  P1 -2.35 [-2.58, -2.12]
+  S3 - baseline_d                    breach -6.96 [-7.93, -5.99]  P1 -3.84 [-4.76, -2.92]
+  S3 - least_slack_rescue            breach -0.78 [-1.00, -0.55]  P1 -2.43 [-2.66, -2.20]
+chosen: S2
