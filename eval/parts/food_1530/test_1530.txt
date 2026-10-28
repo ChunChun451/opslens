@@ -1,0 +1,18 @@
+baseline_d               breach  20.74  P1  13.16  P99 wait  797.6  late/100  4463.0  Hindi  30.57
+least_slack_rescue       breach   9.76  P1  11.03  P99 wait  660.4  late/100  2490.6  Hindi  15.15
+opslens                  breach   9.82  P1   9.78  P99 wait  522.2  late/100  2004.3  Hindi  15.49
+opslens routing alone    breach  10.85  P1  10.15  P99 wait  694.6  late/100  2656.5  Hindi  16.77
+S2                       breach   8.79  P1   8.08  P99 wait  410.2  late/100  1765.7  Hindi  11.70
+S2 routing alone         breach   9.83  P1   8.37  P99 wait  697.1  late/100  2636.0  Hindi  12.77
+  opslens - baseline_d                           breach -10.92 [-13.66, -8.17]  P1 -3.38 [-6.78, +0.02]
+  opslens - least_slack_rescue                   breach +0.06 [-0.44, +0.57]  P1 -1.25 [-2.06, -0.44]
+  opslens routing alone - baseline_d             breach -9.89 [-12.63, -7.15]  P1 -3.01 [-6.13, +0.10]
+  opslens routing alone - least_slack_rescue     breach +1.09 [+0.46, +1.72]  P1 -0.88 [-1.45, -0.32]
+  S2 - baseline_d                                breach -11.95 [-14.88, -9.02]  P1 -5.08 [-8.37, -1.79]
+  S2 - least_slack_rescue                        breach -0.98 [-1.28, -0.67]  P1 -2.95 [-3.68, -2.22]
+  S2 routing alone - baseline_d                  breach -10.91 [-14.05, -7.77]  P1 -4.80 [-8.05, -1.54]
+  S2 routing alone - least_slack_rescue          breach +0.07 [-0.11, +0.25]  P1 -2.67 [-3.36, -1.98]
+  S2 - opslens                                   breach -1.04 [-1.30, -0.78]  P1 -1.70 [-1.87, -1.53]
+step 1 (ship S2): {'beats_industry_overall': True, 'beats_industry_p1': True, 'beats_least_slack_overall': True, 'least_slack_p1_not_worse': True}
+step 2 (OpsLens today): {'beats_industry_overall': True, 'beats_industry_p1': False}
+decision: ship S2 on the 15/30/60 floor
