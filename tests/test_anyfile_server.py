@@ -83,3 +83,20 @@ def test_a_junk_file_is_refused_in_one_plain_sentence():
     assert state["error"].endswith("or try another file.") and "Traceback" not in state["error"] and "{" not in state["error"]
     unknown = client.get("/api/anyfile/job/nothing:here")
     assert unknown.status_code == 404 and unknown.json()["error"].startswith("This report is gone")
+
+
+def test_the_effect_of_a_plan_comes_from_the_server_and_refuses_what_it_cannot_measure():
+    csv = delivery_file().to_csv(index=False).encode()
+    peek = client.post("/api/anyfile/peek", files={"file": ("orders.csv", csv, "text/csv")}).json()
+    mapping = dict(peek["suggested"])
+    mapping["features"] = [c["name"] for c in peek["columns"] if c["feature"] and c["name"] not in mapping.values()]
+    job = client.post("/api/anyfile/run", json={"token": peek["token"], "mapping": mapping, "target_min": 30}).json()["job"]
+    result = poll(job)["result"]
+    assert result["cards"]
+    out = client.post("/api/anyfile/effect", json={"job": job, "groups": [0], "warn": True, "save": 0.75}).json()
+    assert out["plan"]["fewer"] == out["plan"]["from_fixes"] + out["plan"]["from_warning"]
+    assert out["warn"]["save"] == 0.75 and len(out["cards"]) == len(result["cards"])
+    assert out["plan"]["after"] < out["plan"]["before"]
+    assert client.post("/api/anyfile/effect", json={"job": job, "groups": [0], "save": 0.6}).status_code == 400
+    assert client.post("/api/anyfile/effect", json={"job": job, "groups": [99], "save": 0.5}).status_code == 400
+    assert client.post("/api/anyfile/effect", json={"job": "gone:0", "groups": [], "save": 0.5}).status_code == 400

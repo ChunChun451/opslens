@@ -11,6 +11,7 @@ export const state = {
   realSource: readSession("opslens-real-source", "uci"),
   plan: readStored("opslens-plan", {}),
   planimpact: null,
+  fileplan: null,
   live: null,
   role: readStored("opslens-role", "lead"),
   agent: readStored("opslens-agent", null),
@@ -110,6 +111,7 @@ export const LIVE_SOURCES = {
   upload: "GET /api/anyfile/job (OpsLens on your file: learned on its first 70%, scored on the rest)",
   uploadpeek: "POST /api/anyfile/peek (your file as the server read it; nothing learned yet)",
   planimpact: "POST /api/plan/impact (live simulation of your plan)",
+  fileplan: "POST /api/anyfile/effect (your accepted actions, added up on your file's later items)",
   live: "GET /api/live (today's day, simulated on this laptop, at your clock)",
 };
 

@@ -16,6 +16,8 @@ MIN_DAYS = 7
 MIN_MISSES = 30
 LEARN_SHARE = 0.70
 FLAG_SHARE = 0.20
+SAVE_CHOICES = (0.25, 0.5, 0.75)
+SAVE_DEFAULT = 0.5
 LEAK_AUC = 0.97
 TIMELINE_MAX = 3000
 FORECAST_DAYS = 56
@@ -613,6 +615,57 @@ def problem_cards(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, learn: np
     return cards
 
 
+def effect_cells(items: pd.DataFrame, X: pd.DataFrame, y: np.ndarray, test: np.ndarray, cards: list[dict],
+                 score: np.ndarray) -> list[list[int]]:
+    segments = segment_columns(items, X)
+    rows = np.flatnonzero(test)
+    groups = np.zeros(len(rows), dtype=np.int64)
+    for i, c in enumerate(cards):
+        groups |= (segments[c["column"]][rows] == c["value"]).astype(np.int64) << i
+    day = items["created_at"].dt.normalize().to_numpy()[rows]
+    frame = pd.DataFrame({"groups": groups, "flagged": flags_by_day(day, score[rows]).astype(int), "missed": y[rows]})
+    cells = frame.groupby(["groups", "flagged"], as_index=False).agg(items=("missed", "size"), misses=("missed", "sum"))
+    return cells[["groups", "flagged", "items", "misses"]].astype(int).to_numpy().tolist()
+
+
+def group_cut(c: np.ndarray, group: int) -> tuple[np.ndarray, float, float]:
+    inside = ((c[:, 0].astype(np.int64) >> group) & 1) == 1
+    rest_items = float(c[~inside, 2].sum())
+    rate = float(c[~inside, 3].sum()) / rest_items if rest_items else float(c[:, 3].sum()) / max(float(c[:, 2].sum()), 1.0)
+    misses = float(c[inside, 3].sum())
+    return inside, rate, min(1.0, float(c[inside, 2].sum()) * rate / misses) if misses else 1.0
+
+
+def plan_effect(cells: list[list[int]], groups: list[int], warn: bool, save: float) -> dict:
+    c = np.asarray(cells, dtype=float).reshape(-1, 4)
+    chosen = sorted({int(g) for g in groups})
+    items, before = float(c[:, 2].sum()), float(c[:, 3].sum())
+    keep = np.ones(len(c))
+    inside = np.zeros(len(c), dtype=bool)
+    rate = before / max(items, 1.0)
+    for g in chosen:
+        in_g, rate, cut = group_cut(c, g)
+        keep = np.where(in_g, np.minimum(keep, cut), keep)
+        inside |= in_g
+    expected = c[:, 3] * keep
+    from_fixes = int(round(before - float(expected.sum())))
+    flagged = c[:, 1] == 1
+    from_warning = int(round(save * float(expected[flagged].sum()))) if warn else 0
+    fewer = from_fixes + from_warning
+    after = int(before) - fewer
+    return {"items": int(items), "before": int(before), "after": after, "fewer": fewer,
+            "fewer_pct": round(100.0 * fewer / max(before, 1.0), 1),
+            "before_pct": round(100.0 * before / max(items, 1.0), 1), "after_pct": round(100.0 * after / max(items, 1.0), 1),
+            "from_fixes": from_fixes, "from_warning": from_warning,
+            "fixed_items": int(c[inside, 2].sum()), "rest_pct": round(100.0 * rate, 1) if len(chosen) == 1 else None,
+            "flagged_items": int(c[flagged, 2].sum()), "flagged_misses": int(c[flagged, 3].sum()),
+            "save": save if warn else None}
+
+
+def single_effects(cells: list[list[int]], n_cards: int, save: float) -> dict:
+    return {"warn": plan_effect(cells, [], True, save), "cards": [plan_effect(cells, [i], False, save) for i in range(n_cards)]}
+
+
 FORECAST_LAGS = (7, 14, 21, 28)
 BLANKS = ("nan", "None", "(blank)", "")
 FORECAST_INPUTS = ["team", "weekday", "lag_7", "lag_14", "lag_21", "lag_28", "mean_4w"]
@@ -772,6 +825,7 @@ def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, p
     shadow = shadow_day(items, X, y, test, scores, booster)
     step("Finding recurring problems, then checking them on later items")
     cards = problem_cards(items, X, y, learn, test)
+    cells = effect_cells(items, X, y, test, cards, scores["opslens"])
     step("Forecasting each team's workload a week ahead")
     forecast = team_forecast(items, test)
     steps[-1]["seconds"] = round(time.perf_counter() - steps[-1].pop("_t"), 1)
@@ -784,6 +838,8 @@ def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, p
         "test": {"items": int(test.sum()), "from": str(items.loc[test, "created_at"].min())[:10],
                  "to": str(items.loc[test, "created_at"].max())[:10]},
         "warning": warning, "shadow": shadow, "cards": cards, "flag_share_pct": int(100 * FLAG_SHARE),
+        "effect_cells": cells, "impact": {"save_choices": list(SAVE_CHOICES), **single_effects(cells, len(cards), SAVE_DEFAULT),
+                                          "save": SAVE_DEFAULT},
         "steps": steps, "seconds": round(time.perf_counter() - started, 1), "cannot": CANNOT,
         "miss": {**rule, "assumed": bool(target_assumed) and rule["rule"] == "promise"}, "forecast": forecast,
         "needs": missing_columns(items, scores, forecast),

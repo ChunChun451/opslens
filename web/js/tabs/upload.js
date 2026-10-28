@@ -1,6 +1,6 @@
 import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
-import { backendMissing, postJson } from "../ui.js";
+import { backendMissing, postJson, fold } from "../ui.js";
 import { escapeHtml } from "../format.js";
 
 const POLL_MS = 500;
@@ -93,15 +93,18 @@ function closeButton() {
 }
 
 function drawDrop(problem = "") {
-  const drawn = paint(`<section class="card up-card" aria-label="Upload a CSV">${closeButton()}
+  const drawn = paint(`<section class="card up-card" aria-label="Upload a CSV">${headHtml(true, 1)}
       <div class="up-drop" id="up-drop">
         <svg class="up-drop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4.5M7.5 9L12 4.5 16.5 9"/>
           <path d="M4.5 15v3.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V15"/></svg>
         <p class="up-drop-title">Drop a CSV of tickets, incidents or orders</p>
         <div class="up-drop-actions"><button type="button" class="btn btn-primary" id="up-choose">Choose file</button>
           <button type="button" class="link-btn" id="up-uci">or try the UCI example</button></div>
+        <p class="up-drop-sub">Each row is one ticket, incident or order, with when it started and when it ended or how many minutes it took.
+          A team, category, priority or on-time column helps, but is not needed.</p>
         <input type="file" id="up-file" accept=".csv,text/csv,text/plain" hidden>
       </div>
+      <p class="up-fine">Read by the OpsLens server on this laptop.</p>
       ${problem ? problemHtml(problem) : ""}
     </section>`);
   if (!drawn) return;
@@ -135,7 +138,7 @@ async function send(form, name) {
     paint(`<section class="card up-card">${closeButton()}${backendMissing("POST /api/anyfile/peek", "Start the OpsLens server to read your file.")}</section>`);
     return;
   }
-  paint(`<section class="card up-card">${closeButton()}<div class="wait" role="status"><span class="spinner" aria-hidden="true"></span>
+  paint(`<section class="card up-card">${headHtml(true, 1)}<div class="wait" role="status"><span class="spinner" aria-hidden="true"></span>
       <span class="wait-text">Reading ${escapeHtml(name)}…</span></div></section>`);
   let data;
   try {
@@ -177,11 +180,11 @@ function drawQuestion() {
       : "This file has no time an item ended or took. Pick the column under Adjust, or try another file.");
     return;
   }
-  paint(`<section class="card up-card">${headHtml()}
+  paint(`<section class="card up-card">${headHtml(true, 2)}
       <div class="up-question"><p class="up-q-text">${escapeHtml(q.text)}</p>
         <div class="up-answers">${options.map((o) => `<button type="button" class="btn" data-role="${o.role}"
           data-answer="${escapeHtml(o.column)}">${escapeHtml(o.column)}</button>`).join("")}</div></div>
-      ${previewHtml()}</section>`);
+      ${previewHtml(true)}</section>`);
 }
 
 function answer(role, column) {
@@ -235,14 +238,15 @@ function drawConfirm(forced = "") {
   const plan = state.uploadpeek && state.uploadpeek.plan;
   const problem = forced || (plan && plan.problem) || "";
   refuse(problem);
-  paint(`<section class="card up-card">${headHtml()}
-      ${plan ? `<ol class="up-says">${sentences(plan)}</ol>` : ""}
+  paint(`<section class="card up-card">${headHtml(true, 2)}
+      ${plan ? summaryHtml(plan) : ""}
       ${problem ? problemHtml(problem) : ""}
-      ${previewHtml()}
+      ${plan ? `<dl class="up-facts">${facts(plan)}</dl>` : ""}
       <div class="up-go"><button type="button" class="btn btn-primary btn-lg" id="up-run" ${problem || !plan ? "disabled" : ""}>Analyse my file</button>
-        <button type="button" class="link-btn" data-adjust aria-expanded="${adjusting}">Adjust</button>
+        <button type="button" class="link-btn" data-adjust aria-expanded="${adjusting}">Change columns</button>
         <button type="button" class="link-btn" data-up-other>Choose another file</button></div>
       <div class="up-adjust" id="up-adjust" ${adjusting ? "" : "hidden"}>${adjustHtml()}</div>
+      ${previewHtml(false)}
     </section>`);
 }
 
@@ -255,16 +259,34 @@ function toggleAdjust(toLearn) {
   if (toLearn) box.querySelector("#up-learn").scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
-function sentences(plan) {
+function day(iso) {
+  const d = new Date(String(iso).slice(0, 10) + "T00:00:00Z");
+  return Number.isNaN(d.getTime()) ? String(iso) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+function summaryHtml(plan) {
   const P = "uploadpeek.plan";
-  const rows = plan.rows !== plan.items ? ` (${ev(`${P}.items`, "int")} of your ${ev(`${P}.rows`, "int")} rows can be read)` : "";
-  const start = `${pick("created_at", ["time"])}${parts.created_time ? ` + ${pick("created_time", ["time"])}` : ""}`;
-  return `<li>Each row is one item: ${ev(`${P}.items`, "int")} items from ${evText(`${P}.from`)} to ${evText(`${P}.to`)}${rows}.
-        It starts at ${start}.</li>
-      <li>${endSentence()}</li>
-      <li>${missSentence(plan)}</li>
-      <li>${groupSentence()}</li>
-      <li>${learnSentence(plan)}</li>`;
+  const skipped = plan.rows !== plan.items
+    ? `<p class="up-sum-note">${ev(`${P}.items`, "int")} of your ${ev(`${P}.rows`, "int")} rows can be read; the rest are left out.</p>` : "";
+  return `<div class="up-sum"><p class="up-sum-main"><b>${ev(`${P}.items`, "int")}</b> items, ${evText(`${P}.from`, day(plan.from))} to ${evText(`${P}.to`, day(plan.to))}</p>
+      ${skipped}<p class="up-sum-how">OpsLens learns on the first ${ev(`${P}.learn_items`, "int")}, then checks itself on the last
+        ${ev(`${P}.test_items`, "int")}, which it never sees while learning. Check what it read, then analyse.</p></div>`;
+}
+
+function fact(label, value, note = "") {
+  return `<div class="up-fact"><dt>${label}</dt><dd><div class="up-fact-v">${value}</div>${note ? `<p class="up-assume">${note}</p>` : ""}</dd></div>`;
+}
+
+function facts(plan) {
+  const start = `${pick("created_at", ["time"])}${parts.created_time ? `<span class="up-plus">+</span>${pick("created_time", ["time"])}` : ""}`;
+  const miss = missFact(plan);
+  const groups = ["team", "category"].filter((p) => parts[p]).map((p) => pick(p, ["category", "number"], true));
+  return fact("Starts", start)
+    + fact("Ends", endSentence())
+    + fact("A miss is", miss.value, miss.note)
+    + fact("Grouped by", groups.length ? groups.join(`<span class="up-plus">and</span>`) : `<span class="muted">nothing found (see Change columns)</span>`)
+    + fact("Priority", pick("priority", ["category", "number"], true))
+    + fact("Learns from", learnFact(plan));
 }
 
 function freeColumns(part, kinds) {
@@ -294,52 +316,44 @@ function endSentence() {
   const select = `<select class="pick" data-end aria-label="When each item ended">
       ${times.length ? `<optgroup label="Ends at this time">${times.join("")}</optgroup>` : ""}
       ${minutes.length ? `<optgroup label="Took this many minutes">${minutes.join("")}</optgroup>` : ""}</select>`;
-  return parts.duration_min ? `It ends ${select} minutes later.` : `It ends at ${select}.`;
+  return parts.duration_min ? `${select}<span class="up-plus">minutes after it starts</span>` : `at ${select}`;
 }
 
-function missSentence(plan) {
+function missFact(plan) {
   const P = "uploadpeek.plan";
   const rule = plan.miss.rule;
+  const share = `<span class="up-share">${ev(`${P}.missed_pct`, "pct")} of your items</span>`;
   if (MISS_PARTS.includes(rule)) {
     const kinds = rule === "due_at" ? ["time"] : ["category", "number"];
     const options = freeColumns(rule, kinds).filter((c) => rule === "due_at" || c.unique <= 3 || c.name === parts[rule]);
     const select = `<select class="pick" data-miss aria-label="What counts as a miss">${options.map((c) =>
       `<option value="${rule}|${escapeHtml(c.name)}" ${c.name === parts[rule] ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}
       <option value="promise|">none: use a promised time</option></select>`;
-    const says = rule === "due_at" ? `finishing after ${select}` : `what your file's own ${select} column says`;
-    return `A miss = ${says}. That makes ${ev(`${P}.missed_pct`, "pct")} of your items misses.`;
+    return { value: `${rule === "due_at" ? `finishing after ${select}` : `what ${select} says`}${share}` };
   }
   const input = `<input type="number" class="pick-num" id="up-target" min="1" step="1" value="${escapeHtml(String(target))}" aria-label="Promised minutes">`;
-  const guess = plan.miss.assumed ? `<span class="up-assume">That is OpsLens's guess: your file has no on-time column, and half your items
-      take under ${ev(`${P}.median_min`, "dur")}. Type your own promise if it is different.</span>` : "";
-  return `A miss = taking longer than ${input} minutes. That makes ${ev(`${P}.missed_pct`, "pct")} of your items misses. ${guess}`;
+  return { value: `taking longer than ${input} min${share}`,
+    note: plan.miss.assumed ? `OpsLens's guess, as your file has no on-time column: half your items take under ${ev(`${P}.median_min`, "dur")}.
+      Type your own promise if it is different.` : "" };
 }
 
-function groupSentence() {
-  const groups = ["team", "category"].filter((p) => parts[p]).map((p) => pick(p, ["category", "number"], true));
-  const by = groups.length ? `Grouped by ${groups.join(" and ")}.` : "Not grouped: no team or category column was found (see Adjust).";
-  return `${by} Priority: ${pick("priority", ["category", "number"], true)}.`;
-}
-
-function learnSentence(plan) {
+function learnFact(plan) {
   const P = "uploadpeek.plan";
-  const columns = plan.learns_from_count
-    ? `${ev(`${P}.learns_from_count`, "int")} columns known when an item starts
-       (<button type="button" class="link-btn" data-adjust="learn">see which</button>), plus the time of day and how busy it was`
-    : "the time of day and how busy it was (no other column of your file is known when an item starts)";
-  return `OpsLens will learn from ${columns}. It learns on your first ${ev(`${P}.learn_items`, "int")} items and tests on the last
-    ${ev(`${P}.test_items`, "int")}, which it never sees while learning.`;
+  return plan.learns_from_count
+    ? `${ev(`${P}.learns_from_count`, "int")} columns known when an item starts, plus the time of day and how busy it was
+       <button type="button" class="link-btn" data-adjust="learn">see which</button>`
+    : "the time of day and how busy it was (no other column is known when an item starts)";
 }
 
-function previewHtml() {
+function previewHtml(open) {
   const lit = {};
   Object.entries(parts).forEach(([part, column]) => { if (PART_WORD[part] && column && !lit[column]) lit[column] = PART_WORD[part]; });
   const names = peeked.columns.map((c) => c.name);
   const head = names.map((n) => `<th class="${lit[n] ? "is-used" : ""}">${lit[n] ? `<span class="up-role">${lit[n]}</span>` : ""}${escapeHtml(n)}</th>`).join("");
   const rows = peeked.preview.map((row) => `<tr>${names.map((n) =>
     `<td class="${lit[n] ? "is-used" : ""}">${escapeHtml(row[n] === undefined ? "" : row[n])}</td>`).join("")}</tr>`).join("");
-  return `<div class="up-preview"><div class="up-preview-title">The first rows of ${escapeHtml(file)}</div>
-      <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  const table = `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  return `<div class="up-preview">${fold(`The first rows of ${file}`, table, { open, hint: "the columns OpsLens uses are shaded" })}</div>`;
 }
 
 function adjustHtml() {
@@ -394,14 +408,18 @@ function drawWatch(seen, current, elapsed) {
     const mark = done ? "✓" : now ? `<span class="spinner" aria-hidden="true"></span>` : "";
     return `<li class="up-step ${done ? "is-done" : ""} ${now ? "is-now" : ""}"><span class="up-mark">${mark}</span>${escapeHtml(name)}</li>`;
   }).join("");
-  paint(`<section class="card up-card up-watch" role="status" aria-live="polite">${headHtml(false)}
+  paint(`<section class="card up-card up-watch" role="status" aria-live="polite">${headHtml(false, 3)}
       <ol class="up-steps">${rows}</ol>
       <div class="up-bar" aria-hidden="true"><i style="width: ${(share * 100).toFixed(0)}%"></i></div>
       <div class="small muted up-clock">${Number(elapsed || 0).toFixed(1)} s</div></section>`);
 }
 
-function headHtml(withClose = true) {
-  return `<header class="up-head"><span class="up-file">${escapeHtml(file)}</span>${withClose ? closeButton() : ""}</header>`;
+const STEPS = ["Choose a file", "Check what OpsLens read", "Analyse"];
+
+function headHtml(withClose = true, at = 3) {
+  const steps = STEPS.map((name, i) => `<li class="${i + 1 === at ? "is-now" : i + 1 < at ? "is-done" : ""}"><span>${i + 1}</span>${name}</li>`).join("");
+  return `<header class="up-head"><div class="up-head-main"><span class="up-file">${at > 1 && file ? escapeHtml(file) : "Upload a CSV"}</span>
+      <ol class="up-stepper" aria-label="Steps">${steps}</ol></div>${withClose ? closeButton() : ""}</header>`;
 }
 
 function problemHtml(sentence) {
