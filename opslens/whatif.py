@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from functools import lru_cache
 
 import numpy as np
 import pandas as pd
 
 from opslens.impact import summarize
-from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_d
+from opslens.config import PROJECT_ROOT, load_config
+from opslens.policies import (OpsLensPolicy, baseline_a, baseline_b, baseline_d, handle_lognormal,
+                              needs_handle_dist, shipped_settings)
 from opslens.simulate import MINUTES_PER_DAY, Agent, simulate
 from opslens.world import build_world, day_bounds
 
@@ -55,11 +58,21 @@ def check_day(day: int, test_days: tuple[int, int]) -> None:
         raise ValueError(f"day must be a test day ({test_days[0]}-{test_days[1]})")
 
 
-def make_policy(key: str, world, preds: dict[str, str], risk_model, weights: dict, live_risk: bool = False,
+@lru_cache(maxsize=1)
+def default_handle_dist() -> dict:
+    history = pd.read_csv(PROJECT_ROOT / "data" / "generated" / "history.csv",
+                          usecols=["created_at", "final_category", "channel", "handled_min", "reopens", "resolution_min"])
+    calendar = load_config("calendar")
+    return handle_lognormal(history, calendar["start_date"], last_day=calendar["splits"]["train_last_day"])
+
+
+def make_policy(key: str, world, preds: dict[str, str], risk_model, weights: dict, live_risk: bool | None = None,
                 handle_dist: dict | None = None):
     if key == "opslens":
-        return OpsLensPolicy(world, preds, risk_model, weights, OpsLensSettings(use_live_risk=live_risk),
-                             handle_dist=handle_dist)
+        settings = shipped_settings(weights) if live_risk is None else shipped_settings(weights, use_live_risk=live_risk)
+        if handle_dist is None and needs_handle_dist(settings):
+            handle_dist = default_handle_dist()
+        return OpsLensPolicy(world, preds, risk_model, weights, settings, handle_dist=handle_dist)
     if key == "baseline_d":
         return baseline_d(world, preds)
     return baseline_a() if key == "baseline_a" else baseline_b()

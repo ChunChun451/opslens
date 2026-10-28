@@ -15,7 +15,7 @@ from opslens import risk
 from opslens.config import load_config
 from opslens.impact import mean_std, summarize
 from opslens.plan import apply_items, effect_by_kpi, kpi_info, plan_kpis, playbook_items, staffing_items
-from opslens.policies import OpsLensPolicy, OpsLensSettings
+from opslens.policies import OpsLensPolicy, handle_lognormal, shipped_settings
 from opslens.simulate import simulate
 from opslens.world import build_world, day_bounds, load_agents
 
@@ -32,8 +32,12 @@ def run_job(job: dict) -> dict:
     tickets, preds, agents, _ = apply_items(tickets, preds, load_agents(), job["items"], FIRST, LAST, weekday,
                                             alerts=job["alerts"])
     world = build_world(tickets, seed=job["seed"], agents=agents, gen_cfg=load_config("generator"))
+    weights = load_config("optimizer")
+    history = pd.read_csv(GENERATED / "history.csv", usecols=["created_at", "final_category", "channel",
+                                                             "handled_min", "reopens", "resolution_min"])
     policy = OpsLensPolicy(world, dict(zip(preds.ticket_id, preds.pred_final)), risk.load(GENERATED / "models"),
-                           load_config("optimizer"), OpsLensSettings())
+                           weights, shipped_settings(weights),
+                           handle_dist=handle_lognormal(history, load_config("calendar")["start_date"], last_day=35))
     warm, _ = day_bounds(FIRST - 1, FIRST - 1)
     start, end = day_bounds(FIRST, LAST)
     result = simulate(world, policy, warm, end, metric_start_min=start, seed_label=str(job["seed"]))

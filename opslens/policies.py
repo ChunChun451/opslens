@@ -341,6 +341,15 @@ class OpsLensSettings:
     label: str = "OpsLens"
 
 
+def shipped_settings(weights: dict, **overrides) -> OpsLensSettings:
+    return OpsLensSettings(**{**(weights.get("opslens_settings") or {}), **overrides})
+
+
+def needs_handle_dist(settings: OpsLensSettings) -> bool:
+    return (settings.use_live_risk or settings.lost_lane or settings.clock_cross_gate or settings.queue_clock
+            or settings.p1_guard)
+
+
 LOST_P = 0.95
 LOST_BASE = 0.005
 LOST_SPAN = 0.004
@@ -353,7 +362,7 @@ class OpsLensPolicy:
                  estimates: dict | None = None) -> None:
         self.settings = settings or OpsLensSettings()
         self.handle_dist = handle_dist or {}
-        self.estimates = estimates or {}
+        self.estimates = estimates if estimates is not None else (weights.get("estimates") or {})
         self.reserved: dict[str, tuple[int, float]] = {}
         self.notes = LiveNotes([], [])
         self.ctx_rescue: dict[int, float] = {}

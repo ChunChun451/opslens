@@ -17,7 +17,8 @@ from opslens import risk
 from opslens.config import load_config
 from opslens.impact import mean_std, paired_ci, summarize
 from opslens.playbooks import apply_scenario
-from opslens.policies import OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d
+from opslens.policies import (OpsLensPolicy, OpsLensSettings, baseline_a, baseline_b, baseline_c, baseline_d,
+                              needs_handle_dist, shipped_settings)
 from opslens.policies import (ClairvoyantSlackPolicy, GeneralizedCMuPolicy, LeastSlackPolicy,
                               LeastSlackRescuePolicy, expected_handle_minutes, handle_lognormal)
 from opslens.simulate import MINUTES_PER_DAY, simulate
@@ -86,13 +87,16 @@ def run_one(job: dict) -> dict:
                                                                      "handled_min", "reopens", "resolution_min"])
             handle = expected_handle_minutes(history, load_config("calendar")["start_date"], last_day=35)
         handle_dist = None
-        if job.get("settings", {}).get("use_live_risk"):
+        settings = shipped_settings(weights, **job.get("settings", {}))
+        if needs_handle_dist(settings):
             history = pd.read_csv(GENERATED / "history.csv", usecols=["created_at", "final_category", "channel",
                                                                      "handled_min", "reopens", "resolution_min"])
             handle_dist = handle_lognormal(history, load_config("calendar")["start_date"], last_day=35)
-        policy = OpsLensPolicy(world, dict(zip(preds.ticket_id, preds.pred_final)), risk.load(GENERATED / "models"),
-                               weights, OpsLensSettings(**job.get("settings", {})), log_window=log_window,
-                               handle=handle, handle_dist=handle_dist)
+        model = risk.load(GENERATED / "models")
+        if settings.use_live_risk and not settings.use_risk:
+            model = None
+        policy = OpsLensPolicy(world, dict(zip(preds.ticket_id, preds.pred_final)), model,
+                               weights, settings, log_window=log_window, handle=handle, handle_dist=handle_dist)
     started = time.perf_counter()
     day0 = (REPLAY_DAY - 1) * MINUTES_PER_DAY
     floor_window = (day0 + REPLAY_FROM_H * 60, day0 + REPLAY_TO_H * 60) if job.get("log") else None

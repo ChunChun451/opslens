@@ -18,7 +18,10 @@ FIRST, LAST = 43, 56
 ABLATIONS = {
     "full": ("OpsLens (full)", {}, True),
     "no_staffing": ("without staffing plan", {}, False),
-    "no_risk": ("without risk scores", {"use_risk": False}, True),
+    "no_risk": ("without the learned risk model (clock only)", {"use_risk": False}, True),
+    "no_lost_lane": ("without the likely-lost lane", {"lost_lane": False}, True),
+    "no_cross_gate": ("without the clock cross-skill test (old 0.5 rule)", {"clock_cross_gate": False}, True),
+    "no_queue_clock": ("without the queue-aware clock", {"queue_clock": False}, True),
     "no_optimizer": ("without optimiser (greedy per agent)", {"use_optimizer": False}, True),
     "no_classifier": ("without classifier (menu choice routing)", {"use_classifier": False}, True),
     "no_scarcity": ("without scarcity cost", {"use_scarcity": False}, True),
@@ -46,7 +49,7 @@ def main() -> int:
             for s in SEEDS:
                 jobs.append({"policy": policy, "seed": s, "first_day": FIRST, "last_day": LAST,
                              "staffing": policy == "opslens", "tag": f"stress:{name}:{policy}", **extra})
-    results = run_jobs(jobs, workers=10)
+    results = run_jobs(jobs, workers=15)
     by_tag: dict[str, list[dict]] = {}
     for r in results:
         by_tag.setdefault(r["job"]["tag"], []).append(r)

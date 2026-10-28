@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 from eval.run_opslens import PARTS, run_jobs
 from opslens.impact import mean_std, paired_ci
 
-RESCUE_GRID = [10, 20, 30, 60, 120, 240]
+RESCUE_GRID = [2, 5, 10, 15, 20, 30, 60, 120, 240]
 CMU_GRID = [{"tau": tau, "beta": beta} for beta in (0.0, 1.0) for tau in (0.1, 0.25, 0.5, 1.0)]
 NEW_RULES = ["least_slack", "gen_cmu"]
 CLAIRVOYANT = ["clairvoyant", "clairvoyant_staffed"]
