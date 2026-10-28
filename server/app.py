@@ -50,10 +50,16 @@ def engine_inputs() -> dict:
         from opslens.config import load_config
         from opslens.world import load_agents
 
+        from opslens.policies import handle_lognormal
+
         generated = ROOT / "data" / "generated"
         preds = pd.read_csv(generated / "predictions.csv", usecols=["ticket_id", "pred_final"])
-        splits = load_config("calendar")["splits"]
+        calendar = load_config("calendar")
+        splits = calendar["splits"]
+        history = pd.read_csv(generated / "history.csv", usecols=["created_at", "final_category", "channel",
+                                                                 "handled_min", "reopens", "resolution_min"])
         _CACHE.update({
+            "handle_dist": handle_lognormal(history, calendar["start_date"], last_day=splits["train_last_day"]),
             "tickets": pd.read_csv(generated / "world_tickets.csv"),
             "preds": dict(zip(preds["ticket_id"], preds["pred_final"])),
             "agents": load_agents(),
@@ -370,6 +376,13 @@ def _new_action(request: dict, current, minute: float, log: list[dict] | None = 
         if row["current"] is None:
             raise ValueError("Nothing in progress for this agent right now.")
         action["ticket_id"] = row["current"]["ticket_id"]
+        action["started"] = row["current"]["assigned_at"]
+        jobs = [j for j in current.work.get(agent, []) if j["ticket_id"] == action["ticket_id"]
+                and j["minute"] <= current.start + minute]
+        job = jobs[-1] if jobs else None
+        action["cross"] = bool(job and "cross-skill" in job["reason"])
+        if job and job["resolved"] is not None:
+            action["planned_end"] = round(job["resolved"] - current.start, 2)
         if kind == "extra_time":
             extra = float(request.get("value") or 0)
             if not 1 <= extra <= 60:

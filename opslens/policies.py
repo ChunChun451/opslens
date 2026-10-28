@@ -9,7 +9,8 @@ import numpy as np
 import pandas as pd
 
 from opslens.classify import TEAM_OF
-from opslens.features import WAITING_COLUMNS, QueueSnapshot, capability_table, features_for_snapshot
+from opslens.features import (CATEGORICAL, FEATURES, HOUR_BAND, WAITING_COLUMNS, QueueSnapshot, capability_table,
+                               features_for_snapshot)
 from opslens.optimize import (Candidate, SolveStats, solve, ticket_value, top_k, urgency_impact,
                               with_runner_up)
 from opslens.risk import risk_if_assigned_now
@@ -18,6 +19,8 @@ from opslens.simulate import MINUTES_PER_DAY, AgentView, Assignment, SimState, T
 
 PRIORITY_RANK = {"P1": 0, "P2": 1, "P3": 2}
 SCARCITY_FLOOR = 0.01
+SQRT2 = math.sqrt(2.0)
+MIN_RESIDUAL_MIN = 0.5
 
 
 def routing_category(ticket: TicketView) -> str:
@@ -134,6 +137,55 @@ def expected_handle_minutes(history: pd.DataFrame, first_weekday_date: str, last
     for cat, minutes in train.groupby("final_category")["handled_min"].mean().items():
         out[cat] = float(minutes)
     return out
+
+
+def handle_lognormal(history: pd.DataFrame, first_weekday_date: str, last_day: int = 35) -> dict:
+    start = pd.Timestamp(first_weekday_date)
+    created = pd.to_datetime(history["created_at"])
+    train = history[(created < start + pd.Timedelta(days=last_day)) & (history["reopens"] == 0)
+                    & history["resolution_min"].notna() & (history["handled_min"] > 0)]
+    logs = np.log(train["handled_min"].astype(float))
+    out: dict = {}
+    for (cat, channel), g in logs.groupby([train["final_category"], train["channel"]]):
+        if len(g) >= 30:
+            out[(cat, channel)] = (float(g.mean()), float(g.std()))
+    for cat, g in logs.groupby(train["final_category"]):
+        out[cat] = (float(g.mean()), float(g.std()))
+    return out
+
+
+def p_longer(mu: float, sigma: float, minutes: float) -> float:
+    if minutes <= 0:
+        return 1.0
+    return 0.5 * math.erfc((math.log(minutes) - mu) / (sigma * SQRT2))
+
+
+def expected_residual(mu: float, sigma: float, elapsed: float) -> float:
+    mean = math.exp(mu + sigma * sigma / 2)
+    if elapsed <= 0:
+        return mean
+    z = (mu - math.log(elapsed)) / sigma
+    still = 0.5 * math.erfc(-z / SQRT2)
+    if still < 1e-9:
+        return MIN_RESIDUAL_MIN
+    upper = mean * 0.5 * math.erfc(-(z + sigma) / SQRT2) / still
+    return max(MIN_RESIDUAL_MIN, upper - elapsed)
+
+
+@dataclass
+class LiveNotes:
+    speed: list[tuple[float, str, float]]
+    extra: list[tuple[float, str, int, float]]
+
+    def speed_of(self, agent_id: str, now: float) -> float:
+        factor = 1.0
+        for at, who, f in self.speed:
+            if who == agent_id and at <= now:
+                factor = f
+        return factor
+
+    def extra_on(self, agent_id: str, ticket_idx: int, now: float) -> float:
+        return sum(m for at, who, i, m in self.extra if who == agent_id and i == ticket_idx and at <= now)
 
 
 class RankedSkillsPolicy:
@@ -257,14 +309,22 @@ class OpsLensSettings:
     use_optimizer: bool = True
     use_classifier: bool = True
     use_scarcity: bool = True
+    use_live_risk: bool = False
     label: str = "OpsLens"
 
 
 class OpsLensPolicy:
     def __init__(self, world: World, predicted: dict[str, str], risk_model, weights: dict,
                  settings: OpsLensSettings | None = None, log_window: tuple[float, float] | None = None,
-                 handle: dict | None = None) -> None:
+                 handle: dict | None = None, handle_dist: dict | None = None) -> None:
         self.settings = settings or OpsLensSettings()
+        self.handle_dist = handle_dist or {}
+        self.notes = LiveNotes([], [])
+        self.ctx_rescue: dict[int, float] = {}
+        self.ctx_wait: dict[int, float] = {}
+        self._live_sig = None
+        self._live_scored = -1e9
+        self.live_scores = 0
         self.handle = handle
         self.mean_handle = float(np.mean([v for k, v in handle.items() if isinstance(k, str)])) if handle else 0.0
         self.switch = None
@@ -297,6 +357,7 @@ class OpsLensPolicy:
                 for skill in a.skills:
                     counts[(lang, skill)] = counts.get((lang, skill), 0) + 1
         self.rare = {pair for pair, n in counts.items() if n <= 5 and pair[0] != "en"}
+        self._prepare_live()
 
     def category(self, t: TicketView) -> str:
         if t.known_category:
@@ -309,6 +370,28 @@ class OpsLensPolicy:
         self.last_refresh = now
         if not waiting:
             return
+        feats, waiting_df, on_shift_df = self.snapshot_features(state, now, waiting)
+        live = (feats["time_left_min"] > 0).to_numpy()
+        rescue = np.zeros(len(feats))
+        p_wait_all = np.ones(len(feats))
+        if live.any():
+            p_wait = self.risk_model.predict(feats[live])
+            p_now = risk_if_assigned_now(self.risk_model, feats[live])
+            rescue[live] = np.clip(p_wait - p_now, 0.0, 1.0)
+            p_wait_all[live] = p_wait
+        self.rescue = dict(zip(waiting_df["idx"], rescue))
+        self.risk_wait = dict(zip(waiting_df["idx"], p_wait_all))
+        self.pressure = self.rare_pressure(waiting, capability_table(on_shift_df))
+
+    def rare_pressure(self, waiting: list[TicketView], capable: dict) -> dict:
+        need: dict[tuple[str, str], int] = {}
+        for t in waiting:
+            pair = (t.language, self.category(t))
+            if pair in self.rare:
+                need[pair] = need.get(pair, 0) + 1
+        return {pair: n / max(1, capable.get(pair, 0)) for pair, n in need.items()}
+
+    def snapshot_features(self, state: SimState, now: float, waiting: list[TicketView]):
         on_shift = [{"agent_id": a.agent_id, "team": a.team, "languages": set(a.languages), "skills": set(a.skills)}
                     for k, a in enumerate(self.world.agents) if state.shift_end(k, now) is not None]
         on_shift_df = pd.DataFrame(on_shift, columns=["agent_id", "team", "languages", "skills"])
@@ -330,23 +413,7 @@ class OpsLensPolicy:
             on_shift=on_shift_df, first_weekday=self.world.first_weekday,
         )
         feats = features_for_snapshot(snap, TEAM_OF)
-        live = (feats["time_left_min"] > 0).to_numpy()
-        rescue = np.zeros(len(feats))
-        p_wait_all = np.ones(len(feats))
-        if live.any():
-            p_wait = self.risk_model.predict(feats[live])
-            p_now = risk_if_assigned_now(self.risk_model, feats[live])
-            rescue[live] = np.clip(p_wait - p_now, 0.0, 1.0)
-            p_wait_all[live] = p_wait
-        self.rescue = dict(zip(waiting_df["idx"], rescue))
-        self.risk_wait = dict(zip(waiting_df["idx"], p_wait_all))
-        capable = capability_table(on_shift_df)
-        need: dict[tuple[str, str], int] = {}
-        for t in waiting:
-            pair = (t.language, self.category(t))
-            if pair in self.rare:
-                need[pair] = need.get(pair, 0) + 1
-        self.pressure = {pair: n / max(1, capable.get(pair, 0)) for pair, n in need.items()}
+        return feats, waiting_df, on_shift_df
 
     def only_cross_skill_can_save(self, t: TicketView, on_shift: list[dict], now: float) -> bool:
         lang, cat = t.language, self.category(t)
@@ -368,12 +435,15 @@ class OpsLensPolicy:
         if not free:
             return []
         waiting = state.waiting_tickets()
-        if self.settings.use_risk:
+        if self.settings.use_live_risk:
+            self.live_refresh(state, now, free, waiting)
+        elif self.settings.use_risk:
             if now - self.last_refresh >= self.w["risk_refresh_min"]:
                 self.refresh(state, now)
         elif self.settings.use_scarcity and now - self.last_refresh >= self.w["risk_refresh_min"]:
             self.refresh_pressure_only(state, now, waiting)
-        if self.w.get("roster_margin_min") is not None and now - self._roster_checked >= self.w["risk_refresh_min"]:
+        if (self.w.get("roster_margin_min") is not None and not self.settings.use_live_risk
+                and now - self._roster_checked >= self.w["risk_refresh_min"]):
             self._roster_checked = now
             on_shift = [{"languages": set(a.languages), "skills": set(a.skills)}
                         for k, a in enumerate(self.world.agents) if state.shift_end(k, now) is not None]
@@ -399,6 +469,194 @@ class OpsLensPolicy:
         return [Assignment(c.ticket_idx, c.agent_id, c.believed_category, deliberate_cross_skill=c.cross_skill,
                            reason=c.reason) for c in chosen]
 
+    def _prepare_live(self) -> None:
+        self.agent_pos = {a.agent_id: k for k, a in enumerate(self.world.agents)}
+        self.ln_mismatch = math.log(self.world.mismatch_factor)
+        self.ln_reopen = math.log(self.world.reopen_handle_factor)
+        self.codes = {}
+        if self.risk_model is not None:
+            self.codes = {col: {v: float(k) for k, v in enumerate(self.risk_model.categories[col])}
+                          for col in CATEGORICAL}
+        self._clock: dict[int, tuple[float, float, float, float]] = {}
+        self._speed_now: dict[str, float] = {}
+
+    def handle_params(self, category: str, channel: str) -> tuple[float, float]:
+        found = self.handle_dist.get((category, channel)) or self.handle_dist.get(category)
+        if found:
+            return found
+        return math.log(self.mean_handle or 6.0), 0.5
+
+    def live_refresh(self, state: SimState, now: float, free: list[AgentView], waiting: list[TicketView]) -> None:
+        on_shift = [k for k in range(len(self.world.agents)) if state.shift_end(k, now) is not None]
+        sig = (tuple(t.idx for t in waiting), tuple(a.agent_id for a in free), tuple(on_shift))
+        if sig != self._live_sig or now - self._live_scored >= self.w["risk_refresh_min"]:
+            self._live_sig, self._live_scored = sig, now
+            self.score_context(state, now, waiting, on_shift)
+            rows = [{"languages": set(self.world.agents[k].languages), "skills": set(self.world.agents[k].skills)}
+                    for k in on_shift]
+            if self.w.get("roster_margin_min") is not None:
+                self.only_cross = {t.idx: self.only_cross_skill_can_save(t, rows, now) for t in waiting}
+            if self.settings.use_scarcity:
+                capable: dict[tuple[str, str], int] = {}
+                for row in rows:
+                    for lang in row["languages"]:
+                        for skill in row["skills"]:
+                            capable[(lang, skill)] = capable.get((lang, skill), 0) + 1
+                self.pressure = self.rare_pressure(waiting, capable)
+        self.score_clock(state, now, waiting, free, on_shift)
+
+    def context_columns(self, state: SimState, now: float, waiting: list[TicketView], on_shift: list[int]) -> dict:
+        agents = self.world.agents
+        cats = [self.category(t) for t in waiting]
+        teams = [TEAM_OF.get(c, "?") for c in cats]
+        created = np.array([t.created_min for t in waiting], dtype=float)
+        sla = np.array([t.sla_deadline_min - t.created_min for t in waiting], dtype=float)
+        queue_team: dict[str, int] = {}
+        queue_team_language: dict[tuple[str, str], int] = {}
+        ahead = []
+        for t, team in zip(waiting, teams):
+            ahead.append(queue_team.get(team, 0))
+            queue_team[team] = queue_team.get(team, 0) + 1
+            key = (team, t.language)
+            queue_team_language[key] = queue_team_language.get(key, 0) + 1
+        on_team: dict[str, int] = {}
+        capable: dict[tuple[str, str], int] = {}
+        for k in on_shift:
+            a = agents[k]
+            on_team[a.team] = on_team.get(a.team, 0) + 1
+            for lang in a.languages:
+                for skill in a.skills:
+                    capable[(lang, skill)] = capable.get((lang, skill), 0) + 1
+        in_work = list(state.in_work)
+        busy = np.bincount(self.team_code[in_work], minlength=len(self.team_names)) if in_work else np.zeros(4, int)
+        lo = np.searchsorted(self.world.created_min, now - 60.0)
+        hi = np.searchsorted(self.world.created_min, now)
+        arrived = np.bincount(self.team_code[lo:hi], minlength=len(self.team_names))
+        busy_by = {t: int(busy[k]) for k, t in enumerate(self.team_names)}
+        arrived_by = {t: int(arrived[k]) for k, t in enumerate(self.team_names)}
+        minute_of_day = now % 1440
+        hour = int(minute_of_day // 60)
+        weekend = int((self.world.first_weekday + int(now // 1440)) % 7 in (5, 6))
+        age = now - created
+        return {
+            "ticket_id": [t.ticket_id for t in waiting], "idx": [t.idx for t in waiting],
+            "category_pred": cats, "priority": [t.priority for t in waiting], "channel": [t.channel for t in waiting],
+            "language": [t.language for t in waiting], "tier": [t.tier for t in waiting], "team": teams,
+            "hour_band": [HOUR_BAND[hour]] * len(waiting),
+            "age_min": age, "time_left_min": sla - age, "sla_min": sla,
+            "order_value_inr": np.array([t.order_value for t in waiting], dtype=float),
+            "hour": np.full(len(waiting), float(hour)), "is_weekend": np.full(len(waiting), float(weekend)),
+            "queue_total": np.full(len(waiting), float(len(waiting))),
+            "queue_team": np.array([queue_team[team] for team in teams], dtype=float),
+            "queue_team_language": np.array([queue_team_language[(team, t.language)]
+                                             for t, team in zip(waiting, teams)], dtype=float),
+            "ahead_in_team_queue": np.array(ahead, dtype=float),
+            "on_shift_team": np.array([on_team.get(team, 0) for team in teams], dtype=float),
+            "capable_on_shift": np.array([capable.get((t.language, c), 0) for t, c in zip(waiting, cats)], dtype=float),
+            "in_progress_team": np.array([busy_by.get(team, 0) for team in teams], dtype=float),
+            "arrivals_team_last_hour": np.array([arrived_by.get(team, 0) for team in teams], dtype=float),
+            "transfers_so_far": np.array([t.transfers for t in waiting], dtype=float),
+        }
+
+    def context_matrix(self, cols: dict) -> np.ndarray:
+        out = []
+        for col in FEATURES:
+            if col in CATEGORICAL:
+                codes = self.codes[col]
+                out.append([codes.get(str(v), np.nan) for v in cols[col]])
+            else:
+                out.append(cols[col])
+        return np.column_stack(out).astype(float)
+
+    def score_context(self, state: SimState, now: float, waiting: list[TicketView], on_shift: list[int]) -> None:
+        self.ctx_rescue, self.ctx_wait = {}, {}
+        if self.risk_model is None or not waiting:
+            return
+        self.live_scores += 1
+        cols = self.context_columns(state, now, waiting, on_shift)
+        X = self.context_matrix(cols)
+        live = cols["time_left_min"] > 0
+        p_wait = np.ones(len(waiting))
+        rescue = np.zeros(len(waiting))
+        if live.any():
+            wait_rows = X[live]
+            now_rows = wait_rows.copy()
+            now_rows[:, FEATURES.index("ahead_in_team_queue")] = 0.0
+            k = FEATURES.index("capable_on_shift")
+            now_rows[:, k] = np.maximum(now_rows[:, k], 1.0)
+            p = self.risk_model.predict_matrix(np.vstack([wait_rows, now_rows]))
+            n = len(wait_rows)
+            p_wait[live] = p[:n]
+            rescue[live] = np.clip(p[:n] - p[n:], 0.0, 1.0)
+        self.ctx_wait = dict(zip(cols["idx"], p_wait))
+        self.ctx_rescue = dict(zip(cols["idx"], rescue))
+
+    def next_capable_wait(self, state: SimState, now: float, pairs: set[tuple[str, str]], free: list[AgentView],
+                          on_shift: list[int]) -> dict[tuple[str, str], float]:
+        agents = self.world.agents
+        busy = []
+        for i in state.in_work:
+            tk = state.tickets[i]
+            k = self.agent_pos.get(tk.last_agent)
+            if k is None:
+                continue
+            mu, sigma = self.handle_params(tk.known_category or self.pred[i], self.world.channel[i])
+            mu += math.log(self.notes.speed_of(tk.last_agent, now))
+            if tk.working_cross:
+                mu += self.ln_mismatch
+            if tk.reopens > 0:
+                mu += self.ln_reopen
+            left = expected_residual(mu, sigma, now - tk.work_started_min)
+            busy.append((agents[k], left + self.notes.extra_on(tk.last_agent, i, now)))
+        free_ids = {a.agent_id for a in free}
+        free_agents = [agents[k] for k in on_shift if agents[k].agent_id in free_ids]
+        out = {}
+        for lang, cat in pairs:
+            options = [left for a, left in busy if lang in a.languages and cat in a.skills]
+            if any(lang in a.languages and cat in a.skills for a in free_agents):
+                mu, sigma = self.handle_params(cat, "chat")
+                options.append(math.exp(mu + sigma * sigma / 2))
+            if options:
+                out[(lang, cat)] = min(options)
+                continue
+            starts = self._schedule.get((lang, cat))
+            if starts is None:
+                last_day = int(self.world.created_min.max() // MINUTES_PER_DAY) + 3
+                starts = sorted(iv[0] for k, a in enumerate(agents) if lang in a.languages and cat in a.skills
+                                for iv in shift_intervals(self.world, k, 0, last_day, with_absences=False))
+                self._schedule[(lang, cat)] = starts
+            j = bisect.bisect_right(starts, now)
+            out[(lang, cat)] = starts[j] - now if j < len(starts) else math.inf
+        return out
+
+    def score_clock(self, state: SimState, now: float, waiting: list[TicketView], free: list[AgentView],
+                    on_shift: list[int]) -> None:
+        cw = self.w.get("live_clock_weight", 0.5) if self.risk_model is not None else 1.0
+        pairs = {(t.language, self.category(t)) for t in waiting}
+        wait = self.next_capable_wait(state, now, pairs, free, on_shift)
+        self._clock, self.risk_wait, self.rescue = {}, {}, {}
+        self._speed_now = {a.agent_id: self.notes.speed_of(a.agent_id, now) for a in free}
+        for t in waiting:
+            cat = self.category(t)
+            mu, sigma = self.handle_params(cat, t.channel)
+            if t.reopens > 0:
+                mu += self.ln_reopen
+            slack = t.sla_deadline_min - now
+            p_wait = p_longer(mu, sigma, slack - wait[(t.language, cat)])
+            self._clock[t.idx] = (slack, mu, sigma, p_wait)
+            self.risk_wait[t.idx] = cw * p_wait + (1 - cw) * self.ctx_wait.get(t.idx, p_wait)
+
+    def live_rescue(self, t: TicketView, agent_id: str, skilled: bool, now: float) -> float:
+        slack, mu, sigma, p_wait = self._clock[t.idx]
+        mu += math.log(self._speed_now.get(agent_id, 1.0))
+        if not skilled:
+            mu += self.ln_mismatch
+        clock = max(0.0, p_wait - p_longer(mu, sigma, slack))
+        if self.risk_model is None:
+            return clock
+        cw = self.w.get("live_clock_weight", 0.5)
+        return cw * clock + (1 - cw) * self.ctx_rescue.get(t.idx, 0.0)
+
     def expected_handle(self, t: TicketView) -> float:
         cat = self.category(t)
         return self.handle.get((cat, t.channel), self.handle.get(cat, self.mean_handle))
@@ -422,12 +680,7 @@ class OpsLensPolicy:
         on_shift = [{"agent_id": a.agent_id, "team": a.team, "languages": set(a.languages), "skills": set(a.skills)}
                     for k, a in enumerate(self.world.agents) if state.shift_end(k, now) is not None]
         capable = capability_table(pd.DataFrame(on_shift, columns=["agent_id", "team", "languages", "skills"]))
-        need: dict[tuple[str, str], int] = {}
-        for t in waiting:
-            pair = (t.language, self.category(t))
-            if pair in self.rare:
-                need[pair] = need.get(pair, 0) + 1
-        self.pressure = {pair: n / max(1, capable.get(pair, 0)) for pair, n in need.items()}
+        self.pressure = self.rare_pressure(waiting, capable)
 
     def candidates(self, free: list[AgentView], waiting: list[TicketView], now: float) -> list[Candidate]:
         out: list[Candidate] = []
@@ -445,7 +698,10 @@ class OpsLensPolicy:
                 cat = self.category(t)
                 skilled = cat in agent.skills
                 default = self.w["new_ticket_rescue"]
-                rescue = self.rescue.get(t.idx, default) if self.settings.use_risk else default
+                if self.settings.use_live_risk:
+                    rescue = self.live_rescue(t, agent.agent_id, skilled, now)
+                else:
+                    rescue = self.rescue.get(t.idx, default) if self.settings.use_risk else default
                 if not skilled and rescue < self.w["cross_skill_min_rescue"]:
                     continue
                 value = ticket_value(t.priority, t.tier, t.order_value, rescue, now - t.created_min, value_w,

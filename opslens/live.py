@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import bisect
 import math
 import re
-import threading
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -12,15 +12,20 @@ import pandas as pd
 from opslens import policies
 from opslens.privacy import mask_pii
 from opslens.risk import risk_if_assigned_now, top_reasons
-from opslens.simulate import FLOOR_EVERY_MIN, MINUTES_PER_DAY, Overrides, simulate
+from opslens.simulate import MINUTES_PER_DAY, Overrides, simulate
 from opslens.whatif import change_agents, change_volume, make_policy
 from opslens.world import build_world, day_bounds
 
 POLICIES = ("baseline_d", "opslens")
-RISK_EVERY_MIN = 10
+RISK_EVERY_MIN = 1
 RISK_SHOWN = 5
 STATUS_LETTER = {"off": "o", "idle": "i", "busy": "b", "cross": "x", "wrong": "w", "break": "k"}
-CHECKPOINT_EVERY_MIN = 30
+CHECKPOINT_EVERY_MIN = 10
+LIVE_FLOOR_EVERY_MIN = 1
+SPEED_PRIOR_JOBS = 2.0
+SPEED_RANGE = (0.5, 2.0)
+DANGER_COLUMNS = ("ticket_id", "time_left_min", "capable_on_shift", "priority", "language", "category_pred",
+                  "sla_min", "team")
 SIM_ACTIONS = ("decline", "done", "extra_time", "break", "back")
 STATUS_WORD = {letter: word for word, letter in STATUS_LETTER.items()}
 
@@ -50,24 +55,13 @@ class LiveDay:
     context: dict = field(default_factory=dict)
     complete: bool = True
     parent: "LiveDay | None" = None
-
-
-class _CaptureFeatures:
-    def __init__(self, original) -> None:
-        self.original = original
-        self._mine = threading.local()
-
-    def __call__(self, *args, **kwargs):
-        self._mine.last = self.original(*args, **kwargs)
-        return self._mine.last
-
-    @property
-    def last(self) -> pd.DataFrame | None:
-        return getattr(self._mine, "last", None)
+    live_risk: bool = False
 
 
 def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[str, int] | None = None,
-                      volume_factor: float = 1.0, actions: tuple = ()) -> LiveDay:
+                      volume_factor: float = 1.0, actions: tuple = (), live_risk: bool | None = None) -> LiveDay:
+    if live_risk is None:
+        live_risk = bool((inputs["weights"].get("live_risk") or {}).get("enabled"))
     warm, _ = day_bounds(day - 1, day - 1)
     start, end = day_bounds(day, day)
     tickets, preds = inputs["tickets"], inputs["preds"]
@@ -76,21 +70,25 @@ def simulate_live_day(inputs: dict, day: int, seed: int = 1, agents_delta: dict[
     agents = change_agents(inputs["agents"], agents_delta) if agents_delta else inputs["agents"]
     inputs = {**inputs, "tickets": tickets, "preds": preds, "agents": agents}
     tickets_info = tickets.set_index("ticket_id")
+    created = inputs["tickets"]["created_min"]
+    near = inputs["tickets"][(created >= warm - 60) & (created < end)]
     live = None
     for key in POLICIES:
-        world = build_world(inputs["tickets"], seed=seed, agents=inputs["agents"])
+        world = build_world(near, seed=seed, agents=inputs["agents"])
         if live is None:
             live = LiveDay(day=day, seed=seed, start=start, agents=[_agent_card(a, day) for a in world.agents],
-                           actions=tuple(actions))
-        policy = make_policy(key, world, inputs["preds"], inputs["model"], inputs["weights"])
+                           actions=tuple(actions), live_risk=live_risk)
+        policy = make_policy(key, world, inputs["preds"], inputs["model"], inputs["weights"],
+                             live_risk=live_risk, handle_dist=inputs.get("handle_dist"))
         if key == "opslens":
             live.context = {"inputs": inputs, "tickets_info": tickets_info, "world": world, "warm": warm, "end": end,
-                            "index": {tid: i for i, tid in enumerate(world.ticket_ids)}}
+                            "index": {tid: i for i, tid in enumerate(world.ticket_ids)},
+                            "policy_dist": inputs.get("handle_dist") or {}, "job_info": {}}
             policy.log_window = (start, end)
             _run_opslens(live, policy, overrides_from(live, actions), None)
             continue
         result = simulate(world, policy, warm, end, metric_start_min=start, seed_label=str(seed),
-                          floor_window=(start, end))
+                          floor_window=(start, end), floor_every_min=LIVE_FLOOR_EVERY_MIN)
         _keep_floor(live, key, result)
     return live
 
@@ -113,28 +111,23 @@ def _run_opslens(live: LiveDay, policy, overrides: Overrides | None, resume, pau
                  pause_when: Callable[[], bool] | None = None) -> bool:
     ctx = live.context
     world, inputs, start, end = ctx["world"], ctx["inputs"], live.start, ctx["end"]
-    capture = _CaptureFeatures(policies.features_for_snapshot)
-    policies.features_for_snapshot = capture
     first = resume.minute if resume is not None else start
-    earlier = [d["minute"] for d in live.danger if d["minute"] < first]
-    _record_danger(policy, capture, live, inputs, ctx["tickets_info"], start, end,
-                   earlier[-1] + RISK_EVERY_MIN if earlier else start)
+    policy.notes = policies.LiveNotes(speed_notes(live, live.actions), extra_notes(live, live.actions))
     marks = tuple(float(m) for m in np.arange(start, end, CHECKPOINT_EVERY_MIN) if m >= first)
     if pause is not None:
         marks = tuple(m for m in marks if m < pause) + (pause,)
-    share = (inputs["model"], policy.pred, policy.team_code, policy.w)
-    try:
-        result = simulate(world, policy, ctx["warm"], end, metric_start_min=start, seed_label=str(live.seed),
-                          floor_window=(start, end), overrides=overrides, checkpoint_at=marks,
-                          checkpoint_share=share, resume=resume, drain_min=0.0, pause_at=pause, pause_when=pause_when)
-    finally:
-        policies.features_for_snapshot = capture.original
+    share = (inputs["model"], policy.pred, policy.team_code, policy.w, policy._schedule, policy.handle_dist,
+             policy.codes, policy.rare, policy.agent_pos, policy.team_names)
+    result = simulate(world, policy, ctx["warm"], end, metric_start_min=start, seed_label=str(live.seed),
+                      floor_window=(start, end), overrides=overrides, checkpoint_at=marks,
+                      checkpoint_share=share, resume=resume, drain_min=0.0, pause_at=pause, pause_when=pause_when,
+                      floor_every_min=LIVE_FLOOR_EVERY_MIN, watch=_danger_watch(live, policy, inputs["model"]))
     _keep_floor(live, "opslens", result)
     log = [d for d in policy.decision_log
            if overrides is None or not overrides.blocks(d["agent_id"], d["ticket_idx"], d["minute"])]
     live.decisions = [{"minute": d["minute"], "ticket_id": world.ticket_ids[d["ticket_idx"]],
                        "agent": d["agent_id"], "reason": d["reason"]} for d in log]
-    live.work = _work_by_agent(log, world, result.tickets, ctx["tickets_info"])
+    live.work = _work_by_agent(log, world, result.tickets, ctx["tickets_info"], ctx.setdefault("job_info", {}))
     live.checkpoints = live.checkpoints + result.checkpoints
     return result.paused
 
@@ -161,6 +154,42 @@ def overrides_from(live: LiveDay, actions) -> Overrides | None:
             b0, _ = out.breaks[a["agent"]][-1]
             out.breaks[a["agent"]][-1] = (b0, max(b0, at))
     return out
+
+
+def speed_notes(live: LiveDay, actions) -> list[tuple[float, str, float]]:
+    model = live.context.get("policy_dist") or {}
+    info = live.context.get("tickets_info")
+    seen: dict[str, list[float]] = {}
+    out = []
+    for a in actions:
+        if a["kind"] not in ("done", "extra_time") or a.get("started") is None or info is None:
+            continue
+        if a.get("ticket_id") not in info.index:
+            continue
+        mu, _ = model.get(str(info.loc[a["ticket_id"], "category"]), (math.log(6.0), 0.5))
+        expected = math.exp(mu) * (1.6 if a.get("cross") else 1.0)
+        if a["kind"] == "done":
+            took = float(a["minute"] if a.get("value") is None else a["value"]) - float(a["started"])
+        elif a.get("planned_end") is not None:
+            took = float(a["planned_end"]) + float(a["value"]) - float(a["started"])
+        else:
+            continue
+        mine = seen.setdefault(a["agent"], [])
+        mine.append(max(0.0, took) / expected)
+        factor = (SPEED_PRIOR_JOBS + sum(mine)) / (SPEED_PRIOR_JOBS + len(mine))
+        out.append((live.start + float(a["minute"]), a["agent"], min(SPEED_RANGE[1], max(SPEED_RANGE[0], factor))))
+    return out
+
+
+def agent_speed(live: LiveDay, agent: str) -> float:
+    notes = [f for _, who, f in speed_notes(live, live.actions) if who == agent]
+    return notes[-1] if notes else 1.0
+
+
+def extra_notes(live: LiveDay, actions) -> list[tuple[float, str, int, float]]:
+    index = live.context.get("index", {})
+    return [(live.start + float(a["minute"]), a["agent"], index[a["ticket_id"]], float(a["value"]))
+            for a in actions if a["kind"] == "extra_time" and a.get("ticket_id") in index]
 
 
 def with_actions(base: LiveDay, actions, ahead_min: float | None = None) -> LiveDay:
@@ -214,7 +243,7 @@ def _copy_day(day: LiveDay, actions: tuple, parent: LiveDay | None) -> LiveDay:
                    tickets=dict(day.tickets), danger=list(day.danger), risk_seen=list(day.risk_seen),
                    decisions=day.decisions, work=day.work,
                    actions=actions, context=day.context, checkpoints=list(day.checkpoints), parent=parent,
-                   complete=day.complete)
+                   complete=day.complete, live_risk=day.live_risk)
 
 
 def _effects(live: LiveDay) -> list[dict]:
@@ -308,20 +337,27 @@ def _agent_card(agent, day: int) -> dict:
             "shift": f"{clock(start_min % MINUTES_PER_DAY)}-{clock(end_min % MINUTES_PER_DAY)}"}
 
 
-def _work_by_agent(decision_log: list[dict], world, tickets: pd.DataFrame, tickets_info: pd.DataFrame) -> dict[str, list[dict]]:
+def _work_by_agent(decision_log: list[dict], world, tickets: pd.DataFrame, tickets_info: pd.DataFrame,
+                   cache: dict | None = None) -> dict[str, list[dict]]:
     resolved_by_idx = dict(zip(tickets["idx"].to_numpy(), tickets["resolved_min"].to_numpy()))
+    cache = {} if cache is None else cache
     work: dict[str, list[dict]] = {}
     for d in decision_log:
         i = d["ticket_idx"]
         ticket_id = world.ticket_ids[i]
-        info = tickets_info.loc[ticket_id]
+        info = cache.get(ticket_id)
+        if info is None:
+            row = tickets_info.loc[ticket_id]
+            info = cache[ticket_id] = {"priority": str(row["priority"]), "category": str(row["category"]),
+                                       "language": str(row["language"]),
+                                       "text": mask_pii(str(row["text"])).text[:140]}
         resolved = resolved_by_idx.get(i, math.nan)
         work.setdefault(d["agent_id"], []).append({
             "minute": float(d["minute"]), "ticket_id": ticket_id, "reason": d["reason"],
             "created": float(world.created_min[i]), "deadline": float(world.created_min[i] + world.sla_min[i]),
             "resolved": None if math.isnan(resolved) else float(resolved),
-            "priority": str(info["priority"]), "category": str(d.get("believed") or info["category"]), "language": str(info["language"]),
-            "text": mask_pii(str(info["text"])).text[:140]})
+            "priority": info["priority"], "category": str(d.get("believed") or info["category"]),
+            "language": info["language"], "text": info["text"]})
     return work
 
 
@@ -350,41 +386,58 @@ def floor_now(live: LiveDay, now: float, status: str) -> list[dict]:
     return rows
 
 
-def _record_danger(policy, capture: _CaptureFeatures, live: LiveDay, inputs: dict,
-                   tickets_info: pd.DataFrame, start: float, end: float, first_at: float) -> None:
-    original_refresh = type(policy).refresh.__get__(policy)
-    next_at = [first_at]
+def _danger_watch(live: LiveDay, policy, model) -> Callable:
+    world = live.context["world"]
+    every = [0.0]
 
-    def refresh(state, now):
-        original_refresh(state, now)
-        if start <= now < end:
-            live.risk_seen.append((now, policy.risk_wait))
-        if not (start <= now < end) or now < next_at[0] or capture.last is None or capture.last.empty:
+    def watch(state, now: float) -> None:
+        if now < every[0]:
             return
-        next_at[0] = now + RISK_EVERY_MIN
-        feats = capture.last
-        live_rows = feats[feats["time_left_min"] > 0]
-        if live_rows.empty:
+        every[0] = now + RISK_EVERY_MIN
+        waiting = state.waiting_tickets()
+        if not waiting:
+            live.danger.append({"minute": now, "rows": None})
             return
-        p = inputs["model"].predict(live_rows)
-        order = np.argsort(-p)[:RISK_SHOWN]
-        top = live_rows.iloc[order]
-        reasons = top_reasons(inputs["model"], top)
-        served_now = risk_if_assigned_now(inputs["model"], top)
-        rows = []
-        for (_, row), prob, now_p, why in zip(top.iterrows(), p[order], served_now, reasons):
-            info = tickets_info.loc[row["ticket_id"]]
-            rows.append({"ticket_id": row["ticket_id"], "probability": round(float(prob), 3),
-                         "if_served_now": round(float(now_p), 3),
-                         "nobody_capable": bool(row["capable_on_shift"] < 0.5),
-                         "minutes_left": round(float(row["time_left_min"]), 1),
-                         "priority": str(row["priority"]), "language": str(row["language"]),
-                         "category": str(row["category_pred"]),
-                         "text": mask_pii(str(info["text"])).text[:140],
-                         "reasons": [r["text"] for r in why]})
-        live.danger.append({"minute": now, "tickets": rows})
+        on_shift = [k for k in range(len(world.agents)) if state.shift_end(k, now) is not None]
+        cols = policy.context_columns(state, now, waiting, on_shift)
+        live_rows = np.nonzero(cols["time_left_min"] > 0)[0]
+        if len(live_rows) == 0:
+            live.danger.append({"minute": now, "rows": None})
+            return
+        X = policy.context_matrix(cols)[live_rows]
+        p = model.predict_matrix(X)
+        live.risk_seen.append((now, dict(zip(np.asarray(cols["idx"])[live_rows].tolist(), p.tolist()))))
+        order = live_rows[np.argsort(-p, kind="stable")[:RISK_SHOWN]]
+        top = {c: np.asarray(cols[c])[order] for c in cols if c != "idx"}
+        live.danger.append({"minute": now, "rows": top, "p": np.sort(p)[::-1][:RISK_SHOWN]})
 
-    policy.refresh = refresh
+    return watch
+
+
+def danger_tickets(live: LiveDay, entry: dict) -> list[dict]:
+    if "tickets" in entry:
+        return entry["tickets"]
+    top = entry.get("rows")
+    if top is None:
+        entry["tickets"] = []
+        return []
+    model, tickets_info = live.context["inputs"]["model"], live.context["tickets_info"]
+    top = pd.DataFrame(top)
+    reasons = top_reasons(model, top)
+    served_now = risk_if_assigned_now(model, top)
+    rows = []
+    for (_, row), prob, now_p, why in zip(top.iterrows(), entry["p"], served_now, reasons):
+        info = tickets_info.loc[row["ticket_id"]]
+        rows.append({"ticket_id": row["ticket_id"], "probability": round(float(prob), 3),
+                     "if_served_now": round(float(now_p), 3),
+                     "nobody_capable": bool(row["capable_on_shift"] < 0.5),
+                     "minutes_left": round(float(row["time_left_min"]), 1),
+                     "priority": str(row["priority"]), "language": str(row["language"]),
+                     "category": str(row["category_pred"]),
+                     "text": mask_pii(str(info["text"])).text[:140],
+                     "reasons": [r["text"] for r in why]})
+    entry["tickets"] = rows
+    return rows
 
 
 def state_at(live: LiveDay, minute_of_day: float) -> dict:
@@ -392,7 +445,7 @@ def state_at(live: LiveDay, minute_of_day: float) -> dict:
     out = {"day": live.day, "seed": live.seed, "minute_of_day": round(now - live.start, 1),
            "agents": live.agents, "policies": {}}
     for key, frames in live.floors.items():
-        k = min(len(frames) - 1, max(0, int((now - live.start) // FLOOR_EVERY_MIN)))
+        k = max(0, bisect.bisect_right([f["minute"] for f in frames], now) - 1)
         t = live.tickets[key]
         arrived = t["created"] <= now
         waiting = arrived & ~(t["pickup"] <= now)
@@ -407,7 +460,7 @@ def state_at(live: LiveDay, minute_of_day: float) -> dict:
             "queues": frames[k]["queues"] if frames else {},
         }
     past = [d for d in live.danger if d["minute"] <= now]
-    out["danger"] = past[-1]["tickets"] if past else []
+    out["danger"] = danger_tickets(live, past[-1]) if past else []
     out["danger_minute"] = round(past[-1]["minute"] - live.start, 1) if past else None
     recent = [d for d in live.decisions if now - 15 <= d["minute"] <= now]
     out["decisions"] = [{**d, "minute": round(d["minute"] - live.start, 1)} for d in recent[-8:]][::-1]

@@ -55,9 +55,11 @@ def check_day(day: int, test_days: tuple[int, int]) -> None:
         raise ValueError(f"day must be a test day ({test_days[0]}-{test_days[1]})")
 
 
-def make_policy(key: str, world, preds: dict[str, str], risk_model, weights: dict):
+def make_policy(key: str, world, preds: dict[str, str], risk_model, weights: dict, live_risk: bool = False,
+                handle_dist: dict | None = None):
     if key == "opslens":
-        return OpsLensPolicy(world, preds, risk_model, weights, OpsLensSettings())
+        return OpsLensPolicy(world, preds, risk_model, weights, OpsLensSettings(use_live_risk=live_risk),
+                             handle_dist=handle_dist)
     if key == "baseline_d":
         return baseline_d(world, preds)
     return baseline_a() if key == "baseline_a" else baseline_b()

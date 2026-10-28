@@ -130,7 +130,8 @@ def test_an_action_names_the_ticket_the_agent_is_on() -> None:
 
     live = small_live_day()
     done = _new_action({"kind": "done", "agent": "A01"}, live, 20.0)
-    assert done == {"kind": "done", "agent": "A01", "minute": 20.0, "ticket_id": "T1"}
+    assert done == {"kind": "done", "agent": "A01", "minute": 20.0, "ticket_id": "T1", "started": 10.0,
+                    "cross": False, "planned_end": 40.0}
     extra = _new_action({"kind": "extra_time", "agent": "A01", "value": 10}, live, 20.0)
     assert extra["value"] == 10 and extra["ticket_id"] == "T1"
     assert _new_action({"kind": "decline", "agent": "A02", "ticket_id": "T2", "reason": "Language"}, live, 20.0)["reason"] == "Language"

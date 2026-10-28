@@ -126,6 +126,7 @@ class TicketState:
     mismatch_used: bool = False
     last_agent: str = ""
     working_cross: bool = False
+    work_started_min: float = math.nan
 
 
 @dataclass
@@ -289,11 +290,22 @@ class Checkpoint:
 
 def take_checkpoint(minute: float, tickets: list[TicketState], state: SimState, heap: list, seq: int,
                     decide_pending: set[float], snapshots: list[dict], next_snapshot: float, decisions: int,
-                    floor: list[dict], next_floor: float, policy, share: list) -> Checkpoint:
+                    floor: list[dict], next_floor: float, policy, share: list,
+                    previous: Checkpoint | None = None) -> Checkpoint:
     keep = [state.world, *share, *getattr(policy, "decision_log", [])]
+    before = previous.touched if previous is not None else {}
+    touched = {}
+    for i, t in enumerate(tickets):
+        if t.status != "future":
+            old = before.get(i)
+            if old is not None and (old.status == t.status == "resolved" and old.resolved_min == t.resolved_min
+                                    or old == t):
+                touched[i] = old
+            else:
+                touched[i] = copy.copy(t)
     return Checkpoint(
         minute=minute,
-        touched={i: copy.copy(t) for i, t in enumerate(tickets) if t.status != "future"},
+        touched=touched,
         agent_states={k: copy.copy(v) for k, v in state.agent_states.items()},
         waiting=dict(state.waiting), in_work=set(state.in_work), heap=list(heap), seq=seq,
         decide_pending=set(decide_pending), snapshots=list(snapshots), next_snapshot=next_snapshot,
@@ -329,6 +341,8 @@ def simulate(
     resume: Checkpoint | None = None,
     pause_at: float | None = None,
     pause_when: Callable[[], bool] | None = None,
+    floor_every_min: float = FLOOR_EVERY_MIN,
+    watch: Callable[[SimState, float], None] | None = None,
 ) -> SimResult:
     metric_start = start_min if metric_start_min is None else metric_start_min
     tickets = [TicketState() for _ in range(world.n_tickets)]
@@ -362,6 +376,7 @@ def simulate(
     marks = sorted(m for m in checkpoint_at if m >= first)
     checkpoints: list[Checkpoint] = []
     paused = False
+    next_watch = max(floor_window[0], math.ceil(first)) if watch is not None and floor_window else math.inf
 
     while heap:
         now, kind, _, payload = heapq.heappop(heap)
@@ -372,7 +387,8 @@ def simulate(
             if next_mark <= next_change:
                 checkpoints.append(take_checkpoint(marks.pop(0), tickets, state, heap, seq, decide_pending,
                                                    snapshots, next_snapshot, decisions, floor, next_floor,
-                                                   policy, list(checkpoint_share)))
+                                                   policy, list(checkpoint_share),
+                                                   checkpoints[-1] if checkpoints else resume))
                 if pause_at is not None and checkpoints[-1].minute >= pause_at:
                     paused = True
                     break
@@ -380,7 +396,12 @@ def simulate(
                     paused = True
                     break
             else:
+                changed_at = changes[0][0]
                 _change_finish(state, heap, changes.pop(0))
+                if changed_at not in decide_pending:
+                    heapq.heappush(heap, (changed_at, DECIDE, seq, ("event",)))
+                    seq += 1
+                    decide_pending.add(changed_at)
             continue
         if now > stop_min:
             break
@@ -389,7 +410,10 @@ def simulate(
             next_snapshot += SNAPSHOT_EVERY_MIN
         while next_floor <= now and next_floor <= floor_window[1]:
             floor.append(floor_snapshot(state, next_floor))
-            next_floor += FLOOR_EVERY_MIN
+            next_floor += floor_every_min
+        while next_watch <= now and next_watch < floor_window[1]:
+            watch(state, next_watch)
+            next_watch += 1.0
 
         if kind == DECIDE:
             decide_pending.discard(now)
@@ -506,6 +530,7 @@ def _start_work(world, tickets, state, agent_by_id, heap, seq, now, a: Assignmen
     ast.busy += 1
     t.last_agent = a.agent_id
     t.working_cross = a.deliberate_cross_skill
+    t.work_started_min = now
 
     true_cat = world.true_category[i]
     if true_cat in agent.skills or a.deliberate_cross_skill:

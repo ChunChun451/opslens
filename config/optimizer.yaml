@@ -20,3 +20,5 @@ aging_lost: 0.2
 guard_queue_limit: 150
 mismatch_cost: null
 roster_margin_min: 10
+live_risk: {enabled: false}
+live_clock_weight: 0.5

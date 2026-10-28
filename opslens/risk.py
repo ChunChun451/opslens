@@ -45,6 +45,10 @@ class RiskModel:
     def predict(self, feats: pd.DataFrame) -> np.ndarray:
         return self.calibrator.predict(self.raw(feats))
 
+    def predict_matrix(self, X: np.ndarray) -> np.ndarray:
+        raw = self.booster.predict(X, num_threads=1)
+        return np.interp(raw, self.calibrator.X_thresholds_, self.calibrator.y_thresholds_)
+
 
 def train(train_feats: pd.DataFrame, valid_feats: pd.DataFrame, rounds: int = 2000) -> RiskModel:
     categories = {c: sorted(train_feats[c].astype(str).unique()) for c in CATEGORICAL}
