@@ -20,13 +20,15 @@ from opslens.impact import mean_std, paired_ci, summarize
 from opslens.policies import (OpsLensPolicy, OpsLensSettings, baseline_d, cross_estimates, handle_lognormal,
                               reopen_estimates)
 from opslens.simulate import simulate
-from opslens.world import build_world, day_bounds, load_agents
+from opslens.world import apply_staffing_plan, build_world, day_bounds, load_agents
 
 OUT = ROOT / "eval" / "parts" / "food_1530"
 ESTIMATES = OUT / "estimates_1530.json"
 FIRST, LAST = 36, 42
 DESIGN_SEEDS = list(range(1, 11))
 CONFIRM_SEEDS = list(range(101, 121))
+TEST_FIRST, TEST_LAST = 43, 56
+TEST_SEEDS = [1, 2, 3, 4, 5]
 PILOT_SEED = 0
 PILOT_WEEKS = [(1, 7), (8, 14), (15, 21), (22, 28), (29, 35)]
 BLEND_GRID = [0.25, 0.5, 0.75]
@@ -52,10 +54,13 @@ def history_frame() -> pd.DataFrame:
                                                            "reopens", "resolution_min", "transfers"])
 
 
-def world_for(seed: int):
+def world_for(seed: int, staffing: bool = False):
     tickets = pd.read_csv(GENERATED / "world_tickets.csv")
     preds = pd.read_csv(GENERATED / "predictions.csv", usecols=["ticket_id", "pred_final"])
-    world = build_world(tickets, seed=seed, agents=load_agents(), gen_cfg=load_config("generator"))
+    agents = load_agents()
+    if staffing:
+        agents = apply_staffing_plan(agents, json.loads((GENERATED / "staffing_plan.json").read_text(encoding="utf-8")))
+    world = build_world(tickets, seed=seed, agents=agents, gen_cfg=load_config("generator"))
     return world, dict(zip(preds.ticket_id, preds.pred_final))
 
 
@@ -71,7 +76,8 @@ def opslens_policy(world, predicted, spec: dict, estimates: dict | None):
 
 def run_job(job: dict) -> dict:
     started = time.perf_counter()
-    world, predicted = world_for(job["seed"])
+    world, predicted = world_for(job["seed"], job.get("staffing", False))
+    first, last = job.get("days", (FIRST, LAST))
     if job["key"] == "baseline_d":
         policy = baseline_d(world, predicted)
     elif job["key"] == "least_slack_rescue":
@@ -79,10 +85,10 @@ def run_job(job: dict) -> dict:
                                 world, predicted)
     else:
         policy = opslens_policy(world, predicted, job.get("spec", {}), job.get("estimates"))
-    warm, _ = day_bounds(FIRST - 1, FIRST - 1)
-    start, end = day_bounds(FIRST, LAST)
+    warm, _ = day_bounds(first - 1, first - 1)
+    start, end = day_bounds(first, last)
     result = simulate(world, policy, warm, end, metric_start_min=start, seed_label=str(job["seed"]))
-    return {"key": job["key"], "seed": job["seed"], "kpis": summarize(result),
+    return {"key": job.get("tag", job["key"]), "seed": job["seed"], "kpis": summarize(result),
             "seconds": round(time.perf_counter() - started, 1)}
 
 
@@ -236,6 +242,67 @@ def confirm() -> int:
     return 0
 
 
+def ci_pair(per: dict, a: str, b: str) -> dict:
+    return {kpi: paired_ci([r[kpi] for r in per[a]], [r[kpi] for r in per[b]])
+            for kpi in ("turnaround.breach_pct", "segment.p1_breach_pct")}
+
+
+def test_days() -> int:
+    started = time.perf_counter()
+    confirmed = json.loads((OUT / "confirm_1530.json").read_text(encoding="utf-8"))
+    if not confirmed["confirmed"] or confirmed["chosen"] != "S2":
+        print("S2 was not confirmed; this mode only runs the confirmed S2")
+        return 1
+    spec = confirmed["spec"]
+    est = load_estimates()
+    days = (TEST_FIRST, TEST_LAST)
+    jobs = []
+    for s in TEST_SEEDS:
+        jobs += [{"key": "baseline_d", "seed": s, "days": days},
+                 {"key": "least_slack_rescue", "seed": s, "days": days},
+                 {"key": "opslens", "tag": "opslens", "seed": s, "days": days, "staffing": True},
+                 {"key": "opslens", "tag": "opslens routing alone", "seed": s, "days": days},
+                 {"key": "S2", "tag": "S2", "seed": s, "days": days, "staffing": True, "spec": spec, "estimates": est},
+                 {"key": "S2", "tag": "S2 routing alone", "seed": s, "days": days, "spec": spec, "estimates": est}]
+    per = run_all(jobs)
+    keys = ["baseline_d", "least_slack_rescue", "opslens", "opslens routing alone", "S2", "S2 routing alone"]
+    pairs = {f"{a} - {b}": ci_pair(per, a, b) for a in keys[2:] for b in ("baseline_d", "least_slack_rescue")}
+    pairs["S2 - opslens"] = ci_pair(per, "S2", "opslens")
+    s2_ind, s2_ls = pairs["S2 - baseline_d"], pairs["S2 - least_slack_rescue"]
+    ops_ind = pairs["opslens - baseline_d"]
+    step1 = {"beats_industry_overall": s2_ind["turnaround.breach_pct"]["ci_high"] < 0,
+             "beats_industry_p1": s2_ind["segment.p1_breach_pct"]["ci_high"] < 0,
+             "beats_least_slack_overall": s2_ls["turnaround.breach_pct"]["ci_high"] < 0,
+             "least_slack_p1_not_worse": s2_ls["segment.p1_breach_pct"]["mean_diff"] <= 0}
+    step2 = {"beats_industry_overall": ops_ind["turnaround.breach_pct"]["ci_high"] < 0,
+             "beats_industry_p1": ops_ind["segment.p1_breach_pct"]["ci_high"] < 0}
+    if all(step1.values()):
+        decision = "ship S2 on the 15/30/60 floor"
+    elif all(step2.values()):
+        decision = "fallback: OpsLens today on the 15/30/60 floor"
+    else:
+        decision = "fallback: main's 1h/4h/24h floor"
+    out = {"days": list(days), "seeds": TEST_SEEDS, "spec": spec, "estimates": est, "run_once": True,
+           "means": {k: means(per, k) for k in keys}, "paired": pairs, "step1_ship_s2": step1,
+           "step2_opslens_today": step2, "decision": decision, "per_seed": {k: per[k] for k in keys},
+           "seconds": round(time.perf_counter() - started, 1),
+           "note": "test days run once with code and weights frozen at the confirmation; PREREG_1530.md section 5"}
+    (OUT / "test_1530.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    for k in keys:
+        m = out["means"][k]
+        print(f"{k:24s} breach {m['turnaround.breach_pct']:6.2f}  P1 {m['segment.p1_breach_pct']:6.2f}  "
+              f"P99 wait {m['quality.p99_wait_min']:6.1f}  late/100 {m['quality.late_minutes_per_100']:7.1f}  "
+              f"Hindi {m['segment.hindi_breach_pct']:6.2f}")
+    for k, d in pairs.items():
+        b, p = d["turnaround.breach_pct"], d["segment.p1_breach_pct"]
+        print(f"  {k:46s} breach {b['mean_diff']:+.2f} [{b['ci_low']:+.2f}, {b['ci_high']:+.2f}]  "
+              f"P1 {p['mean_diff']:+.2f} [{p['ci_low']:+.2f}, {p['ci_high']:+.2f}]")
+    print("step 1 (ship S2):", step1)
+    print("step 2 (OpsLens today):", step2)
+    print("decision:", decision)
+    return 0
+
+
 def print_table(out: dict, keys: list[str]) -> None:
     for k in keys:
         m = out["means"][k]
@@ -257,4 +324,4 @@ def print_table(out: dict, keys: list[str]) -> None:
 
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else ""
-    raise SystemExit({"estimates": estimates, "design": design, "confirm": confirm}.get(mode, lambda: 2)())
+    raise SystemExit({"estimates": estimates, "design": design, "confirm": confirm, "test": test_days}.get(mode, lambda: 2)())
