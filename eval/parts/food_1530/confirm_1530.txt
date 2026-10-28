@@ -1,0 +1,11 @@
+opslens              breach   7.83  P1   8.67  P99 wait  254.8  late/100  1189.6  Hindi  12.10  reopen  4.43
+baseline_d           breach  13.57  P1  10.70  P99 wait  611.1  late/100  2469.3  Hindi  22.69  reopen  3.97
+least_slack_rescue   breach   7.82  P1   9.47  P99 wait  255.7  late/100  1269.1  Hindi  12.06  reopen  4.88
+S2                   breach   7.11  P1   7.27  P99 wait   95.0  late/100   990.0  Hindi   9.51  reopen  4.59
+  S2 - OpsLens today: breach -0.73 [-0.83, -0.62]  P1 -1.40 [-1.56, -1.23]  {'breach_ci_below_0': True, 'p1_not_up': True, 'p99_wait_not_above_industry': True, 'late_min_per_100_below_industry': True}  PASS
+  opslens - baseline_d               breach -5.74 [-6.24, -5.23]  P1 -2.03 [-2.53, -1.53]
+  opslens - least_slack_rescue       breach +0.02 [-0.11, +0.14]  P1 -0.81 [-0.97, -0.64]
+  S2 - baseline_d                    breach -6.46 [-6.97, -5.96]  P1 -3.43 [-3.93, -2.94]
+  S2 - least_slack_rescue            breach -0.71 [-0.81, -0.61]  P1 -2.20 [-2.33, -2.08]
+chosen: S2
+confirmed
