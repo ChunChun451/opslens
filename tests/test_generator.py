@@ -91,7 +91,7 @@ def test_luck_is_tied_to_ticket_number_not_row() -> None:
 @pytest.mark.skipif(not (GENERATED / "history.csv").exists(), reason="run `make gen` first")
 def test_generated_data_shape_and_signals() -> None:
     hist = pd.read_csv(GENERATED / "history.csv")
-    assert 60_000 < len(hist) < 80_000
+    assert 95_000 < len(hist) < 120_000
     assert hist["resolution_min"].isna().sum() == 0
     b = hist[hist["final_category"].isin(["refund", "payment_failure"])]
     waits = b.groupby("language")["wait_min"].mean()

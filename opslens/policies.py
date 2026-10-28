@@ -324,6 +324,7 @@ class OpsLensPolicy:
         self.ctx_wait: dict[int, float] = {}
         self._live_sig = None
         self._live_scored = -1e9
+        self.predict_threads = 1
         self.live_scores = 0
         self.handle = handle
         self.mean_handle = float(np.mean([v for k, v in handle.items() if isinstance(k, str)])) if handle else 0.0
@@ -495,7 +496,7 @@ class OpsLensPolicy:
             rows = [{"languages": set(self.world.agents[k].languages), "skills": set(self.world.agents[k].skills)}
                     for k in on_shift]
             if self.w.get("roster_margin_min") is not None:
-                self.only_cross = {t.idx: self.only_cross_skill_can_save(t, rows, now) for t in waiting}
+                self.only_cross = self.only_cross_by_pair(waiting, rows, now)
             if self.settings.use_scarcity:
                 capable: dict[tuple[str, str], int] = {}
                 for row in rows:
@@ -504,6 +505,16 @@ class OpsLensPolicy:
                             capable[(lang, skill)] = capable.get((lang, skill), 0) + 1
                 self.pressure = self.rare_pressure(waiting, capable)
         self.score_clock(state, now, waiting, free, on_shift)
+
+    def only_cross_by_pair(self, waiting: list[TicketView], rows: list[dict], now: float) -> dict[int, bool]:
+        covered: dict[tuple[str, str], bool] = {}
+        out = {}
+        for t in waiting:
+            pair = (t.language, self.category(t))
+            if pair not in covered:
+                covered[pair] = any(pair[0] in a["languages"] and pair[1] in a["skills"] for a in rows)
+            out[t.idx] = False if covered[pair] else self.only_cross_skill_can_save(t, [], now)
+        return out
 
     def context_columns(self, state: SimState, now: float, waiting: list[TicketView], on_shift: list[int]) -> dict:
         agents = self.world.agents
@@ -584,7 +595,7 @@ class OpsLensPolicy:
             now_rows[:, FEATURES.index("ahead_in_team_queue")] = 0.0
             k = FEATURES.index("capable_on_shift")
             now_rows[:, k] = np.maximum(now_rows[:, k], 1.0)
-            p = self.risk_model.predict_matrix(np.vstack([wait_rows, now_rows]))
+            p = self.risk_model.predict_matrix(np.vstack([wait_rows, now_rows]), self.predict_threads)
             n = len(wait_rows)
             p_wait[live] = p[:n]
             rescue[live] = np.clip(p[:n] - p[n:], 0.0, 1.0)

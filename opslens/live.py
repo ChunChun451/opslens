@@ -22,6 +22,7 @@ RISK_SHOWN = 5
 STATUS_LETTER = {"off": "o", "idle": "i", "busy": "b", "cross": "x", "wrong": "w", "break": "k"}
 CHECKPOINT_EVERY_MIN = 10
 LIVE_FLOOR_EVERY_MIN = 1
+LIVE_PREDICT_THREADS = 4
 SPEED_PRIOR_JOBS = 2.0
 SPEED_RANGE = (0.5, 2.0)
 DANGER_COLUMNS = ("ticket_id", "time_left_min", "capable_on_shift", "priority", "language", "category_pred",
@@ -113,6 +114,7 @@ def _run_opslens(live: LiveDay, policy, overrides: Overrides | None, resume, pau
     world, inputs, start, end = ctx["world"], ctx["inputs"], live.start, ctx["end"]
     first = resume.minute if resume is not None else start
     policy.notes = policies.LiveNotes(speed_notes(live, live.actions), extra_notes(live, live.actions))
+    policy.predict_threads = LIVE_PREDICT_THREADS
     marks = tuple(float(m) for m in np.arange(start, end, CHECKPOINT_EVERY_MIN) if m >= first)
     if pause is not None:
         marks = tuple(m for m in marks if m < pause) + (pause,)
@@ -405,7 +407,7 @@ def _danger_watch(live: LiveDay, policy, model) -> Callable:
             live.danger.append({"minute": now, "rows": None})
             return
         X = policy.context_matrix(cols)[live_rows]
-        p = model.predict_matrix(X)
+        p = model.predict_matrix(X, LIVE_PREDICT_THREADS)
         live.risk_seen.append((now, dict(zip(np.asarray(cols["idx"])[live_rows].tolist(), p.tolist()))))
         order = live_rows[np.argsort(-p, kind="stable")[:RISK_SHOWN]]
         top = {c: np.asarray(cols[c])[order] for c in cols if c != "idx"}

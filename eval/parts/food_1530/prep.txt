@@ -1,0 +1,82 @@
+tickets: 107,476  over 56 days  (sim 18.3s, 238,411 decisions)
+Baseline A breach %      19.8   target [12, 18]
+mean utilisation         0.70   target [0.7, 0.8]
+Team C wknd dinner rho   1.18   target [1.2, 1.5]
+breach % by resolving team: {'A': 14.4, 'B': 25.5, 'C': 17.0, 'D': 23.0}
+breach % by priority: {'P1': 18.6, 'P2': 20.4, 'P3': 20.7}
+Team B categories, mean wait (min) by language: {'en': 11.5, 'hi': 325.2, 'other': 44.4}
+cluster 17: 4.6% of wrong items vs 1.9% of all tickets
+transfers per 100 tickets by channel: {'call': 12.5, 'chat': 2.4, 'email': 2.4}
+reopen rate 4.0%   unresolved 0
+local model trained on 67,543 tickets in 76s
+validation: 1,732 tickets below 0.95 -> LLM (70 requests)
+threshold search on validation days:
+ threshold  escalated_pct  accuracy
+      0.50         0.1439    0.9824
+      0.60         1.3177    0.9825
+      0.70         2.6051    0.9804
+      0.80         4.2635    0.9780
+      0.85         5.8614    0.9732
+      0.90         8.2696    0.9683
+      0.95        13.1162    0.9565
+test: 360 tickets below 0.6 -> LLM
+menu_choice_accuracy                 0.9077
+accuracy_local                       0.9820
+accuracy_cascade                     0.9822
+accuracy_local_calls                 0.9592
+accuracy_cascade_calls               0.9581
+menu_choice_accuracy_calls           0.7350
+accuracy_cascade_hinglish            0.9795
+threshold                            0.6000
+pct_sent_to_llm                      1.3469
+llm_fixed                            60
+llm_broke                            55
+misrouted_per_100_menu               5.7842
+misrouted_per_100_opslens            1.2571
+misrouted_per_100_menu_calls         16.7686
+misrouted_per_100_opslens_calls      2.9276
+llm_requests_per_million_tickets     538.7609
+test_tickets                         26728
+accuracy_llm_sample                  0.9150
+llm_sample_answered                  400
+late_delivery        k=6: Persistent Delivery Estimate Delays | Unresponsive Rider Delay | Delayed Order Status Inquiries | Delayed Order Delivery Inquiries | Order Delivery Status Inquiry | Delayed Food Delivery
+missing_item         k=6: Missing Items in Sealed Bags | Missing Order Item | Incomplete Order Delivery | Incomplete Order Delivery | Missing Items From Order | Missing Items From Food Orders
+wrong_item           k=6: Incorrect Order Delivery | Incorrect Spice Level and Size | Incorrect Items Received | Incorrect Order Delivery | Recurring Incorrect Order Deliveries | Incorrect Dietary Item Delivered
+refund               k=6: Refund Policy Inquiry | Delayed Order Cancellation Refunds | Delayed Order Refund Requests | Refund Processing Time Inquiries | Refund Status Inquiry | Food Quality Refund Requests
+payment_failure      k=6: Duplicate Payment Charges | Duplicate Payment Charges | Payment Declined With Bank Debit | Online Payment Processing Issues | Pending UPI Payment Failures | UPI Payment Deduction Failure
+app_bug              k=6: Authentication and OTP Delivery Failure | Address Saving Failure | Cart Access Application Crash | Coupon Application Button Failure | Checkout Page Freezing Issue | Coupon Application Failure
+account              k=6: Mobile Number Update Request | Account Block Inquiry | Gold Account Subscription Inquiries | Missing Gold Membership Status | Account Deletion Assistance | User Login Password Recovery Issues
+restaurant_partner   k=6: Poor Food Quality Reports | Restaurant Overcharging Issues | Restaurant Order Cancellations | Incorrect Restaurant Status Display | the, please, and | Poor Restaurant Packaging Quality
+wrote data\generated\predictions.csv and eval/parts/classification.json (1455s total)
+snapshot rows: train 48,379, validation 8,476, test 27,555 (101s)
+test rows: AUC 0.973 (time-left rule 0.671, priority rule 0.438), PR-AUC 0.991, top-10% precision 0.999, Brier 0.0539, base rate 0.763
+at arrival: AUC 0.956, PR-AUC 0.969, top-10% precision 0.997, base rate 0.575, n 10,572
+top features by gain: {'queue_team_language': 0.274, 'time_left_min': 0.18, 'capable_on_shift': 0.148, 'ahead_in_team_queue': 0.071, 'queue_team': 0.048, 'language': 0.038}
+  T107034 p=1.0 -> 0.841 | 8 min left of 60 min SLA — 43% of the push | 15 Team D tickets waiting in this language — 20% of the push | Hindi customer — 15% of the push
+  T107087 p=1.0 -> 0.551 | 31 Team D tickets waiting in this language — 52% of the push | 21 tickets ahead in Team D's queue — 24% of the push | restaurant partner ticket — 17% of the push
+  T107083 p=1.0 -> 0.551 | 31 Team D tickets waiting in this language — 54% of the push | 19 tickets ahead in Team D's queue — 21% of the push | restaurant partner ticket — 17% of the push
+UCI real data: 7,476 test incidents, breach rate 0.233, AUC 0.857 (priority rule 0.552), PR-AUC 0.599, top-10% precision 0.625
+wrote eval/parts/risk.json and the model (157s)
+wape_model                           0.265
+wape_naive                           0.355
+wape_noise_floor                     0.228
+wape_model_without_unseen_surge      0.262
+wape_team_hour_workload_model        0.206
+wape_team_hour_workload_naive        0.283
+coverage_80                          0.783
+coverage_90                          0.889
+q80                                  1.203
+q90                                  1.568
+q80_team                             1.284
+event_uplift                         1.170
+best_iteration                       232.000
+sale_day_error_pct                   -17.503
+plan days 43-49: shortage 471.2 -> 455.2 agent-hours, 6 moves: D08 day off on Thu instead of Sun; D04 start 07:00 instead of 08:00; C03 start 08:00 instead of 06:00; A04 day off on Wed instead of Mon; B08 start 15:00 instead of 14:00; B05 start 08:00 instead of 06:00
+plan days 50-56: shortage 495.1 -> 479.2 agent-hours, 6 moves: A04 day off on Wed instead of Mon; D06 day off on Thu instead of Mon; D04 start 07:00 instead of 08:00; B01 day off on Tue instead of Mon; B08 start 15:00 instead of 14:00; C03 start 08:00 instead of 06:00
+  bottleneck: Team D short by up to 5.1 agents, Sun 18 Oct 17:00-00:00 (26.0 agent-hours)
+  bottleneck: Team C short by up to 4.0 agents, Mon 19 Oct 07:00-15:00 (24.1 agent-hours)
+  bottleneck: Team D short by up to 5.1 agents, Sun 25 Oct 17:00-00:00 (24.0 agent-hours)
+  bottleneck: Team C short by up to 3.1 agents, Thu 22 Oct 16:00-00:00 (22.6 agent-hours)
+  bottleneck: Team C short by up to 4.0 agents, Mon 12 Oct 07:00-15:00 (22.1 agent-hours)
+wrote eval/parts/forecast.json and data/generated/staffing_plan.json (4s)
+PREP DONE

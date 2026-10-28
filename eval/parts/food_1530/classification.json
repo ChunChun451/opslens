@@ -1,0 +1,640 @@
+{
+ "accuracy_local": 0.9819664771026638,
+ "accuracy_cascade": 0.9821535468422627,
+ "accuracy_llm_sample": 0.915,
+ "pct_sent_to_llm": 1.346902125112242,
+ "transfers_avoided_per_100": 4.527087698293924,
+ "confusion": {
+  "account": {
+   "account": 2000,
+   "app_bug": 28,
+   "late_delivery": 3,
+   "missing_item": 4,
+   "payment_failure": 3,
+   "refund": 6,
+   "restaurant_partner": 1,
+   "wrong_item": 2
+  },
+  "app_bug": {
+   "account": 12,
+   "app_bug": 1564,
+   "late_delivery": 6,
+   "missing_item": 1,
+   "payment_failure": 9,
+   "refund": 3,
+   "restaurant_partner": 4,
+   "wrong_item": 0
+  },
+  "late_delivery": {
+   "account": 5,
+   "app_bug": 3,
+   "late_delivery": 7217,
+   "missing_item": 53,
+   "payment_failure": 4,
+   "refund": 14,
+   "restaurant_partner": 7,
+   "wrong_item": 9
+  },
+  "missing_item": {
+   "account": 8,
+   "app_bug": 3,
+   "late_delivery": 22,
+   "missing_item": 3888,
+   "payment_failure": 5,
+   "refund": 11,
+   "restaurant_partner": 1,
+   "wrong_item": 20
+  },
+  "payment_failure": {
+   "account": 5,
+   "app_bug": 17,
+   "late_delivery": 5,
+   "missing_item": 3,
+   "payment_failure": 2513,
+   "refund": 13,
+   "restaurant_partner": 6,
+   "wrong_item": 2
+  },
+  "refund": {
+   "account": 6,
+   "app_bug": 4,
+   "late_delivery": 11,
+   "missing_item": 4,
+   "payment_failure": 30,
+   "refund": 4059,
+   "restaurant_partner": 9,
+   "wrong_item": 4
+  },
+  "restaurant_partner": {
+   "account": 1,
+   "app_bug": 4,
+   "late_delivery": 21,
+   "missing_item": 2,
+   "payment_failure": 16,
+   "refund": 3,
+   "restaurant_partner": 2473,
+   "wrong_item": 13
+  },
+  "wrong_item": {
+   "account": 0,
+   "app_bug": 3,
+   "late_delivery": 3,
+   "missing_item": 28,
+   "payment_failure": 5,
+   "refund": 6,
+   "restaurant_partner": 6,
+   "wrong_item": 2537
+  }
+ },
+ "clusters": [
+  {
+   "category": "late_delivery",
+   "name": "Persistent Delivery Estimate Delays",
+   "root_cause": "Systematic inaccuracies in delivery time estimation causing repeated customer frustration",
+   "size": 1655,
+   "examples": [
+    "estimated time keeps increasing, my order still not here",
+    "estimated time keeps increasing, my order still not here",
+    "estimated time keeps increasing, my order still not here"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Unresponsive Rider Delay",
+   "root_cause": "Delivery rider is not answering calls and failing to complete the delivery",
+   "size": 5582,
+   "examples": [
+    "rider is not picking up the call and the order is late",
+    "rider is not picking up the call and the order is late",
+    "rider is not picking up the call and the order is late"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Delayed Order Status Inquiries",
+   "root_cause": "Orders are not arriving within the expected delivery timeframe",
+   "size": 4947,
+   "examples": [
+    "please check my order status, very late, kids are hungry",
+    "please check my order status, very late, kids are hungry",
+    "please check my order status, very late, kids are hungry"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Delayed Order Delivery Inquiries",
+   "root_cause": "Customers are experiencing significant wait times beyond the expected delivery window",
+   "size": 4880,
+   "examples": [
+    "bhai my order kahan hai? 50 min se wait kar raha hoon",
+    "bhai my order kahan hai? 60 min se wait kar raha hoon",
+    "bhai my order kahan hai? 25 min se wait kar raha hoon"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Order Delivery Status Inquiry",
+   "root_cause": "Customers are requesting updates on the expected arrival time of their orders",
+   "size": 4875,
+   "examples": [
+    "help to see how soon can i expect my order",
+    "help to see how soon can i expect my order",
+    "help to see how soon can i expect my order"
+   ]
+  },
+  {
+   "category": "late_delivery",
+   "name": "Delayed Food Delivery",
+   "root_cause": "The order failed to arrive by the promised delivery time",
+   "size": 673,
+   "examples": [
+    "food was supposed to arrive by 8 pm, its way past that",
+    "food was supposed to arrive by 8 pm, its way past that",
+    "food was supposed to arrive by 8 pm, its way past that"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Items in Sealed Bags",
+   "root_cause": "Items omitted during order packing despite the bag being properly sealed",
+   "size": 377,
+   "examples": [
+    "bag was sealed but etxra chutney was not inside",
+    "bag was sealed but gualb jamun was not inside",
+    "bag was sealed but papad was not inside"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Order Item",
+   "root_cause": "The fulfillment process failed to include all items in the shipment",
+   "size": 361,
+   "examples": [
+    "you missed one item in my order",
+    "you missed one item in my order",
+    "you missed one item in my order"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Incomplete Order Delivery",
+   "root_cause": "Items were omitted from the package during the fulfillment or packing process",
+   "size": 1465,
+   "examples": [
+    "half my order is missing. paid for 3 items received 2",
+    "half my order is missing. paid for 3 items received 2",
+    "half my order is missing. paid for 3 items received 2"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Incomplete Order Delivery",
+   "root_cause": "Items were omitted from the package during the order fulfillment process",
+   "size": 1883,
+   "examples": [
+    "papda nahi aaya order ke saath",
+    "pura order nahi aaya, aadha saman missing hai",
+    "pura order nahi aaya, aadha saman missing hai"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Items From Order",
+   "root_cause": "Items listed on the bill were omitted from the final delivery package",
+   "size": 1705,
+   "examples": [
+    "the ocke is not there in the package, please refund it",
+    "the ocke is not there in the package, please refund it",
+    "where is my garilc naan? it was in the bill but not deliverde"
+   ]
+  },
+  {
+   "category": "missing_item",
+   "name": "Missing Items From Food Orders",
+   "root_cause": "Restaurant failed to include specific items in the prepared delivery order",
+   "size": 6140,
+   "examples": [
+    "i want a refund for this. this is so annoying. hakka noodles did not arrive with my food from biryani junction. i waited 90 and it just wasn't there. refund pls?. call me on [phone]",
+    "hey, masala dosa missing from order id [order_id]. i am not angry but i need the 968 back. please process the refund.. call me on [phone]",
+    "hey, idli sambar missing from order id [order_id]. i am not angry but i need the 807 back. please process the refund.. call me on [phone]"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Order Delivery",
+   "root_cause": "The customer received food items that do not match their original order",
+   "size": 267,
+   "examples": [
+    "completely different food delivered to me",
+    "completely different food delivered to me",
+    "completely different food delivered to me"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Spice Level and Size",
+   "root_cause": "Kitchen staff prepared the order with incorrect spice level and portion size",
+   "size": 295,
+   "examples": [
+    "ordered medium spicy, got extra spicy and wrong size",
+    "ordered medium spicy, got extra spicy and wrong size",
+    "ordered medium spicy, got extra spicy and wrong size"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Items Received",
+   "root_cause": "Warehouse fulfillment error resulting in shipment of incorrect product items",
+   "size": 526,
+   "examples": [
+    "they sent the wrong items, please fix",
+    "they sent the wrong items, please fix",
+    "they sent the wrong items, please fix"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Order Delivery",
+   "root_cause": "Customer received an order belonging to another person due to labeling error",
+   "size": 241,
+   "examples": [
+    "the order belongs to someone else, wrong name on the bill",
+    "the order belongs to someone else, wrong name on the bill",
+    "the order belongs to someone else, wrong name on the bill"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Recurring Incorrect Order Deliveries",
+   "root_cause": "Restaurant consistently fulfills orders with incorrect items leading to customer dissatisfaction",
+   "size": 5490,
+   "examples": [
+    "this is the second time from biryani junction i got the wrong item. i want a full refund for my order.. call me on [phone]",
+    "this is the second time from spice route kitchen i got the wrong item. i want a full refund for my order.. call me on [phone]",
+    "and the app is not working properly. wrong order again from biryani junction, second time this week. call me on [phone]"
+   ]
+  },
+  {
+   "category": "wrong_item",
+   "name": "Incorrect Dietary Item Delivered",
+   "root_cause": "Kitchen staff prepared non vegetarian food instead of the requested vegetarian meal",
+   "size": 1050,
+   "examples": [
+    "received non veg instead of veg! i am vegetarian, this is serious",
+    "received non veg instead of veg! i am vegetarian, this is serious",
+    "received non veg instead of veg! i am vegetarian, this is serious"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Refund Policy Inquiry",
+   "root_cause": "Customers are seeking clarification on the specific conditions required for refund eligibility",
+   "size": 1160,
+   "examples": [
+    "help to see in which cases can i ask for refunds",
+    "help to see in which cases can i ask for refunds",
+    "help to see in which cases can i ask for refunds"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Delayed Order Cancellation Refunds",
+   "root_cause": "Refunds for cancelled orders have not been processed or credited to customers",
+   "size": 483,
+   "examples": [
+    "order cancel kiya tha paisa wapas nahi aaya",
+    "order cancel kiya tha paisa wapas nahi aaya",
+    "order cancel kiya tha paisa wapas nahi aaya"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Delayed Order Refund Requests",
+   "root_cause": "Customers are experiencing significant delays in receiving their requested order refunds",
+   "size": 2173,
+   "examples": [
+    "refund for my order not received yet",
+    "refund for my order not received yet",
+    "refund for my order not received yet"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Refund Processing Time Inquiries",
+   "root_cause": "Customers are seeking clarification on the expected duration for refund transactions",
+   "size": 2547,
+   "examples": [
+    "how long does refund take to bank account",
+    "how long does refund take to bank account",
+    "how long does refund take to bank account"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Refund Status Inquiry",
+   "root_cause": "Customers are requesting updates on the expected arrival time of pending refunds",
+   "size": 505,
+   "examples": [
+    "when will i get my refund of rs 1143?",
+    "when will i get my refund of rs 887?",
+    "when will i get my refund of rs 356?"
+   ]
+  },
+  {
+   "category": "refund",
+   "name": "Food Quality Refund Requests",
+   "root_cause": "Customers requesting refunds due to poor food quality or service issues",
+   "size": 5343,
+   "examples": [
+    "refundingrs483",
+    "refundingrs691",
+    "refundingrs935"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Duplicate Payment Charges",
+   "root_cause": "Multiple payment deductions occurred for a single order transaction",
+   "size": 368,
+   "examples": [
+    "do baar paise kat gaye ek hi order ke",
+    "do baar paise kat gaye ek hi order ke",
+    "do baar paise kat gaye ek hi order ke"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Duplicate Payment Charges",
+   "root_cause": "System error causing multiple transaction processing for a single customer order",
+   "size": 3231,
+   "examples": [
+    "charged twice for the asme my order",
+    "charged twice for the asme my order",
+    "charged twice for the same my order, i want a refund for this"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Payment Declined With Bank Debit",
+   "root_cause": "Transaction failed at checkout despite funds being deducted from customer bank account",
+   "size": 612,
+   "examples": [
+    "card payment declined but bank shows debit",
+    "card payment declined but bank shows debit",
+    "card payment declined but bank shows debit"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Online Payment Processing Issues",
+   "root_cause": "Users are experiencing technical errors while attempting to complete online payment transactions",
+   "size": 2630,
+   "examples": [
+    "i need help to inform of issues with online payments",
+    "i need help to inform of issues with online payments",
+    "i need help to inform of issues with online payments"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "Pending UPI Payment Failures",
+   "root_cause": "UPI transactions remain in pending status preventing order confirmation",
+   "size": 484,
+   "examples": [
+    "upi payment stuck in pending, order not confirmed",
+    "upi payment stuck in pending, order not confirmed",
+    "upi payment stuck in pending, order not confirmed"
+   ]
+  },
+  {
+   "category": "payment_failure",
+   "name": "UPI Payment Deduction Failure",
+   "root_cause": "Funds deducted from user account but order status remains as failed",
+   "size": 544,
+   "examples": [
+    "upi se payment kiya, paise kat gaye, order fail",
+    "upi se payment kiya, paise kat gaye, order fail",
+    "upi se payment kiya, paise kat gaye, order fail"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Authentication and OTP Delivery Failure",
+   "root_cause": "Users are logged out and failing to receive required verification codes",
+   "size": 2865,
+   "examples": [
+    "app logged me out and otp is not coming",
+    "app logged me out and otp is not coming",
+    "app logged me out and otp is not coming"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Address Saving Failure",
+   "root_cause": "The application fails to persist user address updates to the database",
+   "size": 351,
+   "examples": [
+    "address not saving in the app",
+    "address not saving in the app",
+    "address not saving in the app"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Cart Access Application Crash",
+   "root_cause": "Application instability triggered specifically when attempting to view the shopping cart",
+   "size": 194,
+   "examples": [
+    "app keeps crashing when i open my cart",
+    "app keeps crashing when i open my cart",
+    "app keeps crashing when i open my cart"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Coupon Application Button Failure",
+   "root_cause": "The apply coupon button is unresponsive or failing to process user input",
+   "size": 385,
+   "examples": [
+    "cannot apply coupon, button not working",
+    "cannot apply coupon, button not working",
+    "cannot apply coupon, button not working"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Checkout Page Freezing Issue",
+   "root_cause": "The checkout page consistently becomes unresponsive during the payment process",
+   "size": 164,
+   "examples": [
+    "checkout page freezes every time",
+    "checkout page freezes every time",
+    "checkout page freezes every time"
+   ]
+  },
+  {
+   "category": "app_bug",
+   "name": "Coupon Application Failure",
+   "root_cause": "System error preventing users from successfully applying discount coupons during checkout",
+   "size": 735,
+   "examples": [
+    "coupon apply nahi ho raha, error aa raha hai",
+    "coupon apply nahi ho raha, error aa raha hai",
+    "coupon apply nahi ho raha, error aa raha hai"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Mobile Number Update Request",
+   "root_cause": "Users need assistance updating their registered mobile number on their account",
+   "size": 552,
+   "examples": [
+    "mobile number change karna hai account mein",
+    "mobile number change karna hai account mein",
+    "mobile number change karna hai account mein"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Block Inquiry",
+   "root_cause": "User is requesting the specific reason for their account being blocked",
+   "size": 124,
+   "examples": [
+    "mera account block kyun hua?",
+    "mera account block kyun hua?",
+    "mera account block kyun hua?"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Gold Account Subscription Inquiries",
+   "root_cause": "Users are confused about the process for upgrading or modifying gold accounts",
+   "size": 3100,
+   "examples": [
+    "i do not know what i have to do to change to the gold account",
+    "what do i need to do to change to the gold account",
+    "what do i need to do to change to the gold account"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Missing Gold Membership Status",
+   "root_cause": "User account fails to display active gold membership subscription status correctly",
+   "size": 228,
+   "examples": [
+    "gold membership not showing in my account",
+    "gold membership not showing in my account",
+    "gold membership not showing in my account"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "Account Deletion Assistance",
+   "root_cause": "Users are unable to locate or execute the account deletion process",
+   "size": 276,
+   "examples": [
+    "account delete kaise karu",
+    "account delete kaise karu",
+    "account delete kaise karu"
+   ]
+  },
+  {
+   "category": "account",
+   "name": "User Login Password Recovery Issues",
+   "root_cause": "Users are unable to access their accounts due to forgotten passwords",
+   "size": 1747,
+   "examples": [
+    "password bhool gaya, login nahi ho raha",
+    "password bhool gaya, login nahi ho raha",
+    "password bhool gaya, login nahi ho raha"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Poor Food Quality Reports",
+   "root_cause": "Restaurant partner delivered stale and cold food items to the customer",
+   "size": 698,
+   "examples": [
+    "food quality from biryani ujnction was terrible, stale and cold",
+    "food quality from biryani junction was terrible, stale and cold",
+    "food quality from biryani junction was terrible, stale and cold"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Restaurant Overcharging Issues",
+   "root_cause": "Partner restaurants are charging customers prices higher than the listed menu prices",
+   "size": 540,
+   "examples": [
+    "momo srteet is charging more than the menu price",
+    "biryani junction is charging more than the menu price",
+    "biryani junction is charging more than the menu price"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Restaurant Order Cancellations",
+   "root_cause": "Restaurant partner cancelled the customer order after a significant wait time",
+   "size": 755,
+   "examples": [
+    "biryani junction cancelled my order after 40 minutes",
+    "biryani junction cancelled my order after 40 minutes",
+    "biryani junction cancelled my order after 40 minutes"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Incorrect Restaurant Status Display",
+   "root_cause": "App fails to reflect real time restaurant closure status for customers",
+   "size": 268,
+   "examples": [
+    "restaurant is closed but still showing open in app",
+    "restaurant is closed but still showing open in app",
+    "restaurant is closed but still showing open in app"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "the, please, and",
+   "root_cause": "",
+   "size": 4561,
+   "examples": [
+    "biryani junction ne order cancel kar diya paise lene ke baad. call me on [phone]",
+    "biryani junction ne order cancel kar diya paise lene ke baad. call me on [phone]",
+    "biryani junction ne order cancel kar diya paise lene ke baad. call me on [phone]"
+   ]
+  },
+  {
+   "category": "restaurant_partner",
+   "name": "Poor Restaurant Packaging Quality",
+   "root_cause": "Inadequate food container sealing leading to spills during delivery transit",
+   "size": 713,
+   "examples": [
+    "restaurant packaging was leaking, food spilled",
+    "restaurant packaging was leaking, food spilled",
+    "restaurant packaging was leaking, food spilled"
+   ]
+  }
+ ],
+ "details": {
+  "menu_choice_accuracy": 0.9076623765339719,
+  "accuracy_local": 0.9819664771026638,
+  "accuracy_cascade": 0.9821535468422627,
+  "accuracy_local_calls": 0.959236612933111,
+  "accuracy_cascade_calls": 0.9581248841949231,
+  "menu_choice_accuracy_calls": 0.7350379840652215,
+  "accuracy_cascade_hinglish": 0.9794706481167289,
+  "threshold": 0.6,
+  "pct_sent_to_llm": 1.346902125112242,
+  "llm_fixed": 60,
+  "llm_broke": 55,
+  "misrouted_per_100_menu": 5.784196348398683,
+  "misrouted_per_100_opslens": 1.257108650104759,
+  "misrouted_per_100_menu_calls": 16.768575134333886,
+  "misrouted_per_100_opslens_calls": 2.927552343894756,
+  "llm_requests_per_million_tickets": 538.7608500448968,
+  "test_tickets": 26728,
+  "accuracy_llm_sample": 0.915,
+  "llm_sample_answered": 400
+ }
+}

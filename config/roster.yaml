@@ -9,47 +9,47 @@ teams:
 
 agents:
   - {id: A01, name: "Rohit M.",   team: A, start: 7,  days_off: [6, 0], langs: [en, hi],    extra_skills: [missing_item]}
-  - {id: A02, name: "Sana K.",    team: A, start: 8,  days_off: [2, 3], langs: [en, other], extra_skills: [missing_item]}
-  - {id: A03, name: "Vikram P.",  team: A, start: 8,  days_off: [4, 5], langs: [en, hi],    extra_skills: [missing_item]}
-  - {id: A04, name: "Neha G.",    team: A, start: 12, days_off: [0, 1], langs: [en],        extra_skills: [missing_item]}
+  - {id: A02, name: "Sana K.",    team: A, start: 7,  days_off: [2, 3], langs: [en, other], extra_skills: [missing_item]}
+  - {id: A03, name: "Vikram P.",  team: A, start: 7,  days_off: [3, 4], langs: [en, hi],    extra_skills: [missing_item]}
+  - {id: A04, name: "Neha G.",    team: B, start: 13, days_off: [0, 1], langs: [en],        extra_skills: [missing_item]}
   - {id: A05, name: "Imran S.",   team: A, start: 14, days_off: [1, 2], langs: [en, hi],    extra_skills: [missing_item]}
   - {id: A06, name: "Divya R.",   team: A, start: 15, days_off: [4, 5], langs: [en, other], extra_skills: [missing_item]}
   - {id: A07, name: "Karan J.",   team: A, start: 16, days_off: [3, 4], langs: [en, hi],    extra_skills: [missing_item]}
-  - {id: A08, name: "Meera T.",   team: A, start: 16, days_off: [6, 0], langs: [en],        extra_skills: [missing_item]}
-  - {id: A09, name: "Nisha B.",   team: A, start: 22, days_off: [0, 1], langs: [en, hi, other],
+  - {id: A08, name: "Meera T.",   team: A, start: 17, days_off: [6, 0], langs: [en],        extra_skills: [missing_item]}
+  - {id: A09, name: "Nisha B.",   team: A, start: 22, days_off: [4, 5], langs: [en, hi, other],
      extra_skills: [missing_item, wrong_item, app_bug, account, restaurant_partner]}
 
-  - {id: B01, name: "Kavita D.",  team: B, start: 10, days_off: [1, 2], langs: [en, hi]}
-  - {id: B02, name: "Arjun N.",   team: B, start: 14, days_off: [4, 5], langs: [en, hi]}
-  - {id: B03, name: "Ritu S.",    team: B, start: 7,  days_off: [1, 2], langs: [en, other]}
+  - {id: B01, name: "Kavita D.",  team: B, start: 6,  days_off: [6, 0], langs: [en, hi]}
+  - {id: B02, name: "Arjun N.",   team: B, start: 14, days_off: [6, 0], langs: [en, hi]}
+  - {id: B03, name: "Ritu S.",    team: B, start: 6,  days_off: [2, 3], langs: [en, other]}
   - {id: B04, name: "Manish K.",  team: B, start: 7,  days_off: [6, 0], langs: [en]}
-  - {id: B05, name: "Pooja V.",   team: B, start: 7,  days_off: [3, 4], langs: [en, hi]}
-  - {id: B06, name: "Aditya B.",  team: B, start: 12, days_off: [4, 5], langs: [en]}
+  - {id: B05, name: "Pooja V.",   team: B, start: 6,  days_off: [3, 4], langs: [en, hi]}
+  - {id: B06, name: "Aditya B.",  team: B, start: 6,  days_off: [4, 5], langs: [en]}
   - {id: B07, name: "Shreya L.",  team: B, start: 15, days_off: [1, 2], langs: [en, other]}
-  - {id: B08, name: "Nikhil A.",  team: B, start: 15, days_off: [4, 5], langs: [en]}
+  - {id: B08, name: "Nikhil A.",  team: B, start: 14, days_off: [4, 5], langs: [en]}
   - {id: B09, name: "Tanvi C.",   team: B, start: 16, days_off: [3, 4], langs: [en, other]}
   - {id: B10, name: "Rahul E.",   team: B, start: 16, days_off: [6, 0], langs: [en, other]}
-  - {id: B11, name: "Varun H.",   team: B, start: 22, days_off: [2, 3], langs: [en, other], extra_skills: all}
+  - {id: B11, name: "Varun H.",   team: B, start: 22, days_off: [5, 6], langs: [en, other], extra_skills: all}
 
-  - {id: C01, name: "Anjali F.",  team: C, start: 7,  days_off: [5, 6], langs: [en]}
-  - {id: C02, name: "Deepak W.",  team: C, start: 8,  days_off: [0, 1], langs: [en, hi]}
-  - {id: C03, name: "Sneh Y.",    team: C, start: 8,  days_off: [3, 4], langs: [en, other]}
-  - {id: C04, name: "Gaurav O.",  team: C, start: 12, days_off: [1, 2], langs: [en, hi]}
-  - {id: C05, name: "Lata I.",    team: C, start: 14, days_off: [5, 6], langs: [en]}
-  - {id: C06, name: "Harsh U.",   team: C, start: 15, days_off: [1, 2], langs: [en, hi]}
-  - {id: C07, name: "Isha Z.",    team: C, start: 15, days_off: [5, 6], langs: [en]}
-  - {id: C08, name: "Yash X.",    team: C, start: 16, days_off: [0, 1], langs: [en, hi]}
-  - {id: C09, name: "Ruchi P.",   team: C, start: 16, days_off: [3, 4], langs: [en, other]}
+  - {id: C01, name: "Anjali F.",  team: A, start: 6,  days_off: [1, 2], langs: [en]}
+  - {id: C02, name: "Deepak W.",  team: C, start: 7,  days_off: [0, 1], langs: [en, hi]}
+  - {id: C03, name: "Sneh Y.",    team: C, start: 6,  days_off: [6, 0], langs: [en, other]}
+  - {id: C04, name: "Gaurav O.",  team: A, start: 19, days_off: [2, 3], langs: [en, hi]}
+  - {id: C05, name: "Lata I.",    team: A, start: 13, days_off: [6, 0], langs: [en]}
+  - {id: C06, name: "Harsh U.",   team: C, start: 14, days_off: [1, 2], langs: [en, hi]}
+  - {id: C07, name: "Isha Z.",    team: C, start: 13, days_off: [2, 3], langs: [en]}
+  - {id: C08, name: "Yash X.",    team: C, start: 19, days_off: [0, 1], langs: [en, hi]}
+  - {id: C09, name: "Ruchi P.",   team: C, start: 15, days_off: [3, 4], langs: [en, other]}
 
-  - {id: D01, name: "Prakash M.", team: D, start: 7,  days_off: [1, 2], langs: [en, hi]}
-  - {id: D02, name: "Swati N.",   team: D, start: 7,  days_off: [3, 4], langs: [en, other]}
+  - {id: D01, name: "Prakash M.", team: D, start: 8,  days_off: [1, 2], langs: [en, hi]}
+  - {id: D02, name: "Swati N.",   team: D, start: 7,  days_off: [2, 3], langs: [en, other]}
   - {id: D03, name: "Zoya R.",    team: D, start: 7,  days_off: [6, 0], langs: [en]}
   - {id: D04, name: "Amit T.",    team: D, start: 8,  days_off: [4, 5], langs: [en, hi]}
-  - {id: D05, name: "Bhavna S.",  team: D, start: 12, days_off: [2, 3], langs: [en]}
-  - {id: D06, name: "Chetan G.",  team: D, start: 14, days_off: [0, 1], langs: [en, hi],    extra_skills: [missing_item, wrong_item]}
+  - {id: D05, name: "Bhavna S.",  team: D, start: 13, days_off: [4, 5], langs: [en]}
+  - {id: D06, name: "Chetan G.",  team: D, start: 13, days_off: [0, 1], langs: [en, hi],    extra_skills: [missing_item, wrong_item]}
   - {id: D07, name: "Esha P.",    team: D, start: 15, days_off: [1, 2], langs: [en, other], extra_skills: [missing_item, wrong_item]}
   - {id: D08, name: "Feroz A.",   team: D, start: 15, days_off: [5, 6], langs: [en, hi]}
-  - {id: D09, name: "Gita K.",    team: D, start: 16, days_off: [3, 4], langs: [en],        extra_skills: [missing_item, wrong_item]}
+  - {id: D09, name: "Gita K.",    team: D, start: 17, days_off: [6, 0], langs: [en],        extra_skills: [missing_item, wrong_item]}
   - {id: D10, name: "Hemant L.",  team: D, start: 16, days_off: [6, 0], langs: [en, hi]}
-  - {id: D11, name: "Kunal V.",   team: D, start: 22, days_off: [4, 5], langs: [en, hi, other],
+  - {id: D11, name: "Kunal V.",   team: D, start: 22, days_off: [3, 4], langs: [en, hi, other],
      extra_skills: [late_delivery, missing_item, wrong_item]}

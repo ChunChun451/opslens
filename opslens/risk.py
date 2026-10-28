@@ -45,8 +45,8 @@ class RiskModel:
     def predict(self, feats: pd.DataFrame) -> np.ndarray:
         return self.calibrator.predict(self.raw(feats))
 
-    def predict_matrix(self, X: np.ndarray) -> np.ndarray:
-        raw = self.booster.predict(X, num_threads=1)
+    def predict_matrix(self, X: np.ndarray, threads: int = 1) -> np.ndarray:
+        raw = self.booster.predict(X, num_threads=threads)
         return np.interp(raw, self.calibrator.X_thresholds_, self.calibrator.y_thresholds_)
 
 

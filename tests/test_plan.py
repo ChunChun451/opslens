@@ -15,17 +15,17 @@ GENERATED = Path(__file__).resolve().parent.parent / "data" / "generated"
 
 def week_plan() -> list[dict]:
     return [{"first_day": 43, "last_day": 49, "moves": [
-        {"agent_id": "C02", "team": "C", "change": "start 07:00 instead of 08:00"},
-        {"agent_id": "B02", "team": "B", "change": "day off on Mon instead of Fri"}],
-        "shifts": [{"agent_id": "C02", "start_hour": 7, "days_off": [0, 1]},
-                   {"agent_id": "B02", "start_hour": 14, "days_off": [0, 5]}]}]
+        {"agent_id": "C02", "team": "C", "change": "start 08:00 instead of 07:00"},
+        {"agent_id": "B02", "team": "B", "change": "day off on Fri instead of Sun"}],
+        "shifts": [{"agent_id": "C02", "start_hour": 8, "days_off": [0, 1]},
+                   {"agent_id": "B02", "start_hour": 14, "days_off": [0, 4]}]}]
 
 
 def test_staffing_items_have_stable_ids_and_one_agent_each() -> None:
     items = staffing_items(week_plan(), load_agents())
     assert [i["id"] for i in items] == ["staff_43_C02", "staff_43_B02"]
-    assert items[0]["change"] == {"agent_id": "C02", "start_hour": 7, "days_off": [0, 1]}
-    assert items[0]["title"] == "Deepak W. (C02, Team C): start 07:00 instead of 08:00"
+    assert items[0]["change"] == {"agent_id": "C02", "start_hour": 8, "days_off": [0, 1]}
+    assert items[0]["title"] == "Deepak W. (C02, Team C): start 08:00 instead of 07:00"
 
 
 def test_applying_a_move_changes_exactly_that_agent() -> None:
@@ -35,9 +35,9 @@ def test_applying_a_move_changes_exactly_that_agent() -> None:
     changed = [a.agent_id for a, b in zip(agents, after) if a != b]
     assert changed == ["C02"]
     c02 = next(a for a in after if a.agent_id == "C02")
-    assert c02.schedule_on(43 - 1) == (7 * 60, frozenset({0, 1}))
-    assert c02.schedule_on(49 - 1) == (7 * 60, frozenset({0, 1}))
-    assert c02.schedule_on(50 - 1) == (8 * 60, frozenset({0, 1}))
+    assert c02.schedule_on(43 - 1) == (8 * 60, frozenset({0, 1}))
+    assert c02.schedule_on(49 - 1) == (8 * 60, frozenset({0, 1}))
+    assert c02.schedule_on(50 - 1) == (7 * 60, frozenset({0, 1}))
 
 
 def test_unknown_or_repeated_ids_are_refused_and_order_is_the_catalogue_order() -> None:

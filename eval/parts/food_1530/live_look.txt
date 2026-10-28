@@ -1,0 +1,12 @@
+validation days 36-42, seeds [1, 2, 3, 4, 5]; least slack + rescue threshold chosen 10 min (grid [(2, 9.54), (5, 8.1), (10, 7.82), (15, 8.11), (20, 8.18), (30, 8.98)])
+  baseline_a           breach  16.82%  P1  15.19%  late min/100  2568.9  p99 wait  655.2  0.5 s per simulated day
+  baseline_d           breach  14.61%  P1   9.94%  late min/100  2681.9  p99 wait  625.2  0.6 s per simulated day
+  least_slack          breach   9.58%  P1   9.56%  late min/100  2600.9  p99 wait  761.0  0.7 s per simulated day
+  least_slack_rescue   breach   7.82%  P1   9.32%  late min/100  1226.3  p99 wait  234.3  0.0 s per simulated day
+  opslens              breach   7.74%  P1   8.24%  late min/100  1145.5  p99 wait  218.9  9.9 s per simulated day
+  opslens_live         breach   8.15%  P1   7.67%  late min/100  1123.7  p99 wait  249.5  8.3 s per simulated day
+  opslens_live - opslens               breach +0.41 [+0.22, +0.59]  P1 -0.57 [-0.98, -0.16]
+  opslens_live - baseline_d            breach -6.46 [-7.49, -5.44]  P1 -2.28 [-3.13, -1.42]
+  opslens_live - least_slack_rescue    breach +0.33 [-0.23, +0.89]  P1 -1.66 [-2.16, -1.16]
+  opslens - baseline_d                 breach -6.87 [-7.99, -5.75]  P1 -1.70 [-2.73, -0.68]
+  opslens - least_slack_rescue         breach -0.08 [-0.51, +0.36]  P1 -1.09 [-1.78, -0.39]

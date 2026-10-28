@@ -1,6 +1,6 @@
 seed: 2026
 
-tickets_per_weekday: 1130
+tickets_per_weekday: 1695
 weekend_multiplier: 1.15
 day_noise_sd: 0.06
 
