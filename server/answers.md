@@ -32,9 +32,10 @@ limits live in `config/providers.yaml`, so a change is a config edit, not a code
 
 **Q6. (Attack) Your data is fake. Why should we believe anything?**
 The operations layer is generated, and we say so: public data has no timestamps, agents or SLAs.
-But it is calibrated (Baseline A: 13.1% breaches, 0.80 utilisation), the roster was searched to
-be a reasonable status quo, and the same engine is checked on a real ServiceNow incident log
-(24,918 incidents, UCI). Every parameter is in two YAML files.
+The promises are food delivery's: a live order (P1) in 15 minutes, P2 in 30, P3 in 60. The floor is
+calibrated (first come, first served misses 25.2% on the test days at 0.76 utilisation), the roster was
+searched to be a reasonable status quo, and the same engine is checked on a real ServiceNow incident
+log (24,918 incidents, UCI). Every parameter is in two YAML files.
 
 **Q7. (Attack) You built the simulator, so of course your policy wins in it.**
 Three safeguards. Every policy gets the same tickets, the same luck (common random numbers) and
@@ -45,13 +46,14 @@ wait at utilisation 0.8.
 **Q8. What are common random numbers and why do they matter?**
 All luck is drawn once per seed, by ticket number. Ticket 812 takes the same base time under
 FIFO and under OpsLens. So the difference between policies comes from decisions, not luck.
-That is why our paired confidence intervals are narrow: OpsLens vs priority-first is −4.72
-points, 95% CI [−5.98, −3.46], with only 5 seeds.
+That is why our paired confidence intervals are narrow: OpsLens vs priority-first is −13.15
+points, 95% CI [−15.63, −10.67], with only 5 seeds.
 
 **Q9. Is your baseline a strawman?**
-No. Baseline B (priority first) already cuts breaches from 13.1% to 6.8% on the test days. Agents
-help other queues when theirs is empty, and shifts follow demand. But B makes the slowest 1% of
-customers wait 1,007 minutes instead of 816. OpsLens has to beat B on breaches without that cost.
+No. We compare with the industry standard (skills routing with our AI triage, 20.74% on the test
+days), an "SLA due" sort (15.20%), and published scheduling rules: least slack first (11.59%), least
+slack with cross-skill rescue (9.76%) and even a clairvoyant least slack that knows every work time
+(10.24%). OpsLens misses 8.79%.
 
 **Q10. Why did you change decisions to "event-driven"?**
 Our first version decided every 2 minutes. The Erlang-C test showed agents then sat idle about a
@@ -61,20 +63,20 @@ policy decides the moment a ticket arrives or an agent finishes — the same mom
 ## Ingest and classification
 
 **Q11. Why not send every ticket to the LLM? It's 2026.**
-We measured it. On 400 random test tickets Gemini alone was 90.0% right; our local model, which
-learns how reliable the customer's menu choice is per channel, was 98.0%. So the LLM only sees
-the 1.54% of tickets the local model is unsure about (about 617 requests per million tickets).
-There it fixed 57 answers and broke 37.
+We measured it. On 400 random test tickets Gemini alone was 91.5% right; our local model, which
+learns how reliable the customer's menu choice is per channel, was 98.2%. So the LLM only sees
+the 1.35% of tickets the local model is unsure about (about 539 requests per million tickets).
+There it fixed 60 answers and broke 55.
 
 **Q12. (Attack) 98% accuracy on synthetic text proves nothing.**
 Agreed, the text is partly synthetic and real accuracy will be lower. The number that matters
-operationally is routing: tickets sent to the wrong team fall from 5.71 to 1.20 per 100, and
-on phone tickets from 14.83 to 2.54, because the IVR menu choice is wrong a quarter of the time.
+operationally is routing: tickets sent to the wrong team fall from 5.78 to 1.26 per 100, and
+on phone tickets from 16.77 to 2.93, because the IVR menu choice is wrong a quarter of the time.
 
 **Q13. How do you choose when to call the LLM?**
 On validation days only. We tried confidence thresholds 0.5 to 0.95 with calibrated
-(isotonic) probabilities and kept the most accurate one within a 15% LLM budget: 0.6, which
-sends 1.6% of validation tickets to the LLM. Test days were never used to choose it.
+(isotonic) probabilities and kept the most accurate one within a 15% LLM budget: 0.6. Test days
+were never used to choose it.
 
 **Q14. Is the LLM given customer data?**
 Only masked text, in batches of 25, cached by a hash of the masked prompt. Answers are
@@ -83,37 +85,40 @@ answer stays. Cluster names containing digits are rejected.
 
 ## Patterns
 
-**Q15. (Attack) You found 5 of 5 problems you planted yourself. Of course you did.**
-That is why we ran a blind test: 20 new datasets, each with 3 problems of random type, place and
-size drawn by code after the finder was frozen. It found and correctly diagnosed 57 of 60 (95%).
-The misses: two small regional-language gaps and one spike on the very last day.
+**Q15. (Attack) You found 4 of 5 problems you planted yourself. Of course you did.**
+On the main data it found 4 of 5; the Team C weekend-dinner overload was missed. That is why we ran
+a blind test: 20 new datasets, each with 3 problems of random type, place and size drawn by code
+after the finder was frozen. It found and correctly diagnosed 52 of 60 (86.7%). The misses: 7 of 14
+skill gaps (with 15-minute promises, every queue waits, so a small language gap stands out less)
+and one spike.
 
 **Q16. How do you avoid "everything looks like a problem"?**
 A pair of labels (e.g. Hindi × Team B) is reported only if it is at least 2× worse than BOTH
 parents, with z ≥ 6. Spikes compare a day with days of the same type, and known sale days are
-explained, not flagged. Unplanted findings must replicate on held-out days: one of two did.
+explained, not flagged. Unplanted findings must replicate on held-out days: 4 of 5 did.
 
 **Q17. How fast would OpsLens notice a bad app release?**
-The unseen day-47 app-bug surge was flagged 45 minutes after it began, with one false alert in
+The unseen day-47 app-bug surge was flagged 60 minutes after it began, with no false alert in
 two weeks. The alert rule (z ≥ 4.5 on two checks in a row) was chosen on history days 15–42,
 where it caught the day-18 payment spike, never on the test days.
 
 **Q18. Can it find problems you did not plant?**
-Yes: "regional-language tickets on weekday mornings wait 2.3× longer". We checked the roster: few
-regional-language speakers start before 08:00. It replicated on the held-out days (2.0×).
-A second unplanted finding did not replicate (1.2×), and we count it as a false alarm.
+Yes. Team D and Team C are overloaded at dinner (work 1.31× agent-time); both replicated on the
+held-out days. Regional-language tickets on weekday mornings wait longer: few regional-language
+speakers start before 08:00, and it replicated too. Findings that did not replicate are counted
+as false alarms.
 
 ## Risk model
 
-**Q19. (Attack) An AUC of 0.976 is too good to be true. Leakage?**
+**Q19. (Attack) An AUC of 0.973 is too good to be true. Leakage?**
 Three checks. Features come only from a snapshot of what was known at time t, and a test changes
 the future and asserts the features do not move. Tickets already past their SLA are excluded.
 And on real ServiceNow data the same method gets 0.857, against 0.552 for the priority rule.
 
 **Q20. Why should a manager trust the probabilities?**
 They are calibrated on validation days with isotonic regression. On test days, tickets scored
-about 0.29 breached 32% of the time, and those scored about 0.74 breached 78%. The optimiser
-multiplies these probabilities, so honesty matters more than a high AUC.
+about 0.17 breached 16% of the time, and those scored about 0.52 breached 49%. The optimiser
+uses these probabilities, so honesty matters more than a high AUC.
 
 **Q21. The model learned under FIFO. Isn't that biased for your policy?**
 It predicts the risk "if nothing changes", which is exactly the risk we act to prevent. The
@@ -127,15 +132,15 @@ challenger arena compares it on the same split before anyone argues from benchma
 
 ## Forecast and staffing
 
-**Q23. Your hourly WAPE is 0.305. That sounds bad.**
+**Q23. Your hourly WAPE is 0.265. That sounds bad.**
 Hourly counts per category are small, so even a perfect forecast would be off by chance: the
-Poisson floor is 0.280. "Same hour last week" scores 0.415. Per team-hour workload, our error is
-0.235 vs 0.323. And the ranges are honest: the 80% range covered 79.2% of test hours.
+Poisson floor is 0.228. "Same hour last week" scores 0.355. Per team-hour workload, our error is
+0.206 vs 0.283. And the ranges are honest: the 80% range covered 78.3% of test hours.
 
 **Q24. (Attack) "Hire more agents" is not a recommendation.**
 We never add people. Every move keeps the same people and the same hours per week: shift starts
-move 1–2 hours or a day off moves to a quieter day. Example: C05 takes Monday off instead of
-Saturday, because Team C is short by up to 5 agents on Saturday nights.
+move 1–2 hours or a day off moves to a quieter day. Example: Feroz A. (D08) takes Thursday off
+instead of Sunday, because Team D is short by up to 5.1 agents on Sunday evenings.
 
 **Q25. Why Erlang C?**
 It is the call-centre standard, judges from operations know it, and our simulator reproduces it
@@ -145,60 +150,64 @@ busier-than-expected days, and we weight hours with real overload 3×.
 ## Optimiser and the OpsLens policy
 
 **Q26. What is the headline result?**
-On 14 held-out days, 5 seeds, same tickets and luck for every policy: SLA breaches 2.05% with
-OpsLens vs 5.51% for industry-standard skills routing (with our AI triage), 5.38% for an "SLA due"
-sort, 6.77% priority-first and 13.08% FIFO. OpsLens − industry standard: −3.46 points, 95% CI
-[−4.77, −2.15]. On a new world generated after v5 was frozen, run once: 2.20% vs 5.84%.
+On 14 held-out days, 5 seeds, same tickets and luck for every policy, with 15/30/60-minute promises:
+OpsLens misses 8.79% vs 20.74% for industry-standard skills routing (with our AI triage), 15.20% for
+an "SLA due" sort, 21.94% priority-first and 25.16% FIFO. OpsLens − industry standard: −11.95 points,
+95% CI [−14.88, −9.02]; live orders (P1) 8.08% vs 13.16%. On a new world generated after OpsLens was
+frozen, run once: 8.16% vs 18.73%.
 
 **Q27. (Attack) Does OpsLens cut breaches by abandoning tickets that are already late?**
-Partly, by design, and we measured the cost. Once a ticket has missed its SLA, OpsLens serves
-tickets that can still be saved first; a guard brings a late ticket back 8 hours past its SLA.
-Late customers are late by 224 min on average (FIFO 211, priority-first 328). Total minutes past
-SLA per 100 tickets: 483 vs 2,256 for priority-first and 1,432 for industry standard.
+Partly, by design, and we measured the cost. A ticket that will miss even if served now goes
+behind every ticket that can still be saved (the likely-lost lane); a guard brings a late ticket back
+8 hours past its promise. Late customers are late by 197 min on average (FIFO 169, priority-first
+203, industry standard 213). Total minutes past the promise per 100 tickets: 1,766 vs 4,496 for
+priority-first and 4,463 for the industry standard.
 
 **Q28. Why a min-cost flow and not a simple sorted queue?**
 When several agents are free, the best choice for one agent depends on the others: the only
 Hindi refund agent should take the Hindi refund, not the English one anyone can take. The flow
-optimises all free agents together in 0.07 ms per decision, 0.06 s for 5,000 tickets × 500
-agents. Honestly, greedy with the same values ties it (2.03% vs 2.05%): the values are the engine.
+optimises all free agents together in 0.07 ms per decision, 0.05 s for 5,000 tickets × 500
+agents. Honestly, greedy with the same values ties it (8.87% vs 8.79%): the values are the engine.
 
 **Q29. (Attack) You tuned the weights until your policy won.**
-Weights were chosen on validation days 36–42 only (v3: 2.13% vs 5.94% for priority-first). But
-the test days were looked at three times, because v1 and v2 failed a stress test there. So we
-generated new worlds afterwards and ran each once; for v5 (seed 6262): OpsLens 2.20% vs "SLA due" 5.55%.
+Every choice was made on validation days 36–42. When the promises moved to 15/30/60 minutes we
+diagnosed the misses there, wrote the design and the pass rule down first (PREREG_1530), passed it on
+validation days and again on 20 fresh seeds, and only then ran the test days, once. Then a new world
+(seed 9393) was generated and run once: 8.16% vs 18.73% for the industry standard.
 
 **Q30. What does OpsLens do worse?**
-Reopens rise from 3.93% to 4.44% (+0.50 points, CI [+0.41, +0.59]), because OpsLens sometimes asks
-an agent to rescue a ticket outside their training (1.6× slower, more reopens), only when the
-rescue value is at least 0.5. And late customers wait slightly longer than under FIFO (224 vs
-211 min late on average), the price of saving the tickets that can still make it.
+Reopens rise from 4.00% to 4.73% (+0.72 points, CI [+0.62, +0.82]), because OpsLens sometimes asks
+an agent to rescue a ticket outside their training (slower, more reopens), only when the slower work
+still fits the promise and beats waiting for a trained agent. And late customers wait longer than
+under FIFO (197 vs 169 min late on average), the price of saving the tickets that can still make it.
 
 ## Evaluation, ablations, stress tests
 
 **Q31. (Attack) You changed the policy after seeing test results. Isn't that cheating?**
-We say it openly: the test days were run three times. v1 failed the +25% volume stress test
-(51.7% vs 29.1% for priority-first), v2 still lost (40.5%), v3 won (10.7%); v5 today: 10.5% vs 28.9% for priority-first. Each new version
-was designed and chosen on validation days only, and all three test results are kept in
-results.json. The lesson: a stress test is a release gate.
+We say it openly: on the earlier floor the test days were run several times. v1 failed the +25%
+volume stress test (51.7% vs 29.1% for priority-first), v2 still lost (40.5%), v3 won (10.7%). Each
+version was designed on validation days only, and every test result is kept in results.json. On
+the 15/30/60 floor the test days ran once, after the design passed on validation days and fresh seeds.
 
 **Q32. Which part of OpsLens actually creates the gain?**
-The risk model. Switching it off raises breaches from 2.05% to 4.19% (+2.15, 95% CI [+1.66,
-+2.63]). The classifier adds +0.14 [+0.01, +0.27]. Staffing, scarcity and the min-cost flow are
-within noise on these days — we report that rather than hide it.
+Removing one part at a time (test days, 5 seeds, from 8.79%): the staffing plan +1.04 [+0.76, +1.33],
+the classifier +0.95 [+0.87, +1.03], the likely-lost lane +0.57 [+0.31, +0.82] and the queue-aware
+clock +0.55 [+0.39, +0.70]. The learned risk model (+0.03), the cross-skill test (−0.01), scarcity
+and the min-cost flow are within noise here — we report that rather than hide it.
 
-**Q32b. (Attack) Greedy matches your OR-Tools solver (2.03% vs 2.05%). Why keep min-cost flow?**
-Because the gain was never the solver: it is the value each pair gets (risk-based rescue +
-aging), which greedy also uses. Decisions happen the moment an agent frees up, so usually one
+**Q32b. (Attack) Greedy matches your OR-Tools solver (8.87% vs 8.79%). Why keep min-cost flow?**
+Because the gain was never the solver: it is the value each pair gets (rescue in minutes of slack,
+aging, the likely-lost lane), which greedy also uses. Decisions happen the moment an agent frees up, so usually one
 agent is free and there is nothing to coordinate. The flow costs 0.07 ms and guarantees the best
-joint choice at shift starts and at scale (5,000 × 500 in 0.06 s).
+joint choice at shift starts and at scale (5,000 × 500 in 0.05 s).
 
 **Q33. What happens on a really bad day?**
-With 25% more tickets (on top of a sale day and an unseen surge), FIFO breaches 53.6%,
-priority-first 28.9%, OpsLens 10.5%. With 10% of agents absent: 20.2%, 9.8% and 2.9%. In a
+With 25% more tickets (on top of a sale day and an unseen surge), FIFO misses 51.14%,
+priority-first 43.57%, OpsLens 18.15%. With 10% of agents absent: 32.58%, 27.83% and 11.30%. In a
 crisis OpsLens pauses its fairness guard to protect what can still be saved.
 
 **Q34. How do I know every number in your deck is real?**
-One command (`make eval`, ~20 minutes) regenerates eval/results.json and eval/NUMBERS.md. The dashboard
+One command (`make eval`, about two hours) regenerates eval/results.json and eval/NUMBERS.md. The dashboard
 reads only that file, every number on screen clicks through to its path in it, and `make demo`
 refuses to start on fixture data.
 
@@ -206,7 +215,7 @@ refuses to start on fixture data.
 
 **Q35. Can I try it myself?**
 Yes. What-if re-runs any test day with more or fewer agents per team or more volume, for all
-three policies, in about 10–20 seconds. Plant-a-problem hides a problem you choose in 21 fresh
+four policies, in about 10–20 seconds. Plant-a-problem hides a problem you choose in 21 fresh
 days; OpsLens is not told where, and the same matcher as our blind test checks the answer.
 
 **Q36. (Attack) Your LLM brief could invent numbers.**
@@ -226,7 +235,7 @@ on the laptop. `make demo` checks that real results exist before it starts.
 ## Challenger arena
 
 **Q39. Did you try a 2025 foundation model for the forecast?**
-Yes, Chronos-2, zero-shot, same test hours and origins. Hourly WAPE 0.304 vs our LightGBM 0.305:
+Yes, on the earlier floor (1 h / 4 h / 24 h promises): Chronos-2, zero-shot, same test hours and origins. Hourly WAPE 0.304 vs our LightGBM 0.305:
 0.4% better, below the 2% bar we wrote down before running it, so LightGBM stays. Its 80% range
 covered 76% of hours, ours 79%. Both sit near the Poisson floor (0.280): there is little left to win.
 
@@ -238,21 +247,21 @@ order-check, product gets a phone-menu fix, a status banner and self-serve refun
 two named agents to cross-train. Each one was replayed on the 14 held-out days.
 
 **Q41. What do those actions actually save?**
-On today's priority-first floor, all six together: 163 fewer breaches in two weeks (95% CI 125 to
-201). OpsLens with every fix and the staffing changes: 889 fewer than priority-first today, out of
-1,220. The biggest single one: cross-training two Hindi speakers, −79.0 under priority-first and
-−26.8 under OpsLens (alone, today's roster, CI −39.0 to −14.6).
+On today's priority-first floor, all six together: 1,127 fewer missed promises in two weeks (95% CI
+991 to 1,264). OpsLens with every fix and the staffing changes: 3,810 fewer than priority-first today,
+out of 5,864. The biggest single one: cross-training two Hindi speakers, −167.4 under priority-first
+and −91.8 under OpsLens (alone, CI −150.3 to −33.3).
 
 **Q42. (Attack) "Saves 30% of tickets" — you made that number up.**
 Some inputs are guesses, and we label them: 30% of customers skip a ticket after a status banner,
-60% use self-serve. Each guess is re-run at a low and high value (banner 15% → 50%: 1 to 16
-breaches saved). Everything else is measured: which tickets, which agents, which hours.
+60% use self-serve. Each guess is re-run at a low and a high value, and both results are in
+results.json. Everything else is measured: which tickets, which agents, which hours.
 
 **Q43. Why do most playbooks barely help under OpsLens?**
 Because OpsLens already absorbs those symptoms: its classifier fixes the phone-menu routing, so
-the menu fix saves 39.0 breaches under priority-first but only 2.0 under OpsLens (no clear effect).
-Cross-training still helps (−26.8) because it adds capacity where no routing can help. We show both
-columns on purpose.
+the menu fix saves 398.0 missed promises under priority-first but only 4.6 under OpsLens (no clear
+effect). Cross-training still helps (−91.8) because it adds capacity where no routing can help. We
+show both columns on purpose.
 
 **Q44. Is the LLM finally doing something?**
 It drafts the request to each owner team, from facts it can only cite by key, like the brief. It
@@ -263,32 +272,39 @@ until we passed the cluster number as a key too.
 
 **Q45. Is OpsLens the best possible? How would you even know?**
 We computed the physical floor: tickets that breach even with unlimited agents and perfect routing
-(their own work outlasts the SLA, or nobody on shift speaks their language). On the test days it is
-1.31%. OpsLens (2.05%) captures 83% ± 4 of everything possible over industry routing; on a new
-world generated after v5 was frozen, 81% ± 4.
+(their own work outlasts the promise, or nobody on shift speaks their language). On the test days it
+is 4.72%. OpsLens (8.79%) captures 75% ± 1 of everything possible over industry routing; on a new
+world generated after it was frozen, 74% ± 1.
 
 **Q46. (Attack) Your "floor" is just another simulation you can tune.**
 It is not a simulation: it is computed exactly per ticket, and a proof shows no legal policy can beat
 it. We attacked the proof: ten policies, including random legal ones, on 25 random worlds, never
 beat it. It is a bound, not a choice, so nothing is tuned on it.
 
-**Q47. Is 1.31% true for any company?**
-No. The method is general; the number belongs to this data. It depends on the tickets, the SLAs,
-the roster and luck (1.23–1.38% across our five seeds). On your export we would compute it again.
+**Q47. Is 4.72% true for any company?**
+No. The method is general; the number belongs to this data. It depends on the tickets, the promises,
+the roster and luck (4.67–4.79% across our five seeds). On your export we would compute it again.
 
 **Q48. Did you find anything wrong while building it?**
 Yes, in our own simulator: a transfer used to change a ticket's work-time draw, so policies with
 many transfers did not see exactly the same luck. We fixed it and regenerated every number (OpsLens
 v3 moved by only 0.01 points). A promising v4 then lost its significance, so our rule rejected it.
 
-**Q49. What is v5, and how do you know it is not luck?**
-The floor showed tickets nobody trained can reach before their deadline (Hindi refunds at night).
+**Q49. What was v5, and how do you know it was not luck?**
+On the earlier floor (1 h / 4 h / 24 h promises), the floor showed tickets nobody trained can reach before their deadline (Hindi refunds at night).
 v5 lets an untrained agent who speaks the language rescue them. The first test (5 seeds) could not
 separate it from luck, so we did not ship it; a new pre-registered test on 20 fresh seeds did:
-−0.17 points [−0.20, −0.13]. Test days: 2.21% → 2.05%.
+−0.17 points [−0.20, −0.13]. Test days (earlier floor): 2.21% → 2.05%.
 
-**Q50. (Attack) What does v5 cost?**
-Cross-skill work is 1.6× slower and reopens more (4.44% vs 3.93% for the baselines). Under +25%
+**Q49b. What changed for the 15-minute promises?**
+We first diagnosed every miss on validation days. The biggest avoidable cause was serving tickets
+already lost while savable ones waited. OpsLens now (1) puts a ticket that will miss even if served
+now behind every savable one, (2) allows cross-skill work only when the slower work still fits and
+beats waiting for a trained agent, and (3) estimates each ticket's wait from the queue in front of it.
+Written down first; on 20 fresh validation seeds −0.73 points [−0.83, −0.62], P1 −1.40.
+
+**Q50. (Attack) What did v5 cost?**
+On the earlier floor: cross-skill work is 1.6× slower and reopens more (4.44% vs 3.93% for the baselines). Under +25%
 volume on validation days, already-late customers got later and the slowest 1% waited longer. On
 the test days the slowest 1% did not wait longer (728 min, as before). We report it rather than hide it.
 
@@ -314,13 +330,14 @@ forecast; on our food floor it wins clearly. We show the real result on the Proo
 
 **Q55. What do Accept and Override actually do?**
 Accept puts a recommendation in Your plan with its measured effect, and Simulate replays a day with
-the whole plan, live. Example: cross-training two Hindi agents, 26.8 fewer missed SLAs over 14
+the whole plan, live. Example: cross-training two Hindi agents, 131.0 fewer missed promises over 14
 held-out days with OpsLens. Override records why the manager said no.
 
-**Q56. (Attack) Most of your staffing moves say "no clear effect". Why recommend them?**
-Because one move is one person for one week: small. Each is measured alone, so we show it: only
-Arjun N.'s day-off swap is clearly helpful (−7.6, CI −15.0 to −0.2). All 18 recommendations
-together: −48.8 (CI −63.1 to −34.5) of 379.8 missed SLAs. The manager can override the rest.
+**Q56. (Attack) Some of your staffing moves say "no clear effect". Why recommend them?**
+Because one move is one person for one week: small. Each is measured alone, so we show it: 5 of the
+12 moves clearly help (Feroz A.'s day off on Thursday: −78.8, CI −122.4 to −35.2), and one clearly
+hurts (Sneh Y. starting at 08:00 in the second week: +7.0, CI +3.1 to +10.9), so the manager should
+override it. All 18 recommendations together: −574.0 (CI −643.3 to −504.7) of 2,627.8 missed promises.
 
 **Q57. (Attack) Isn't "all together" just the single effects added up?**
 No. It is its own replay with every item in place: same 14 days, same 5 seeds, same luck. It is
@@ -358,41 +375,41 @@ team-days, vs 54.0% / 97.9% for alerting every weekday. The forecast choice was 
 weeks picked the learned model, which then did worst on test (0.365 vs 0.326 for the average).
 
 **Q64. Does OpsLens only win in the world you built?**
-No. We drew 30 random worlds from ranges fixed before running: volume, skills, deadlines, absences,
+On the earlier floor (1 h / 4 h / 24 h promises, OpsLens v5; not yet re-run on 15/30/60): we drew 30 random worlds from ranges fixed before running: volume, skills, deadlines, absences,
 chats per agent. OpsLens beats the industry standard in 29 of 30 (median −8.19 points, CI −12.20 to
 −3.28), and is the best of six policies in all 13 worlds up to today's load.
 
 **Q65. (Attack) Your own pre-registered rule failed: lowest in only 19 of 30 worlds.**
-Yes, and we show it. All 11 losses are floors in sustained overload (1.06× today's load or more, the
+Yes, and we show it (earlier floor, not yet re-run on 15/30/60). All 11 losses are floors in sustained overload (1.06× today's load or more, the
 backlog growing for weeks), all to least-slack-first. In 10 of the 11 OpsLens keeps late customers
 less late: least slack wins the count by letting the already-late wait much longer.
 
 **Q66. (Attack) A logistic regression would do just as well as your LightGBM.**
-On ranking it nearly does: AUC 0.957 vs 0.977 on the same 26,811 test snapshots. But dispatch does not use the ranking, it uses the *rescue*: how much serving a ticket now lowers its risk. Swapped into the dispatcher, the logistic regression misses 3.87% of SLAs vs 2.05% (+1.83 points [+1.66, +2.00], test days, 5 seeds), almost as bad as no model (4.19%).
+On ranking it nearly does: AUC 0.954 vs 0.974 on the same 9,132 test snapshots. In the dispatcher it now ties too: 8.88% vs 8.79% (+0.09 points [−0.05, +0.22], test days, 5 seeds), and so does no learned model at all (8.82%). With 15-minute promises the clock part of the risk (minutes of slack against each ticket's work time and the queue in front of it) does the work; the learned model mostly ranks and explains.
 
 **Q67. Isn't "least time left" all you need?**
-It ranks well (AUC 0.884) but cannot tell what serving now changes: time left is the same whether the ticket waits or not, so its rescue is zero for every ticket. That is our "no risk model" ablation: 4.19% vs 2.05%.
+Time left alone ranks poorly here (AUC 0.669): it cannot see the queue in front of a ticket or how long its work takes. OpsLens's clock adds both, and that is what the dispatcher uses.
 
 **Q68. Are your probabilities honest?**
-Brier 0.055 (LR 0.080, rule 0.131). The reliability bins per model are in `results.prediction_baselines` (predicted vs observed per decile).
+Brier 0.054 (LR 0.072, rule 0.196). The reliability bins per model are in `results.prediction_baselines` (predicted vs observed per decile).
 
 **Q69. (Attack) Do your bottleneck alerts come true?**
-Made 1–7 days ahead from the P80 forecast: 58% of alert hours really were over 85% load (naive forecast 56%) and we caught 98% of those hours (naive 91%). Most overloaded hours do not turn into a breach cluster (precision 15–18% against that), because the floor absorbs them with cross-skill help. So the alerts are cautious by design: better than naive, not a crystal ball.
+Made 1–7 days ahead from the P80 forecast: 58% of alert hours really were over 85% load (naive forecast 54%) and we caught 98% of those hours (naive 94%). Most overloaded hours do not turn into a breach cluster (precision 21–22% against that), because the floor absorbs them with cross-skill help. So the alerts are cautious by design: better than naive, not a crystal ball.
 
 **Q70. (Attack) SHAP reasons are decoration: you never checked the model uses them.**
-We did. Remove a ticket's top reason and its risk falls more than when a random feature is removed in 98.9% of 3,000 at-risk test tickets (3.18 vs 0.17 log-odds). Rule fixed before the run: ≥ 80%.
+We did. Remove a ticket's top reason and its risk falls more than when a random feature is removed in 99.2% of 3,000 at-risk test tickets (2.78 vs 0.10 log-odds). Rule fixed before the run: ≥ 80%.
 
 **Q71. Do the reasons point at the real cause?**
-For the Hindi refund problem we planted, 98.6% of at-risk Hindi refund/payment tickets name language or skill coverage in their top 3 reasons. For other Team B tickets it is 63%: at night, few capable agents on shift is a real cause for everyone.
+For the Hindi refund problem we planted, 98.9% of at-risk Hindi refund/payment tickets name language or skill coverage in their top 3 reasons. For other Team B tickets it is 76%: at night, few capable agents on shift is a real cause for everyone.
 
 **Q72. Why did the optimiser give this ticket to this agent?**
 Every assignment names the runner-up: "runner-up B03, value 0.31 lower", or "C04 valued it more but took T061200": the optimiser maximises the whole floor, not each pair. A test proves the text never changes a decision.
 
 **Q73. (Attack) Your staffing "optimiser" is a greedy search. Did you try a real one?**
-Yes: an exact CP-SAT tour scheduler (start hours and days off for every agent at once). It beats greedy on the planning score every week, but missed SLAs did not follow: −0.03 points on 20 fresh seeds (CI crosses 0) and +0.21 [+0.05, +0.37] on the test days. Our rule, fixed before the run, said keep greedy, so we did.
+Yes, on the earlier floor: an exact CP-SAT tour scheduler (start hours and days off for every agent at once). It beats greedy on the planning score every week, but missed SLAs did not follow: −0.03 points on 20 fresh seeds (CI crosses 0) and +0.21 [+0.05, +0.37] on the test days. Our rule, fixed before the run, said keep greedy, so we did.
 
 **Q74. Then why does staffing matter at all?**
-The staffing plan is a small lever here (removing it costs +0.06 points); the dispatcher's risk-based rescues decide most of the outcome. A better roster objective would be measured in simulated breaches, not in Erlang-C shortfall: that is the next step, not a claim.
+With 15-minute promises it is a real lever: removing the staffing plan costs +1.04 points [+0.76, +1.33] on the test days, the largest single part. On the earlier floor it was within noise. A better roster objective would be measured in simulated misses, not in Erlang-C shortfall: that is the next step, not a claim.
 
 **Q75. Is CP-SAT fast enough?**
 N ≤ 2 changes per team: proven optimal in about 17 s per week; N = 4 gives its best roster within 30 s. Rosters are weekly, so seconds are fine.
@@ -421,10 +438,10 @@ No. Detector v2 was designed on the check weeks with a limit of 10 false alarms 
 We tried, the honest way: a digital twin of the desk, with a validation gate fixed before any run. Running the desk's own policy, the twin had to reproduce reality on months it was not fitted to. It missed 27.9% vs 22.4% real, so it failed and we show no twin result. A log does not record real work time; a twin that cannot reproduce reality would only show our assumptions. What we do show on real data: the warnings (shadow mode) and the fast-track estimate.
 
 **Q83. When least slack beats you under overload, who pays for OpsLens's extra misses?**
-We rebuilt the 11 worlds and looked (analysis after the result, labelled as such). OpsLens misses fewer gold customers in 11 of 11 and keeps late customers less late in 11 of 11: it follows its business-impact weights and never abandons the late. It does not protect P1 better (4 of 11). Least slack wins the raw count by letting the already-late wait much longer.
+On the earlier floor we rebuilt the 11 worlds and looked (analysis after the result, labelled as such). OpsLens misses fewer gold customers in 11 of 11 and keeps late customers less late in 11 of 11: it follows its business-impact weights and never abandons the late. It does not protect P1 better (4 of 11). Least slack wins the raw count by letting the already-late wait much longer.
 
 **Q84. (Attack) You lose overloaded worlds to least slack. Why not switch strategy when overload is predicted?**
-We tried, with the rule written first. Round 1's best mode (value per minute of work) was no worse on a normal
+On the earlier floor we tried, with the rule written first. Round 1's best mode (value per minute of work) was no worse on a normal
 week (−0.006 points) but was lowest in only 18 of 30 new worlds — we needed 27. Switching to least slack fired too
 often on normal weeks. v5 stays; it still beat the industry standard in 30 of 30 new worlds.
 
@@ -477,7 +494,7 @@ Then a fair simulator replays held-out days to measure it against every baseline
 **B3. (Attack) Can it scale to millions of tickets a day?**
 Decisions are local: a free agent only needs the tickets it can serve, so the floor splits by
 language × skill group and each part runs its own loop. Our scale test assigned 5,000 waiting
-tickets to 500 agents in 0.04 seconds. Risk scoring is one LightGBM call every few minutes, and the
+tickets to 500 agents in 0.05 seconds. Risk scoring is one LightGBM call every few minutes, and the
 LLM only sees the tickets the local model is unsure about.
 
 **B4. How would it plug into our helpdesk (Zendesk, Freshdesk, ServiceNow)?**
@@ -512,7 +529,8 @@ release gate.
 The operations data of the food floor is generated, so the real public desk is the honest guide.
 On that real log OpsLens can only watch (a log cannot replay new decisions), its planted-problem
 detector is weak, and its forecast does not beat "same day last week". In random worlds under heavy
-overload, "least slack first" saves more promises in total. Every one of these is on screen.
+overload on the earlier floor, "least slack first" saved more promises in total. Cross-skill rescues
+raise reopens (4.73% vs 4.00%). Every one of these is on screen.
 
 **B10. Isn't an AI chatbot enough for customer support now?**
 An AI first line resolves the routine chats. What still reaches people are the escalated,
@@ -534,4 +552,4 @@ about 16. Open it under IT service desk → Overview → Shadow mode.
 **B13. How is OpsLens different from the helpdesk tools we already have?**
 Helpdesk tools tell you a ticket is already late. OpsLens tells you which tickets will be late, why,
 and what to do, and it shows the effect before you act: on the held-out days the industry
-standard missed 5.51% of promises and OpsLens 2.05%, with the same tickets, agents and luck.
+standard missed 20.74% of 15/30/60-minute promises and OpsLens 8.79%, with the same tickets, agents and luck.

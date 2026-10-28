@@ -1,12 +1,18 @@
 {
- "classification": 137.7,
- "patterns": 17.5,
- "risk": 104.3,
- "forecast": 9.2,
- "opslens": 143.3,
- "ablations": 842.5,
- "playbooks": 1045.8,
- "baseline_c": 227.7,
- "best_baselines": 373.5,
- "floor": 8.4
+ "classification": 1455.0,
+ "patterns": 26.0,
+ "risk": 157.0,
+ "forecast": 4.0,
+ "opslens": 167.0,
+ "ablations": 1015.0,
+ "concurrency": 1102.0,
+ "tracking": 140.0,
+ "playbooks": 918.0,
+ "baseline_c": 210.0,
+ "best_baselines": 351.0,
+ "floor": 8.0,
+ "plan_items": 1509.0,
+ "w7": 949.0,
+ "w8": 54.0,
+ "blind": 1347.0
 }

@@ -16,6 +16,7 @@ export function render(section) {
   section.innerHTML = `
     ${pageHeader("Beyond the world we built",
       `${ev("worlds.n_worlds", "int")} random support floors, drawn from wide ranges fixed before the run. Nothing was tuned per world; the classifier ran without the LLM.`)}
+    ${w.floor_note ? `<div class="callout warn">${escapeHtml(w.floor_note)}</div>` : ""}
     <section class="card wd-verdict is-${verdict}">
       <div class="wd-said">
         <span class="wd-label">We said, before the run</span>

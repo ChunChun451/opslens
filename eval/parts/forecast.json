@@ -1,296 +1,296 @@
 {
  "metrics": {
-  "wape_model": 0.30534240993563433,
-  "wape_naive": 0.41531721384205855,
-  "wape_noise_floor": 0.28033185463959887,
-  "wape_model_without_unseen_surge": 0.3025127524368965,
-  "wape_team_hour_workload_model": 0.2352661747818786,
-  "wape_team_hour_workload_naive": 0.32254956267461654,
-  "coverage_80": 0.7924107142857143,
-  "coverage_90": 0.9002976190476191,
-  "q80": 1.1481073713648584,
-  "q90": 1.5349778360999653,
-  "q80_team": 1.2811019333405567,
-  "event_uplift": 1.1773947976037886,
-  "best_iteration": 252,
-  "sale_day_error_pct": -16.56305113340443
+  "wape_model": 0.265241966584048,
+  "wape_naive": 0.35535767734211315,
+  "wape_noise_floor": 0.22800850590533314,
+  "wape_model_without_unseen_surge": 0.2616316868892243,
+  "wape_team_hour_workload_model": 0.2060499841321095,
+  "wape_team_hour_workload_naive": 0.28309651709941813,
+  "coverage_80": 0.7831101190476191,
+  "coverage_90": 0.8891369047619048,
+  "q80": 1.2027658479870438,
+  "q90": 1.5681738004609929,
+  "q80_team": 1.2842565144972442,
+  "event_uplift": 1.1695467823000347,
+  "best_iteration": 232,
+  "sale_day_error_pct": -17.502883391194093
  },
  "horizon": [
   {
    "time": "2026-10-24T00:00",
    "team": "A",
-   "demand_hours": 0.85,
-   "lo80": 0.47,
-   "hi80": 1.22,
+   "demand_hours": 0.69,
+   "lo80": 0.45,
+   "hi80": 0.94,
    "capacity_hours": 1.61,
-   "actual_hours": 0.9
+   "actual_hours": 0.73
   },
   {
    "time": "2026-10-24T01:00",
    "team": "A",
-   "demand_hours": 0.54,
-   "lo80": 0.23,
-   "hi80": 0.85,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.45
+   "demand_hours": 0.63,
+   "lo80": 0.39,
+   "hi80": 0.86,
+   "capacity_hours": 1.61,
+   "actual_hours": 0.17
   },
   {
    "time": "2026-10-24T02:00",
    "team": "A",
-   "demand_hours": 0.35,
-   "lo80": 0.09,
-   "hi80": 0.62,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.22
-  },
-  {
-   "time": "2026-10-24T03:00",
-   "team": "A",
-   "demand_hours": 0.2,
-   "lo80": 0.0,
+   "demand_hours": 0.26,
+   "lo80": 0.1,
    "hi80": 0.42,
    "capacity_hours": 0.81,
    "actual_hours": 0.11
   },
   {
+   "time": "2026-10-24T03:00",
+   "team": "A",
+   "demand_hours": 0.19,
+   "lo80": 0.05,
+   "hi80": 0.33,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.28
+  },
+  {
    "time": "2026-10-24T04:00",
    "team": "A",
-   "demand_hours": 0.25,
-   "lo80": 0.02,
-   "hi80": 0.48,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.0
+   "demand_hours": 0.19,
+   "lo80": 0.05,
+   "hi80": 0.33,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.06
   },
   {
    "time": "2026-10-24T05:00",
    "team": "A",
-   "demand_hours": 0.16,
-   "lo80": 0.0,
-   "hi80": 0.36,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.11
+   "demand_hours": 0.18,
+   "lo80": 0.04,
+   "hi80": 0.32,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.22
   },
   {
    "time": "2026-10-24T06:00",
    "team": "A",
-   "demand_hours": 0.31,
-   "lo80": 0.06,
-   "hi80": 0.56,
+   "demand_hours": 0.32,
+   "lo80": 0.14,
+   "hi80": 0.49,
    "capacity_hours": 0.81,
-   "actual_hours": 0.34
+   "actual_hours": 0.28
   },
   {
    "time": "2026-10-24T07:00",
    "team": "A",
-   "demand_hours": 0.87,
-   "lo80": 0.49,
-   "hi80": 1.25,
-   "capacity_hours": 0.81,
-   "actual_hours": 1.12
+   "demand_hours": 0.58,
+   "lo80": 0.35,
+   "hi80": 0.81,
+   "capacity_hours": 3.23,
+   "actual_hours": 0.45
   },
   {
    "time": "2026-10-24T08:00",
    "team": "A",
-   "demand_hours": 1.29,
-   "lo80": 0.84,
-   "hi80": 1.75,
-   "capacity_hours": 1.61,
-   "actual_hours": 0.9
+   "demand_hours": 0.92,
+   "lo80": 0.63,
+   "hi80": 1.2,
+   "capacity_hours": 3.23,
+   "actual_hours": 0.73
   },
   {
    "time": "2026-10-24T09:00",
    "team": "A",
-   "demand_hours": 1.38,
-   "lo80": 0.91,
-   "hi80": 1.85,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.12
+   "demand_hours": 1.09,
+   "lo80": 0.78,
+   "hi80": 1.4,
+   "capacity_hours": 3.23,
+   "actual_hours": 0.9
   },
   {
    "time": "2026-10-24T10:00",
    "team": "A",
-   "demand_hours": 1.46,
-   "lo80": 0.98,
-   "hi80": 1.94,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.46
+   "demand_hours": 1.18,
+   "lo80": 0.86,
+   "hi80": 1.49,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.18
   },
   {
    "time": "2026-10-24T11:00",
    "team": "A",
-   "demand_hours": 1.74,
-   "lo80": 1.21,
-   "hi80": 2.26,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.23
+   "demand_hours": 1.39,
+   "lo80": 1.04,
+   "hi80": 1.73,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.18
   },
   {
    "time": "2026-10-24T12:00",
    "team": "A",
-   "demand_hours": 3.04,
-   "lo80": 2.36,
-   "hi80": 3.73,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.35
+   "demand_hours": 2.23,
+   "lo80": 1.8,
+   "hi80": 2.67,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.08
   },
   {
    "time": "2026-10-24T13:00",
    "team": "A",
-   "demand_hours": 3.19,
-   "lo80": 2.49,
-   "hi80": 3.89,
-   "capacity_hours": 2.42,
-   "actual_hours": 3.92
+   "demand_hours": 2.51,
+   "lo80": 2.05,
+   "hi80": 2.97,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.81
   },
   {
    "time": "2026-10-24T14:00",
    "team": "A",
-   "demand_hours": 2.34,
-   "lo80": 1.73,
-   "hi80": 2.94,
-   "capacity_hours": 3.23,
-   "actual_hours": 1.9
+   "demand_hours": 1.98,
+   "lo80": 1.57,
+   "hi80": 2.38,
+   "capacity_hours": 4.84,
+   "actual_hours": 1.57
   },
   {
    "time": "2026-10-24T15:00",
    "team": "A",
-   "demand_hours": 1.85,
-   "lo80": 1.31,
-   "hi80": 2.39,
-   "capacity_hours": 3.23,
-   "actual_hours": 1.34
+   "demand_hours": 1.43,
+   "lo80": 1.08,
+   "hi80": 1.77,
+   "capacity_hours": 4.04,
+   "actual_hours": 0.96
   },
   {
    "time": "2026-10-24T16:00",
    "team": "A",
-   "demand_hours": 1.77,
-   "lo80": 1.24,
-   "hi80": 2.29,
-   "capacity_hours": 4.04,
-   "actual_hours": 1.46
+   "demand_hours": 1.44,
+   "lo80": 1.09,
+   "hi80": 1.79,
+   "capacity_hours": 2.42,
+   "actual_hours": 0.67
   },
   {
    "time": "2026-10-24T17:00",
    "team": "A",
-   "demand_hours": 1.87,
-   "lo80": 1.33,
-   "hi80": 2.41,
+   "demand_hours": 1.46,
+   "lo80": 1.1,
+   "hi80": 1.81,
    "capacity_hours": 3.23,
-   "actual_hours": 2.46
+   "actual_hours": 1.91
   },
   {
    "time": "2026-10-24T18:00",
    "team": "A",
-   "demand_hours": 1.92,
-   "lo80": 1.37,
-   "hi80": 2.46,
+   "demand_hours": 1.61,
+   "lo80": 1.24,
+   "hi80": 1.98,
    "capacity_hours": 3.23,
-   "actual_hours": 1.57
+   "actual_hours": 0.96
   },
   {
    "time": "2026-10-24T19:00",
    "team": "A",
-   "demand_hours": 3.5,
-   "lo80": 2.77,
-   "hi80": 4.23,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.92
+   "demand_hours": 2.89,
+   "lo80": 2.4,
+   "hi80": 3.38,
+   "capacity_hours": 4.04,
+   "actual_hours": 1.69
   },
   {
    "time": "2026-10-24T20:00",
    "team": "A",
-   "demand_hours": 3.71,
-   "lo80": 2.96,
-   "hi80": 4.46,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.02
+   "demand_hours": 2.96,
+   "lo80": 2.47,
+   "hi80": 3.46,
+   "capacity_hours": 4.04,
+   "actual_hours": 3.2
   },
   {
    "time": "2026-10-24T21:00",
    "team": "A",
-   "demand_hours": 3.9,
-   "lo80": 3.13,
-   "hi80": 4.67,
-   "capacity_hours": 2.42,
-   "actual_hours": 4.7
+   "demand_hours": 2.95,
+   "lo80": 2.46,
+   "hi80": 3.45,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.7
   },
   {
    "time": "2026-10-24T22:00",
    "team": "A",
-   "demand_hours": 3.83,
-   "lo80": 3.07,
-   "hi80": 4.6,
+   "demand_hours": 2.36,
+   "lo80": 1.92,
+   "hi80": 2.8,
    "capacity_hours": 3.23,
-   "actual_hours": 4.14
+   "actual_hours": 2.42
   },
   {
    "time": "2026-10-24T23:00",
    "team": "A",
-   "demand_hours": 2.13,
-   "lo80": 1.55,
-   "hi80": 2.7,
+   "demand_hours": 1.73,
+   "lo80": 1.35,
+   "hi80": 2.11,
    "capacity_hours": 2.42,
-   "actual_hours": 1.23
+   "actual_hours": 0.79
   },
   {
    "time": "2026-10-25T00:00",
    "team": "A",
-   "demand_hours": 0.77,
-   "lo80": 0.41,
-   "hi80": 1.14,
+   "demand_hours": 0.94,
+   "lo80": 0.66,
+   "hi80": 1.23,
    "capacity_hours": 2.42,
-   "actual_hours": 0.56
+   "actual_hours": 0.62
   },
   {
    "time": "2026-10-25T01:00",
    "team": "A",
-   "demand_hours": 0.61,
-   "lo80": 0.28,
-   "hi80": 0.93,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.45
+   "demand_hours": 0.5,
+   "lo80": 0.29,
+   "hi80": 0.72,
+   "capacity_hours": 1.61,
+   "actual_hours": 0.84
   },
   {
    "time": "2026-10-25T02:00",
    "team": "A",
-   "demand_hours": 0.53,
-   "lo80": 0.22,
-   "hi80": 0.84,
+   "demand_hours": 0.26,
+   "lo80": 0.1,
+   "hi80": 0.42,
    "capacity_hours": 0.81,
-   "actual_hours": 0.34
+   "actual_hours": 0.28
   },
   {
    "time": "2026-10-25T03:00",
    "team": "A",
-   "demand_hours": 0.27,
-   "lo80": 0.03,
-   "hi80": 0.5,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.22
-  },
-  {
-   "time": "2026-10-25T04:00",
-   "team": "A",
-   "demand_hours": 0.25,
-   "lo80": 0.02,
-   "hi80": 0.48,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.45
-  },
-  {
-   "time": "2026-10-25T05:00",
-   "team": "A",
-   "demand_hours": 0.22,
-   "lo80": 0.0,
-   "hi80": 0.44,
+   "demand_hours": 0.2,
+   "lo80": 0.06,
+   "hi80": 0.34,
    "capacity_hours": 0.81,
    "actual_hours": 0.34
   },
   {
+   "time": "2026-10-25T04:00",
+   "team": "A",
+   "demand_hours": 0.18,
+   "lo80": 0.04,
+   "hi80": 0.32,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.0
+  },
+  {
+   "time": "2026-10-25T05:00",
+   "team": "A",
+   "demand_hours": 0.19,
+   "lo80": 0.05,
+   "hi80": 0.33,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.11
+  },
+  {
    "time": "2026-10-25T06:00",
    "team": "A",
-   "demand_hours": 0.23,
-   "lo80": 0.0,
+   "demand_hours": 0.28,
+   "lo80": 0.12,
    "hi80": 0.45,
    "capacity_hours": 0.81,
    "actual_hours": 0.45
@@ -298,2501 +298,2093 @@
   {
    "time": "2026-10-25T07:00",
    "team": "A",
-   "demand_hours": 0.85,
-   "lo80": 0.47,
-   "hi80": 1.23,
-   "capacity_hours": 0.0,
+   "demand_hours": 0.61,
+   "lo80": 0.38,
+   "hi80": 0.84,
+   "capacity_hours": 2.42,
    "actual_hours": 0.45
   },
   {
    "time": "2026-10-25T08:00",
    "team": "A",
-   "demand_hours": 1.34,
-   "lo80": 0.87,
-   "hi80": 1.8,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.01
+   "demand_hours": 0.88,
+   "lo80": 0.6,
+   "hi80": 1.15,
+   "capacity_hours": 2.42,
+   "actual_hours": 0.62
   },
   {
    "time": "2026-10-25T09:00",
    "team": "A",
-   "demand_hours": 1.23,
-   "lo80": 0.78,
-   "hi80": 1.67,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.34
+   "demand_hours": 1.13,
+   "lo80": 0.82,
+   "hi80": 1.44,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.46
   },
   {
    "time": "2026-10-25T10:00",
    "team": "A",
-   "demand_hours": 1.37,
-   "lo80": 0.9,
-   "hi80": 1.83,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.46
+   "demand_hours": 1.05,
+   "lo80": 0.75,
+   "hi80": 1.35,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.29
   },
   {
    "time": "2026-10-25T11:00",
    "team": "A",
-   "demand_hours": 1.79,
-   "lo80": 1.26,
-   "hi80": 2.31,
-   "capacity_hours": 1.61,
+   "demand_hours": 1.47,
+   "lo80": 1.12,
+   "hi80": 1.82,
+   "capacity_hours": 2.42,
    "actual_hours": 1.46
   },
   {
    "time": "2026-10-25T12:00",
    "team": "A",
-   "demand_hours": 3.12,
-   "lo80": 2.43,
-   "hi80": 3.81,
+   "demand_hours": 2.4,
+   "lo80": 1.95,
+   "hi80": 2.84,
    "capacity_hours": 2.42,
-   "actual_hours": 3.92
+   "actual_hours": 3.32
   },
   {
    "time": "2026-10-25T13:00",
    "team": "A",
-   "demand_hours": 3.13,
-   "lo80": 2.43,
-   "hi80": 3.82,
+   "demand_hours": 2.46,
+   "lo80": 2.01,
+   "hi80": 2.92,
    "capacity_hours": 2.42,
-   "actual_hours": 3.02
+   "actual_hours": 2.53
   },
   {
    "time": "2026-10-25T14:00",
    "team": "A",
-   "demand_hours": 2.14,
-   "lo80": 1.56,
-   "hi80": 2.71,
+   "demand_hours": 1.92,
+   "lo80": 1.52,
+   "hi80": 2.32,
    "capacity_hours": 3.23,
-   "actual_hours": 2.35
+   "actual_hours": 1.85
   },
   {
    "time": "2026-10-25T15:00",
    "team": "A",
-   "demand_hours": 1.97,
-   "lo80": 1.42,
-   "hi80": 2.53,
-   "capacity_hours": 4.04,
-   "actual_hours": 2.02
+   "demand_hours": 1.35,
+   "lo80": 1.01,
+   "hi80": 1.69,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.85
   },
   {
    "time": "2026-10-25T16:00",
    "team": "A",
-   "demand_hours": 1.83,
-   "lo80": 1.29,
-   "hi80": 2.36,
-   "capacity_hours": 4.84,
-   "actual_hours": 1.9
+   "demand_hours": 1.44,
+   "lo80": 1.1,
+   "hi80": 1.79,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.74
   },
   {
    "time": "2026-10-25T17:00",
    "team": "A",
-   "demand_hours": 1.88,
-   "lo80": 1.34,
-   "hi80": 2.42,
-   "capacity_hours": 3.23,
-   "actual_hours": 1.46
+   "demand_hours": 1.36,
+   "lo80": 1.02,
+   "hi80": 1.7,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.29
   },
   {
    "time": "2026-10-25T18:00",
    "team": "A",
-   "demand_hours": 1.89,
-   "lo80": 1.35,
-   "hi80": 2.44,
-   "capacity_hours": 3.23,
-   "actual_hours": 2.13
+   "demand_hours": 1.56,
+   "lo80": 1.19,
+   "hi80": 1.92,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.41
   },
   {
    "time": "2026-10-25T19:00",
    "team": "A",
-   "demand_hours": 3.56,
-   "lo80": 2.82,
-   "hi80": 4.29,
+   "demand_hours": 2.56,
+   "lo80": 2.1,
+   "hi80": 3.03,
    "capacity_hours": 3.23,
-   "actual_hours": 2.58
+   "actual_hours": 2.25
   },
   {
    "time": "2026-10-25T20:00",
    "team": "A",
-   "demand_hours": 3.5,
-   "lo80": 2.77,
-   "hi80": 4.23,
+   "demand_hours": 2.95,
+   "lo80": 2.45,
+   "hi80": 3.44,
    "capacity_hours": 3.23,
-   "actual_hours": 4.14
+   "actual_hours": 3.37
   },
   {
    "time": "2026-10-25T21:00",
    "team": "A",
-   "demand_hours": 3.89,
-   "lo80": 3.12,
-   "hi80": 4.66,
-   "capacity_hours": 2.42,
-   "actual_hours": 3.92
+   "demand_hours": 2.95,
+   "lo80": 2.46,
+   "hi80": 3.45,
+   "capacity_hours": 3.23,
+   "actual_hours": 3.09
   },
   {
    "time": "2026-10-25T22:00",
    "team": "A",
-   "demand_hours": 3.43,
-   "lo80": 2.7,
-   "hi80": 4.15,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.14
+   "demand_hours": 2.51,
+   "lo80": 2.06,
+   "hi80": 2.97,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.14
   },
   {
    "time": "2026-10-25T23:00",
    "team": "A",
-   "demand_hours": 2.08,
-   "lo80": 1.51,
-   "hi80": 2.65,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.13
+   "demand_hours": 1.4,
+   "lo80": 1.06,
+   "hi80": 1.75,
+   "capacity_hours": 3.23,
+   "actual_hours": 0.67
   },
   {
    "time": "2026-10-24T00:00",
    "team": "B",
-   "demand_hours": 1.45,
-   "lo80": 0.56,
-   "hi80": 2.33,
+   "demand_hours": 1.14,
+   "lo80": 0.54,
+   "hi80": 1.74,
    "capacity_hours": 1.61,
-   "actual_hours": 1.51
+   "actual_hours": 1.22
   },
   {
    "time": "2026-10-24T01:00",
    "team": "B",
-   "demand_hours": 1.09,
-   "lo80": 0.3,
-   "hi80": 1.87,
+   "demand_hours": 0.71,
+   "lo80": 0.21,
+   "hi80": 1.2,
    "capacity_hours": 0.81,
-   "actual_hours": 0.33
+   "actual_hours": 0.94
   },
   {
    "time": "2026-10-24T02:00",
    "team": "B",
-   "demand_hours": 0.63,
-   "lo80": 0.06,
-   "hi80": 1.28,
+   "demand_hours": 0.47,
+   "lo80": 0.08,
+   "hi80": 0.88,
    "capacity_hours": 0.81,
-   "actual_hours": 1.17
+   "actual_hours": 0.56
   },
   {
    "time": "2026-10-24T03:00",
    "team": "B",
-   "demand_hours": 0.54,
-   "lo80": 0.04,
-   "hi80": 1.16,
+   "demand_hours": 0.29,
+   "lo80": 0.0,
+   "hi80": 0.65,
    "capacity_hours": 0.81,
-   "actual_hours": 0.33
+   "actual_hours": 0.28
   },
   {
    "time": "2026-10-24T04:00",
    "team": "B",
-   "demand_hours": 0.4,
+   "demand_hours": 0.29,
    "lo80": 0.0,
-   "hi80": 0.97,
+   "hi80": 0.65,
    "capacity_hours": 0.81,
-   "actual_hours": 0.33
+   "actual_hours": 0.56
   },
   {
    "time": "2026-10-24T05:00",
    "team": "B",
-   "demand_hours": 0.58,
-   "lo80": 0.02,
-   "hi80": 1.21,
+   "demand_hours": 0.28,
+   "lo80": 0.0,
+   "hi80": 0.64,
    "capacity_hours": 0.81,
-   "actual_hours": 0.33
+   "actual_hours": 0.47
   },
   {
    "time": "2026-10-24T06:00",
    "team": "B",
-   "demand_hours": 0.51,
-   "lo80": 0.0,
-   "hi80": 1.12,
-   "capacity_hours": 0.81,
-   "actual_hours": 1.17
+   "demand_hours": 0.53,
+   "lo80": 0.11,
+   "hi80": 0.96,
+   "capacity_hours": 3.23,
+   "actual_hours": 0.47
   },
   {
    "time": "2026-10-24T07:00",
    "team": "B",
-   "demand_hours": 1.05,
-   "lo80": 0.27,
-   "hi80": 1.82,
-   "capacity_hours": 2.42,
-   "actual_hours": 1.84
+   "demand_hours": 0.98,
+   "lo80": 0.42,
+   "hi80": 1.54,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.22
   },
   {
    "time": "2026-10-24T08:00",
    "team": "B",
-   "demand_hours": 1.87,
-   "lo80": 0.89,
-   "hi80": 2.85,
-   "capacity_hours": 2.42,
-   "actual_hours": 1.84
+   "demand_hours": 1.37,
+   "lo80": 0.72,
+   "hi80": 2.02,
+   "capacity_hours": 3.23,
+   "actual_hours": 0.85
   },
   {
    "time": "2026-10-24T09:00",
    "team": "B",
-   "demand_hours": 2.15,
-   "lo80": 1.11,
-   "hi80": 3.19,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.18
+   "demand_hours": 1.71,
+   "lo80": 0.99,
+   "hi80": 2.42,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.5
   },
   {
    "time": "2026-10-24T10:00",
    "team": "B",
-   "demand_hours": 2.52,
-   "lo80": 1.41,
-   "hi80": 3.64,
+   "demand_hours": 2.06,
+   "lo80": 1.29,
+   "hi80": 2.84,
    "capacity_hours": 3.23,
-   "actual_hours": 1.84
+   "actual_hours": 1.88
   },
   {
    "time": "2026-10-24T11:00",
    "team": "B",
-   "demand_hours": 3.06,
-   "lo80": 1.84,
-   "hi80": 4.28,
+   "demand_hours": 2.49,
+   "lo80": 1.64,
+   "hi80": 3.34,
    "capacity_hours": 3.23,
-   "actual_hours": 3.01
+   "actual_hours": 3.1
   },
   {
    "time": "2026-10-24T12:00",
    "team": "B",
-   "demand_hours": 3.47,
-   "lo80": 2.18,
-   "hi80": 4.76,
+   "demand_hours": 2.79,
+   "lo80": 1.89,
+   "hi80": 3.68,
    "capacity_hours": 3.23,
-   "actual_hours": 4.02
+   "actual_hours": 2.54
   },
   {
    "time": "2026-10-24T13:00",
    "team": "B",
-   "demand_hours": 3.67,
-   "lo80": 2.34,
-   "hi80": 4.99,
-   "capacity_hours": 3.23,
-   "actual_hours": 4.35
+   "demand_hours": 3.06,
+   "lo80": 2.12,
+   "hi80": 4.0,
+   "capacity_hours": 4.04,
+   "actual_hours": 3.2
   },
   {
    "time": "2026-10-24T14:00",
    "team": "B",
-   "demand_hours": 3.7,
-   "lo80": 2.38,
-   "hi80": 5.03,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.35
+   "demand_hours": 2.95,
+   "lo80": 2.03,
+   "hi80": 3.87,
+   "capacity_hours": 4.84,
+   "actual_hours": 2.54
   },
   {
    "time": "2026-10-24T15:00",
    "team": "B",
-   "demand_hours": 3.12,
-   "lo80": 1.89,
-   "hi80": 4.35,
-   "capacity_hours": 4.04,
-   "actual_hours": 1.17
+   "demand_hours": 2.47,
+   "lo80": 1.63,
+   "hi80": 3.31,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.79
   },
   {
    "time": "2026-10-24T16:00",
    "team": "B",
-   "demand_hours": 3.07,
-   "lo80": 1.85,
-   "hi80": 4.28,
-   "capacity_hours": 3.23,
-   "actual_hours": 2.85
+   "demand_hours": 2.37,
+   "lo80": 1.54,
+   "hi80": 3.2,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.35
   },
   {
    "time": "2026-10-24T17:00",
    "team": "B",
-   "demand_hours": 3.07,
-   "lo80": 1.85,
-   "hi80": 4.29,
-   "capacity_hours": 3.23,
-   "actual_hours": 2.68
+   "demand_hours": 2.24,
+   "lo80": 1.43,
+   "hi80": 3.04,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.07
   },
   {
    "time": "2026-10-24T18:00",
    "team": "B",
-   "demand_hours": 3.43,
-   "lo80": 2.14,
-   "hi80": 4.71,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.68
+   "demand_hours": 2.65,
+   "lo80": 1.78,
+   "hi80": 3.53,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.54
   },
   {
    "time": "2026-10-24T19:00",
    "team": "B",
-   "demand_hours": 4.4,
-   "lo80": 2.96,
-   "hi80": 5.84,
-   "capacity_hours": 2.42,
-   "actual_hours": 5.19
+   "demand_hours": 3.78,
+   "lo80": 2.75,
+   "hi80": 4.81,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.63
   },
   {
    "time": "2026-10-24T20:00",
    "team": "B",
-   "demand_hours": 5.0,
-   "lo80": 3.48,
-   "hi80": 6.53,
-   "capacity_hours": 2.42,
-   "actual_hours": 4.19
+   "demand_hours": 3.7,
+   "lo80": 2.68,
+   "hi80": 4.73,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.73
   },
   {
    "time": "2026-10-24T21:00",
    "team": "B",
-   "demand_hours": 4.92,
-   "lo80": 3.41,
-   "hi80": 6.44,
-   "capacity_hours": 2.42,
-   "actual_hours": 4.02
+   "demand_hours": 3.94,
+   "lo80": 2.89,
+   "hi80": 4.99,
+   "capacity_hours": 4.04,
+   "actual_hours": 4.42
   },
   {
    "time": "2026-10-24T22:00",
    "team": "B",
-   "demand_hours": 4.18,
-   "lo80": 2.79,
-   "hi80": 5.58,
+   "demand_hours": 3.31,
+   "lo80": 2.33,
+   "hi80": 4.28,
    "capacity_hours": 3.23,
-   "actual_hours": 3.01
+   "actual_hours": 2.91
   },
   {
    "time": "2026-10-24T23:00",
    "team": "B",
-   "demand_hours": 3.2,
-   "lo80": 1.96,
-   "hi80": 4.44,
-   "capacity_hours": 3.23,
-   "actual_hours": 2.01
+   "demand_hours": 2.43,
+   "lo80": 1.59,
+   "hi80": 3.27,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.69
   },
   {
    "time": "2026-10-25T00:00",
    "team": "B",
-   "demand_hours": 1.5,
-   "lo80": 0.6,
-   "hi80": 2.39,
-   "capacity_hours": 2.42,
-   "actual_hours": 0.5
+   "demand_hours": 1.22,
+   "lo80": 0.61,
+   "hi80": 1.84,
+   "capacity_hours": 1.61,
+   "actual_hours": 2.07
   },
   {
    "time": "2026-10-25T01:00",
    "team": "B",
-   "demand_hours": 1.06,
+   "demand_hours": 0.78,
    "lo80": 0.27,
-   "hi80": 1.84,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.67
+   "hi80": 1.3,
+   "capacity_hours": 0.0,
+   "actual_hours": 1.04
   },
   {
    "time": "2026-10-25T02:00",
    "team": "B",
-   "demand_hours": 0.74,
-   "lo80": 0.06,
-   "hi80": 1.43,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.33
+   "demand_hours": 0.46,
+   "lo80": 0.07,
+   "hi80": 0.87,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.85
   },
   {
    "time": "2026-10-25T03:00",
    "team": "B",
-   "demand_hours": 0.5,
+   "demand_hours": 0.29,
    "lo80": 0.0,
-   "hi80": 1.1,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.17
+   "hi80": 0.65,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.09
   },
   {
    "time": "2026-10-25T04:00",
    "team": "B",
-   "demand_hours": 0.46,
+   "demand_hours": 0.25,
    "lo80": 0.0,
-   "hi80": 1.05,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.33
+   "hi80": 0.6,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.09
   },
   {
    "time": "2026-10-25T05:00",
    "team": "B",
-   "demand_hours": 0.47,
+   "demand_hours": 0.28,
    "lo80": 0.0,
-   "hi80": 1.07,
-   "capacity_hours": 0.81,
-   "actual_hours": 1.17
+   "hi80": 0.64,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.38
   },
   {
    "time": "2026-10-25T06:00",
    "team": "B",
-   "demand_hours": 0.63,
-   "lo80": 0.08,
-   "hi80": 1.28,
-   "capacity_hours": 0.81,
-   "actual_hours": 0.0
+   "demand_hours": 0.69,
+   "lo80": 0.21,
+   "hi80": 1.17,
+   "capacity_hours": 2.42,
+   "actual_hours": 0.47
   },
   {
    "time": "2026-10-25T07:00",
    "team": "B",
-   "demand_hours": 0.98,
-   "lo80": 0.22,
-   "hi80": 1.73,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.0
+   "demand_hours": 1.03,
+   "lo80": 0.46,
+   "hi80": 1.6,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.13
   },
   {
    "time": "2026-10-25T08:00",
    "team": "B",
-   "demand_hours": 1.61,
-   "lo80": 0.69,
-   "hi80": 2.53,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.34
+   "demand_hours": 1.31,
+   "lo80": 0.67,
+   "hi80": 1.94,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.41
   },
   {
    "time": "2026-10-25T09:00",
    "team": "B",
-   "demand_hours": 2.01,
-   "lo80": 1.0,
-   "hi80": 3.02,
-   "capacity_hours": 1.61,
-   "actual_hours": 2.51
+   "demand_hours": 1.79,
+   "lo80": 1.06,
+   "hi80": 2.52,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.79
   },
   {
    "time": "2026-10-25T10:00",
    "team": "B",
-   "demand_hours": 2.52,
-   "lo80": 1.41,
-   "hi80": 3.64,
+   "demand_hours": 2.13,
+   "lo80": 1.34,
+   "hi80": 2.92,
    "capacity_hours": 2.42,
-   "actual_hours": 3.52
+   "actual_hours": 1.6
   },
   {
    "time": "2026-10-25T11:00",
    "team": "B",
-   "demand_hours": 3.04,
-   "lo80": 1.82,
-   "hi80": 4.25,
+   "demand_hours": 2.37,
+   "lo80": 1.54,
+   "hi80": 3.19,
    "capacity_hours": 2.42,
-   "actual_hours": 1.84
+   "actual_hours": 2.73
   },
   {
    "time": "2026-10-25T12:00",
    "team": "B",
-   "demand_hours": 3.57,
-   "lo80": 2.26,
-   "hi80": 4.88,
-   "capacity_hours": 3.23,
-   "actual_hours": 4.69
+   "demand_hours": 2.99,
+   "lo80": 2.07,
+   "hi80": 3.92,
+   "capacity_hours": 2.42,
+   "actual_hours": 3.86
   },
   {
    "time": "2026-10-25T13:00",
    "team": "B",
-   "demand_hours": 3.57,
-   "lo80": 2.26,
-   "hi80": 4.88,
+   "demand_hours": 3.17,
+   "lo80": 2.22,
+   "hi80": 4.12,
    "capacity_hours": 3.23,
-   "actual_hours": 4.02
+   "actual_hours": 2.54
   },
   {
    "time": "2026-10-25T14:00",
    "team": "B",
-   "demand_hours": 3.83,
-   "lo80": 2.49,
-   "hi80": 5.17,
+   "demand_hours": 2.91,
+   "lo80": 2.0,
+   "hi80": 3.83,
    "capacity_hours": 4.04,
-   "actual_hours": 4.02
+   "actual_hours": 2.16
   },
   {
    "time": "2026-10-25T15:00",
    "team": "B",
-   "demand_hours": 3.09,
-   "lo80": 1.87,
-   "hi80": 4.31,
-   "capacity_hours": 5.65,
-   "actual_hours": 3.01
+   "demand_hours": 2.46,
+   "lo80": 1.62,
+   "hi80": 3.3,
+   "capacity_hours": 2.42,
+   "actual_hours": 2.07
   },
   {
    "time": "2026-10-25T16:00",
    "team": "B",
-   "demand_hours": 3.03,
-   "lo80": 1.82,
-   "hi80": 4.24,
-   "capacity_hours": 4.84,
-   "actual_hours": 1.17
+   "demand_hours": 2.27,
+   "lo80": 1.46,
+   "hi80": 3.09,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.07
   },
   {
    "time": "2026-10-25T17:00",
    "team": "B",
-   "demand_hours": 3.1,
-   "lo80": 1.88,
-   "hi80": 4.33,
-   "capacity_hours": 4.84,
-   "actual_hours": 3.35
+   "demand_hours": 2.46,
+   "lo80": 1.62,
+   "hi80": 3.31,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.91
   },
   {
    "time": "2026-10-25T18:00",
    "team": "B",
-   "demand_hours": 3.04,
-   "lo80": 1.83,
-   "hi80": 4.26,
-   "capacity_hours": 4.84,
-   "actual_hours": 3.01
+   "demand_hours": 2.51,
+   "lo80": 1.65,
+   "hi80": 3.36,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.92
   },
   {
    "time": "2026-10-25T19:00",
    "team": "B",
-   "demand_hours": 4.44,
-   "lo80": 2.99,
-   "hi80": 5.89,
-   "capacity_hours": 4.04,
-   "actual_hours": 3.52
+   "demand_hours": 3.75,
+   "lo80": 2.72,
+   "hi80": 4.78,
+   "capacity_hours": 3.23,
+   "actual_hours": 3.29
   },
   {
    "time": "2026-10-25T20:00",
    "team": "B",
-   "demand_hours": 4.23,
-   "lo80": 2.81,
-   "hi80": 5.65,
-   "capacity_hours": 4.04,
-   "actual_hours": 4.18
+   "demand_hours": 3.96,
+   "lo80": 2.9,
+   "hi80": 5.02,
+   "capacity_hours": 3.23,
+   "actual_hours": 3.57
   },
   {
    "time": "2026-10-25T21:00",
    "team": "B",
-   "demand_hours": 4.47,
-   "lo80": 3.02,
-   "hi80": 5.92,
+   "demand_hours": 4.26,
+   "lo80": 3.17,
+   "hi80": 5.35,
    "capacity_hours": 3.23,
-   "actual_hours": 5.52
+   "actual_hours": 3.2
   },
   {
    "time": "2026-10-25T22:00",
    "team": "B",
-   "demand_hours": 4.15,
-   "lo80": 2.77,
-   "hi80": 5.53,
-   "capacity_hours": 4.04,
-   "actual_hours": 4.18
+   "demand_hours": 3.64,
+   "lo80": 2.62,
+   "hi80": 4.66,
+   "capacity_hours": 2.42,
+   "actual_hours": 3.57
   },
   {
    "time": "2026-10-25T23:00",
    "team": "B",
-   "demand_hours": 3.0,
-   "lo80": 1.79,
-   "hi80": 4.2,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.35
+   "demand_hours": 2.65,
+   "lo80": 1.77,
+   "hi80": 3.52,
+   "capacity_hours": 1.61,
+   "actual_hours": 1.41
   },
   {
    "time": "2026-10-24T00:00",
    "team": "C",
-   "demand_hours": 1.25,
+   "demand_hours": 1.03,
    "lo80": 0.49,
-   "hi80": 2.0,
+   "hi80": 1.57,
    "capacity_hours": 0.81,
-   "actual_hours": 1.41
+   "actual_hours": 0.64
   },
   {
    "time": "2026-10-24T01:00",
    "team": "C",
-   "demand_hours": 0.82,
-   "lo80": 0.18,
-   "hi80": 1.46,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.26
+   "demand_hours": 0.73,
+   "lo80": 0.26,
+   "hi80": 1.2,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.68
   },
   {
    "time": "2026-10-24T02:00",
    "team": "C",
-   "demand_hours": 0.38,
-   "lo80": 0.0,
-   "hi80": 0.88,
-   "capacity_hours": 0.0,
+   "demand_hours": 0.36,
+   "lo80": 0.02,
+   "hi80": 0.72,
+   "capacity_hours": 0.81,
    "actual_hours": 0.15
   },
   {
    "time": "2026-10-24T03:00",
    "team": "C",
-   "demand_hours": 0.25,
+   "demand_hours": 0.27,
    "lo80": 0.0,
-   "hi80": 0.7,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.15
+   "hi80": 0.6,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.34
   },
   {
    "time": "2026-10-24T04:00",
    "team": "C",
-   "demand_hours": 0.31,
+   "demand_hours": 0.27,
    "lo80": 0.0,
-   "hi80": 0.77,
+   "hi80": 0.6,
    "capacity_hours": 0.0,
-   "actual_hours": 0.0
+   "actual_hours": 0.24
   },
   {
    "time": "2026-10-24T05:00",
    "team": "C",
-   "demand_hours": 0.24,
+   "demand_hours": 0.28,
    "lo80": 0.0,
-   "hi80": 0.68,
+   "hi80": 0.61,
    "capacity_hours": 0.0,
-   "actual_hours": 0.0
+   "actual_hours": 0.36
   },
   {
    "time": "2026-10-24T06:00",
    "team": "C",
-   "demand_hours": 0.36,
-   "lo80": 0.0,
-   "hi80": 0.85,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.13
+   "demand_hours": 0.44,
+   "lo80": 0.06,
+   "hi80": 0.82,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.53
   },
   {
    "time": "2026-10-24T07:00",
    "team": "C",
-   "demand_hours": 0.74,
-   "lo80": 0.13,
+   "demand_hours": 0.86,
+   "lo80": 0.36,
    "hi80": 1.36,
-   "capacity_hours": 0.0,
+   "capacity_hours": 1.61,
    "actual_hours": 0.7
   },
   {
    "time": "2026-10-24T08:00",
    "team": "C",
-   "demand_hours": 1.32,
-   "lo80": 0.55,
-   "hi80": 2.08,
+   "demand_hours": 1.21,
+   "lo80": 0.63,
+   "hi80": 1.79,
    "capacity_hours": 1.61,
-   "actual_hours": 1.36
+   "actual_hours": 1.47
   },
   {
    "time": "2026-10-24T09:00",
    "team": "C",
-   "demand_hours": 1.82,
-   "lo80": 0.94,
-   "hi80": 2.7,
+   "demand_hours": 1.5,
+   "lo80": 0.86,
+   "hi80": 2.14,
    "capacity_hours": 1.61,
-   "actual_hours": 1.66
+   "actual_hours": 1.09
   },
   {
    "time": "2026-10-24T10:00",
    "team": "C",
-   "demand_hours": 1.96,
-   "lo80": 1.05,
-   "hi80": 2.87,
+   "demand_hours": 1.76,
+   "lo80": 1.07,
+   "hi80": 2.44,
    "capacity_hours": 1.61,
-   "actual_hours": 2.54
+   "actual_hours": 1.6
   },
   {
    "time": "2026-10-24T11:00",
    "team": "C",
-   "demand_hours": 2.41,
-   "lo80": 1.41,
-   "hi80": 3.41,
+   "demand_hours": 1.93,
+   "lo80": 1.21,
+   "hi80": 2.64,
    "capacity_hours": 1.61,
-   "actual_hours": 2.24
+   "actual_hours": 1.71
   },
   {
    "time": "2026-10-24T12:00",
    "team": "C",
-   "demand_hours": 3.73,
-   "lo80": 2.52,
-   "hi80": 4.94,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.63
+   "demand_hours": 2.89,
+   "lo80": 2.03,
+   "hi80": 3.75,
+   "capacity_hours": 1.61,
+   "actual_hours": 2.88
   },
   {
    "time": "2026-10-24T13:00",
    "team": "C",
-   "demand_hours": 3.1,
-   "lo80": 1.98,
-   "hi80": 4.22,
+   "demand_hours": 2.78,
+   "lo80": 1.94,
+   "hi80": 3.62,
    "capacity_hours": 2.42,
-   "actual_hours": 2.8
+   "actual_hours": 3.31
   },
   {
    "time": "2026-10-24T14:00",
    "team": "C",
-   "demand_hours": 2.9,
-   "lo80": 1.82,
-   "hi80": 3.98,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.82
+   "demand_hours": 2.8,
+   "lo80": 1.96,
+   "hi80": 3.64,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.94
   },
   {
    "time": "2026-10-24T15:00",
    "team": "C",
-   "demand_hours": 2.2,
-   "lo80": 1.24,
-   "hi80": 3.16,
-   "capacity_hours": 3.23,
-   "actual_hours": 1.97
-  },
-  {
-   "time": "2026-10-24T16:00",
-   "team": "C",
-   "demand_hours": 1.96,
-   "lo80": 1.05,
-   "hi80": 2.87,
-   "capacity_hours": 4.84,
-   "actual_hours": 1.58
-  },
-  {
-   "time": "2026-10-24T17:00",
-   "team": "C",
-   "demand_hours": 2.37,
-   "lo80": 1.38,
-   "hi80": 3.36,
+   "demand_hours": 1.97,
+   "lo80": 1.25,
+   "hi80": 2.69,
    "capacity_hours": 3.23,
    "actual_hours": 1.71
   },
   {
+   "time": "2026-10-24T16:00",
+   "team": "C",
+   "demand_hours": 1.87,
+   "lo80": 1.17,
+   "hi80": 2.57,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.26
+  },
+  {
+   "time": "2026-10-24T17:00",
+   "team": "C",
+   "demand_hours": 1.92,
+   "lo80": 1.2,
+   "hi80": 2.63,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.41
+  },
+  {
    "time": "2026-10-24T18:00",
    "team": "C",
-   "demand_hours": 2.56,
-   "lo80": 1.53,
-   "hi80": 3.59,
-   "capacity_hours": 3.23,
-   "actual_hours": 1.79
+   "demand_hours": 2.12,
+   "lo80": 1.37,
+   "hi80": 2.86,
+   "capacity_hours": 2.42,
+   "actual_hours": 2.47
   },
   {
    "time": "2026-10-24T19:00",
    "team": "C",
-   "demand_hours": 4.25,
-   "lo80": 2.96,
-   "hi80": 5.54,
+   "demand_hours": 3.62,
+   "lo80": 2.66,
+   "hi80": 4.57,
    "capacity_hours": 3.23,
-   "actual_hours": 2.9
+   "actual_hours": 5.48
   },
   {
    "time": "2026-10-24T20:00",
    "team": "C",
-   "demand_hours": 4.61,
-   "lo80": 3.27,
-   "hi80": 5.95,
+   "demand_hours": 4.63,
+   "lo80": 3.56,
+   "hi80": 5.7,
    "capacity_hours": 3.23,
-   "actual_hours": 3.65
+   "actual_hours": 4.63
   },
   {
    "time": "2026-10-24T21:00",
    "team": "C",
-   "demand_hours": 4.71,
-   "lo80": 3.37,
-   "hi80": 6.05,
-   "capacity_hours": 2.42,
-   "actual_hours": 4.79
+   "demand_hours": 4.4,
+   "lo80": 3.35,
+   "hi80": 5.45,
+   "capacity_hours": 3.23,
+   "actual_hours": 4.16
   },
   {
    "time": "2026-10-24T22:00",
    "team": "C",
-   "demand_hours": 4.13,
-   "lo80": 2.86,
-   "hi80": 5.4,
+   "demand_hours": 4.56,
+   "lo80": 3.5,
+   "hi80": 5.62,
    "capacity_hours": 2.42,
-   "actual_hours": 5.14
+   "actual_hours": 3.97
   },
   {
    "time": "2026-10-24T23:00",
    "team": "C",
-   "demand_hours": 2.45,
-   "lo80": 1.45,
-   "hi80": 3.45,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.24
+   "demand_hours": 2.14,
+   "lo80": 1.4,
+   "hi80": 2.89,
+   "capacity_hours": 1.61,
+   "actual_hours": 1.84
   },
   {
    "time": "2026-10-25T00:00",
    "team": "C",
-   "demand_hours": 1.22,
-   "lo80": 0.47,
-   "hi80": 1.96,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.74
+   "demand_hours": 0.98,
+   "lo80": 0.45,
+   "hi80": 1.51,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.55
   },
   {
    "time": "2026-10-25T01:00",
    "team": "C",
-   "demand_hours": 0.89,
-   "lo80": 0.23,
-   "hi80": 1.55,
+   "demand_hours": 0.7,
+   "lo80": 0.24,
+   "hi80": 1.16,
+   "capacity_hours": 0.81,
+   "actual_hours": 1.09
+  },
+  {
+   "time": "2026-10-25T02:00",
+   "team": "C",
+   "demand_hours": 0.39,
+   "lo80": 0.03,
+   "hi80": 0.76,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.24
+  },
+  {
+   "time": "2026-10-25T03:00",
+   "team": "C",
+   "demand_hours": 0.25,
+   "lo80": 0.0,
+   "hi80": 0.57,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.19
+  },
+  {
+   "time": "2026-10-25T04:00",
+   "team": "C",
+   "demand_hours": 0.25,
+   "lo80": 0.0,
+   "hi80": 0.58,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.08
+  },
+  {
+   "time": "2026-10-25T05:00",
+   "team": "C",
+   "demand_hours": 0.3,
+   "lo80": 0.0,
+   "hi80": 0.63,
+   "capacity_hours": 0.0,
+   "actual_hours": 0.32
+  },
+  {
+   "time": "2026-10-25T06:00",
+   "team": "C",
+   "demand_hours": 0.46,
+   "lo80": 0.07,
+   "hi80": 0.86,
    "capacity_hours": 0.0,
    "actual_hours": 0.4
   },
   {
-   "time": "2026-10-25T02:00",
-   "team": "C",
-   "demand_hours": 0.37,
-   "lo80": 0.0,
-   "hi80": 0.86,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.41
-  },
-  {
-   "time": "2026-10-25T03:00",
-   "team": "C",
-   "demand_hours": 0.31,
-   "lo80": 0.0,
-   "hi80": 0.78,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.0
-  },
-  {
-   "time": "2026-10-25T04:00",
-   "team": "C",
-   "demand_hours": 0.27,
-   "lo80": 0.0,
-   "hi80": 0.73,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.0
-  },
-  {
-   "time": "2026-10-25T05:00",
-   "team": "C",
-   "demand_hours": 0.32,
-   "lo80": 0.0,
-   "hi80": 0.79,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.45
-  },
-  {
-   "time": "2026-10-25T06:00",
-   "team": "C",
-   "demand_hours": 0.31,
-   "lo80": 0.0,
-   "hi80": 0.79,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.26
-  },
-  {
    "time": "2026-10-25T07:00",
    "team": "C",
-   "demand_hours": 0.74,
-   "lo80": 0.12,
-   "hi80": 1.35,
-   "capacity_hours": 0.0,
-   "actual_hours": 1.13
+   "demand_hours": 0.8,
+   "lo80": 0.31,
+   "hi80": 1.28,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.72
   },
   {
    "time": "2026-10-25T08:00",
    "team": "C",
-   "demand_hours": 1.3,
-   "lo80": 0.54,
-   "hi80": 2.07,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.26
+   "demand_hours": 1.14,
+   "lo80": 0.57,
+   "hi80": 1.7,
+   "capacity_hours": 0.81,
+   "actual_hours": 1.52
   },
   {
    "time": "2026-10-25T09:00",
    "team": "C",
-   "demand_hours": 1.75,
-   "lo80": 0.88,
-   "hi80": 2.61,
-   "capacity_hours": 1.61,
-   "actual_hours": 1.71
+   "demand_hours": 1.56,
+   "lo80": 0.91,
+   "hi80": 2.21,
+   "capacity_hours": 0.81,
+   "actual_hours": 1.45
   },
   {
    "time": "2026-10-25T10:00",
    "team": "C",
-   "demand_hours": 1.97,
+   "demand_hours": 1.74,
    "lo80": 1.06,
-   "hi80": 2.88,
-   "capacity_hours": 1.61,
-   "actual_hours": 0.83
+   "hi80": 2.42,
+   "capacity_hours": 0.81,
+   "actual_hours": 1.79
   },
   {
    "time": "2026-10-25T11:00",
    "team": "C",
-   "demand_hours": 2.23,
-   "lo80": 1.27,
-   "hi80": 3.2,
-   "capacity_hours": 1.61,
-   "actual_hours": 2.82
+   "demand_hours": 1.94,
+   "lo80": 1.22,
+   "hi80": 2.65,
+   "capacity_hours": 0.81,
+   "actual_hours": 1.34
   },
   {
    "time": "2026-10-25T12:00",
    "team": "C",
-   "demand_hours": 3.42,
-   "lo80": 2.26,
-   "hi80": 4.58,
-   "capacity_hours": 2.42,
-   "actual_hours": 3.05
+   "demand_hours": 2.61,
+   "lo80": 1.79,
+   "hi80": 3.43,
+   "capacity_hours": 0.81,
+   "actual_hours": 3.03
   },
   {
    "time": "2026-10-25T13:00",
    "team": "C",
-   "demand_hours": 3.39,
-   "lo80": 2.23,
-   "hi80": 4.56,
-   "capacity_hours": 2.42,
-   "actual_hours": 4.03
+   "demand_hours": 2.95,
+   "lo80": 2.08,
+   "hi80": 3.82,
+   "capacity_hours": 1.61,
+   "actual_hours": 2.65
   },
   {
    "time": "2026-10-25T14:00",
    "team": "C",
-   "demand_hours": 2.66,
-   "lo80": 1.61,
-   "hi80": 3.7,
+   "demand_hours": 2.5,
+   "lo80": 1.69,
+   "hi80": 3.31,
    "capacity_hours": 2.42,
-   "actual_hours": 3.31
+   "actual_hours": 1.98
   },
   {
    "time": "2026-10-25T15:00",
    "team": "C",
-   "demand_hours": 2.21,
-   "lo80": 1.25,
-   "hi80": 3.16,
+   "demand_hours": 2.12,
+   "lo80": 1.37,
+   "hi80": 2.87,
    "capacity_hours": 3.23,
-   "actual_hours": 1.67
+   "actual_hours": 2.31
   },
   {
    "time": "2026-10-25T16:00",
    "team": "C",
-   "demand_hours": 2.03,
-   "lo80": 1.11,
-   "hi80": 2.95,
-   "capacity_hours": 4.84,
-   "actual_hours": 1.11
+   "demand_hours": 1.99,
+   "lo80": 1.26,
+   "hi80": 2.72,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.81
   },
   {
    "time": "2026-10-25T17:00",
    "team": "C",
-   "demand_hours": 2.29,
-   "lo80": 1.31,
-   "hi80": 3.26,
-   "capacity_hours": 3.23,
-   "actual_hours": 1.56
+   "demand_hours": 1.95,
+   "lo80": 1.23,
+   "hi80": 2.67,
+   "capacity_hours": 2.42,
+   "actual_hours": 2.22
   },
   {
    "time": "2026-10-25T18:00",
    "team": "C",
-   "demand_hours": 2.82,
-   "lo80": 1.75,
-   "hi80": 3.89,
-   "capacity_hours": 3.23,
-   "actual_hours": 2.11
+   "demand_hours": 2.27,
+   "lo80": 1.5,
+   "hi80": 3.05,
+   "capacity_hours": 2.42,
+   "actual_hours": 2.2
   },
   {
    "time": "2026-10-25T19:00",
    "team": "C",
-   "demand_hours": 4.16,
-   "lo80": 2.89,
-   "hi80": 5.44,
+   "demand_hours": 4.51,
+   "lo80": 3.44,
+   "hi80": 5.57,
    "capacity_hours": 3.23,
-   "actual_hours": 6.06
+   "actual_hours": 3.9
   },
   {
    "time": "2026-10-25T20:00",
    "team": "C",
-   "demand_hours": 4.62,
-   "lo80": 3.29,
-   "hi80": 5.96,
+   "demand_hours": 4.35,
+   "lo80": 3.3,
+   "hi80": 5.39,
    "capacity_hours": 3.23,
-   "actual_hours": 6.38
+   "actual_hours": 5.23
   },
   {
    "time": "2026-10-25T21:00",
    "team": "C",
-   "demand_hours": 4.9,
-   "lo80": 3.53,
-   "hi80": 6.27,
-   "capacity_hours": 2.42,
-   "actual_hours": 6.05
+   "demand_hours": 4.92,
+   "lo80": 3.82,
+   "hi80": 6.02,
+   "capacity_hours": 3.23,
+   "actual_hours": 4.84
   },
   {
    "time": "2026-10-25T22:00",
    "team": "C",
-   "demand_hours": 3.97,
-   "lo80": 2.73,
-   "hi80": 5.22,
+   "demand_hours": 3.66,
+   "lo80": 2.7,
+   "hi80": 4.63,
    "capacity_hours": 2.42,
-   "actual_hours": 3.91
+   "actual_hours": 4.67
   },
   {
    "time": "2026-10-25T23:00",
    "team": "C",
-   "demand_hours": 2.28,
-   "lo80": 1.31,
-   "hi80": 3.25,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.67
+   "demand_hours": 1.98,
+   "lo80": 1.26,
+   "hi80": 2.71,
+   "capacity_hours": 1.61,
+   "actual_hours": 1.81
   },
   {
    "time": "2026-10-24T00:00",
    "team": "D",
-   "demand_hours": 1.63,
-   "lo80": 0.38,
-   "hi80": 2.89,
-   "capacity_hours": 0.81,
-   "actual_hours": 1.64
+   "demand_hours": 1.66,
+   "lo80": 0.65,
+   "hi80": 2.68,
+   "capacity_hours": 1.61,
+   "actual_hours": 1.26
   },
   {
    "time": "2026-10-24T01:00",
    "team": "D",
-   "demand_hours": 1.18,
-   "lo80": 0.15,
-   "hi80": 2.29,
-   "capacity_hours": 0.0,
-   "actual_hours": 1.11
+   "demand_hours": 0.99,
+   "lo80": 0.17,
+   "hi80": 1.82,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.87
   },
   {
    "time": "2026-10-24T02:00",
    "team": "D",
-   "demand_hours": 0.54,
-   "lo80": 0.0,
-   "hi80": 1.42,
+   "demand_hours": 0.63,
+   "lo80": 0.01,
+   "hi80": 1.33,
    "capacity_hours": 0.0,
-   "actual_hours": 0.55
+   "actual_hours": 0.22
   },
   {
    "time": "2026-10-24T03:00",
    "team": "D",
-   "demand_hours": 0.41,
+   "demand_hours": 0.39,
    "lo80": 0.0,
-   "hi80": 1.25,
+   "hi80": 1.01,
    "capacity_hours": 0.0,
-   "actual_hours": 0.0
+   "actual_hours": 0.63
   },
   {
    "time": "2026-10-24T04:00",
    "team": "D",
-   "demand_hours": 0.51,
+   "demand_hours": 0.33,
    "lo80": 0.0,
-   "hi80": 1.39,
+   "hi80": 0.92,
    "capacity_hours": 0.0,
-   "actual_hours": 0.11
+   "actual_hours": 0.52
   },
   {
    "time": "2026-10-24T05:00",
    "team": "D",
-   "demand_hours": 0.46,
+   "demand_hours": 0.39,
    "lo80": 0.0,
-   "hi80": 1.31,
+   "hi80": 1.01,
    "capacity_hours": 0.0,
-   "actual_hours": 0.0
+   "actual_hours": 0.22
   },
   {
    "time": "2026-10-24T06:00",
    "team": "D",
-   "demand_hours": 0.55,
+   "demand_hours": 0.58,
    "lo80": 0.0,
-   "hi80": 1.44,
+   "hi80": 1.27,
    "capacity_hours": 0.0,
-   "actual_hours": 0.97
+   "actual_hours": 0.45
   },
   {
    "time": "2026-10-24T07:00",
    "team": "D",
-   "demand_hours": 1.11,
-   "lo80": 0.1,
-   "hi80": 2.2,
-   "capacity_hours": 2.42,
-   "actual_hours": 1.11
+   "demand_hours": 1.21,
+   "lo80": 0.32,
+   "hi80": 2.11,
+   "capacity_hours": 1.61,
+   "actual_hours": 0.48
   },
   {
    "time": "2026-10-24T08:00",
    "team": "D",
-   "demand_hours": 1.83,
-   "lo80": 0.52,
-   "hi80": 3.14,
+   "demand_hours": 1.72,
+   "lo80": 0.69,
+   "hi80": 2.75,
    "capacity_hours": 2.42,
-   "actual_hours": 1.77
+   "actual_hours": 1.21
   },
   {
    "time": "2026-10-24T09:00",
    "team": "D",
-   "demand_hours": 1.99,
-   "lo80": 0.64,
-   "hi80": 3.35,
+   "demand_hours": 2.24,
+   "lo80": 1.09,
+   "hi80": 3.39,
    "capacity_hours": 2.42,
-   "actual_hours": 1.66
+   "actual_hours": 1.98
   },
   {
    "time": "2026-10-24T10:00",
    "team": "D",
-   "demand_hours": 2.36,
-   "lo80": 0.92,
-   "hi80": 3.81,
+   "demand_hours": 2.73,
+   "lo80": 1.48,
+   "hi80": 3.99,
    "capacity_hours": 2.42,
-   "actual_hours": 2.91
+   "actual_hours": 1.92
   },
   {
    "time": "2026-10-24T11:00",
    "team": "D",
-   "demand_hours": 3.09,
-   "lo80": 1.47,
-   "hi80": 4.71,
+   "demand_hours": 3.11,
+   "lo80": 1.78,
+   "hi80": 4.44,
    "capacity_hours": 2.42,
-   "actual_hours": 3.01
+   "actual_hours": 1.91
   },
   {
    "time": "2026-10-24T12:00",
    "team": "D",
-   "demand_hours": 3.64,
-   "lo80": 1.9,
-   "hi80": 5.37,
-   "capacity_hours": 3.23,
-   "actual_hours": 2.28
+   "demand_hours": 3.46,
+   "lo80": 2.07,
+   "hi80": 4.85,
+   "capacity_hours": 2.42,
+   "actual_hours": 2.21
   },
   {
    "time": "2026-10-24T13:00",
    "team": "D",
-   "demand_hours": 3.65,
-   "lo80": 1.91,
-   "hi80": 5.38,
+   "demand_hours": 3.57,
+   "lo80": 2.15,
+   "hi80": 4.98,
    "capacity_hours": 3.23,
-   "actual_hours": 3.87
+   "actual_hours": 2.08
   },
   {
    "time": "2026-10-24T14:00",
    "team": "D",
-   "demand_hours": 3.59,
-   "lo80": 1.87,
-   "hi80": 5.31,
-   "capacity_hours": 4.04,
-   "actual_hours": 3.99
+   "demand_hours": 3.61,
+   "lo80": 2.19,
+   "hi80": 5.03,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.76
   },
   {
    "time": "2026-10-24T15:00",
    "team": "D",
-   "demand_hours": 3.02,
-   "lo80": 1.42,
-   "hi80": 4.61,
-   "capacity_hours": 4.84,
-   "actual_hours": 2.43
+   "demand_hours": 2.87,
+   "lo80": 1.6,
+   "hi80": 4.15,
+   "capacity_hours": 4.04,
+   "actual_hours": 2.88
   },
   {
    "time": "2026-10-24T16:00",
    "team": "D",
-   "demand_hours": 2.88,
-   "lo80": 1.31,
-   "hi80": 4.45,
-   "capacity_hours": 4.04,
-   "actual_hours": 2.73
+   "demand_hours": 2.83,
+   "lo80": 1.56,
+   "hi80": 4.1,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.66
   },
   {
    "time": "2026-10-24T17:00",
    "team": "D",
-   "demand_hours": 3.37,
-   "lo80": 1.7,
-   "hi80": 5.03,
-   "capacity_hours": 4.04,
-   "actual_hours": 2.21
+   "demand_hours": 2.77,
+   "lo80": 1.52,
+   "hi80": 4.03,
+   "capacity_hours": 3.23,
+   "actual_hours": 2.2
   },
   {
    "time": "2026-10-24T18:00",
    "team": "D",
-   "demand_hours": 3.35,
-   "lo80": 1.67,
-   "hi80": 5.02,
-   "capacity_hours": 4.04,
-   "actual_hours": 2.29
+   "demand_hours": 3.16,
+   "lo80": 1.82,
+   "hi80": 4.5,
+   "capacity_hours": 3.23,
+   "actual_hours": 3.3
   },
   {
    "time": "2026-10-24T19:00",
    "team": "D",
-   "demand_hours": 4.37,
-   "lo80": 2.49,
-   "hi80": 6.24,
-   "capacity_hours": 4.04,
-   "actual_hours": 3.43
+   "demand_hours": 4.0,
+   "lo80": 2.51,
+   "hi80": 5.48,
+   "capacity_hours": 3.23,
+   "actual_hours": 3.69
   },
   {
    "time": "2026-10-24T20:00",
    "team": "D",
-   "demand_hours": 4.54,
-   "lo80": 2.63,
-   "hi80": 6.45,
-   "capacity_hours": 4.04,
-   "actual_hours": 5.4
+   "demand_hours": 4.04,
+   "lo80": 2.55,
+   "hi80": 5.54,
+   "capacity_hours": 3.23,
+   "actual_hours": 4.4
   },
   {
    "time": "2026-10-24T21:00",
    "team": "D",
-   "demand_hours": 4.24,
-   "lo80": 2.38,
-   "hi80": 6.09,
+   "demand_hours": 4.36,
+   "lo80": 2.82,
+   "hi80": 5.91,
    "capacity_hours": 3.23,
-   "actual_hours": 3.68
+   "actual_hours": 2.81
   },
   {
    "time": "2026-10-24T22:00",
    "team": "D",
-   "demand_hours": 3.66,
-   "lo80": 1.92,
-   "hi80": 5.41,
+   "demand_hours": 4.21,
+   "lo80": 2.69,
+   "hi80": 5.74,
    "capacity_hours": 3.23,
-   "actual_hours": 3.89
+   "actual_hours": 4.32
   },
   {
    "time": "2026-10-24T23:00",
    "team": "D",
-   "demand_hours": 2.98,
-   "lo80": 1.39,
-   "hi80": 4.57,
-   "capacity_hours": 2.42,
-   "actual_hours": 3.56
+   "demand_hours": 3.13,
+   "lo80": 1.79,
+   "hi80": 4.46,
+   "capacity_hours": 3.23,
+   "actual_hours": 1.94
   },
   {
    "time": "2026-10-25T00:00",
    "team": "D",
-   "demand_hours": 1.43,
-   "lo80": 0.24,
-   "hi80": 2.63,
-   "capacity_hours": 1.61,
-   "actual_hours": 0.98
+   "demand_hours": 1.66,
+   "lo80": 0.65,
+   "hi80": 2.68,
+   "capacity_hours": 2.42,
+   "actual_hours": 1.33
   },
   {
    "time": "2026-10-25T01:00",
    "team": "D",
-   "demand_hours": 1.14,
-   "lo80": 0.1,
-   "hi80": 2.24,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.9
+   "demand_hours": 0.89,
+   "lo80": 0.12,
+   "hi80": 1.68,
+   "capacity_hours": 1.61,
+   "actual_hours": 1.44
   },
   {
    "time": "2026-10-25T02:00",
    "team": "D",
-   "demand_hours": 0.58,
+   "demand_hours": 0.54,
    "lo80": 0.0,
-   "hi80": 1.48,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.76
+   "hi80": 1.22,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.43
   },
   {
    "time": "2026-10-25T03:00",
    "team": "D",
-   "demand_hours": 0.37,
+   "demand_hours": 0.38,
    "lo80": 0.0,
-   "hi80": 1.19,
-   "capacity_hours": 0.0,
-   "actual_hours": 1.1
+   "hi80": 1.0,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.35
   },
   {
    "time": "2026-10-25T04:00",
    "team": "D",
-   "demand_hours": 0.46,
+   "demand_hours": 0.35,
    "lo80": 0.0,
-   "hi80": 1.31,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.32
+   "hi80": 0.95,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.15
   },
   {
    "time": "2026-10-25T05:00",
    "team": "D",
-   "demand_hours": 0.44,
+   "demand_hours": 0.39,
    "lo80": 0.0,
-   "hi80": 1.28,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.32
+   "hi80": 1.01,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.07
   },
   {
    "time": "2026-10-25T06:00",
    "team": "D",
-   "demand_hours": 0.61,
+   "demand_hours": 0.58,
    "lo80": 0.0,
-   "hi80": 1.52,
-   "capacity_hours": 0.0,
-   "actual_hours": 0.32
+   "hi80": 1.27,
+   "capacity_hours": 0.81,
+   "actual_hours": 1.14
   },
   {
    "time": "2026-10-25T07:00",
    "team": "D",
-   "demand_hours": 0.98,
-   "lo80": 0.04,
-   "hi80": 2.03,
-   "capacity_hours": 1.61,
-   "actual_hours": 0.67
+   "demand_hours": 1.36,
+   "lo80": 0.43,
+   "hi80": 2.3,
+   "capacity_hours": 0.81,
+   "actual_hours": 0.82
   },
   {
    "time": "2026-10-25T08:00",
    "team": "D",
-   "demand_hours": 1.72,
-   "lo80": 0.44,
-   "hi80": 2.99,
+   "demand_hours": 1.89,
+   "lo80": 0.82,
+   "hi80": 2.95,
    "capacity_hours": 2.42,
-   "actual_hours": 1.53
+   "actual_hours": 1.51
   },
   {
    "time": "2026-10-25T09:00",
    "team": "D",
-   "demand_hours": 2.04,
-   "lo80": 0.67,
-   "hi80": 3.4,
+   "demand_hours": 2.53,
+   "lo80": 1.32,
+   "hi80": 3.75,
    "capacity_hours": 2.42,
-   "actual_hours": 3.31
+   "actual_hours": 2.25
   },
   {
    "time": "2026-10-25T10:00",
    "team": "D",
-   "demand_hours": 2.25,
-   "lo80": 0.83,
-   "hi80": 3.67,
+   "demand_hours": 2.84,
+   "lo80": 1.56,
+   "hi80": 4.11,
    "capacity_hours": 2.42,
-   "actual_hours": 2.42
+   "actual_hours": 1.77
   },
   {
    "time": "2026-10-25T11:00",
    "team": "D",
-   "demand_hours": 2.98,
-   "lo80": 1.38,
-   "hi80": 4.57,
+   "demand_hours": 3.15,
+   "lo80": 1.82,
+   "hi80": 4.48,
    "capacity_hours": 2.42,
-   "actual_hours": 1.65
+   "actual_hours": 3.05
   },
   {
    "time": "2026-10-25T12:00",
    "team": "D",
-   "demand_hours": 3.6,
-   "lo80": 1.87,
-   "hi80": 5.32,
-   "capacity_hours": 3.23,
-   "actual_hours": 4.67
+   "demand_hours": 3.39,
+   "lo80": 2.01,
+   "hi80": 4.77,
+   "capacity_hours": 2.42,
+   "actual_hours": 3.03
   },
   {
    "time": "2026-10-25T13:00",
    "team": "D",
-   "demand_hours": 3.78,
-   "lo80": 2.02,
-   "hi80": 5.54,
-   "capacity_hours": 3.23,
-   "actual_hours": 4.86
+   "demand_hours": 3.58,
+   "lo80": 2.18,
+   "hi80": 4.99,
+   "capacity_hours": 4.04,
+   "actual_hours": 3.95
   },
   {
    "time": "2026-10-25T14:00",
    "team": "D",
-   "demand_hours": 3.63,
-   "lo80": 1.9,
-   "hi80": 5.35,
+   "demand_hours": 3.5,
+   "lo80": 2.1,
+   "hi80": 4.9,
    "capacity_hours": 4.04,
-   "actual_hours": 2.63
+   "actual_hours": 4.19
   },
   {
    "time": "2026-10-25T15:00",
    "team": "D",
-   "demand_hours": 2.98,
-   "lo80": 1.39,
-   "hi80": 4.57,
+   "demand_hours": 2.78,
+   "lo80": 1.52,
+   "hi80": 4.04,
    "capacity_hours": 4.84,
-   "actual_hours": 3.21
+   "actual_hours": 2.83
   },
   {
    "time": "2026-10-25T16:00",
    "team": "D",
-   "demand_hours": 2.88,
-   "lo80": 1.31,
-   "hi80": 4.44,
+   "demand_hours": 2.55,
+   "lo80": 1.34,
+   "hi80": 3.77,
    "capacity_hours": 4.04,
-   "actual_hours": 3.4
+   "actual_hours": 2.92
   },
   {
    "time": "2026-10-25T17:00",
    "team": "D",
-   "demand_hours": 3.11,
-   "lo80": 1.5,
-   "hi80": 4.73,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.74
+   "demand_hours": 2.7,
+   "lo80": 1.46,
+   "hi80": 3.95,
+   "capacity_hours": 2.42,
+   "actual_hours": 3.52
   },
   {
    "time": "2026-10-25T18:00",
    "team": "D",
-   "demand_hours": 3.12,
-   "lo80": 1.5,
-   "hi80": 4.75,
-   "capacity_hours": 3.23,
-   "actual_hours": 3.39
+   "demand_hours": 3.32,
+   "lo80": 1.95,
+   "hi80": 4.68,
+   "capacity_hours": 2.42,
+   "actual_hours": 4.17
   },
   {
    "time": "2026-10-25T19:00",
    "team": "D",
-   "demand_hours": 3.97,
-   "lo80": 2.17,
-   "hi80": 5.77,
-   "capacity_hours": 3.23,
-   "actual_hours": 4.51
+   "demand_hours": 4.09,
+   "lo80": 2.59,
+   "hi80": 5.59,
+   "capacity_hours": 2.42,
+   "actual_hours": 5.02
   },
   {
    "time": "2026-10-25T20:00",
    "team": "D",
-   "demand_hours": 4.5,
-   "lo80": 2.6,
-   "hi80": 6.4,
-   "capacity_hours": 3.23,
-   "actual_hours": 5.27
+   "demand_hours": 4.28,
+   "lo80": 2.74,
+   "hi80": 5.81,
+   "capacity_hours": 2.42,
+   "actual_hours": 3.95
   },
   {
    "time": "2026-10-25T21:00",
    "team": "D",
-   "demand_hours": 4.58,
-   "lo80": 2.66,
-   "hi80": 6.5,
+   "demand_hours": 4.54,
+   "lo80": 2.97,
+   "hi80": 6.11,
    "capacity_hours": 2.42,
    "actual_hours": 5.29
   },
   {
    "time": "2026-10-25T22:00",
    "team": "D",
-   "demand_hours": 3.51,
-   "lo80": 1.8,
-   "hi80": 5.21,
-   "capacity_hours": 3.23,
-   "actual_hours": 4.36
+   "demand_hours": 4.55,
+   "lo80": 2.98,
+   "hi80": 6.12,
+   "capacity_hours": 1.61,
+   "actual_hours": 4.56
   },
   {
    "time": "2026-10-25T23:00",
    "team": "D",
-   "demand_hours": 3.03,
-   "lo80": 1.42,
-   "hi80": 4.63,
-   "capacity_hours": 2.42,
-   "actual_hours": 2.31
+   "demand_hours": 3.31,
+   "lo80": 1.94,
+   "hi80": 4.67,
+   "capacity_hours": 1.61,
+   "actual_hours": 2.44
   }
  ],
  "bottlenecks": [
   {
-   "team": "B",
-   "start": "2026-10-16T18:00",
-   "end": "2026-10-16T23:00",
-   "peak_gap_agents": 5.1,
-   "agent_hours_short": 18.6,
-   "text": "Team B short by up to 5.1 agents, Fri 16 Oct 18:00-23:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-17T19:00",
-   "end": "2026-10-18T00:00",
-   "peak_gap_agents": 5.2,
-   "agent_hours_short": 17.9,
-   "text": "Team C short by up to 5.2 agents, Sat 17 Oct 19:00-00:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-17T18:00",
-   "end": "2026-10-17T23:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 16.9,
-   "text": "Team B short by up to 4.2 agents, Sat 17 Oct 18:00-23:00"
-  },
-  {
    "team": "D",
-   "start": "2026-10-17T00:00",
-   "end": "2026-10-17T07:00",
-   "peak_gap_agents": 3.0,
-   "agent_hours_short": 16.1,
-   "text": "Team D short by up to 3.0 agents, Sat 17 Oct 00:00-07:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-15T18:00",
-   "end": "2026-10-15T23:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 15.1,
-   "text": "Team D short by up to 4.2 agents, Thu 15 Oct 18:00-23:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-18T19:00",
+   "start": "2026-10-18T17:00",
    "end": "2026-10-19T00:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 14.9,
-   "text": "Team D short by up to 4.2 agents, Sun 18 Oct 19:00-00:00"
+   "peak_gap_agents": 5.1,
+   "agent_hours_short": 26.0,
+   "text": "Team D short by up to 5.1 agents, Sun 18 Oct 17:00-00:00"
   },
   {
    "team": "C",
-   "start": "2026-10-18T19:00",
-   "end": "2026-10-18T23:00",
-   "peak_gap_agents": 5.2,
-   "agent_hours_short": 14.7,
-   "text": "Team C short by up to 5.2 agents, Sun 18 Oct 19:00-23:00"
+   "start": "2026-10-12T07:00",
+   "end": "2026-10-12T15:00",
+   "peak_gap_agents": 4.0,
+   "agent_hours_short": 22.1,
+   "text": "Team C short by up to 4.0 agents, Mon 12 Oct 07:00-15:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-16T00:00",
-   "end": "2026-10-16T07:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 14.1,
-   "text": "Team B short by up to 2.0 agents, Fri 16 Oct 00:00-07:00"
+   "team": "C",
+   "start": "2026-10-15T16:00",
+   "end": "2026-10-16T00:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 20.6,
+   "text": "Team C short by up to 3.1 agents, Thu 15 Oct 16:00-00:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-14T16:00",
+   "end": "2026-10-14T23:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 17.6,
+   "text": "Team C short by up to 3.1 agents, Wed 14 Oct 16:00-23:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-18T08:00",
+   "end": "2026-10-18T15:00",
+   "peak_gap_agents": 4.0,
+   "agent_hours_short": 17.5,
+   "text": "Team C short by up to 4.0 agents, Sun 18 Oct 08:00-15:00"
   },
   {
    "team": "D",
+   "start": "2026-10-12T18:00",
+   "end": "2026-10-13T00:00",
+   "peak_gap_agents": 3.2,
+   "agent_hours_short": 16.9,
+   "text": "Team D short by up to 3.2 agents, Mon 12 Oct 18:00-00:00"
+  },
+  {
+   "team": "C",
    "start": "2026-10-17T19:00",
    "end": "2026-10-18T00:00",
    "peak_gap_agents": 3.2,
-   "agent_hours_short": 14.1,
-   "text": "Team D short by up to 3.2 agents, Sat 17 Oct 19:00-00:00"
+   "agent_hours_short": 13.9,
+   "text": "Team C short by up to 3.2 agents, Sat 17 Oct 19:00-00:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-18T19:00",
+   "end": "2026-10-19T00:00",
+   "peak_gap_agents": 3.2,
+   "agent_hours_short": 13.9,
+   "text": "Team C short by up to 3.2 agents, Sun 18 Oct 19:00-00:00"
   },
   {
    "team": "C",
    "start": "2026-10-13T19:00",
    "end": "2026-10-14T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 13.7,
-   "text": "Team C short by up to 3.2 agents, Tue 13 Oct 19:00-00:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-14T09:00",
-   "end": "2026-10-14T14:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 13.6,
-   "text": "Team B short by up to 3.2 agents, Wed 14 Oct 09:00-14:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-15T01:00",
-   "end": "2026-10-15T07:00",
-   "peak_gap_agents": 3.0,
-   "agent_hours_short": 13.0,
-   "text": "Team B short by up to 3.0 agents, Thu 15 Oct 01:00-07:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-18T01:00",
-   "end": "2026-10-18T07:00",
-   "peak_gap_agents": 3.0,
-   "agent_hours_short": 13.0,
-   "text": "Team D short by up to 3.0 agents, Sun 18 Oct 01:00-07:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-15T19:00",
-   "end": "2026-10-16T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 12.1,
-   "text": "Team B short by up to 3.2 agents, Thu 15 Oct 19:00-00:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-16T19:00",
-   "end": "2026-10-17T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 12.1,
-   "text": "Team D short by up to 3.2 agents, Fri 16 Oct 19:00-00:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-17T10:00",
-   "end": "2026-10-17T15:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 11.7,
-   "text": "Team C short by up to 3.2 agents, Sat 17 Oct 10:00-15:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-18T10:00",
-   "end": "2026-10-18T15:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 11.7,
-   "text": "Team C short by up to 3.2 agents, Sun 18 Oct 10:00-15:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-16T09:00",
-   "end": "2026-10-16T14:00",
    "peak_gap_agents": 3.1,
-   "agent_hours_short": 11.6,
-   "text": "Team D short by up to 3.1 agents, Fri 16 Oct 09:00-14:00"
+   "agent_hours_short": 13.4,
+   "text": "Team C short by up to 3.1 agents, Tue 13 Oct 19:00-00:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-18T19:00",
-   "end": "2026-10-18T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 10.9,
-   "text": "Team B short by up to 3.2 agents, Sun 18 Oct 19:00-23:00"
-  },
-  {
-   "team": "A",
+   "team": "D",
    "start": "2026-10-17T19:00",
    "end": "2026-10-17T23:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 10.8,
-   "text": "Team A short by up to 4.2 agents, Sat 17 Oct 19:00-23:00"
+   "peak_gap_agents": 3.2,
+   "agent_hours_short": 11.8,
+   "text": "Team D short by up to 3.2 agents, Sat 17 Oct 19:00-23:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-13T09:00",
+   "end": "2026-10-13T14:00",
+   "peak_gap_agents": 3.0,
+   "agent_hours_short": 11.3,
+   "text": "Team C short by up to 3.0 agents, Tue 13 Oct 09:00-14:00"
   },
   {
    "team": "B",
-   "start": "2026-10-18T09:00",
-   "end": "2026-10-18T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 10.8,
-   "text": "Team B short by up to 2.2 agents, Sun 18 Oct 09:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-12T19:00",
-   "end": "2026-10-13T00:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 10.7,
-   "text": "Team A short by up to 2.2 agents, Mon 12 Oct 19:00-00:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-15T11:00",
-   "end": "2026-10-15T15:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 10.7,
-   "text": "Team D short by up to 3.2 agents, Thu 15 Oct 11:00-15:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-16T11:00",
-   "end": "2026-10-16T15:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 10.6,
-   "text": "Team B short by up to 3.2 agents, Fri 16 Oct 11:00-15:00"
-  },
-  {
-   "team": "A",
    "start": "2026-10-18T19:00",
-   "end": "2026-10-18T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.8,
-   "text": "Team A short by up to 3.2 agents, Sun 18 Oct 19:00-23:00"
+   "end": "2026-10-19T00:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 10.9,
+   "text": "Team B short by up to 2.2 agents, Sun 18 Oct 19:00-00:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-14T20:00",
-   "end": "2026-10-15T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.8,
-   "text": "Team B short by up to 3.2 agents, Wed 14 Oct 20:00-00:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-13T19:00",
-   "end": "2026-10-13T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.8,
-   "text": "Team D short by up to 3.2 agents, Tue 13 Oct 19:00-23:00"
-  },
-  {
-   "team": "A",
+   "team": "C",
    "start": "2026-10-16T19:00",
-   "end": "2026-10-16T23:00",
-   "peak_gap_agents": 3.1,
-   "agent_hours_short": 9.6,
-   "text": "Team A short by up to 3.1 agents, Fri 16 Oct 19:00-23:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-13T10:00",
-   "end": "2026-10-13T14:00",
-   "peak_gap_agents": 3.1,
-   "agent_hours_short": 9.5,
-   "text": "Team B short by up to 3.1 agents, Tue 13 Oct 10:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-13T19:00",
-   "end": "2026-10-13T23:00",
+   "end": "2026-10-17T00:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 8.6,
-   "text": "Team A short by up to 2.2 agents, Tue 13 Oct 19:00-23:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-15T10:00",
-   "end": "2026-10-15T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 8.5,
-   "text": "Team C short by up to 2.2 agents, Thu 15 Oct 10:00-14:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-14T11:00",
-   "end": "2026-10-14T14:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 8.5,
-   "text": "Team D short by up to 3.2 agents, Wed 14 Oct 11:00-14:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-12T20:00",
-   "end": "2026-10-12T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 7.6,
-   "text": "Team D short by up to 3.2 agents, Mon 12 Oct 20:00-23:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-14T19:00",
-   "end": "2026-10-14T22:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 7.6,
-   "text": "Team D short by up to 3.2 agents, Wed 14 Oct 19:00-22:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-13T11:00",
-   "end": "2026-10-13T14:00",
-   "peak_gap_agents": 3.1,
-   "agent_hours_short": 7.3,
-   "text": "Team C short by up to 3.1 agents, Tue 13 Oct 11:00-14:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-17T12:00",
-   "end": "2026-10-17T15:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team B short by up to 2.2 agents, Sat 17 Oct 12:00-15:00"
+   "agent_hours_short": 10.6,
+   "text": "Team C short by up to 2.2 agents, Fri 16 Oct 19:00-00:00"
   },
   {
    "team": "D",
    "start": "2026-10-17T11:00",
-   "end": "2026-10-17T14:00",
+   "end": "2026-10-17T15:00",
+   "peak_gap_agents": 3.2,
+   "agent_hours_short": 9.7,
+   "text": "Team D short by up to 3.2 agents, Sat 17 Oct 11:00-15:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-12T20:00",
+   "end": "2026-10-13T00:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 9.5,
+   "text": "Team C short by up to 3.1 agents, Mon 12 Oct 20:00-00:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-13T19:00",
+   "end": "2026-10-13T23:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team D short by up to 2.2 agents, Sat 17 Oct 11:00-14:00"
+   "agent_hours_short": 8.8,
+   "text": "Team D short by up to 2.2 agents, Tue 13 Oct 19:00-23:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-14T10:00",
+   "end": "2026-10-14T13:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 8.3,
+   "text": "Team D short by up to 3.1 agents, Wed 14 Oct 10:00-13:00"
+  },
+  {
+   "team": "B",
+   "start": "2026-10-12T19:00",
+   "end": "2026-10-12T22:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 6.5,
+   "text": "Team B short by up to 2.2 agents, Mon 12 Oct 19:00-22:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-14T12:00",
+   "end": "2026-10-14T15:00",
+   "peak_gap_agents": 2.1,
+   "agent_hours_short": 6.3,
+   "text": "Team C short by up to 2.1 agents, Wed 14 Oct 12:00-15:00"
   },
   {
    "team": "D",
    "start": "2026-10-18T11:00",
-   "end": "2026-10-18T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team D short by up to 2.2 agents, Sun 18 Oct 11:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-16T11:00",
-   "end": "2026-10-16T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.4,
-   "text": "Team C short by up to 2.2 agents, Fri 16 Oct 11:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-12T12:00",
-   "end": "2026-10-12T14:00",
-   "peak_gap_agents": 3.1,
-   "agent_hours_short": 6.2,
-   "text": "Team A short by up to 3.1 agents, Mon 12 Oct 12:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-14T00:00",
-   "end": "2026-10-14T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 6.0,
-   "text": "Team C short by up to 2.0 agents, Wed 14 Oct 00:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-16T00:00",
-   "end": "2026-10-16T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 6.0,
-   "text": "Team C short by up to 2.0 agents, Fri 16 Oct 00:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-17T00:00",
-   "end": "2026-10-17T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 6.0,
-   "text": "Team C short by up to 2.0 agents, Sat 17 Oct 00:00-03:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-17T12:00",
-   "end": "2026-10-17T14:00",
+   "end": "2026-10-18T13:00",
    "peak_gap_agents": 3.2,
    "agent_hours_short": 5.3,
-   "text": "Team A short by up to 3.2 agents, Sat 17 Oct 12:00-14:00"
+   "text": "Team D short by up to 3.2 agents, Sun 18 Oct 11:00-13:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-12T20:00",
-   "end": "2026-10-12T22:00",
+   "team": "C",
+   "start": "2026-10-17T12:00",
+   "end": "2026-10-17T14:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 5.2,
+   "text": "Team C short by up to 3.1 agents, Sat 17 Oct 12:00-14:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-15T11:00",
+   "end": "2026-10-15T13:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.5,
-   "text": "Team B short by up to 2.2 agents, Mon 12 Oct 20:00-22:00"
+   "agent_hours_short": 4.3,
+   "text": "Team D short by up to 2.2 agents, Thu 15 Oct 11:00-13:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-13T20:00",
-   "end": "2026-10-13T22:00",
+   "team": "D",
+   "start": "2026-10-16T11:00",
+   "end": "2026-10-16T13:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.5,
-   "text": "Team B short by up to 2.2 agents, Tue 13 Oct 20:00-22:00"
+   "agent_hours_short": 4.3,
+   "text": "Team D short by up to 2.2 agents, Fri 16 Oct 11:00-13:00"
   },
   {
-   "team": "B",
+   "team": "C",
    "start": "2026-10-15T12:00",
    "end": "2026-10-15T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.4,
-   "text": "Team B short by up to 2.2 agents, Thu 15 Oct 12:00-14:00"
+   "peak_gap_agents": 2.1,
+   "agent_hours_short": 4.2,
+   "text": "Team C short by up to 2.1 agents, Thu 15 Oct 12:00-14:00"
   },
   {
-   "team": "C",
-   "start": "2026-10-15T21:00",
-   "end": "2026-10-15T23:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.4,
-   "text": "Team C short by up to 2.2 agents, Thu 15 Oct 21:00-23:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-13T12:00",
-   "end": "2026-10-13T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Tue 13 Oct 12:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-15T12:00",
-   "end": "2026-10-15T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Thu 15 Oct 12:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-18T12:00",
-   "end": "2026-10-18T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Sun 18 Oct 12:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-13T01:00",
-   "end": "2026-10-13T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Tue 13 Oct 01:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-15T01:00",
-   "end": "2026-10-15T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Thu 15 Oct 01:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-17T06:00",
-   "end": "2026-10-17T08:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Sat 17 Oct 06:00-08:00"
-  },
-  {
-   "team": "C",
+   "team": "B",
    "start": "2026-10-18T01:00",
    "end": "2026-10-18T03:00",
    "peak_gap_agents": 2.0,
    "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Sun 18 Oct 01:00-03:00"
+   "text": "Team B short by up to 2.0 agents, Sun 18 Oct 01:00-03:00"
   },
   {
    "team": "C",
-   "start": "2026-10-18T06:00",
-   "end": "2026-10-18T08:00",
+   "start": "2026-10-13T00:00",
+   "end": "2026-10-13T02:00",
    "peak_gap_agents": 2.0,
    "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Sun 18 Oct 06:00-08:00"
+   "text": "Team C short by up to 2.0 agents, Tue 13 Oct 00:00-02:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-24T18:00",
-   "end": "2026-10-24T23:00",
-   "peak_gap_agents": 5.2,
-   "agent_hours_short": 19.9,
-   "text": "Team B short by up to 5.2 agents, Sat 24 Oct 18:00-23:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-23T18:00",
-   "end": "2026-10-23T23:00",
-   "peak_gap_agents": 4.1,
-   "agent_hours_short": 16.6,
-   "text": "Team B short by up to 4.1 agents, Fri 23 Oct 18:00-23:00"
+   "team": "C",
+   "start": "2026-10-14T00:00",
+   "end": "2026-10-14T02:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team C short by up to 2.0 agents, Wed 14 Oct 00:00-02:00"
   },
   {
    "team": "D",
-   "start": "2026-10-24T00:00",
-   "end": "2026-10-24T07:00",
-   "peak_gap_agents": 3.0,
-   "agent_hours_short": 15.1,
-   "text": "Team D short by up to 3.0 agents, Sat 24 Oct 00:00-07:00"
+   "start": "2026-10-16T02:00",
+   "end": "2026-10-16T04:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Fri 16 Oct 02:00-04:00"
   },
   {
-   "team": "A",
-   "start": "2026-10-19T19:00",
+   "team": "D",
+   "start": "2026-10-16T05:00",
+   "end": "2026-10-16T07:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Fri 16 Oct 05:00-07:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-17T02:00",
+   "end": "2026-10-17T04:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Sat 17 Oct 02:00-04:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-17T05:00",
+   "end": "2026-10-17T07:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Sat 17 Oct 05:00-07:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-19T07:00",
+   "end": "2026-10-19T15:00",
+   "peak_gap_agents": 4.0,
+   "agent_hours_short": 24.1,
+   "text": "Team C short by up to 4.0 agents, Mon 19 Oct 07:00-15:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-25T17:00",
+   "end": "2026-10-26T00:00",
+   "peak_gap_agents": 5.1,
+   "agent_hours_short": 24.0,
+   "text": "Team D short by up to 5.1 agents, Sun 25 Oct 17:00-00:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-22T16:00",
+   "end": "2026-10-23T00:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 22.6,
+   "text": "Team C short by up to 3.1 agents, Thu 22 Oct 16:00-00:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-19T17:00",
    "end": "2026-10-20T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 14.7,
-   "text": "Team A short by up to 3.2 agents, Mon 19 Oct 19:00-00:00"
+   "peak_gap_agents": 4.2,
+   "agent_hours_short": 22.1,
+   "text": "Team D short by up to 4.2 agents, Mon 19 Oct 17:00-00:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-21T16:00",
+   "end": "2026-10-21T23:00",
+   "peak_gap_agents": 4.1,
+   "agent_hours_short": 20.6,
+   "text": "Team C short by up to 4.1 agents, Wed 21 Oct 16:00-23:00"
   },
   {
    "team": "C",
    "start": "2026-10-24T19:00",
-   "end": "2026-10-24T23:00",
+   "end": "2026-10-25T00:00",
    "peak_gap_agents": 4.2,
-   "agent_hours_short": 14.7,
-   "text": "Team C short by up to 4.2 agents, Sat 24 Oct 19:00-23:00"
+   "agent_hours_short": 14.9,
+   "text": "Team C short by up to 4.2 agents, Sat 24 Oct 19:00-00:00"
   },
   {
    "team": "C",
    "start": "2026-10-25T19:00",
    "end": "2026-10-25T23:00",
-   "peak_gap_agents": 5.2,
-   "agent_hours_short": 14.7,
-   "text": "Team C short by up to 5.2 agents, Sun 25 Oct 19:00-23:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-22T19:00",
-   "end": "2026-10-23T00:00",
    "peak_gap_agents": 3.2,
-   "agent_hours_short": 14.1,
-   "text": "Team B short by up to 3.2 agents, Thu 22 Oct 19:00-00:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-23T00:00",
-   "end": "2026-10-23T07:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 14.1,
-   "text": "Team B short by up to 2.0 agents, Fri 23 Oct 00:00-07:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-25T19:00",
-   "end": "2026-10-26T00:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 13.9,
-   "text": "Team D short by up to 4.2 agents, Sun 25 Oct 19:00-00:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-19T19:00",
-   "end": "2026-10-19T23:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 13.8,
-   "text": "Team D short by up to 4.2 agents, Mon 19 Oct 19:00-23:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-25T01:00",
-   "end": "2026-10-25T07:00",
-   "peak_gap_agents": 3.0,
-   "agent_hours_short": 13.0,
-   "text": "Team D short by up to 3.0 agents, Sun 25 Oct 01:00-07:00"
+   "agent_hours_short": 12.8,
+   "text": "Team C short by up to 3.2 agents, Sun 25 Oct 19:00-23:00"
   },
   {
    "team": "C",
    "start": "2026-10-20T19:00",
    "end": "2026-10-21T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 12.7,
-   "text": "Team C short by up to 3.2 agents, Tue 20 Oct 19:00-00:00"
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 12.4,
+   "text": "Team C short by up to 3.1 agents, Tue 20 Oct 19:00-00:00"
   },
   {
    "team": "C",
-   "start": "2026-10-25T10:00",
-   "end": "2026-10-25T15:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 12.7,
-   "text": "Team C short by up to 3.2 agents, Sun 25 Oct 10:00-15:00"
+   "start": "2026-10-25T09:00",
+   "end": "2026-10-25T14:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 12.3,
+   "text": "Team C short by up to 3.1 agents, Sun 25 Oct 09:00-14:00"
   },
   {
    "team": "B",
-   "start": "2026-10-21T19:00",
-   "end": "2026-10-22T00:00",
+   "start": "2026-10-25T19:00",
+   "end": "2026-10-26T00:00",
    "peak_gap_agents": 3.2,
-   "agent_hours_short": 12.1,
-   "text": "Team B short by up to 3.2 agents, Wed 21 Oct 19:00-00:00"
+   "agent_hours_short": 11.9,
+   "text": "Team B short by up to 3.2 agents, Sun 25 Oct 19:00-00:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-24T10:00",
+   "end": "2026-10-24T15:00",
+   "peak_gap_agents": 3.2,
+   "agent_hours_short": 11.9,
+   "text": "Team D short by up to 3.2 agents, Sat 24 Oct 10:00-15:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-19T19:00",
+   "end": "2026-10-20T00:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 11.6,
+   "text": "Team C short by up to 3.1 agents, Mon 19 Oct 19:00-00:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-20T09:00",
+   "end": "2026-10-20T14:00",
+   "peak_gap_agents": 3.0,
+   "agent_hours_short": 11.3,
+   "text": "Team C short by up to 3.0 agents, Tue 20 Oct 09:00-14:00"
   },
   {
    "team": "D",
    "start": "2026-10-24T19:00",
-   "end": "2026-10-25T00:00",
+   "end": "2026-10-24T23:00",
    "peak_gap_agents": 3.2,
-   "agent_hours_short": 12.1,
-   "text": "Team D short by up to 3.2 agents, Sat 24 Oct 19:00-00:00"
+   "agent_hours_short": 10.8,
+   "text": "Team D short by up to 3.2 agents, Sat 24 Oct 19:00-23:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-22T01:00",
-   "end": "2026-10-22T07:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 12.0,
-   "text": "Team B short by up to 2.0 agents, Thu 22 Oct 01:00-07:00"
+   "team": "D",
+   "start": "2026-10-21T09:00",
+   "end": "2026-10-21T13:00",
+   "peak_gap_agents": 3.1,
+   "agent_hours_short": 10.4,
+   "text": "Team D short by up to 3.1 agents, Wed 21 Oct 09:00-13:00"
   },
   {
    "team": "C",
-   "start": "2026-10-24T10:00",
-   "end": "2026-10-24T15:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 11.7,
-   "text": "Team C short by up to 3.2 agents, Sat 24 Oct 10:00-15:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-22T19:00",
-   "end": "2026-10-22T22:00",
-   "peak_gap_agents": 4.2,
-   "agent_hours_short": 11.6,
-   "text": "Team D short by up to 4.2 agents, Thu 22 Oct 19:00-22:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-23T09:00",
-   "end": "2026-10-23T14:00",
+   "start": "2026-10-23T20:00",
+   "end": "2026-10-24T00:00",
    "peak_gap_agents": 3.1,
-   "agent_hours_short": 11.6,
-   "text": "Team D short by up to 3.1 agents, Fri 23 Oct 09:00-14:00"
+   "agent_hours_short": 9.5,
+   "text": "Team C short by up to 3.1 agents, Fri 23 Oct 20:00-00:00"
   },
   {
-   "team": "B",
-   "start": "2026-10-21T10:00",
-   "end": "2026-10-21T14:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 11.5,
-   "text": "Team B short by up to 3.2 agents, Wed 21 Oct 10:00-14:00"
+   "team": "D",
+   "start": "2026-10-20T19:00",
+   "end": "2026-10-20T23:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 8.8,
+   "text": "Team D short by up to 2.2 agents, Tue 20 Oct 19:00-23:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-19T11:00",
+   "end": "2026-10-19T15:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 8.7,
+   "text": "Team D short by up to 2.2 agents, Mon 19 Oct 11:00-15:00"
   },
   {
    "team": "B",
    "start": "2026-10-19T19:00",
-   "end": "2026-10-19T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 10.9,
-   "text": "Team B short by up to 3.2 agents, Mon 19 Oct 19:00-23:00"
+   "end": "2026-10-19T22:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 6.5,
+   "text": "Team B short by up to 2.2 agents, Mon 19 Oct 19:00-22:00"
   },
   {
    "team": "D",
-   "start": "2026-10-19T10:00",
-   "end": "2026-10-19T15:00",
+   "start": "2026-10-25T10:00",
+   "end": "2026-10-25T13:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 10.9,
-   "text": "Team D short by up to 2.2 agents, Mon 19 Oct 10:00-15:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-21T19:00",
-   "end": "2026-10-21T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 10.9,
-   "text": "Team D short by up to 3.2 agents, Wed 21 Oct 19:00-23:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-19T09:00",
-   "end": "2026-10-19T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 10.8,
-   "text": "Team B short by up to 2.2 agents, Mon 19 Oct 09:00-14:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-25T19:00",
-   "end": "2026-10-25T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.9,
-   "text": "Team B short by up to 3.2 agents, Sun 25 Oct 19:00-23:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-24T19:00",
-   "end": "2026-10-24T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.8,
-   "text": "Team A short by up to 3.2 agents, Sat 24 Oct 19:00-23:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-20T19:00",
-   "end": "2026-10-20T23:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.8,
-   "text": "Team D short by up to 3.2 agents, Tue 20 Oct 19:00-23:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-23T20:00",
-   "end": "2026-10-24T00:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 9.8,
-   "text": "Team D short by up to 3.2 agents, Fri 23 Oct 20:00-00:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-23T19:00",
-   "end": "2026-10-23T23:00",
-   "peak_gap_agents": 3.1,
-   "agent_hours_short": 9.6,
-   "text": "Team A short by up to 3.1 agents, Fri 23 Oct 19:00-23:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-20T10:00",
-   "end": "2026-10-20T14:00",
-   "peak_gap_agents": 3.1,
-   "agent_hours_short": 9.5,
-   "text": "Team B short by up to 3.1 agents, Tue 20 Oct 10:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-20T19:00",
-   "end": "2026-10-20T23:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 8.6,
-   "text": "Team A short by up to 2.2 agents, Tue 20 Oct 19:00-23:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-23T11:00",
-   "end": "2026-10-23T15:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 8.6,
-   "text": "Team B short by up to 2.2 agents, Fri 23 Oct 11:00-15:00"
+   "agent_hours_short": 6.5,
+   "text": "Team D short by up to 2.2 agents, Sun 25 Oct 10:00-13:00"
   },
   {
    "team": "C",
-   "start": "2026-10-19T10:00",
-   "end": "2026-10-19T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 8.5,
-   "text": "Team C short by up to 2.2 agents, Mon 19 Oct 10:00-14:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-22T11:00",
-   "end": "2026-10-22T14:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 8.5,
-   "text": "Team D short by up to 3.2 agents, Thu 22 Oct 11:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-25T19:00",
-   "end": "2026-10-25T22:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 7.6,
-   "text": "Team A short by up to 3.2 agents, Sun 25 Oct 19:00-22:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-21T11:00",
-   "end": "2026-10-21T14:00",
-   "peak_gap_agents": 3.2,
-   "agent_hours_short": 7.5,
-   "text": "Team D short by up to 3.2 agents, Wed 21 Oct 11:00-14:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-24T12:00",
-   "end": "2026-10-24T15:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team B short by up to 2.2 agents, Sat 24 Oct 12:00-15:00"
-  },
-  {
-   "team": "B",
-   "start": "2026-10-25T11:00",
-   "end": "2026-10-25T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team B short by up to 2.2 agents, Sun 25 Oct 11:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-22T21:00",
-   "end": "2026-10-23T00:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team C short by up to 2.2 agents, Thu 22 Oct 21:00-00:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-24T11:00",
-   "end": "2026-10-24T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team D short by up to 2.2 agents, Sat 24 Oct 11:00-14:00"
-  },
-  {
-   "team": "D",
-   "start": "2026-10-25T11:00",
-   "end": "2026-10-25T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 6.6,
-   "text": "Team D short by up to 2.2 agents, Sun 25 Oct 11:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-20T11:00",
-   "end": "2026-10-20T14:00",
+   "start": "2026-10-21T12:00",
+   "end": "2026-10-21T15:00",
    "peak_gap_agents": 2.1,
    "agent_hours_short": 6.3,
-   "text": "Team C short by up to 2.1 agents, Tue 20 Oct 11:00-14:00"
+   "text": "Team C short by up to 2.1 agents, Wed 21 Oct 12:00-15:00"
   },
   {
-   "team": "A",
-   "start": "2026-10-19T12:00",
-   "end": "2026-10-19T14:00",
+   "team": "C",
+   "start": "2026-10-24T12:00",
+   "end": "2026-10-24T14:00",
    "peak_gap_agents": 3.1,
-   "agent_hours_short": 6.2,
-   "text": "Team A short by up to 3.1 agents, Mon 19 Oct 12:00-14:00"
+   "agent_hours_short": 5.2,
+   "text": "Team C short by up to 3.1 agents, Sat 24 Oct 12:00-14:00"
   },
   {
-   "team": "C",
-   "start": "2026-10-21T00:00",
-   "end": "2026-10-21T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 6.0,
-   "text": "Team C short by up to 2.0 agents, Wed 21 Oct 00:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-23T00:00",
-   "end": "2026-10-23T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 6.0,
-   "text": "Team C short by up to 2.0 agents, Fri 23 Oct 00:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-24T00:00",
-   "end": "2026-10-24T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 6.0,
-   "text": "Team C short by up to 2.0 agents, Sat 24 Oct 00:00-03:00"
+   "team": "D",
+   "start": "2026-10-23T19:00",
+   "end": "2026-10-23T21:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 4.5,
+   "text": "Team D short by up to 2.2 agents, Fri 23 Oct 19:00-21:00"
   },
   {
    "team": "B",
+   "start": "2026-10-19T12:00",
+   "end": "2026-10-19T14:00",
+   "peak_gap_agents": 2.2,
+   "agent_hours_short": 4.3,
+   "text": "Team B short by up to 2.2 agents, Mon 19 Oct 12:00-14:00"
+  },
+  {
+   "team": "D",
    "start": "2026-10-22T11:00",
    "end": "2026-10-22T13:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.4,
-   "text": "Team B short by up to 2.2 agents, Thu 22 Oct 11:00-13:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-19T21:00",
-   "end": "2026-10-19T23:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.4,
-   "text": "Team C short by up to 2.2 agents, Mon 19 Oct 21:00-23:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-21T19:00",
-   "end": "2026-10-21T21:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.4,
-   "text": "Team C short by up to 2.2 agents, Wed 21 Oct 19:00-21:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-21T12:00",
-   "end": "2026-10-21T14:00",
-   "peak_gap_agents": 2.2,
    "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Wed 21 Oct 12:00-14:00"
+   "text": "Team D short by up to 2.2 agents, Thu 22 Oct 11:00-13:00"
   },
   {
-   "team": "A",
-   "start": "2026-10-22T12:00",
-   "end": "2026-10-22T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Thu 22 Oct 12:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-24T12:00",
-   "end": "2026-10-24T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Sat 24 Oct 12:00-14:00"
-  },
-  {
-   "team": "A",
-   "start": "2026-10-25T12:00",
-   "end": "2026-10-25T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team A short by up to 2.2 agents, Sun 25 Oct 12:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-21T12:00",
-   "end": "2026-10-21T14:00",
-   "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.3,
-   "text": "Team C short by up to 2.2 agents, Wed 21 Oct 12:00-14:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-22T10:00",
-   "end": "2026-10-22T12:00",
-   "peak_gap_agents": 2.1,
-   "agent_hours_short": 4.2,
-   "text": "Team C short by up to 2.1 agents, Thu 22 Oct 10:00-12:00"
-  },
-  {
-   "team": "C",
+   "team": "D",
    "start": "2026-10-23T11:00",
    "end": "2026-10-23T13:00",
    "peak_gap_agents": 2.2,
-   "agent_hours_short": 4.2,
-   "text": "Team C short by up to 2.2 agents, Fri 23 Oct 11:00-13:00"
+   "agent_hours_short": 4.3,
+   "text": "Team D short by up to 2.2 agents, Fri 23 Oct 11:00-13:00"
   },
   {
    "team": "C",
+   "start": "2026-10-22T12:00",
+   "end": "2026-10-22T14:00",
+   "peak_gap_agents": 2.1,
+   "agent_hours_short": 4.2,
+   "text": "Team C short by up to 2.1 agents, Thu 22 Oct 12:00-14:00"
+  },
+  {
+   "team": "B",
    "start": "2026-10-19T01:00",
    "end": "2026-10-19T03:00",
    "peak_gap_agents": 2.0,
    "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Mon 19 Oct 01:00-03:00"
+   "text": "Team B short by up to 2.0 agents, Mon 19 Oct 01:00-03:00"
   },
   {
-   "team": "C",
-   "start": "2026-10-20T01:00",
-   "end": "2026-10-20T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Tue 20 Oct 01:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-22T01:00",
-   "end": "2026-10-22T03:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Thu 22 Oct 01:00-03:00"
-  },
-  {
-   "team": "C",
-   "start": "2026-10-24T06:00",
-   "end": "2026-10-24T08:00",
-   "peak_gap_agents": 2.0,
-   "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Sat 24 Oct 06:00-08:00"
-  },
-  {
-   "team": "C",
+   "team": "B",
    "start": "2026-10-25T01:00",
    "end": "2026-10-25T03:00",
    "peak_gap_agents": 2.0,
    "agent_hours_short": 4.0,
-   "text": "Team C short by up to 2.0 agents, Sun 25 Oct 01:00-03:00"
+   "text": "Team B short by up to 2.0 agents, Sun 25 Oct 01:00-03:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-20T00:00",
+   "end": "2026-10-20T02:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team C short by up to 2.0 agents, Tue 20 Oct 00:00-02:00"
+  },
+  {
+   "team": "C",
+   "start": "2026-10-21T00:00",
+   "end": "2026-10-21T02:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team C short by up to 2.0 agents, Wed 21 Oct 00:00-02:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-23T02:00",
+   "end": "2026-10-23T04:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Fri 23 Oct 02:00-04:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-23T05:00",
+   "end": "2026-10-23T07:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Fri 23 Oct 05:00-07:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-24T02:00",
+   "end": "2026-10-24T04:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Sat 24 Oct 02:00-04:00"
+  },
+  {
+   "team": "D",
+   "start": "2026-10-24T05:00",
+   "end": "2026-10-24T07:00",
+   "peak_gap_agents": 2.0,
+   "agent_hours_short": 4.0,
+   "text": "Team D short by up to 2.0 agents, Sat 24 Oct 05:00-07:00"
   }
  ],
  "plans": [
   {
    "first_day": 43,
    "last_day": 49,
-   "shortage_before": 654.2,
-   "shortage_after": 635.9,
+   "shortage_before": 471.2,
+   "shortage_after": 455.2,
    "moves": [
     {
-     "agent_id": "C02",
+     "agent_id": "D08",
+     "team": "D",
+     "change": "day off on Thu instead of Sun",
+     "shortage_before": 1016.8,
+     "shortage_after": 1003.5
+    },
+    {
+     "agent_id": "D04",
+     "team": "D",
+     "change": "start 07:00 instead of 08:00",
+     "shortage_before": 1003.5,
+     "shortage_after": 993.2
+    },
+    {
+     "agent_id": "C03",
      "team": "C",
-     "change": "start 07:00 instead of 08:00",
-     "shortage_before": 1394.0,
-     "shortage_after": 1381.1
+     "change": "start 08:00 instead of 06:00",
+     "shortage_before": 993.2,
+     "shortage_after": 983.5
     },
     {
-     "agent_id": "A03",
-     "team": "A",
-     "change": "start 07:00 instead of 08:00",
-     "shortage_before": 1381.1,
-     "shortage_after": 1369.3
-    },
-    {
-     "agent_id": "B02",
+     "agent_id": "A04",
      "team": "B",
-     "change": "day off on Mon instead of Fri",
-     "shortage_before": 1369.3,
-     "shortage_after": 1358.7
+     "change": "day off on Wed instead of Mon",
+     "shortage_before": 983.5,
+     "shortage_after": 975.8
     },
     {
-     "agent_id": "C05",
-     "team": "C",
-     "change": "day off on Mon instead of Sat",
-     "shortage_before": 1358.7,
-     "shortage_after": 1351.5
+     "agent_id": "B08",
+     "team": "B",
+     "change": "start 15:00 instead of 14:00",
+     "shortage_before": 975.8,
+     "shortage_after": 967.1
     },
     {
-     "agent_id": "C06",
-     "team": "C",
-     "change": "day off on Fri instead of Tue",
-     "shortage_before": 1351.5,
-     "shortage_after": 1345.3
-    },
-    {
-     "agent_id": "A02",
-     "team": "A",
-     "change": "start 07:00 instead of 08:00",
-     "shortage_before": 1345.3,
-     "shortage_after": 1339.6
+     "agent_id": "B05",
+     "team": "B",
+     "change": "start 08:00 instead of 06:00",
+     "shortage_before": 967.1,
+     "shortage_after": 961.5
     }
    ]
   },
   {
    "first_day": 50,
    "last_day": 56,
-   "shortage_before": 685.0,
-   "shortage_after": 667.8,
+   "shortage_before": 495.1,
+   "shortage_after": 479.2,
    "moves": [
     {
-     "agent_id": "C02",
-     "team": "C",
-     "change": "start 07:00 instead of 08:00",
-     "shortage_before": 1477.3,
-     "shortage_after": 1464.1
-    },
-    {
-     "agent_id": "A02",
-     "team": "A",
-     "change": "start 07:00 instead of 08:00",
-     "shortage_before": 1464.1,
-     "shortage_after": 1452.9
-    },
-    {
-     "agent_id": "B02",
+     "agent_id": "A04",
      "team": "B",
-     "change": "day off on Thu instead of Fri",
-     "shortage_before": 1452.9,
-     "shortage_after": 1444.0
+     "change": "day off on Wed instead of Mon",
+     "shortage_before": 1090.8,
+     "shortage_after": 1075.6
     },
     {
-     "agent_id": "C05",
-     "team": "C",
-     "change": "day off on Fri instead of Sat",
-     "shortage_before": 1444.0,
-     "shortage_after": 1437.0
+     "agent_id": "D06",
+     "team": "D",
+     "change": "day off on Thu instead of Mon",
+     "shortage_before": 1075.6,
+     "shortage_after": 1062.3
     },
     {
-     "agent_id": "C03",
-     "team": "C",
+     "agent_id": "D04",
+     "team": "D",
      "change": "start 07:00 instead of 08:00",
-     "shortage_before": 1437.0,
-     "shortage_after": 1431.5
+     "shortage_before": 1062.3,
+     "shortage_after": 1052.4
     },
     {
      "agent_id": "B01",
      "team": "B",
-     "change": "start 08:00 instead of 10:00",
-     "shortage_before": 1431.5,
-     "shortage_after": 1426.3
+     "change": "day off on Tue instead of Mon",
+     "shortage_before": 1052.4,
+     "shortage_after": 1044.2
+    },
+    {
+     "agent_id": "B08",
+     "team": "B",
+     "change": "start 15:00 instead of 14:00",
+     "shortage_before": 1044.2,
+     "shortage_after": 1035.6
+    },
+    {
+     "agent_id": "C03",
+     "team": "C",
+     "change": "start 08:00 instead of 06:00",
+     "shortage_before": 1035.6,
+     "shortage_after": 1027.7
     }
    ]
   }
  ],
  "aht_min": {
-  "account": 6.725633786157131,
-  "app_bug": 12.686267129088451,
-  "late_delivery": 6.718357101763737,
-  "missing_item": 7.930988425530976,
-  "payment_failure": 10.047701713777405,
-  "refund": 10.040068298194566,
-  "restaurant_partner": 13.49217328909568,
-  "wrong_item": 8.989266115967153
+  "account": 4.415309322871549,
+  "app_bug": 7.789620115727623,
+  "late_delivery": 3.372002282306494,
+  "missing_item": 4.516104628840365,
+  "payment_failure": 5.648327714691943,
+  "refund": 5.6378343312232335,
+  "restaurant_partner": 9.013212955514087,
+  "wrong_item": 5.64522562986637
  }
 }

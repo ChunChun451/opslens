@@ -540,7 +540,7 @@ function ablationsPanel() {
 function partName(row) {
   if (row.key === "no_optimizer") return "the exact solver (min-cost flow instead of greedy)";
   if (row.key === "no_risk") return "the learned risk model";
-  return `the ${row.label.replace(/^without /, "").replace(/ \(.*\)$/, "")}`;
+  return `the ${row.label.replace(/^without (the )?/, "").replace(/ \(.*\)$/, "")}`;
 }
 
 function ablationVerdict(rows) {

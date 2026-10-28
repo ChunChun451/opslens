@@ -152,7 +152,8 @@ function worldsText() {
     We had promised OpsLens would be the lowest in ${ev("worlds.wins_needed", "int")}; it was lowest in
     ${ev("worlds.wins", "int")}, so that rule is <strong>missed</strong>. It still beats the industry standard in
     ${ev("worlds.breakdown.beats_industry_standard", "int")} of ${ev("worlds.breakdown.of", "int")}, wins every world up to
-    ${ev("worlds.breakdown.normal_load.max_load", "ratio")}× today's load, and loses only under heavy overload.`;
+    ${ev("worlds.breakdown.normal_load.max_load", "ratio")}× today's load, and loses only under heavy overload.${w.floor_note
+      ? ` <em>${escapeHtml(w.floor_note)}</em>` : ""}`;
 }
 
 function shadowText() {

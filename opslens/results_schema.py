@@ -21,6 +21,7 @@ class Meta(Strict):
     validation_days: list[int]
     test_days: list[int]
     run_seconds: float = 0.0
+    promises_min: dict[str, int] | None = None
 
 
 class MeanStd(Strict):
@@ -282,4 +283,6 @@ class Results(Strict):
     faithfulness: dict[str, Any] | None = None
     staffing_opt: dict[str, Any] | None = None
     nlp_bench: dict[str, Any] | None = None
+    food_1530: dict[str, Any] | None = None
+    earlier_floor: dict[str, Any] | None = None
     details: dict[str, Any] = {}

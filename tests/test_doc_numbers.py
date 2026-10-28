@@ -4,11 +4,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ["server/answers.md", "README.md"]
-HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2")
+HISTORY = ("details.v1_record", "details.v2_record", "details.design_v2", "details.design_v3", "details.v3_record",
+           "details.v3_before_sim_fix", "details.design_v4", "details.design_v5", "details.confirm_v5",
+           "details.sealed_world_5151_v3", "details.tuning", "details.challengers", "earlier_floor", "worlds",
+           "v6", "staffing_opt", "sealed_world.", "sealed_world_rerun")
 BULK = re.compile(r"per_seed|replay|horizon|series|confusion|assignments|alerts_used|step_seconds|"
                   r"sensitivity|bottlenecks|clusters|examples|shown_days\[\d+\]\.incidents|"
                   r"worlds\[\d+\]\.params|diagnosis\.worlds|twin\.validation\.grid|\.teams\.|next_week")
-NAMES_A_VERSION = re.compile(r"\bv[12]\b")
+NAMES_A_VERSION = re.compile(r"\bv[1-6]\b|earlier floor", re.IGNORECASE)
 OTHER_SOURCES = {
     "24,918": "size of the UCI incident log (data/SOURCES.md)",
     "10.97": "Erlang-C check, simulator average wait (tests/test_simulate.py)",

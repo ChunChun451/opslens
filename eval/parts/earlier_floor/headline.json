@@ -1,0 +1,70 @@
+{
+ "promises_min": {
+  "P1": 60,
+  "P2": 240,
+  "P3": 1440
+ },
+ "results_commit": "2505882",
+ "generated_at": "2026-10-28T11:18:05",
+ "n_tickets": 71530,
+ "policy": "OpsLens v5",
+ "rescue_threshold_min": 30,
+ "test_means": {
+  "baseline_a": {
+   "turnaround.breach_pct": 13.07564330079858,
+   "segment.p1_breach_pct": 27.25044347685857,
+   "segment.hindi_breach_pct": 22.145206172527196,
+   "quality.late_minutes_per_100": 2789.668890212114,
+   "quality.p99_wait_min": 817.161015602076
+  },
+  "baseline_b": {
+   "turnaround.breach_pct": 6.766858917480036,
+   "segment.p1_breach_pct": 9.008224479922593,
+   "segment.hindi_breach_pct": 16.16999747027574,
+   "quality.late_minutes_per_100": 2255.9590379033953,
+   "quality.p99_wait_min": 1009.1491576743365
+  },
+  "baseline_c": {
+   "turnaround.breach_pct": 5.375998225377107,
+   "segment.p1_breach_pct": 8.87276245766812,
+   "segment.hindi_breach_pct": 12.390589425752593,
+   "quality.late_minutes_per_100": 4206.044566425452,
+   "quality.p99_wait_min": 1422.4706429590783
+  },
+  "baseline_d": {
+   "turnaround.breach_pct": 5.506876663708962,
+   "segment.p1_breach_pct": 7.498790517658442,
+   "segment.hindi_breach_pct": 13.321527953453074,
+   "quality.late_minutes_per_100": 1432.3679313258524,
+   "quality.p99_wait_min": 941.1896950458864
+  },
+  "opslens": {
+   "turnaround.breach_pct": 2.0463620230700976,
+   "segment.p1_breach_pct": 4.844379938719561,
+   "segment.hindi_breach_pct": 2.7219833038198837,
+   "quality.late_minutes_per_100": 482.676675434933,
+   "quality.p99_wait_min": 728.3927441179793
+  },
+  "least_slack": {
+   "turnaround.breach_pct": 3.9385536823425022,
+   "segment.p1_breach_pct": 6.966618287373005,
+   "segment.hindi_breach_pct": 9.334682519605362,
+   "quality.late_minutes_per_100": 3552.00982350695,
+   "quality.p99_wait_min": 1386.2110485771136
+  },
+  "least_slack_rescue": {
+   "turnaround.breach_pct": 2.981366459627329,
+   "segment.p1_breach_pct": 5.515239477503629,
+   "segment.hindi_breach_pct": 6.582342524664812,
+   "quality.late_minutes_per_100": 1969.1903612281337,
+   "quality.p99_wait_min": 930.0810390980865
+  }
+ },
+ "opslens_minus_d": {
+  "mean_diff": -3.460514640638864,
+  "ci_low": -4.767509604400027,
+  "ci_high": -2.153519676877701
+ },
+ "sealed_world_seed": 6262,
+ "note": "Earlier food floor: P1 1 h, P2 4 h, P3 24 h promises, OpsLens v5. Kept as history; not comparable ticket by ticket with the 15/30/60 floor."
+}

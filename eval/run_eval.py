@@ -107,7 +107,8 @@ def assemble(timings: dict[str, float]) -> dict:
                  "start_date": cal["start_date"], "days": cal["days"], "train_days": [1, sp["train_last_day"]],
                  "validation_days": [sp["train_last_day"] + 1, sp["validation_last_day"]],
                  "test_days": [sp["validation_last_day"] + 1, sp["test_last_day"]],
-                 "run_seconds": float(sum(timings.values()))},
+                 "run_seconds": float(sum(timings.values())),
+                 "promises_min": {k: int(v) for k, v in load_config("sla")["sla_minutes"].items()}},
         "sim": {"seeds": sim["seeds"], "test_days": sim["test_days"], "policies": sim["policies"],
                 "comparisons": sim["comparisons"], "replay": replay},
         "patterns": {"cards": pat["cards"], "recall": pat["recall"],
@@ -172,7 +173,11 @@ def assemble(timings: dict[str, float]) -> dict:
             "design_v5": part("design_v5") if (PARTS / "design_v5.json").exists() else {},
             "confirm_v5": part("confirm_v5") if (PARTS / "confirm_v5.json").exists() else {},
             "sealed_world_5151_v3": part("sealed_world_5151_v3") if (PARTS / "sealed_world_5151_v3.json").exists() else {},
-            "test_runs_note": ("Policies run on the test days: v1, v2, v3 and v5 (current), each designed and chosen on "
+            "test_runs_note": ("On the 15/30/60 floor (28 Oct): OpsLens S2 was designed on validation days, passed a "
+                               "pre-registered rule there and on 20 fresh seeds (PREREG_1530), and ran once on the test "
+                               "days next to v5; a new world (seed 9393) was then generated and run once. Everything "
+                               "below is the earlier floor (1 h / 4 h / 24 h promises). "
+                               "Policies run on the test days: v1, v2, v3 and v5, each designed and chosen on "
                                "validation days only; all results are kept here. On 18 Oct the simulator was corrected "
                                "(work-time draws no longer shifted by transfers; off-shift starts refused) and every "
                                "number was regenerated (v3 before the correction: v3_before_sim_fix). v4 was tested on "
@@ -235,6 +240,22 @@ def assemble(timings: dict[str, float]) -> dict:
         results["sealed_world_new"] = sealed
     results["details"]["challengers"] = {name: part(f"challenger_{name}") for name in ("forecast", "risk")
                                          if (PARTS / f"challenger_{name}.json").exists()}
+    if (PARTS / "food_1530" / "test_1530.json").exists():
+        results["food_1530"] = {name: part(f"food_1530/{name}_1530") for name in ("estimates", "design", "confirm", "test")}
+        results["food_1530"]["prereg"] = {"file": "eval/PREREG_1530.md", "commit": "c5f5f70",
+                                          "test_harness_commit": "c6e5ffd"}
+    if (PARTS / "earlier_floor" / "headline.json").exists():
+        results["earlier_floor"] = {"headline": part("earlier_floor/headline"),
+                                    "sealed_world_new": part("earlier_floor/sealed_world_new"),
+                                    "concurrency": part("earlier_floor/concurrency"),
+                                    "prediction_baselines": part("earlier_floor/w7"),
+                                    "faithfulness": part("earlier_floor/w8"),
+                                    "not_rerun": [k for k in EARLIER_FLOOR_SECTIONS if results.get(k)]}
+        for key in EARLIER_FLOOR_SECTIONS:
+            if isinstance(results.get(key), dict):
+                results[key]["floor_note"] = EARLIER_FLOOR_NOTE
+        if results["details"]["challengers"]:
+            results["details"]["challengers"]["floor_note"] = EARLIER_FLOOR_NOTE
     old = ROOT / "eval" / "results.json"
     if "--keep-brief" in sys.argv and old.exists():
         results["brief"] = json.loads(old.read_text(encoding="utf-8"))["brief"]
@@ -242,6 +263,47 @@ def assemble(timings: dict[str, float]) -> dict:
         results["brief"] = make_brief(results)
     Results.model_validate(results)
     return results
+
+
+EARLIER_FLOOR_SECTIONS = ("worlds", "v6", "staffing_opt", "sealed_world", "sealed_world_rerun")
+EARLIER_FLOOR_NOTE = ("Earlier food floor (P1 1 h, P2 4 h, P3 24 h promises), OpsLens v5. "
+                      "Not yet re-run on the 15/30/60 floor.")
+
+
+def earlier(lines: list[str]) -> list[str]:
+    if not lines:
+        return lines
+    head = next(i for i, line in enumerate(lines) if line.startswith("## "))
+    return lines[:head + 1] + ["", f"> {EARLIER_FLOOR_NOTE}"] + lines[head + 1:]
+
+
+def food_1530_md(r: dict) -> list[str]:
+    f, old = r.get("food_1530"), r.get("earlier_floor")
+    if not f:
+        return []
+    t = f["test"]
+    m = t["means"]
+    lines = ["", "## The floor and the policy", "",
+             f"Promises: P1 {r['meta']['promises_min']['P1']} min, P2 {r['meta']['promises_min']['P2']} min, "
+             f"P3 {r['meta']['promises_min']['P3']} min. OpsLens is S2 (pre-registered in eval/PREREG_1530.md, "
+             f"commit {f['prereg']['commit']}): the likely-lost lane, the clock cross-skill test, live risk with a "
+             "queue-aware clock. Its four estimates come from days 1-35 only.", "",
+             f"Pre-registered test-day run (days {t['days'][0]}-{t['days'][1]}, seeds {t['seeds']}, run once): "
+             f"**{t['decision']}**.", "",
+             "| Policy | Missed % | P1 missed % | Late min / 100 |", "|---|---|---|---|"]
+    names = {"baseline_d": "Industry standard", "least_slack_rescue": "Least slack + rescue",
+             "opslens": "OpsLens v5 (before S2)", "opslens routing alone": "OpsLens v5, routing alone",
+             "S2": "OpsLens (S2)", "S2 routing alone": "OpsLens (S2), routing alone"}
+    for k, label in names.items():
+        lines.append(f"| {label} | {fmt(m[k]['turnaround.breach_pct'])} | {fmt(m[k]['segment.p1_breach_pct'])} | "
+                     f"{fmt(m[k]['quality.late_minutes_per_100'], 0)} |")
+    if old:
+        h = old["headline"]
+        lines += ["", f"Earlier floor for reference (P1 1 h, P2 4 h, P3 24 h; {h['policy']}; not comparable ticket by "
+                      f"ticket): OpsLens {fmt(h['test_means']['opslens']['turnaround.breach_pct'])}%, industry standard "
+                      f"{fmt(h['test_means']['baseline_d']['turnaround.breach_pct'])}%, least slack + rescue "
+                      f"{fmt(h['test_means']['least_slack_rescue']['turnaround.breach_pct'])}%."]
+    return lines
 
 
 def with_means(section: dict) -> dict:
@@ -302,6 +364,7 @@ def numbers_md(r: dict) -> str:
         "# OpsLens — the numbers", "",
         f"Generated from `eval/results.json` on {r['meta']['generated_at']} (commit {r['meta']['git_commit']}). "
         "Do not edit by hand: run `mingw32-make eval`.", "",
+    ] + food_1530_md(r) + ["",
         f"Data: {r['meta']['n_tickets']:,} tickets over {r['meta']['days']} days; train days {r['meta']['train_days']}, "
         f"validation {r['meta']['validation_days']}, test {r['meta']['test_days']}. Simulator seeds {r['sim']['seeds']}.", "",
         "## Baseline vs OpsLens (test days, mean ± std over seeds)", "",
@@ -361,7 +424,7 @@ def numbers_md(r: dict) -> str:
         "", "## Forecast (test days)", "",
         f"- WAPE {fmt(fc['wape_model'], 3)} vs same-hour-last-week {fmt(fc['wape_naive'], 3)} (Poisson floor {fmt(d['forecast']['wape_noise_floor'], 3)}).",
         f"- Conformal coverage: 80% range {fmt(100 * fc['coverage_80'], 1)}%, 90% range {fmt(100 * fc['coverage_90'], 1)}%.",
-    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + sealed_world_md(r) + sealed_rerun_md(r) + playbooks_md(r) + plan_md(r) + tracking_md(r) + concurrency_md(r) + worlds_md(r) + v6_md(r) + challengers_md(r) + [
+    ] + baseline_c_md(r) + best_baselines_md(r) + realdesk_md(r) + floor_md(r) + sealed_new_md(r) + earlier(sealed_world_md(r)) + earlier(sealed_rerun_md(r)) + playbooks_md(r) + plan_md(r) + tracking_md(r) + concurrency_md(r) + earlier(worlds_md(r)) + earlier(v6_md(r)) + earlier(challengers_md(r)) + [
         "", "## Speed", "",
         f"- Optimiser per decision: median {fmt(r['speed']['optimizer_ms_median'], 2)} ms, max {fmt(r['speed']['optimizer_ms_max'], 1)} ms.",
         f"- Scale test: {r['speed']['scale_test']['tickets']:,} tickets × {r['speed']['scale_test']['agents']} agents solved in "

@@ -1001,6 +1001,12 @@ tr.hot td { background: var(--bad-soft); }
   margin: 0 0 6px;
   max-width: 60ch;
 }
+.ledger-floor {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
 .ledger-rule {
   margin: 0 0 10px;
   color: var(--muted);

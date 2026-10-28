@@ -2,12 +2,12 @@
  "summary": {
   "sets": 20,
   "planted": 60,
-  "found": 57,
-  "diagnosed": 57,
-  "found_pct": 95.0,
-  "diagnosed_pct": 95.0,
-  "unplanted_cards_per_set": 2.35,
-  "clean_set_cards": 3,
+  "found": 52,
+  "diagnosed": 52,
+  "found_pct": 86.66666666666667,
+  "diagnosed_pct": 86.66666666666667,
+  "unplanted_cards_per_set": 5.4,
+  "clean_set_cards": 11,
   "by_type": {
    "capacity": {
     "planted": 10,
@@ -21,8 +21,8 @@
    },
    "skill_gap": {
     "planted": 14,
-    "found": 12,
-    "diagnosed": 12
+    "found": 7,
+    "diagnosed": 7
    },
    "partner_issue": {
     "planted": 14,
@@ -88,12 +88,18 @@
      }
     }
    ],
-   "found": 3,
-   "diagnosed": 3,
+   "found": 2,
+   "diagnosed": 2,
    "unmatched": [
-    "Team D \u00d7 weekend afternoon wait 2.3\u00d7 longer",
-    "Late delivery spike on Sat 12 Sep",
-    "Account spike on Tue 29 Sep"
+    "late delivery \u00d7 Hindi wait 12.4\u00d7 longer",
+    "Team C overloaded on weekday dinner (work 1.33\u00d7 agent-time)",
+    "Missing item spike on Tue 29 Sep",
+    "Late delivery spike on Sun 27 Sep",
+    "Account spike on Tue 29 Sep",
+    "Late delivery spike on Thu 03 Sep",
+    "Late delivery spike on Thu 01 Oct",
+    "Refund spike on Sat 10 Oct",
+    "Payment failure spike on Tue 29 Sep"
    ],
    "details": [
     {
@@ -101,21 +107,21 @@
      "name": "Team D weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F2"
     },
     {
      "id": "R2",
      "name": "missing_item spike day 13",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F3"
     },
     {
      "id": "R3",
      "name": "hi x Team C skill gap",
-     "found": true,
-     "diagnosed": true,
-     "card": "F3"
+     "found": false,
+     "diagnosed": false,
+     "card": ""
     }
    ]
   },
@@ -164,8 +170,9 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "Hindi \u00d7 weekend late wait 2.4\u00d7 longer",
-    "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer"
+    "Team D overloaded on weekend dinner (work 1.31\u00d7 agent-time)",
+    "wrong item \u00d7 weekday morning wait 2.0\u00d7 longer",
+    "regional-language \u00d7 weekend dinner wait 2.1\u00d7 longer"
    ],
    "details": [
     {
@@ -173,21 +180,21 @@
      "name": "Team C weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F1"
     },
     {
      "id": "R2",
      "name": "cluster 17 restaurant_partner",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F4"
     },
     {
      "id": "R3",
      "name": "hi x Team A skill gap",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F2"
     }
    ]
   },
@@ -241,7 +248,14 @@
    ],
    "found": 2,
    "diagnosed": 2,
-   "unmatched": [],
+   "unmatched": [
+    "Team C overloaded on weekday dinner (work 1.31\u00d7 agent-time)",
+    "Team D overloaded on weekend late (work 1.23\u00d7 agent-time)",
+    "wrong item \u00d7 weekday morning wait 3.2\u00d7 longer",
+    "Team B \u00d7 weekday night wait 2.3\u00d7 longer",
+    "regional-language \u00d7 weekend dinner wait 2.0\u00d7 longer",
+    "Late delivery spike on Sat 19 Sep"
+   ],
    "details": [
     {
      "id": "R1",
@@ -262,7 +276,7 @@
      "name": "cluster 11 missing_item",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F6"
     }
    ]
   },
@@ -301,8 +315,11 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "wrong item \u00d7 Hindi wait 2.2\u00d7 longer",
-    "Wrong item spike on Sat 26 Sep"
+    "Team D overloaded on weekend dinner (work 1.32\u00d7 agent-time)",
+    "Team C overloaded on weekday dinner (work 1.30\u00d7 agent-time)",
+    "wrong item \u00d7 Hindi wait 2.6\u00d7 longer",
+    "Team B \u00d7 weekend night wait 2.0\u00d7 longer",
+    "Refund spike on Sat 26 Sep"
    ],
    "details": [
     {
@@ -324,7 +341,7 @@
      "name": "cluster 13 restaurant_partner",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F6"
     }
    ]
   },
@@ -361,35 +378,34 @@
      }
     }
    ],
-   "found": 3,
-   "diagnosed": 3,
+   "found": 2,
+   "diagnosed": 2,
    "unmatched": [
-    "Team D \u00d7 weekend dinner wait 2.5\u00d7 longer",
-    "regional-language \u00d7 weekday morning wait 2.1\u00d7 longer",
-    "Missing item spike on Fri 02 Oct",
-    "Missing item spike on Fri 04 Sep"
+    "late delivery \u00d7 Hindi wait 14.1\u00d7 longer",
+    "Team C overloaded on weekday dinner (work 1.35\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.31\u00d7 agent-time)"
    ],
    "details": [
     {
      "id": "R1",
      "name": "hi x Team C skill gap",
-     "found": true,
-     "diagnosed": true,
-     "card": "F2"
+     "found": false,
+     "diagnosed": false,
+     "card": ""
     },
     {
      "id": "R2",
      "name": "call menu mislabels",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F2"
     },
     {
      "id": "R3",
      "name": "cluster 9 restaurant_partner",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F5"
     }
    ]
   },
@@ -433,16 +449,12 @@
      }
     }
    ],
-   "found": 3,
-   "diagnosed": 3,
+   "found": 2,
+   "diagnosed": 2,
    "unmatched": [
-    "Team D \u00d7 weekend dinner wait 2.3\u00d7 longer",
-    "Team C \u00d7 weekday night wait 2.1\u00d7 longer",
-    "Hindi \u00d7 weekday night wait 2.0\u00d7 longer",
-    "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer",
-    "Team D \u00d7 weekend late wait 2.3\u00d7 longer",
-    "Late delivery spike on Wed 16 Sep",
-    "Wrong item spike on Wed 16 Sep"
+    "late delivery \u00d7 Hindi wait 17.4\u00d7 longer",
+    "Team C overloaded on weekday dinner (work 1.28\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.26\u00d7 agent-time)"
    ],
    "details": [
     {
@@ -450,21 +462,21 @@
      "name": "app_bug spike day 20",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F4"
     },
     {
      "id": "R2",
      "name": "hi x Team C skill gap",
-     "found": true,
-     "diagnosed": true,
-     "card": "F1"
+     "found": false,
+     "diagnosed": false,
+     "card": ""
     },
     {
      "id": "R3",
      "name": "cluster 6 missing_item",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F5"
     }
    ]
   },
@@ -505,11 +517,9 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
-    "Hindi \u00d7 weekend night wait 2.0\u00d7 longer",
-    "Team D \u00d7 weekend night wait 2.0\u00d7 longer",
-    "Late delivery spike on Sat 10 Oct",
-    "Payment failure spike on Sat 10 Oct"
+    "Team D overloaded on weekend dinner (work 1.30\u00d7 agent-time)",
+    "Team C overloaded on weekday dinner (work 1.29\u00d7 agent-time)",
+    "regional-language \u00d7 weekday morning wait 2.6\u00d7 longer"
    ],
    "details": [
     {
@@ -517,7 +527,7 @@
      "name": "cluster 16 wrong_item",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F6"
     },
     {
      "id": "R2",
@@ -577,10 +587,13 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "Team B \u00d7 weekday late wait 2.1\u00d7 longer",
-    "Missing item spike on Sun 27 Sep",
-    "Restaurant partner spike on Thu 01 Oct",
-    "Late delivery spike on Thu 01 Oct"
+    "Team C overloaded on weekday dinner (work 1.33\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.25\u00d7 agent-time)",
+    "wrong item \u00d7 Hindi wait 2.7\u00d7 longer",
+    "Team B \u00d7 weekday night wait 2.5\u00d7 longer",
+    "wrong item \u00d7 weekday morning wait 2.4\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer",
+    "regional-language \u00d7 weekend dinner wait 2.0\u00d7 longer"
    ],
    "details": [
     {
@@ -588,21 +601,21 @@
      "name": "email menu mislabels",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F1"
     },
     {
      "id": "R2",
      "name": "cluster 12 missing_item",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F8"
     },
     {
      "id": "R3",
      "name": "Team A weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F3"
     }
    ]
   },
@@ -656,8 +669,14 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "wrong item \u00d7 Hindi wait 2.3\u00d7 longer",
-    "Team B \u00d7 weekday late wait 2.3\u00d7 longer"
+    "Team C overloaded on weekday dinner (work 1.34\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.30\u00d7 agent-time)",
+    "wrong item \u00d7 weekday morning wait 3.4\u00d7 longer",
+    "wrong item \u00d7 Hindi wait 3.0\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.5\u00d7 longer",
+    "Team B \u00d7 weekday night wait 2.0\u00d7 longer",
+    "Late delivery spike on Thu 01 Oct",
+    "Wrong item spike on Tue 01 Sep"
    ],
    "details": [
     {
@@ -665,21 +684,21 @@
      "name": "Team A weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F4"
     },
     {
      "id": "R2",
      "name": "payment_failure spike day 29",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F1"
     },
     {
      "id": "R3",
      "name": "cluster 15 wrong_item",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F9"
     }
    ]
   },
@@ -732,12 +751,12 @@
      }
     }
    ],
-   "found": 3,
-   "diagnosed": 3,
+   "found": 2,
+   "diagnosed": 2,
    "unmatched": [
-    "Team D \u00d7 weekend afternoon wait 2.6\u00d7 longer",
-    "Restaurant partner spike on Sun 06 Sep",
-    "Payment failure spike on Sun 06 Sep"
+    "late delivery \u00d7 Hindi wait 17.1\u00d7 longer",
+    "Team C overloaded on weekday dinner (work 1.29\u00d7 agent-time)",
+    "Team D overloaded on weekend late (work 1.24\u00d7 agent-time)"
    ],
    "details": [
     {
@@ -745,21 +764,21 @@
      "name": "Team D weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F2"
     },
     {
      "id": "R2",
      "name": "hi x Team C skill gap",
-     "found": true,
-     "diagnosed": true,
-     "card": "F2"
+     "found": false,
+     "diagnosed": false,
+     "card": ""
     },
     {
      "id": "R3",
      "name": "late_delivery spike day 13",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F5"
     }
    ]
   },
@@ -802,11 +821,13 @@
      }
     }
    ],
-   "found": 2,
-   "diagnosed": 2,
+   "found": 3,
+   "diagnosed": 3,
    "unmatched": [
-    "Payment failure spike on Tue 15 Sep",
-    "Missing item spike on Mon 31 Aug"
+    "Team D overloaded on weekend dinner (work 1.32\u00d7 agent-time)",
+    "Team C overloaded on weekday dinner (work 1.32\u00d7 agent-time)",
+    "Team C \u00d7 weekend dinner wait 2.3\u00d7 longer",
+    "Restaurant partner spike on Sat 26 Sep"
    ],
    "details": [
     {
@@ -821,14 +842,14 @@
      "name": "wrong_item spike day 13",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F5"
     },
     {
      "id": "R3",
      "name": "other x Team C skill gap",
-     "found": false,
-     "diagnosed": false,
-     "card": ""
+     "found": true,
+     "diagnosed": true,
+     "card": "F6"
     }
    ]
   },
@@ -877,8 +898,13 @@
    "found": 2,
    "diagnosed": 2,
    "unmatched": [
-    "regional-language \u00d7 Team D wait 2.2\u00d7 longer",
-    "App bug spike on Wed 02 Sep"
+    "Team C overloaded on weekday dinner (work 1.32\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.29\u00d7 agent-time)",
+    "P2 \u00d7 weekend dinner wait 2.1\u00d7 longer",
+    "regional-language \u00d7 Team D wait 2.1\u00d7 longer",
+    "Missing item spike on Wed 07 Oct",
+    "Late delivery spike on Tue 15 Sep",
+    "Restaurant partner spike on Sun 06 Sep"
    ],
    "details": [
     {
@@ -886,7 +912,7 @@
      "name": "restaurant_partner spike day 19",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F3"
     },
     {
      "id": "R2",
@@ -900,7 +926,7 @@
      "name": "cluster 4 wrong_item",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F4"
     }
    ]
   },
@@ -939,7 +965,10 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "wrong item \u00d7 Hindi wait 2.2\u00d7 longer"
+    "Team D overloaded on weekend dinner (work 1.28\u00d7 agent-time)",
+    "Team C overloaded on weekday dinner (work 1.26\u00d7 agent-time)",
+    "wrong item \u00d7 Hindi wait 3.0\u00d7 longer",
+    "wrong item \u00d7 weekday morning wait 2.5\u00d7 longer"
    ],
    "details": [
     {
@@ -954,7 +983,7 @@
      "name": "cluster 12 wrong_item",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F7"
     },
     {
      "id": "R3",
@@ -1016,7 +1045,13 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "Refund spike on Sat 26 Sep"
+    "Team C overloaded on weekday dinner (work 1.33\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.33\u00d7 agent-time)",
+    "wrong item \u00d7 Hindi wait 2.9\u00d7 longer",
+    "wrong item \u00d7 weekday morning wait 3.1\u00d7 longer",
+    "Team B \u00d7 weekday night wait 2.5\u00d7 longer",
+    "Team D \u00d7 weekend night wait 2.0\u00d7 longer",
+    "Wrong item spike on Thu 01 Oct"
    ],
    "details": [
     {
@@ -1024,21 +1059,21 @@
      "name": "app_bug spike day 40",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F4"
     },
     {
      "id": "R2",
      "name": "cluster 16 missing_item",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F8"
     },
     {
      "id": "R3",
      "name": "Team A weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F3"
     }
    ]
   },
@@ -1081,9 +1116,15 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "wrong item \u00d7 Hindi wait 2.4\u00d7 longer",
-    "Team B \u00d7 weekday night wait 2.3\u00d7 longer",
-    "regional-language \u00d7 weekday morning wait 2.2\u00d7 longer"
+    "wrong item \u00d7 Hindi wait 4.3\u00d7 longer",
+    "Team C overloaded on weekday dinner (work 1.29\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.27\u00d7 agent-time)",
+    "wrong item \u00d7 weekday morning wait 3.1\u00d7 longer",
+    "regional-language \u00d7 weekday morning wait 2.7\u00d7 longer",
+    "Hindi \u00d7 weekday night wait 2.2\u00d7 longer",
+    "regional-language \u00d7 Team D wait 2.0\u00d7 longer",
+    "Team B \u00d7 weekend night wait 2.2\u00d7 longer",
+    "Hindi \u00d7 weekend night wait 2.0\u00d7 longer"
    ],
    "details": [
     {
@@ -1098,14 +1139,14 @@
      "name": "cluster 9 wrong_item",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F7"
     },
     {
      "id": "R3",
      "name": "account spike day 18",
      "found": true,
      "diagnosed": true,
-     "card": "F6"
+     "card": "F12"
     }
    ]
   },
@@ -1156,8 +1197,12 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
+    "Team C overloaded on weekday dinner (work 1.29\u00d7 agent-time)",
+    "Team D overloaded on weekend late (work 1.27\u00d7 agent-time)",
+    "wrong item \u00d7 weekday morning wait 2.6\u00d7 longer",
     "regional-language \u00d7 weekday morning wait 2.4\u00d7 longer",
-    "Refund spike on Thu 17 Sep"
+    "Account spike on Mon 14 Sep",
+    "Wrong item spike on Thu 01 Oct"
    ],
    "details": [
     {
@@ -1172,7 +1217,7 @@
      "name": "cluster 20 missing_item",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F7"
     },
     {
      "id": "R3",
@@ -1225,7 +1270,14 @@
    "found": 3,
    "diagnosed": 3,
    "unmatched": [
-    "Team B \u00d7 weekday late wait 2.1\u00d7 longer"
+    "Team C overloaded on weekday dinner (work 1.33\u00d7 agent-time)",
+    "Team D \u00d7 weekend night wait 3.3\u00d7 longer",
+    "wrong item \u00d7 weekday morning wait 2.6\u00d7 longer",
+    "regional-language \u00d7 Team D wait 2.2\u00d7 longer",
+    "wrong item \u00d7 Hindi wait 2.0\u00d7 longer",
+    "Account spike on Thu 01 Oct",
+    "Payment failure spike on Thu 01 Oct",
+    "Missing item spike on Thu 01 Oct"
    ],
    "details": [
     {
@@ -1240,7 +1292,7 @@
      "name": "cluster 20 wrong_item",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F6"
     },
     {
      "id": "R3",
@@ -1303,28 +1355,33 @@
    ],
    "found": 3,
    "diagnosed": 3,
-   "unmatched": [],
+   "unmatched": [
+    "Team C overloaded on weekday dinner (work 1.29\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.28\u00d7 agent-time)",
+    "Hindi \u00d7 weekend dinner wait 2.3\u00d7 longer",
+    "Refund spike on Sat 12 Sep"
+   ],
    "details": [
     {
      "id": "R1",
      "name": "payment_failure spike day 10",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F5"
     },
     {
      "id": "R2",
      "name": "hi x Team B skill gap",
      "found": true,
      "diagnosed": true,
-     "card": "F2"
+     "card": "F1"
     },
     {
      "id": "R3",
      "name": "Team B weekend dinner overload",
      "found": true,
      "diagnosed": true,
-     "card": "F1"
+     "card": "F2"
     }
    ]
   },
@@ -1369,12 +1426,13 @@
      }
     }
    ],
-   "found": 3,
-   "diagnosed": 3,
+   "found": 2,
+   "diagnosed": 2,
    "unmatched": [
-    "late delivery \u00d7 Hindi wait 2.1\u00d7 longer",
-    "regional-language \u00d7 weekday morning wait 2.0\u00d7 longer",
-    "Late delivery spike on Thu 01 Oct"
+    "late delivery \u00d7 Hindi wait 18.5\u00d7 longer",
+    "Team C overloaded on weekday dinner (work 1.32\u00d7 agent-time)",
+    "Team D overloaded on weekend dinner (work 1.27\u00d7 agent-time)",
+    "Restaurant partner spike on Fri 04 Sep"
    ],
    "details": [
     {
@@ -1389,14 +1447,14 @@
      "name": "app_bug spike day 26",
      "found": true,
      "diagnosed": true,
-     "card": "F4"
+     "card": "F6"
     },
     {
      "id": "R3",
      "name": "hi x Team C skill gap",
-     "found": true,
-     "diagnosed": true,
-     "card": "F1"
+     "found": false,
+     "diagnosed": false,
+     "card": ""
     }
    ]
   },
@@ -1440,16 +1498,22 @@
      }
     }
    ],
-   "found": 3,
-   "diagnosed": 3,
-   "unmatched": [],
+   "found": 2,
+   "diagnosed": 2,
+   "unmatched": [
+    "late delivery \u00d7 Hindi wait 15.3\u00d7 longer",
+    "Team D overloaded on weekend dinner (work 1.33\u00d7 agent-time)",
+    "Team C overloaded on weekday dinner (work 1.28\u00d7 agent-time)",
+    "Restaurant partner spike on Sun 06 Sep",
+    "Restaurant partner spike on Sat 05 Sep"
+   ],
    "details": [
     {
      "id": "R1",
      "name": "restaurant_partner spike day 29",
      "found": true,
      "diagnosed": true,
-     "card": "F3"
+     "card": "F5"
     },
     {
      "id": "R2",
@@ -1461,16 +1525,24 @@
     {
      "id": "R3",
      "name": "hi x Team C skill gap",
-     "found": true,
-     "diagnosed": true,
-     "card": "F1"
+     "found": false,
+     "diagnosed": false,
+     "card": ""
     }
    ]
   }
  ],
  "clean_set_cards": [
-  "wrong item \u00d7 Hindi wait 2.6\u00d7 longer",
-  "Team D \u00d7 weekend late wait 2.5\u00d7 longer",
-  "regional-language \u00d7 weekday morning wait 2.1\u00d7 longer"
+  "Team C overloaded on weekday dinner (work 1.33\u00d7 agent-time)",
+  "Team D overloaded on weekend dinner (work 1.32\u00d7 agent-time)",
+  "wrong item \u00d7 Hindi wait 3.3\u00d7 longer",
+  "wrong item \u00d7 weekday morning wait 2.8\u00d7 longer",
+  "Team B \u00d7 weekday night wait 2.3\u00d7 longer",
+  "regional-language \u00d7 weekday morning wait 2.4\u00d7 longer",
+  "regional-language \u00d7 Team D wait 2.1\u00d7 longer",
+  "Team D \u00d7 weekend night wait 2.3\u00d7 longer",
+  "Hindi \u00d7 weekend night wait 2.1\u00d7 longer",
+  "App bug spike on Sun 20 Sep",
+  "Late delivery spike on Sat 05 Sep"
  ]
 }

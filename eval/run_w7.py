@@ -38,6 +38,7 @@ class LogRegRisk:
             ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
         ])
         self.pipe = Pipeline([("prep", prep), ("clf", LogisticRegression(C=1.0, max_iter=3000))])
+        self.categories = {c: sorted(train_feats[c].astype(str).unique()) for c in CATEGORICAL}
         self.pipe.fit(self._x(train_feats), train_feats["breached"].astype(int))
         self.calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0)
         self.calibrator.fit(self.raw(valid_feats), valid_feats["breached"].astype(int))
@@ -56,6 +57,16 @@ class LogRegRisk:
 
     def predict(self, feats: pd.DataFrame) -> np.ndarray:
         return self.calibrator.predict(self.raw(feats))
+
+    def predict_matrix(self, X: np.ndarray, threads: int = 1) -> np.ndarray:
+        cols = {}
+        for k, col in enumerate(FEATURES):
+            if col in CATEGORICAL:
+                names = self.categories[col]
+                cols[col] = [names[int(v)] if v == v and 0 <= int(v) < len(names) else "nan" for v in X[:, k]]
+            else:
+                cols[col] = X[:, k]
+        return self.predict(pd.DataFrame(cols))
 
 
 class TimeLeftRule:
