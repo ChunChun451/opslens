@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpsLens · Sign in</title>
+  <link rel="icon" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/desk/desk.css">
+</head>
+<body>
+  <main class="login">
+    <form class="card" id="login" autocomplete="on">
+      <div class="brand"><img src="/app/favicon.svg" alt=""><div><h1>OpsLens</h1><div class="muted">Support desk</div></div></div>
+      <label>Work email<input name="email" type="email" required autocomplete="username" placeholder="you@opslens.demo"></label>
+      <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+      <div class="err" id="err" role="alert"></div>
+      <button class="btn primary" type="submit">Sign in</button>
+      <div class="hint">
+        Agents land in their workspace. Team leads and admins land in the console.
+        Demo accounts: <b>a01@opslens.demo</b> (agent), <b>lead.a@opslens.demo</b> (team lead), <b>admin@opslens.demo</b> (admin).
+        The demo password is in <code>.env.example</code>.
+        <div style="margin-top:8px"><a href="/app/">Open the classic analysis dashboard</a></div>
+      </div>
+    </form>
+  </main>
+  <script type="module">
+    import { api } from "/desk/desk.js";
+    const form = document.getElementById("login");
+    const err = document.getElementById("err");
+    api("/api/v2/me").then(({ user }) => { location.href = user.role === "agent" ? "/agent/" : "/admin/"; }).catch(() => {});
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      err.textContent = "";
+      const button = form.querySelector("button");
+      button.disabled = true;
+      try {
+        const data = new FormData(form);
+        const out = await api("/api/v2/login", { body: { email: data.get("email"), password: data.get("password") } });
+        location.href = out.home;
+      } catch (e) {
+        err.textContent = e.message;
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -7,9 +7,10 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, UploadFile
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from server.auth import router as auth_router
 from server.v2 import router as v2_router
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -17,6 +18,7 @@ RESULTS = ROOT / "eval" / "results.json"
 FIXTURE = ROOT / "eval" / "fixture_results.json"
 
 app = FastAPI(title="OpsLens", docs_url="/api/docs")
+app.include_router(auth_router)
 app.include_router(v2_router)
 
 
@@ -25,8 +27,8 @@ def results_path() -> Path:
 
 
 @app.get("/")
-def home() -> RedirectResponse:
-    return RedirectResponse("/app/")
+def home() -> FileResponse:
+    return FileResponse(ROOT / "desk" / "login.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/api/health")
@@ -557,13 +559,16 @@ def _current_live(weekday: int):
 @app.middleware("http")
 async def always_fresh_web_files(request, call_next):
     response = await call_next(request)
-    if request.url.path.startswith(("/web", "/app")):
+    if request.url.path.startswith(("/web", "/app", "/desk", "/agent", "/admin")):
         response.headers["Cache-Control"] = "no-cache"
     if request.url.path in ("/web", "/web/", "/web/index.html", "/app", "/app/", "/app/index.html"):
         response.headers["Clear-Site-Data"] = '"cache"'
     return response
 
 
+app.mount("/desk", StaticFiles(directory=ROOT / "desk"), name="desk")
+app.mount("/agent", StaticFiles(directory=ROOT / "desk" / "agent", html=True), name="agent")
+app.mount("/admin", StaticFiles(directory=ROOT / "desk" / "admin", html=True), name="admin")
 app.mount("/app", StaticFiles(directory=ROOT / "web", html=True), name="app")
 app.mount("/web", StaticFiles(directory=ROOT / "web", html=True), name="web")
 app.mount("/eval", StaticFiles(directory=ROOT / "eval"), name="eval")

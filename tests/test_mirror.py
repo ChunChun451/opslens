@@ -82,3 +82,13 @@ def test_sync_writes_changes_once_and_history_only_grows():
     assert first["changed"] == 1 and again["changed"] == 0 and again["events"] == 0 and later["changed"] == 2
     assert kinds == ["created", "assigned", "breached", "solved"]
     assert [(d["agent_code"], float(d["rescue_value"])) for d in decided] == [("B01", 0.62)]
+
+
+def test_a_ticket_counts_as_being_worked_only_while_its_agent_is_on_it():
+    live = small_day()
+    live.floors["opslens"] = [{"minute": START, "status": "ib", "queues": {}}]
+    worked = by_id(mirror.ticket_rows(live, START + 15, TODAY)[0])["TEST-M1"]
+    assert worked["status"] == "in_progress" and worked["assignee"] == "B01"
+    live.floors["opslens"] = [{"minute": START, "status": "ii", "queues": {}}]
+    bounced = by_id(mirror.ticket_rows(live, START + 15, TODAY)[0])["TEST-M1"]
+    assert bounced["status"] == "open" and bounced["assignee"] is None and bounced["_job"]["agent"] == "B01"

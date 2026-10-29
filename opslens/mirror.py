@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import bisect
 import json
 import math
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta
 
 from opslens.classify import TEAM_OF
-from opslens.live import LiveDay, _risk_in
+from opslens.live import LiveDay, _risk_in, danger_tickets, floor_now
 from opslens.privacy import mask_pii
 
 DAY_MIN = 1440.0
@@ -46,12 +47,29 @@ def risk_now(live: LiveDay, now: float) -> tuple[float | None, dict]:
     return best if best else (None, {})
 
 
+def working_now(live: LiveDay, now: float) -> dict[str, str] | None:
+    frames = getattr(live, "floors", {}).get("opslens")
+    if not frames:
+        return None
+    k = max(0, bisect.bisect_right([f["minute"] for f in frames], now) - 1)
+    return {r["current"]["ticket_id"]: r["id"] for r in floor_now(live, now, frames[k]["status"]) if r["current"]}
+
+
+def reasons_now(live: LiveDay, now: float) -> dict[str, list[str]]:
+    past = [d for d in getattr(live, "danger", []) if d["minute"] <= now]
+    if not past:
+        return {}
+    return {t["ticket_id"]: t["reasons"] for t in danger_tickets(live, past[-1]) if t.get("reasons")}
+
+
 def ticket_rows(live: LiveDay, now: float, today: date) -> tuple[list[dict], dict[str, dict]]:
     world = live.context["world"]
     info = live.context["tickets_info"]
     teams = {a["id"]: a.get("team") for a in live.agents}
     jobs = latest_jobs(live, now)
     _, scores = risk_now(live, now)
+    why = reasons_now(live, now)
+    working = working_now(live, now)
     rows = []
     for i, tid in enumerate(world.ticket_ids):
         created = float(world.created_min[i])
@@ -61,7 +79,8 @@ def ticket_rows(live: LiveDay, now: float, today: date) -> tuple[list[dict], dic
         job = jobs.get(tid)
         resolved = job["resolved"] if job else None
         solved = resolved is not None and resolved <= now
-        status = "solved" if solved else "in_progress" if job else "open"
+        held = job if solved or working is None or (job and working.get(tid) == job["agent"]) else None
+        status = "solved" if solved else "in_progress" if held else "open"
         breached = (resolved > deadline) if solved else (True if now > deadline else None)
         category = str(job["category"]) if job else str(world.selected_category[i])
         row = info.loc[tid] if tid in info.index else None
@@ -72,13 +91,14 @@ def ticket_rows(live: LiveDay, now: float, today: date) -> tuple[list[dict], dic
             "customer_tier": world.tier[i], "order_value_inr": float(world.order_value[i]),
             "restaurant": None if row is None else str(row.get("restaurant_name", "")),
             "body": mask_pii(str(row["text"]) if row is not None else "").text,
-            "status": status, "assignee": job["agent"] if job else None,
-            "team": teams.get(job["agent"]) if job else TEAM_OF.get(category),
+            "status": status, "assignee": held["agent"] if held else None,
+            "team": teams.get(held["agent"]) if held else TEAM_OF.get(category),
             "sla_due_at": stamp(today, live, deadline),
-            "assigned_at": stamp(today, live, job["minute"]) if job else None,
+            "assigned_at": stamp(today, live, held["minute"]) if held else None,
             "solved_at": stamp(today, live, resolved) if solved else None,
             "breached": breached, "risk": None if risk is None or math.isnan(risk) else round(float(risk), 3),
             "assign_reason": job["reason"] if job else None,
+            "risk_reasons": None if solved or tid not in why else json.dumps(why[tid]),
             "_created": created, "_deadline": deadline, "_job": job, "_resolved": resolved if solved else None,
         })
     return rows, jobs
@@ -86,13 +106,13 @@ def ticket_rows(live: LiveDay, now: float, today: date) -> tuple[list[dict], dic
 
 UPSERT = """
 insert into tickets (id, day, created_at, channel, priority, language, category, customer_tier, order_value_inr,
-  restaurant, body, status, assignee, team, sla_due_at, assigned_at, solved_at, breached, risk, assign_reason, updated_at)
+  restaurant, body, status, assignee, team, sla_due_at, assigned_at, solved_at, breached, risk, risk_reasons, assign_reason, updated_at)
 values (%(id)s, %(day)s, %(created_at)s, %(channel)s, %(priority)s, %(language)s, %(category)s, %(customer_tier)s,
   %(order_value_inr)s, %(restaurant)s, %(body)s, %(status)s, %(assignee)s, %(team)s, %(sla_due_at)s, %(assigned_at)s,
-  %(solved_at)s, %(breached)s, %(risk)s, %(assign_reason)s, now())
+  %(solved_at)s, %(breached)s, %(risk)s, %(risk_reasons)s, %(assign_reason)s, now())
 on conflict (id) do update set status = excluded.status, assignee = excluded.assignee, team = excluded.team,
   category = excluded.category, assigned_at = excluded.assigned_at, solved_at = excluded.solved_at,
-  breached = excluded.breached, risk = excluded.risk, assign_reason = excluded.assign_reason, updated_at = now()
+  breached = excluded.breached, risk = excluded.risk, risk_reasons = excluded.risk_reasons, assign_reason = excluded.assign_reason, updated_at = now()
 """
 
 
@@ -110,7 +130,7 @@ def sync(conn, live: LiveDay, minute_of_day: float, today: date, state: MirrorSt
     events = []
     decisions = []
     for r in rows:
-        print_ = (r["status"], r["assignee"], r["breached"], r["risk"])
+        print_ = (r["status"], r["assignee"], r["breached"], r["risk"], r["risk_reasons"])
         if state.seen.get(r["id"]) != print_:
             changed.append(r)
             state.seen[r["id"]] = print_

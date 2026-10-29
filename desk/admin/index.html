@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpsLens · Console</title>
+  <link rel="icon" href="/app/favicon.svg">
+  <link rel="stylesheet" href="/desk/desk.css">
+  <script src="/app/vendor/chart.umd.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <nav class="rail" id="rail">
+      <img class="logo" src="/app/favicon.svg" alt="OpsLens">
+      <button data-page="overview" title="Overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 7h6V4h-6z"/></svg>Home</button>
+      <button data-page="tickets" title="Tickets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Tickets</button>
+      <button data-page="team" title="Team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.5a3.5 3.5 0 010 7M18 14.8c1.9.8 3 2.6 3.5 5.2"/></svg>Team</button>
+      <div class="spacer"></div>
+      <button data-href="/app/" title="Classic analysis dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-6"/></svg>Analysis</button>
+      <button id="logout" title="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>Sign out</button>
+    </nav>
+    <header class="top">
+      <span class="title" id="title">Overview</span>
+      <span class="muted hide-sm" id="scope"></span>
+      <span class="grow"></span>
+      <span class="muted hide-sm" id="updated" style="font-size:12px"></span>
+      <div class="who"><div class="avatar" id="avatar"></div><div class="hide-sm"><div id="myname" style="font-weight:600"></div><div class="muted" id="myrole" style="font-size:12px"></div></div></div>
+    </header>
+    <main class="main" id="main"></main>
+  </div>
+  <script type="module" src="/desk/admin/admin.js"></script>
+</body>
+</html>
