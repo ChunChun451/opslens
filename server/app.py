@@ -10,11 +10,14 @@ from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from server.v2 import router as v2_router
+
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "eval" / "results.json"
 FIXTURE = ROOT / "eval" / "fixture_results.json"
 
 app = FastAPI(title="OpsLens", docs_url="/api/docs")
+app.include_router(v2_router)
 
 
 def results_path() -> Path:
@@ -541,6 +544,14 @@ def warm_live_now() -> None:
             thread = threading.Thread(target=_build_live, args=(key,), daemon=True)
             _LIVE_BUILDING[key] = thread
             thread.start()
+    from server.v2 import start_mirror
+    start_mirror(_current_live)
+
+
+def _current_live(weekday: int):
+    day, seed = _live_key(weekday, 1)
+    log = _ACTIONS.get((day, seed), [])
+    return _LIVE.get((day, seed, (), 1.0, _log_key(log))) or _LIVE.get((day, seed, (), 1.0, ()))
 
 
 @app.middleware("http")
