@@ -12,6 +12,15 @@ const WORDS = {
   delivery_person_age: "rider age", assignment_group: "team", first_team: "team",
 };
 
+export function itemWord(one = false) {
+  const noun = (state.upload && state.upload.noun) || "items";
+  return one ? noun.replace(/s$/, "") : noun;
+}
+
+export function nounText(text) {
+  return String(text).replace(/\bitems\b/g, itemWord()).replace(/\bitem\b/g, itemWord(true));
+}
+
 export function readable(column) {
   const name = String(column);
   const mapped = state.upload && state.upload.mapping ? state.upload.mapping[name] : "";
@@ -73,7 +82,7 @@ export function forecastProof(r) {
         ${ev(`${fc}.wape_same_weekday_last_week`, "ratio")}. <b>${better ? "On your file the learned forecast is better."
           : "On your file the learned forecast is not better than same weekday last week."}</b>
         The days just before had picked ${f.chosen_on_check === "learned" ? "the learned one" : "same weekday last week"}.</p>
-      ${fold(`Forecast error per ${word}`, `<div class="table-wrap"><table><thead><tr><th>${escapeHtml(capital(word))}</th><th class="num">New items</th>
+      ${fold(`Forecast error per ${word}`, `<div class="table-wrap"><table><thead><tr><th>${escapeHtml(capital(word))}</th><th class="num">New ${escapeHtml(itemWord())}</th>
         <th class="num">Learned</th><th class="num">Same weekday last week</th></tr></thead><tbody>${teams}</tbody></table></div>`)}` });
 }
 
@@ -85,14 +94,14 @@ export function filePlanItems() {
   const w = `${U}.warning`;
   const rival = r.warning.vs.rival;
   const warn = { id: `file-${meta.token}-warn`, world: "real", source, owner: "Team lead", fileIndex: 0,
-    title: `Flag the riskiest 1 in ${Math.round(100 / r.flag_share_pct)} new items as they open, and look at them first`,
-    effects: [{ label: "Real misses caught on your later items, OpsLens", path: `${w}.caught_pct.opslens`, unit: "pct" },
+    title: `Flag the riskiest 1 in ${Math.round(100 / r.flag_share_pct)} new ${itemWord()} as they open, and look at them first`,
+    effects: [{ label: `Real misses caught on your later ${itemWord()}, OpsLens`, path: `${w}.caught_pct.opslens`, unit: "pct" },
               { label: `The same, ${r.warning.vs.rival === "priority" ? "your priority field" : "a rule of thumb"}`, path: `${w}.caught_pct.${rival}`, unit: "pct" }],
-    note: "Measured on your later items, which OpsLens never learned from." };
+    note: `Measured on your later ${itemWord()}, which OpsLens never learned from.` };
   const fixes = r.cards.map((c, i) => ({ id: `file-${meta.token}-fix-${i}`, world: "real", source, owner: "Process owner",
     fileIndex: i + 1, groupWord: `${readable(c.column)} = ${String(c.value).trim()}`,
     title: `Look at ${readable(c.column)} = ${String(c.value).trim()}`,
-    effects: [{ label: "Real misses in this group, on your later items", path: `${U}.cards[${i}].test_misses`, unit: "int" },
+    effects: [{ label: `Real misses in this group, on your later ${itemWord()}`, path: `${U}.cards[${i}].test_misses`, unit: "int" },
               { label: "Missed in this group, later", path: `${U}.cards[${i}].test_pct`, unit: "pct" },
               { label: "Missed in the rest, later", path: `${U}.cards[${i}].test_rest_pct`, unit: "pct" }],
     note: "Measured in your file. A log cannot say what fixing it would have saved." }));

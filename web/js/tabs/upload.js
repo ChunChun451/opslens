@@ -164,6 +164,11 @@ async function send(form, name) {
   else drawConfirm();
 }
 
+function noun(one = false) {
+  const word = (peeked && peeked.noun) || "items";
+  return one ? word.replace(/s$/, "") : word;
+}
+
 function usedColumns() {
   return new Set(Object.entries(parts).filter(([key, value]) => key !== "features" && value).map(([, value]) => value));
 }
@@ -176,8 +181,8 @@ function drawQuestion() {
     asking = [];
     adjusting = true;
     drawConfirm(q.role === "created_at"
-      ? "This file has no column that says when an item started. Pick the column under Adjust, or try another file."
-      : "This file has no time an item ended or took. Pick the column under Adjust, or try another file.");
+      ? `This file has no column that says when an ${noun(true)} started. Pick the column under Change columns, or try another file.`
+      : `This file has no time an ${noun(true)} ended or took. Pick the column under Change columns, or try another file.`);
     return;
   }
   paint(`<section class="card up-card">${headHtml(true, 2)}
@@ -268,7 +273,7 @@ function summaryHtml(plan) {
   const P = "uploadpeek.plan";
   const skipped = plan.rows !== plan.items
     ? `<p class="up-sum-note">${ev(`${P}.items`, "int")} of your ${ev(`${P}.rows`, "int")} rows can be read; the rest are left out.</p>` : "";
-  return `<div class="up-sum"><p class="up-sum-main"><b>${ev(`${P}.items`, "int")}</b> items, ${evText(`${P}.from`, day(plan.from))} to ${evText(`${P}.to`, day(plan.to))}</p>
+  return `<div class="up-sum"><p class="up-sum-main"><b>${ev(`${P}.items`, "int")}</b> ${noun()}, ${evText(`${P}.from`, day(plan.from))} to ${evText(`${P}.to`, day(plan.to))}</p>
       ${skipped}<p class="up-sum-how">OpsLens learns on the first ${ev(`${P}.learn_items`, "int")}, then checks itself on the last
         ${ev(`${P}.test_items`, "int")}, which it never sees while learning. Check what it read, then analyse.</p></div>`;
 }
@@ -322,7 +327,7 @@ function endSentence() {
 function missFact(plan) {
   const P = "uploadpeek.plan";
   const rule = plan.miss.rule;
-  const share = `<span class="up-share">${ev(`${P}.missed_pct`, "pct")} of your items</span>`;
+  const share = `<span class="up-share">${ev(`${P}.missed_pct`, "pct")} of your ${noun()}</span>`;
   if (MISS_PARTS.includes(rule)) {
     const kinds = rule === "due_at" ? ["time"] : ["category", "number"];
     const options = freeColumns(rule, kinds).filter((c) => rule === "due_at" || c.unique <= 3 || c.name === parts[rule]);
@@ -333,16 +338,16 @@ function missFact(plan) {
   }
   const input = `<input type="number" class="pick-num" id="up-target" min="1" step="1" value="${escapeHtml(String(target))}" aria-label="Promised minutes">`;
   return { value: `taking longer than ${input} min${share}`,
-    note: plan.miss.assumed ? `OpsLens's guess, as your file has no on-time column: half your items take under ${ev(`${P}.median_min`, "dur")}.
+    note: plan.miss.assumed ? `OpsLens's guess, as your file has no on-time column: half your ${noun()} take under ${ev(`${P}.median_min`, "dur")}.
       Type your own promise if it is different.` : "" };
 }
 
 function learnFact(plan) {
   const P = "uploadpeek.plan";
   return plan.learns_from_count
-    ? `${ev(`${P}.learns_from_count`, "int")} columns known when an item starts, plus the time of day and how busy it was
+    ? `${ev(`${P}.learns_from_count`, "int")} columns known when an ${noun(true)} starts, plus the time of day and how busy it was
        <button type="button" class="link-btn" data-adjust="learn">see which</button>`
-    : "the time of day and how busy it was (no other column is known when an item starts)";
+    : `the time of day and how busy it was (no other column is known when an ${noun(true)} starts)`;
 }
 
 function previewHtml(open) {
@@ -356,22 +361,29 @@ function previewHtml(open) {
   return `<div class="up-preview">${fold(`The first rows of ${file}`, table, { open, hint: "the columns OpsLens uses are shaded" })}</div>`;
 }
 
+const MORE_PARTS = ["id", "sla_met", "breached", "due_at"];
+const UNSET_PARTS = ["created_time", "team", "category"];
+
 function adjustHtml() {
-  const selects = PARTS.map(([part, label, kind]) => {
+  const one = noun(true);
+  const shown = PARTS.filter(([part]) => MORE_PARTS.includes(part) || (UNSET_PARTS.includes(part) && !parts[part]));
+  const selects = shown.map(([part, label, kind]) => {
     const current = parts[part] || "";
     const columns = freeColumns(part, kind === "any" ? ["time", "number", "category", "id", "text"] : [kind]);
-    return `<label class="field"><span class="field-label">${escapeHtml(label)}</span><select data-part="${part}">
-        <option value="">(not in this file)</option>${columns.map((c) =>
+    return `<label class="up-more-field"><span>${escapeHtml(label.replace("item", one))}</span><select data-part="${part}">
+        <option value="">not in this file</option>${columns.map((c) =>
           `<option value="${escapeHtml(c.name)}" ${c.name === current ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}</select></label>`;
   }).join("");
   const used = usedColumns();
   const ticks = peeked.columns.filter((c) => ["number", "category"].includes(c.kind) && !used.has(c.name)).map((c) => `
-      <label class="up-check"><input type="checkbox" data-learn="${escapeHtml(c.name)}" ${(parts.features || []).includes(c.name) ? "checked" : ""}>
-        <span>${escapeHtml(c.name)}</span><small>${escapeHtml(c.examples.slice(0, 2).join(", "))}</small></label>`).join("");
-  return `<div class="form-grid">${selects}</div>
-    <div class="up-learn" id="up-learn"><div class="section-label">Learns from (known when an item starts)</div>
-      <p class="small muted">Untick anything written after an item ended. A column that gives the outcome away is dropped anyway.</p>
-      <div class="up-checks">${ticks || `<p class="small muted">No other column of your file can be learned from.</p>`}</div></div>`;
+      <label class="up-chip" title="${escapeHtml(c.examples.join(", "))}"><input type="checkbox" data-learn="${escapeHtml(c.name)}" ${(parts.features || []).includes(c.name) ? "checked" : ""}>
+        <span class="up-chip-name">${escapeHtml(c.name)}</span><span class="up-chip-eg">${escapeHtml(c.examples.slice(0, 2).join(", "))}</span></label>`).join("");
+  return `<div class="up-learn" id="up-learn"><div class="up-more-head">Learns from</div>
+      <p class="small muted">Only what is known when an ${escapeHtml(one)} starts. Untick anything written after it ended; a column that gives the outcome away is dropped anyway.</p>
+      <div class="up-chips">${ticks || `<p class="small muted">No other column of your file can be learned from.</p>`}</div></div>
+    <div class="up-more"><div class="up-more-head">Other columns</div>
+      <p class="small muted">Only if your file has them. The rows above already cover the rest.</p>
+      <div class="up-more-grid">${selects}</div></div>`;
 }
 
 async function run() {

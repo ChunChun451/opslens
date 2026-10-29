@@ -100,6 +100,14 @@ def test_who_and_where_of_a_delivery_are_known_when_it_is_ordered_but_not_when_i
         assert not A.known_at_open(after), after
 
 
+def test_a_file_is_called_by_what_its_rows_are():
+    assert A.peek(delivery_file())["noun"] == "orders"
+    incidents = pd.DataFrame({"number": [f"INC{i:07d}" for i in range(300)], "opened": ["2016-03-01"] * 300})
+    assert A.item_word(incidents) == "incidents"
+    assert A.item_word(pd.DataFrame({"ticket_id": [1], "created": [2]})) == "tickets"
+    assert A.item_word(pd.DataFrame({"a": [1], "b": [2]})) == "items"
+
+
 def test_an_id_column_is_not_learned_from_unless_ticked():
     raw = delivery_file()
     raw["Delivery_person_ID"] = [f"RES{i % 400:03d}DEL0{i % 3}" for i in range(len(raw))]

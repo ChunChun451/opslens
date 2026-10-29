@@ -5,7 +5,7 @@ import { escapeHtml } from "../format.js";
 import { planButtons, registerItem } from "../plan.js";
 import { realPlanItems, fastTrackLead, fastTrackProof, alertsCard, impactCard, plantsCard } from "./realdesk.js";
 import { fileActionEffect, filePlanTotal, refreshFileEffect } from "../fileplan.js";
-import { filePlanItems, readable, plainReason, rivalWords, stampHtml, missWords, oneIn, groupName, forecastProof } from "./yourfile.js";
+import { itemWord, nounText, filePlanItems, readable, plainReason, rivalWords, stampHtml, missWords, oneIn, groupName, forecastProof } from "./yourfile.js";
 
 const R = "realdesk";
 const U = "upload";
@@ -19,6 +19,12 @@ function note(text) {
 function prettyDate(iso) {
   const d = new Date(iso + "T00:00:00Z");
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+function prettyTime(text) {
+  const [d, t] = String(text).split(" ");
+  const date = new Date(d + "T00:00:00Z");
+  return Number.isNaN(date.getTime()) ? String(text) : `${date.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}${t ? ` ${t}` : ""}`;
 }
 
 function capital(text) {
@@ -125,21 +131,23 @@ function fileModel() {
   const fc = `${U}.forecast`;
   const team = readable("team");
   const [warn, ...fixes] = filePlanItems();
+  const n = itemWord();
+  const one = itemWord(true);
   return {
-    key: "up", items: "items", team, proofHref: "#proof/up-proof", shadowHref: "#overview/up-shadow",
+    key: "up", items: n, team, proofHref: "#proof/up-proof", shadowHref: "#overview/up-shadow",
     title: `Your file: ${r.file}`,
-    sub: `${evText(`${U}.summary.from`)} to ${evText(`${U}.summary.to`)}. ${missWords(r)}`,
-    headline: `Flagging ${oneIn(r)} items as they opened, OpsLens caught
-      <b class="t-ours">${ev(`${w}.caught_pct.opslens`, "pct", { key: true, title: "Real misses caught", explain: "Of the items in the later part of your file that really missed, the share OpsLens had flagged as they opened (the same 1 in 5 of each day's items for every picker)." })}</b>
-      of the real misses on your later items; ${rivalWords(r)} caught ${ev(`${w}.caught_pct.${rival}`, "pct")}.`,
+    sub: `${evText(`${U}.summary.from`, prettyDate(r.summary.from))} to ${evText(`${U}.summary.to`, prettyDate(r.summary.to))}. ${missWords(r)}`,
+    headline: `Flagging ${oneIn(r)} ${n} as they opened, OpsLens caught
+      <b class="t-ours">${ev(`${w}.caught_pct.opslens`, "pct", { key: true, title: "Real misses caught", explain: `Of the ${n} in the later part of your file that really missed, the share OpsLens had flagged as they opened (the same 1 in 5 of each day's ${n} for every picker).` })}</b>
+      of the real misses on your later ${n}; ${rivalWords(r)} caught ${ev(`${w}.caught_pct.${rival}`, "pct")}.`,
     headlineNote: rival === "priority" ? "" : `The comparison with your priority field needs ${evText(`${U}.needs.priority`) || "a priority column"}.`,
     tiles: [
-      ["Items", ev(`${U}.summary.items`, "int"), `over ${ev(`${U}.summary.days`, "int")} days`],
-      ["Missed their promise", ev(`${U}.summary.missed_pct`, "pct"), "of all items"],
+      [capital(n), ev(`${U}.summary.items`, "int"), `over ${ev(`${U}.summary.days`, "int")} days`],
+      ["Missed their promise", ev(`${U}.summary.missed_pct`, "pct"), `of all ${n}`],
       ["Median time to finish", ev(`${U}.summary.median_min`, "dur"), `90% within ${ev(`${U}.summary.p90_min`, "dur")}`],
       ["Passed between teams", "—", "needs a reassignment column"],
     ],
-    shadow: r.shadow ? `<p>On ${evText(`${U}.shadow.weekday`)} ${evText(`${U}.shadow.date`, prettyDate(r.shadow.date))}, ${ev(`${U}.shadow.items`, "int")} items opened and
+    shadow: r.shadow ? `<p>On ${evText(`${U}.shadow.weekday`)} ${evText(`${U}.shadow.date`, prettyDate(r.shadow.date))}, ${ev(`${U}.shadow.items`, "int")} ${n} opened and
         ${ev(`${U}.shadow.misses`, "int")} really missed. With ${ev(`${U}.shadow.flags`, "int")} flags each, OpsLens caught
         <b class="t-ours">${ev(`${U}.shadow.caught.opslens`, "int")}</b>; ${rivalWords(r)}, ${ev(`${U}.shadow.caught.${rival}`, "int")}.</p>` : "",
     fasttrack: "",
@@ -149,31 +157,30 @@ function fileModel() {
       return {
         id: `up-card-${i}`, tag: readable(c.column), title: groupName(c, i), metric: "Missed", stamp: c.still_true,
         bars: [["This group", c.learn_pct, ev(`${b}.learn_pct`, "pct")], ["The rest", c.learn_rest_pct, ev(`${b}.learn_rest_pct`, "pct")]],
-        later: `Later items: ${ev(`${b}.test_pct`, "pct")} vs ${ev(`${b}.test_rest_pct`, "pct")} for the rest.`,
-        size: `${ev(`${b}.learn_items`, "int")} items on your first part`,
-        todo: `Look at why ${escapeHtml(readable(c.column))} ${escapeHtml(String(c.value).trim())} misses more often (an item in Actions).`,
+        later: `Later ${n}: ${ev(`${b}.test_pct`, "pct")} vs ${ev(`${b}.test_rest_pct`, "pct")} for the rest.`,
+        size: `${ev(`${b}.learn_items`, "int")} ${n} on your first part`,
+        todo: `Find out why ${escapeHtml(readable(c.column))} = ${escapeHtml(String(c.value).trim())} misses more often. It is one of the Fix first actions.`,
         examples: c.examples.map((x, j) => evText(`${b}.examples[${j}]`)).join(", "),
       };
     }),
     worst: ["team", "category", "priority"].map((key) => worstTable(r, key)),
     riskProof: `Flagging ${oneIn(r)} as they opened caught <b>${ev(`${w}.caught_pct.opslens`, "pct")}</b> of real misses; ${rivalWords(r)}, ${ev(`${w}.caught_pct.${rival}`, "pct")}.`,
-    riskSub: "Scored the moment each one opened. From later items, so you can see if each one missed.",
+    riskSub: `Scored the moment each one opened. From later ${n}, so you can see if each one missed.`,
     atRisk: r.warning.at_risk.map((x, i) => ({
-      id: evText(`${w}.at_risk[${i}].id`), meta: `opened ${evText(`${w}.at_risk[${i}].opened`)}`,
+      id: evText(`${w}.at_risk[${i}].id`), meta: `opened ${evText(`${w}.at_risk[${i}].opened`, prettyTime(x.opened))}`,
       reasons: x.reasons.map((reason, j) => `${evText(`${w}.at_risk[${i}].reasons[${j}].text`, plainReason(reason.text))} <span class="small muted">${ev(`${w}.at_risk[${i}].reasons[${j}].share`, "frac_pct")} of the push</span>`),
       risk: ev(`${w}.at_risk[${i}].risk`, "frac_pct"), missed: x.missed,
     })),
-    forecast: f.needs ? { needs: `This forecast needs ${evText(`${fc}.needs`)}.` } : { rows: (f.first_week || []).map((x, i) => ({ over: x.forecast - x.usual_ends,
+    forecast: f.needs ? { needs: `This forecast needs ${evText(`${fc}.needs`, nounText(f.needs))}.` } : { rows: (f.first_week || []).map((x, i) => ({ over: x.forecast - x.usual_ends,
       cells: [evText(`${fc}.first_week[${i}].team`), evText(`${fc}.first_week[${i}].date`), ev(`${fc}.first_week[${i}].forecast`, "num"),
               ev(`${fc}.first_week[${i}].usual_ends`, "num"), ev(`${fc}.first_week[${i}].actual`, "int")] })) },
     plan: [warn, ...fixes],
-    planEvidence: [`flagging ${oneIn(r)} as they opened caught ${ev(`${w}.caught_pct.opslens`, "pct")} of the real misses on your later items; ${rivalWords(r)}, ${ev(`${w}.caught_pct.${rival}`, "pct")}`,
-      ...r.cards.map((c, i) => `${ev(`${U}.cards[${i}].test_pct`, "pct")} missed on your later items vs ${ev(`${U}.cards[${i}].test_rest_pct`, "pct")} for the rest;
-        ${ev(`${U}.cards[${i}].test_misses`, "int")} real misses in this group ${stampHtml(c.still_true)}`)],
+    planEvidence: [`catches ${ev(`${w}.caught_pct.opslens`, "pct")} of misses as they open (${r.warning.vs.rival === "priority" ? "priority field" : "rule of thumb"}: ${ev(`${w}.caught_pct.${rival}`, "pct")})`,
+      ...r.cards.map((c, i) => `misses ${ev(`${U}.cards[${i}].test_pct`, "pct")} vs ${ev(`${U}.cards[${i}].test_rest_pct`, "pct")} for the rest ${stampHtml(c.still_true)}`)],
     effect: (item, i) => fileActionEffect(i, item.groupWord),
     planTotal: () => filePlanTotal(),
-    actionsSub: "Each action shows what it would change on your later items. Accept adds it to Your plan; Override says why not.",
-    notOnList: "How the effects are worked out: on your later items, which OpsLens never learned from. A log cannot be replayed, so a fix is assumed to bring its group down to the rest's miss rate, and looking first is assumed to save the share you pick.",
+    actionsSub: `Each action shows what it would change on your later ${n}. Accept adds it to Your plan; Override says why not.`,
+    notOnList: `How the effects are worked out: on your later ${n}, which OpsLens never learned from. A log cannot be replayed, so a fix is assumed to bring its group down to the rest's miss rate, and looking first is assumed to save the share you pick.`,
     proofRows: ["opslens", "priority", "rule"].map((k) => {
       const name = k === "opslens" ? "OpsLens" : k === "priority" ? "Your priority field"
         : `A rule of thumb${r.rule_column ? ` (past miss rate by ${readable(r.rule_column)})` : " (past miss rate)"}`;
@@ -182,17 +189,17 @@ function fileModel() {
     }),
     proofFoot: `OpsLens minus ${rivalWords(r)}: ${ev(`${w}.vs.gap_pts`, "pts", { signed: true })} of the real misses caught (95% interval
       ${ev(`${w}.vs.ci[0]`, "pts", { signed: true, bare: true })} to ${ev(`${w}.vs.ci[1]`, "pts", { signed: true, bare: true })} points, resampling whole days).
-      ${ev(`${w}.misses`, "int")} real misses among ${ev(`${w}.items`, "int")} later items.`,
+      ${ev(`${w}.misses`, "int")} real misses among ${ev(`${w}.items`, "int")} later ${n}.`,
     forecastProof: f.needs ? "" : forecastProof(r),
     fasttrackProof: "",
-    learned: [`Learned on ${ev(`${U}.learn.items`, "int")} items from ${evText(`${U}.learn.from`)} to ${evText(`${U}.learn.to`)} (the most recent of those
-        only to decide when to stop learning); scored once on ${ev(`${U}.test.items`, "int")} items from ${evText(`${U}.test.from`)} to ${evText(`${U}.test.to`)}.`,
-      `Learned from what was known when each item opened: ${evText(`${U}.features`, r.features.map(readable).join(", "))}.`,
+    learned: [`Learned on ${ev(`${U}.learn.items`, "int")} ${n} from ${evText(`${U}.learn.from`, prettyDate(r.learn.from))} to ${evText(`${U}.learn.to`, prettyDate(r.learn.to))} (the most recent of those
+        only to decide when to stop learning); scored once on ${ev(`${U}.test.items`, "int")} ${n} from ${evText(`${U}.test.from`, prettyDate(r.test.from))} to ${evText(`${U}.test.to`, prettyDate(r.test.to))}.`,
+      `Learned from what was known when each ${one} opened: ${evText(`${U}.features`, r.features.map(readable).join(", "))}.`,
       r.dropped_after_the_fact.length
         ? `Dropped, because each one alone gives the outcome away: ${evText(`${U}.dropped_after_the_fact`, r.dropped_after_the_fact.map(readable).join(", "))}.`
         : "No column gave the outcome away, so none was dropped."],
-    cannot: r.cannot.map((n, i) => evText(`${U}.cannot[${i}]`)),
-    extra: r.notes.length ? [card({ title: "How to read this", body: `<ul class="list">${r.notes.map((n, i) => `<li>${evText(`${U}.notes[${i}]`)}</li>`).join("")}</ul>` })] : [],
+    cannot: r.cannot.map((x, i) => evText(`${U}.cannot[${i}]`, nounText(x))),
+    extra: r.notes.length ? [card({ title: "How to read this", body: `<ul class="list">${r.notes.map((x, i) => `<li>${evText(`${U}.notes[${i}]`, nounText(x))}</li>`).join("")}</ul>` })] : [],
   };
 }
 
@@ -200,12 +207,12 @@ function worstTable(r, key) {
   const rows = r.summary[`by_${key}`];
   const word = readable(key);
   if (!rows) return { key, word: key, empty: true, body: note(`Needs ${evText(`${U}.needs.${key}`) || escapeHtml(`a ${key} column`)}.`) };
-  if (!rows.length) return { key, word, empty: true, body: note(`No ${escapeHtml(word)} has enough items to compare.`) };
+  if (!rows.length) return { key, word, empty: true, body: note(`No ${escapeHtml(word)} has enough ${itemWord()} to compare.`) };
   const p = `${U}.summary.by_${key}`;
   const body = rows.map((x, i) => `<tr><td>${evText(`${p}[${i}].name`)}</td><td class="num">${ev(`${p}[${i}].items`, "int")}</td>
       <td class="num">${ev(`${p}[${i}].missed_pct`, "pct")}</td></tr>`).join("");
   return { key, word, body: `<div class="table-wrap"><table><thead><tr><th>${escapeHtml(capital(word))}</th>
-      <th class="num">Items</th><th class="num">Missed</th></tr></thead><tbody>${body}</tbody></table></div>` };
+      <th class="num">${escapeHtml(capital(itemWord()))}</th><th class="num">Missed</th></tr></thead><tbody>${body}</tbody></table></div>` };
 }
 
 function modelFor(section) {
@@ -250,12 +257,12 @@ export const overview = { render(section) {
         "Not available for this source: it needs a later day with enough items.")}
       ${card({ title: BIGGEST[Math.min(m.cards.length, 3)], sub: m.cards.length ? "Open Problems for the evidence." : "", body: problemsList(m) })}
     </div>
-    <div class="grid cols-2 rd-pair">
-      ${m.fasttrack || slot("If a fifth of each day's items were fast-tracked", "", "",
-        "Not available for this source: it needs each item's pickup time after opening, from an event log.")}
-      ${slot("Where an item's open time goes", "From every state change in the event log.", m.openTime,
+    ${m.fasttrack || m.openTime ? `<div class="grid cols-2 rd-pair">
+      ${m.fasttrack || slot(`If a fifth of each day's ${m.items} were fast-tracked`, "", "",
+        "Not available for this source: it needs each pickup time after opening, from an event log.")}
+      ${slot(`Where the open time goes`, "From every state change in the event log.", m.openTime,
         "Not available for this source: it needs an event log with every state change.")}
-    </div>`;
+    </div>` : `<p class="up-oneline">Not shown for a file: fast-tracking and where the open time goes need an event log with every state change.</p>`}`;
 } };
 
 function barsHtml(c) {
@@ -379,7 +386,7 @@ export const proof = { render(section) {
         <thead><tr><th>Who flags</th><th class="num">How well it ranks (AUC)</th><th class="num">Real misses caught (1 in 5 flagged)</th></tr></thead>
         <tbody>${rows}</tbody></table></div><p class="small">${m.proofFoot}</p>` })}
     ${m.forecastProof || emptyCard(`Workload forecast per ${m.team}`, m.forecast.needs || "Not available for this source.")}
-    ${m.fasttrackProof || emptyCard("Who should be fast-tracked?", "Not available for this source: it needs each item's pickup time after opening, from an event log.")}
+    ${m.fasttrackProof || (m.key === "up" ? "" : emptyCard("Who should be fast-tracked?", "Not available for this source: it needs each pickup time after opening, from an event log."))}
     <div class="grid cols-2 rd-pair">
       ${card({ title: "How it learned", body: `<ul class="list">${m.learned.map((x) => `<li>${x}</li>`).join("")}</ul>` })}
       ${card({ title: "What this source cannot tell you", body: `<ul class="list">${m.cannot.map((x) => `<li>${x}</li>`).join("")}</ul>` })}

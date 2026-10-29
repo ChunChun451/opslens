@@ -1,6 +1,7 @@
 import { state } from "./data.js";
 import { ev } from "./evidence.js";
 import { escapeHtml } from "./format.js";
+import { itemWord } from "./tabs/yourfile.js";
 
 const SAVE_WORDS = { 0.25: "1 in 4", 0.5: "1 in 2", 0.75: "3 in 4" };
 let asked = "";
@@ -67,10 +68,10 @@ export function fileActionEffect(index, groupWord = "") {
   const path = index === 0 ? `${b}.warn` : `${b}.cards[${index - 1}]`;
   const p = index === 0 ? source.warn : source.cards[index - 1];
   if (!p) return "";
-  const items = `on your last ${ev(`${path}.items`, "int")} items`;
+  const items = `on your last ${ev(`${path}.items`, "int")} ${itemWord()}`;
   const how = index === 0
-    ? `Flagging puts ${ev(`${path}.flagged_misses`, "int")} of those misses in front of you as they open, measured. Looking at them first saves ${saveChooser()} of them: your assumption, not measured.`
-    : `Assumes the fix brings ${escapeHtml(groupWord)} (${ev(`${path}.fixed_items`, "int")} items) down to the rest's miss rate, ${ev(`${path}.rest_pct`, "pct")}. A log cannot show what a fix really does.`;
+    ? `<b>Measured:</b> ${ev(`${path}.flagged_misses`, "int")} of those misses get flagged as they open. <b>Assumed:</b> looking at them first saves ${saveChooser()} of them.`
+    : `<b>Assumed:</b> the fix brings ${escapeHtml(groupWord)} (${ev(`${path}.fixed_items`, "int")} ${itemWord()}) down to the rest's miss rate, ${ev(`${path}.rest_pct`, "pct")}.`;
   return `<div class="fx"><div class="fx-head">If you do this, ${items}</div>${beforeAfter(path, p)}<p class="fx-how">${how}</p></div>`;
 }
 
@@ -81,20 +82,20 @@ export function filePlanTotal(compact = false) {
   const w = state.upload.impact.warn;
   if (!count) {
     return `<div class="fx fx-total is-empty"><div class="fx-head">Your plan</div>
-      <p class="fx-how">Now: ${ev("upload.impact.warn.before", "int")} missed on your last ${ev("upload.impact.warn.items", "int")} items (${ev("upload.impact.warn.before_pct", "pct")}).
+      <p class="fx-how">Now: ${ev("upload.impact.warn.before", "int")} missed on your last ${ev("upload.impact.warn.items", "int")} ${itemWord()} (${ev("upload.impact.warn.before_pct", "pct")}).
         Accept actions to see what they save together.</p></div>`;
   }
   const done = state.fileplan && state.fileplan.accepted;
   const fresh = done && base() === "fileplan" && done.warn === parts.warn && done.groups.join() === parts.groups.join();
   if (!fresh) {
     return `<div class="fx fx-total"><div class="fx-head">Your plan, ${count} accepted</div>
-      <p class="fx-how">${state.fileplanError ? escapeHtml(state.fileplanError) : `Adding ${count === 1 ? "it" : "them"} up on your last ${w.items.toLocaleString("en-GB")} items…`}</p></div>`;
+      <p class="fx-how">${state.fileplanError ? escapeHtml(state.fileplanError) : `Adding ${count === 1 ? "it" : "them"} up on your last ${w.items.toLocaleString("en-GB")} ${itemWord()}…`}</p></div>`;
   }
   const p = state.fileplan.plan;
   const split = [p.from_fixes ? `${ev("fileplan.plan.from_fixes", "int")} from fixing groups` : "", p.from_warning ? `${ev("fileplan.plan.from_warning", "int")} from looking first` : ""].filter(Boolean).join(", ");
-  return `<div class="fx fx-total"><div class="fx-head">Your plan, ${count} accepted, on your last ${ev("fileplan.plan.items", "int")} items</div>
+  return `<div class="fx fx-total"><div class="fx-head">Your plan, ${count} accepted, on your last ${ev("fileplan.plan.items", "int")} ${itemWord()}</div>
     ${beforeAfter("fileplan.plan", p, "is-big")}
-    <p class="fx-how">${split ? `Fewer misses: ${split}. ` : ""}${parts.groups.length > 1 ? "An item in more than one accepted group gets the bigger of their cuts, once. " : ""}${parts.warn && !compact ? `Assumes looking first saves ${SAVE_WORDS[state.fileplan.save]} flagged misses.` : ""}</p></div>`;
+    <p class="fx-how">${split ? `Fewer misses: ${split}. ` : ""}${parts.groups.length > 1 ? `An ${itemWord(true)} in more than one accepted group gets the bigger of their cuts, once. ` : ""}${parts.warn && !compact ? `Assumes looking first saves ${SAVE_WORDS[state.fileplan.save]} flagged misses.` : ""}</p></div>`;
 }
 
 export function initFilePlan() {

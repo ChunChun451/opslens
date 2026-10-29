@@ -2,7 +2,7 @@ import { state } from "../data.js";
 import { ev, evText } from "../evidence.js";
 import { pageHeader, card, fold } from "../ui.js";
 import { escapeHtml, tidyDash } from "../format.js";
-import { plainReason, rivalWords } from "./yourfile.js";
+import { plainReason, rivalWords, itemWord } from "./yourfile.js";
 
 const S = "realdesk.shadow";
 const F = "upload.shadow";
@@ -32,7 +32,7 @@ export function render(section) {
       ${escapeHtml(d.weekday)} ${escapeHtml(prettyDate(d.date))}${d.date === sh.showcase ? " · busiest" : ""}</button>`).join("");
   section.innerHTML = `
     ${pageHeader("Shadow mode: a later day, replayed",
-      "Real items at their real times. OpsLens only watches and warns; the outcome is what really happened.")}
+      "Real incidents at their real times. OpsLens only watches and warns; the outcome is what really happened.")}
     <div class="sh-days">${chips}</div>
     <section class="card sh-stage">
       <div class="sh-top">
@@ -88,7 +88,7 @@ function renderFile(section) {
   const r = state.upload;
   const theirs = r.warning.vs.rival === "priority" ? "Your priority field" : "The rule of thumb";
   const head = pageHeader("Shadow mode: a later day, replayed",
-    "Real items at their real times. OpsLens only watches and warns; the outcome is what really happened.");
+    `Real ${itemWord()} at their real times. OpsLens only watches and warns; the outcome is what really happened.`);
   const honest = "";
   if (!r.shadow.timeline) {
     section.innerHTML = head + honest + card({ body: `<p>${evText(`${F}.timeline_note`)}</p><div class="sh-final">${fileFinal()}</div>` });
@@ -141,7 +141,7 @@ function fileDay() {
 
 function fileFinal() {
   const rival = state.upload.warning.vs.rival;
-  return `<p>Once every item of that day had ended: <b>${ev(F + ".misses", "int")}</b> of its ${ev(F + ".items", "int")} items really missed.
+  return `<p>Once every item of that day had ended: <b>${ev(F + ".misses", "int")}</b> of its ${ev(F + ".items", "int")} ${itemWord()} really missed.
     OpsLens's ${ev(F + ".flags", "int")} flags had caught <b class="t-ours">${ev(F + ".caught.opslens", "int")}</b> of them;
     the ${ev(F + ".flags", "int")} flags of ${rivalWords(state.upload)} caught <b class="t-theirs">${ev(`${F}.caught.${rival}`, "int")}</b>.</p>`;
 }

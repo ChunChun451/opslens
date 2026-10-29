@@ -99,6 +99,23 @@ def known_at_open(name: str) -> bool:
     return True
 
 
+NOUNS = (("incident", "incidents"), ("order", "orders"), ("deliver", "orders"), ("ticket", "tickets"), ("case", "cases"),
+         ("call", "calls"), ("request", "requests"))
+
+
+def item_word(raw: pd.DataFrame) -> str:
+    head = raw.head(200)
+    for name in head.columns:
+        values = head[name].dropna().astype(str)
+        if len(values) and values.str.match(r"^INC\d+").mean() > 0.8:
+            return "incidents"
+    words = [w for name in raw.columns for w in name_words(str(name))]
+    for hint, noun in NOUNS:
+        if any(w.startswith(hint) for w in words):
+            return noun
+    return "items"
+
+
 def peek(raw: pd.DataFrame) -> dict:
     columns = []
     for name in raw.columns:
@@ -110,7 +127,7 @@ def peek(raw: pd.DataFrame) -> dict:
     suggested = suggest_mapping(raw, columns)
     suggested["features"] = [c["name"] for c in columns if c["feature"] and c["name"] not in suggested.values()]
     ask = questions(columns, suggested)
-    return {"rows": int(len(raw)), "columns": columns, "suggested": suggested, "preview": preview_rows(raw),
+    return {"rows": int(len(raw)), "noun": item_word(raw), "columns": columns, "suggested": suggested, "preview": preview_rows(raw),
             "ask": ask, "plan": None if ask else check_mapping(raw, suggested)}
 
 
@@ -295,7 +312,7 @@ def build_items(raw: pd.DataFrame, m: dict, target_min: float | None,
     before = len(items)
     items = items.dropna(subset=["created_at", "end_at"]).sort_values("created_at").reset_index(drop=True)
     if len(items) < before:
-        notes.append(f"{before - len(items)} rows without a readable start or end were left out.")
+        notes.append(f"{before - len(items):,} rows without a readable start or end were left out.")
     return items, notes
 
 
@@ -838,7 +855,7 @@ def analyse(raw: pd.DataFrame, mapping: dict, target_min: float | None = None, p
     steps[-1]["seconds"] = round(time.perf_counter() - steps[-1].pop("_t"), 1)
     rule = miss_rule(mapping, target_min)
     return {
-        "summary": floor_summary(items), "notes": notes, "dropped_after_the_fact": dropped,
+        "summary": floor_summary(items), "notes": notes, "dropped_after_the_fact": dropped, "noun": item_word(raw),
         "features": list(X.columns), "rule_column": rule_col,
         "learn": {"items": int(learn.sum()), "from": str(items.loc[learn, "created_at"].min())[:10],
                   "to": str(items.loc[learn, "created_at"].max())[:10]},
