@@ -21,13 +21,13 @@ def test_migrations_and_partitions_are_idempotent():
     assert versions[:2] == ["001_init", "002_vector"]
 
 
-def test_seed_creates_one_login_per_agent_plus_leads_and_an_admin():
+def test_seed_creates_one_login_per_agent_and_one_admin_and_no_leads():
     from opslens.seed import seed
     with store.connection() as conn:
         counts = seed(conn)
         roles = {r["role"]: r["n"] for r in conn.execute("select role, count(*) n from users group by role")}
         linked = conn.execute("select count(*) n from users where role = 'agent' and agent_code is not null").fetchone()["n"]
-    assert roles["admin"] == 1 and roles["lead"] == counts["teams"] and roles["agent"] == counts["agents"] == linked
+    assert roles == {"admin": 1, "agent": counts["agents"]} and linked == counts["agents"]
 
 
 def test_publish_reaches_a_subscriber():

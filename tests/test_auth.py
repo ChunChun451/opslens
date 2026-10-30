@@ -69,11 +69,10 @@ def test_an_agent_sees_their_own_tickets_and_their_teams_unassigned_queue_only(a
     assert c.get("/api/v2/summary").status_code == 403
 
 
-def test_a_lead_sees_their_team_and_an_admin_sees_everything(app_client):
+def test_there_are_only_admins_and_agents_and_an_admin_sees_everything(app_client):
     client, password = app_client
-    lead = logged_in(client, "lead.a@opslens.demo", password)
-    assert ids(lead) == {"TEST-A1", "TEST-A2", "TEST-A3"}
-    assert lead.get("/api/v2/summary").status_code == 200
+    client.cookies.clear()
+    assert client.post("/api/v2/login", json={"email": "lead.a@opslens.demo", "password": password}).status_code == 401
     admin = logged_in(client, "admin@opslens.demo", password)
     assert ids(admin) == {"TEST-A1", "TEST-A2", "TEST-A3", "TEST-B1"}
     assert admin.post("/api/v2/login", json={"email": "admin@opslens.demo", "password": password}).json()["home"] == "/admin/"
@@ -116,3 +115,28 @@ def test_the_sign_in_page_and_both_screens_are_served(app_client):
     assert client.get("/admin/").status_code == 200
     assert client.get("/desk/desk.js").status_code == 200
     assert client.get("/app/").status_code == 200
+
+
+def test_admin_signs_in_by_username_and_agent_picks_who_they_are(app_client):
+    client, password = app_client
+    client.cookies.clear()
+    assert client.post("/api/v2/login", json={"username": "admin", "password": password}).json()["home"] == "/admin/"
+    client.cookies.clear()
+    assert client.get("/api/v2/login/agents").status_code == 401
+    assert client.post("/api/v2/login/pick", json={"agent": "A01"}).status_code == 401
+    first = client.post("/api/v2/login", json={"username": "agent", "password": password})
+    assert first.json() == {"pick": True} and client.get("/api/v2/me").status_code == 401
+    listed = client.get("/api/v2/login/agents").json()["agents"]
+    assert listed and all(a["status"] != "off" for a in listed)
+    assert client.post("/api/v2/login/pick", json={"agent": "nobody"}).status_code == 400
+    chosen = client.post("/api/v2/login/pick", json={"agent": listed[0]["agent_code"]})
+    assert chosen.json()["home"] == "/agent/"
+    assert client.get("/api/v2/me").json()["user"]["agent_code"] == listed[0]["agent_code"]
+    assert client.post("/api/v2/login/pick", json={"agent": "A02"}).status_code == 401
+
+
+def test_the_agent_username_still_needs_the_right_password(app_client):
+    client, _ = app_client
+    client.cookies.clear()
+    assert client.post("/api/v2/login", json={"username": "agent", "password": "nope"}).status_code == 401
+    assert client.get("/api/v2/login/agents").status_code == 401

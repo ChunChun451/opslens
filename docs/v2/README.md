@@ -16,7 +16,7 @@ agents read, write, explain and propose; they never replace the maths that produ
 ```
 Browser ── /            sign-in page
          ├─ /agent/     agent workspace  (role: agent)
-         ├─ /admin/     console          (roles: lead, admin)
+         ├─ /admin/     console          (role: admin)
          └─ /app/       classic analysis dashboard, unchanged
 
 FastAPI (server/app.py + server/v2.py + server/auth.py)
@@ -88,35 +88,50 @@ computed in numpy.
   get the same answer and take the same time, so nobody can probe which emails exist.
 - **Roles are checked on the server for every request**, not hidden in the browser:
   - an **agent** sees their own tickets and their team's waiting queue, and can act only as themself;
-  - a **team lead** sees and decides for their own team only;
-  - an **admin** sees everything.
+  - an **admin** sees everything and decides: assignments, breaks, AI suggestions, the plan.
   Anything outside your scope answers 404, not 403, so its existence is not revealed.
-- Demo accounts are seeded by `python -m opslens.seed`: `admin@opslens.demo`, `lead.a@opslens.demo`
-  … `lead.d@`, and one per agent (`a01@opslens.demo` …). The demo password is in `.env.example`.
+- **Signing in for the demo:** username `admin` or `agent`, password `123` (`DEMO_PASSWORD` in
+  `.env.example`). `agent` then lists the agents on shift right now, working ones first, and you pick
+  who you are; the session belongs to that agent. "Switch agent" in the profile menu goes back to the
+  list. Each agent also has their own login (`a01@opslens.demo` …), seeded by `python -m opslens.seed`.
+  The password is for a laptop demo only; set `DEMO_PASSWORD` before putting this anywhere shared.
 
 ## 4. The screens
 
 Plain HTML, CSS and JavaScript in `desk/`, no build step, one shared stylesheet and one shared helper
-module. Layout borrowed from Zendesk: a dark rail on the left, views with counts, a ticket table, and a
-ticket page with the conversation on the left and context on the right.
+module. Laid out like Zendesk's agent workspace: a dark green rail on the left, open tickets as tabs
+across the top, search (`/`), views with counts, sortable ticket tables with status letters (N new, O
+open, S solved), and a three-pane ticket page: properties, the conversation with a reply box, and
+context. Keyboard: `j`/`k` to move, Enter to open, Esc to close, `g h` home, `?` for the list.
 
 **Agent workspace** (`/agent/`)
 
-- A bar at the top says what you are doing right now: the ticket you are on and its minutes left, or
-  that you are free, or on a break. Buttons: Mark solved, Need 10 more min, Take a break, I'm back.
-- Views: My open tickets, Team queue, Due in 15 minutes, Solved by me today.
-- Ticket page: the customer's message, why OpsLens gave it to you, the promise time, the chance of
-  missing it, what the intake agent read, and the reply copilot. If OpsLens has lined a ticket up for
-  you next, you can say why you can't take it; the optimiser re-plans.
+- Home: the ticket you are on with a countdown ring, what is lined up next, today's solved count,
+  on-time rate and handle time, and your queue. A toast tells you when a new ticket lands.
+- Views: My open tickets, Team queue, Due in 15 minutes, Solved by me today; sort and export to CSV.
+- Ticket page: the customer's message, OpsLens's assignment note, replies and internal notes, the
+  promise, the chance of missing it, what the intake agent read, and similar solved tickets. Draft
+  with AI fills the reply box; Submit as Solved saves the reply and closes the ticket on the floor.
+  Take this ticket, I can't take this, +10 min, Take a break and I'm back all re-plan the floor.
+  Drafts are kept if you leave the ticket.
 - Every button goes through the same `/api/live/action` path as before, so the floor really changes.
 
 **Console** (`/admin/`)
 
-- Home: five numbers (tickets today, waiting, being worked, likely to miss, promises missed), Ask
-  OpsLens, what needs attention now, tickets per hour, OpsLens against usual routing on the same
-  tickets, OpsLens suggests (approve or dismiss), and a team table.
-- Tickets: the same views as Zendesk, filterable by team.
-- Team: who is free, working, on a break, and on what.
+- Home: today's numbers, Ask OpsLens, what needs attention now, the recurring problems most worth
+  fixing with their measured effect, OpsLens suggests (approve or dismiss), OpsLens against usual
+  routing today, tickets per hour, and the teams.
+- Views: all unsolved, unassigned, due soon, likely to miss, solved; filter by team, sort, export.
+  On a ticket the admin can assign it to anyone on shift; the list shows who has the skill and the
+  language and who is free.
+- Recurring problems: the 9 problems found in 56 days of tickets, the evidence and real examples, how
+  many tickets like it came in today, and each fix with its measured effect on missed promises over
+  14 held-out days (with the 95% range). Add to plan.
+- Plan and impact: the chosen fixes, and a button that replays a real held-out day with and without
+  them (3 seeds, about 30 seconds), with every past replay kept.
+- Team: who is free, working, on a break, and on what; send someone on a break or bring them back.
+- Analysis: the Round 1 result (OpsLens against skills routing and the best published rule), the models
+  and the load test, inside the console. The research dashboard opens in a new tab.
 - AI: every agent run, and every step inside it.
 
 Screens update by themselves: the server pushes a message over SSE whenever the floor changes, with a
@@ -135,14 +150,14 @@ All four use the same small runtime in `opslens/agents.py`:
   comparing numbers, adding up and reading raw JSON. So code turns the data into plain sentences,
   computes limits, totals and "busiest" or "most", and lists the actions that are actually possible.
   The model chooses, explains and writes.
-- **People decide.** Nothing an agent proposes changes the floor until a lead approves it.
+- **People decide.** Nothing an agent proposes changes the floor until the admin approves it.
 
 | Agent | When | What it does | Guardrail |
 |---|---|---|---|
 | Intake | every new ticket, in the background | reads the message; stores its search vector; writes category, urgency and a 12-word summary | if its category differs from the router's, the ticket page says so; it never re-routes on its own |
 | Reply copilot | an agent presses Draft a reply | reads the ticket, finds the two closest policies by meaning, drafts a reply, then checks every claim against the policy and removes unsupported ones | order-value limits ("above Rs 300, ask for a photo") are computed in code and given to it as a fact; the agent edits and sends, the copilot never sends |
 | Floor analyst | every 15 minutes, or Check the floor now | reads today's numbers, tickets at risk, who is free; code lists the actions that are possible (a free agent with the right skill and language, or a ticket nobody can take); the model picks the urgent ones and says why | it can only pick from the checked list; a reassignment is checked again at approval and then goes through the optimiser's own take path; stale suggestions expire |
-| Ask OpsLens | a lead types a question | answers from the live numbers, written as plain facts | every number in the answer must appear in the facts; if not, it is asked again, and the screen says whether every number was found |
+| Ask OpsLens | the admin types a question | answers from the live numbers, written as plain facts | every number in the answer must appear in the facts; if not, it is asked again, and the screen says whether every number was found |
 
 ## 6. What did not change
 

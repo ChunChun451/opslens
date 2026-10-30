@@ -74,11 +74,12 @@ assistant falls back to keyword rules. `mingw32-make demo` serves cached results
 
 ## Version 2
 
-After Round 1, OpsLens became a support desk people sign in to: an agent workspace at `/agent/`, a
-console for team leads and admins at `/admin/`, Postgres underneath, and four AI agents that run on a
-local model through Ollama. The optimiser still decides who gets each ticket; the agents read, draft,
-explain and propose, and a lead approves. Everything about it, including the load test, is in
-[docs/v2/README.md](docs/v2/README.md).
+After Round 1, OpsLens became a support desk people sign in to: an agent workspace at `/agent/`, an
+admin console at `/admin/` with recurring problems, measured fixes and a plan you can replay, Postgres
+underneath, and four AI agents that run on a local model through Ollama. Sign in as `admin` or
+`agent` with the password `123`; as agent you then pick who you are from today's shift. The optimiser
+still decides who gets each ticket; the agents read, draft, explain and propose, and the admin
+approves. Everything about it, including the load test, is in [docs/v2/README.md](docs/v2/README.md).
 
 ## Layout
 

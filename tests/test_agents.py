@@ -131,7 +131,7 @@ def logged_in(client: TestClient, email: str) -> TestClient:
     return client
 
 
-def test_leads_decide_proposals_for_their_own_team_only():
+def test_only_an_admin_decides_proposals_and_only_once():
     from server.app import app
 
     with store.connection() as conn:
@@ -139,11 +139,10 @@ def test_leads_decide_proposals_for_their_own_team_only():
                            "('note', 'B', 'TEST-G2', 'Find someone for TEST-G2', 'test') returning id").fetchone()["id"]
     client = TestClient(app)
     assert logged_in(client, "a01@opslens.demo").post(f"/api/v2/proposals/{pid}", json={"decision": "approve"}).status_code == 403
-    assert logged_in(client, "lead.a@opslens.demo").post(f"/api/v2/proposals/{pid}", json={"decision": "approve"}).status_code == 404
-    lead_b = logged_in(client, "lead.b@opslens.demo")
-    assert pid in [p["id"] for p in lead_b.get("/api/v2/proposals").json()["proposals"]]
-    assert lead_b.post(f"/api/v2/proposals/{pid}", json={"decision": "approve"}).json()["status"] == "approved"
-    assert lead_b.post(f"/api/v2/proposals/{pid}", json={"decision": "reject"}).status_code == 409
+    admin = logged_in(client, "admin@opslens.demo")
+    assert pid in [p["id"] for p in admin.get("/api/v2/proposals").json()["proposals"]]
+    assert admin.post(f"/api/v2/proposals/{pid}", json={"decision": "approve"}).json()["status"] == "approved"
+    assert admin.post(f"/api/v2/proposals/{pid}", json={"decision": "reject"}).status_code == 409
 
 
 def test_an_agent_can_only_ask_the_copilot_about_tickets_they_can_see(monkeypatch):

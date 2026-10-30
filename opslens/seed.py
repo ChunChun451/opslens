@@ -15,7 +15,7 @@ hasher = PasswordHasher()
 
 def demo_password() -> str:
     load_env_file()
-    return os.environ.get("DEMO_PASSWORD", "opslens-demo")
+    return os.environ.get("DEMO_PASSWORD", "123")
 
 
 def split(cell) -> list[str]:
@@ -38,9 +38,9 @@ def seed(conn) -> dict[str, int]:
                 "shift_hours = excluded.shift_hours, days_off = excluded.days_off, max_concurrent = excluded.max_concurrent",
                 (a.agent_id, a.name, a.team, split(a.skills), split(a.languages), int(a.shift_start_hour), int(a.shift_hours),
                  [int(d) for d in split(a.days_off)], int(a.max_concurrent)))
+        conn.execute("delete from users where role = 'lead'")
         password = hasher.hash(demo_password())
         users = [(f"admin@{DEMO_DOMAIN}", "Ops admin", "admin", None, None)]
-        users += [(f"lead.{code.lower()}@{DEMO_DOMAIN}", f"Team {code} lead", "lead", code, None) for code in teams]
         users += [(f"{a.agent_id.lower()}@{DEMO_DOMAIN}", a.name, "agent", a.team, a.agent_id) for a in agents.itertuples()]
         for email, name, role, team, agent_code in users:
             conn.execute(

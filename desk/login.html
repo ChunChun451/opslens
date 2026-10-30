@@ -3,44 +3,111 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OpsLens · Sign in</title>
+  <title>Sign in · OpsLens</title>
   <link rel="icon" href="/app/favicon.svg">
   <link rel="stylesheet" href="/desk/desk.css">
 </head>
 <body>
   <main class="login">
-    <form class="card" id="login" autocomplete="on">
-      <div class="brand"><img src="/app/favicon.svg" alt=""><div><h1>OpsLens</h1><div class="muted">Support desk</div></div></div>
-      <label>Work email<input name="email" type="email" required autocomplete="username" placeholder="you@opslens.demo"></label>
-      <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
-      <div class="err" id="err" role="alert"></div>
-      <button class="btn primary" type="submit">Sign in</button>
-      <div class="hint">
-        Agents land in their workspace. Team leads and admins land in the console.
-        Demo accounts: <b>a01@opslens.demo</b> (agent), <b>lead.a@opslens.demo</b> (team lead), <b>admin@opslens.demo</b> (admin).
-        The demo password is in <code>.env.example</code>.
-        <div style="margin-top:8px"><a href="/app/">Open the classic analysis dashboard</a></div>
+    <section class="hero">
+      <div style="display:flex;align-items:center;gap:10px"><img src="/app/favicon.svg" alt="" width="36" height="36"><b style="font-size:18px;color:#fff">OpsLens</b></div>
+      <div>
+        <h1>Every ticket to the right person, before its promise runs out.</h1>
+        <p>A support desk that routes with an optimiser, finds the problems that keep coming back, and measures every fix before you make it. The AI runs on this laptop.</p>
       </div>
-    </form>
+      <div class="stats">
+        <div><b>8.79%</b><span>promises missed with OpsLens on 14 held-out days</span></div>
+        <div><b>20.74%</b><span>with industry-standard skills routing, same days</span></div>
+        <div><b>−574</b><span>missed promises from the 18 measured fixes together</span></div>
+      </div>
+    </section>
+    <section class="side">
+      <form id="login" autocomplete="on">
+        <div><h1>Sign in</h1><div class="muted" style="margin-top:4px">Use <b>admin</b> or <b>agent</b>, password <b>123</b>.</div></div>
+        <div class="who">
+          <button type="button" data-user="admin"><b>Admin</b><span>The console: floor, problems, plan</span></button>
+          <button type="button" data-user="agent"><b>Agent</b><span>Pick who you are from today's shift</span></button>
+        </div>
+        <label>Username<input class="field" name="username" required autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="admin or agent"></label>
+        <label>Password<input class="field" name="password" type="password" required autocomplete="current-password"></label>
+        <div class="err" id="err" role="alert"></div>
+        <button class="btn primary" type="submit" style="height:40px">Sign in</button>
+      </form>
+      <div id="pick" hidden style="width:100%;max-width:520px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px">
+          <div><h1>Who are you?</h1><div class="muted" style="margin-top:4px" id="picknote">Agents on shift right now. Working ones first.</div></div>
+          <button class="btn quiet small" id="pickback" type="button">Back</button>
+        </div>
+        <input class="field" id="pickq" placeholder="Filter by name, code or team" style="width:100%;margin-bottom:10px" autocomplete="off">
+        <div id="picklist" class="card" style="max-height:62vh;overflow:auto"></div>
+      </div>
+    </section>
   </main>
   <script type="module">
-    import { api } from "/desk/desk.js";
+    import { api, esc, tag, agentTag, initials, CATEGORY, LANGUAGE, fmtMin } from "/desk/desk.js";
     const form = document.getElementById("login");
     const err = document.getElementById("err");
+    const pickBox = document.getElementById("pick");
     api("/api/v2/me").then(({ user }) => { location.href = user.role === "agent" ? "/agent/" : "/admin/"; }).catch(() => {});
+    const preset = new URLSearchParams(location.search).get("as");
+    if (preset) { form.username.value = preset; form.password.focus(); }
+    form.querySelectorAll("[data-user]").forEach(b => b.onclick = () => { form.username.value = b.dataset.user; form.password.focus(); });
+
+    let agents = [];
+    const row = a => {
+      const job = a.current || a.next;
+      const doing = a.current ? `on <b>${esc(CATEGORY[a.current.category] || a.current.category)}</b> #${esc(a.current.ticket_id)} · ${a.current.minutes_left < 0 ? `${fmtMin(-a.current.minutes_left)} late` : `${fmtMin(a.current.minutes_left)} left`}`
+        : a.next ? `next: ${esc(CATEGORY[a.next.category] || a.next.category)} #${esc(a.next.ticket_id)}` : a.status === "idle" ? "free for the next ticket" : "";
+      return `<button type="button" data-agent="${esc(a.agent_code)}" style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line-soft);background:#fff;padding:11px 14px;text-align:left;cursor:pointer">
+        <span class="avatar">${esc(initials(a.name))}<span class="pres ${esc(a.status)}"></span></span>
+        <span style="min-width:0"><b>${esc(a.name)}</b> <span class="muted small">${esc(a.agent_code)} · ${esc(a.team_name)}</span>
+          <div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${doing || esc((a.languages || []).map(l => LANGUAGE[l] || l).join(", "))}</div></span>
+        <span style="text-align:right">${a.status === "unknown" ? "" : agentTag(a.status)}<div class="small faint" style="margin-top:3px">${a.solved_today} solved today</div></span></button>`;
+    };
+    const draw = () => {
+      const q = document.getElementById("pickq").value.trim().toLowerCase();
+      const shown = agents.filter(a => !q || `${a.name} ${a.agent_code} ${a.team_name}`.toLowerCase().includes(q));
+      document.getElementById("picklist").innerHTML = shown.length ? shown.map(row).join("") : `<div class="empty">Nobody matches.</div>`;
+      document.querySelectorAll("[data-agent]").forEach(b => {
+        b.onmouseenter = () => { b.style.background = "var(--blue-soft)"; };
+        b.onmouseleave = () => { b.style.background = "#fff"; };
+        b.onclick = async () => {
+          b.disabled = true;
+          try { location.href = (await api("/api/v2/login/pick", { body: { agent: b.dataset.agent } })).home; }
+          catch (e) { document.getElementById("picknote").textContent = e.message; b.disabled = false; }
+        };
+      });
+    };
+    const showPick = async () => {
+      const data = await api("/api/v2/login/agents");
+      agents = data.agents;
+      document.getElementById("picknote").textContent = data.live
+        ? `${agents.length} agents on shift right now. Working ones first.` : "Today's floor is still starting, so everyone is listed.";
+      form.hidden = true;
+      pickBox.hidden = false;
+      draw();
+      document.getElementById("pickq").focus();
+    };
+    document.getElementById("pickq").addEventListener("input", draw);
+    document.getElementById("pickq").addEventListener("keydown", e => {
+      if (e.key === "Enter") { const first = document.querySelector("[data-agent]"); if (first) first.click(); }
+    });
+    document.getElementById("pickback").onclick = () => { pickBox.hidden = true; form.hidden = false; form.password.value = ""; form.password.focus(); };
     form.addEventListener("submit", async event => {
       event.preventDefault();
       err.textContent = "";
-      const button = form.querySelector("button");
+      const button = form.querySelector("button[type=submit]");
       button.disabled = true;
+      button.textContent = "Signing in…";
       try {
-        const data = new FormData(form);
-        const out = await api("/api/v2/login", { body: { email: data.get("email"), password: data.get("password") } });
-        location.href = out.home;
+        const out = await api("/api/v2/login", { body: { username: form.username.value, password: form.password.value } });
+        if (out.pick) await showPick();
+        else location.href = out.home;
       } catch (e) {
         err.textContent = e.message;
-        button.disabled = false;
       }
+      button.disabled = false;
+      button.textContent = "Sign in";
     });
   </script>
 </body>
