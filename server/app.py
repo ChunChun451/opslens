@@ -7,7 +7,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi import Cookie, Depends, FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from psycopg import OperationalError
@@ -32,6 +32,15 @@ app.include_router(desk_router)
 def database_down(request: Request, exc: Exception) -> JSONResponse:
     return JSONResponse({"error": "The database is not running. Start Postgres, then run: python -m opslens.seed"},
                         status_code=503)
+
+
+def floor_user(opslens_session: str | None = Cookie(default=None)) -> dict | None:
+    from opslens import store
+    from server.auth import current_user
+
+    if not store.available():
+        return None
+    return current_user(opslens_session)
 
 
 def results_path() -> Path:
@@ -474,7 +483,6 @@ def _on_break(log: list[dict], agent: str) -> bool:
     return bool(moves) and moves[-1] == "break"
 
 
-@app.post("/api/live/action")
 def live_action(request: dict) -> JSONResponse:
     from opslens.live import outcome_at, simulated_until, with_actions
 
@@ -515,6 +523,13 @@ def live_action(request: dict) -> JSONResponse:
                          "effect": {**effect, "outcome": outcome_at(effect.get("went_to"), minute)}})
 
 
+@app.post("/api/live/action")
+def live_action_signed_in(request: dict, user: dict | None = Depends(floor_user)) -> JSONResponse:
+    if user is not None and user["role"] == "agent" and str(request.get("agent", "")).upper() != user["agent_code"]:
+        return JSONResponse({"error": "You can only act as yourself."}, status_code=403)
+    return live_action(request)
+
+
 def _forget_old_actions(day: int, seed: int) -> None:
     mine = [k for k in _LIVE if len(k) == 5 and k[0] == day and k[1] == seed and k[4]]
     for k in mine[:-ACTION_DAYS_KEPT]:
@@ -531,7 +546,9 @@ def live_actions(weekday: int, seed: int = 1) -> JSONResponse:
 
 
 @app.post("/api/live/reset")
-def live_reset(request: dict) -> JSONResponse:
+def live_reset(request: dict, user: dict | None = Depends(floor_user)) -> JSONResponse:
+    if user is not None and user["role"] != "admin":
+        return JSONResponse({"error": "Only an admin can reset the day."}, status_code=403)
     try:
         weekday, seed = int(request.get("weekday", -1)), int(request.get("seed", 1))
     except (TypeError, ValueError):

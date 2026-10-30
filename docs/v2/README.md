@@ -86,15 +86,25 @@ computed in numpy.
   in an httpOnly, SameSite cookie; only its SHA-256 is stored, so a database leak does not leak
   sessions. Five wrong passwords in a minute and that email waits. A wrong email and a wrong password
   get the same answer and take the same time, so nobody can probe which emails exist.
-- **Roles are checked on the server for every request**, not hidden in the browser:
+- **Roles are checked on the server, not hidden in the browser:**
   - an **agent** sees their own tickets and their team's waiting queue, and can act only as themself;
   - an **admin** sees everything and decides: assignments, breaks, AI suggestions, the plan.
-  Anything outside your scope answers 404, not 403, so its existence is not revealed.
-- **Signing in for the demo:** username `admin` or `agent`, password `123` (`DEMO_PASSWORD` in
-  `.env.example`). `agent` then lists the agents on shift right now, working ones first, and you pick
-  who you are; the session belongs to that agent. "Switch agent" in the profile menu goes back to the
-  list. Each agent also has their own login (`a01@opslens.demo` …), seeded by `python -m opslens.seed`.
-  The password is for a laptop demo only; set `DEMO_PASSWORD` before putting this anywhere shared.
+  Every `/api/v2` route checks the role, and a ticket outside your scope answers 404, not 403, so its
+  existence is not revealed. The floor buttons (`/api/live/action`: take, decline, done, extra time,
+  break, back) need a sign-in: an agent is refused (403) if they name anyone but themself, a stranger
+  gets 401, and resetting the day is admin-only. This was found by trying it: the dashboard hid other
+  agents but the endpoint behind it did not check, so one agent could send another on a break.
+- **Signing in:** `admin` with password `123` for the admin. An **agent** chooses Agent, types their
+  name (full, without the dot, first name only, or code such as `B01`), chooses their team and enters
+  the password. Names are unique within a team, so this opens exactly one agent's dashboard; there is
+  no list to pick from, and a right name with the wrong team or password gets nobody in. Each agent
+  also has an email login (`a01@opslens.demo` …), seeded by `python -m opslens.seed`.
+  The shared password `123` is for a laptop demo only: anyone who knows another agent's name and team
+  could sign in as them. Give each agent their own password, or set `DEMO_PASSWORD`, before putting
+  this anywhere shared.
+- **Known limit:** the read-only data behind the dashboard (`/api/live`, `/api/results`, `/api/bot`) is
+  not behind the sign-in, so the agent screen hides other agents but a technical user could still read
+  the simulated floor. Nothing there can be changed.
 
 ## 4. The screens
 
@@ -178,6 +188,11 @@ ones it used. The model reads our facts instead of guessing from memory.
 5. **Answer.** `qwen2.5:3b` gets the 5 pieces and a one-line glossary (missed means the promise time
    passed; lower is better) and must cite them. Every number it writes must appear in the pieces or
    the question; if not, it is asked once more.
+
+**Limit.** The number check proves a number is in the sources, not that the sentence around it is
+right. A small model can still mislabel a number: one answer said Hindi tickets wait "368 minutes
+longer" when 368 minutes is the whole wait. That is why every answer shows its sources, so a reader
+can check the sentence against the text it came from.
 
 Rebuild with `mingw32-make rag` after changing a policy, a result or the docs.
 

@@ -140,3 +140,19 @@ def test_an_agent_signs_in_as_themself_by_name_and_team_and_nobody_else(app_clie
     assert client.get("/api/v2/me").status_code == 401
     assert client.get("/api/v2/login/agents").status_code in (404, 405)
     assert {t["code"] for t in client.get("/api/v2/login/teams").json()["teams"]} == {"A", "B", "C", "D"}
+
+
+def test_an_agent_cannot_act_for_another_agent_or_reset_the_day_and_a_stranger_cannot_act_at_all(app_client):
+    client, password = app_client
+    client.cookies.clear()
+    action = {"weekday": 4, "seed": 1, "minute": 600, "kind": "break", "agent": "A01"}
+    assert client.post("/api/live/action", json=action).status_code == 401
+    assert client.post("/api/live/reset", json={"weekday": 4, "seed": 1}).status_code == 401
+    r = client.post("/api/v2/login", json={"role": "agent", "name": "Kavita", "team": "B", "password": password})
+    assert r.status_code == 200
+    forbidden = client.post("/api/live/action", json=action)
+    assert forbidden.status_code == 403 and "yourself" in forbidden.json()["error"]
+    assert client.post("/api/live/action", json={**action, "agent": "a01"}).status_code == 403
+    assert client.post("/api/live/reset", json={"weekday": 4, "seed": 1}).status_code == 403
+    admin = logged_in(client, "admin@opslens.demo", password)
+    assert admin.post("/api/live/reset", json={"weekday": 4, "seed": 1}).json()["ok"] is True
