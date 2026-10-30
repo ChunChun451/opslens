@@ -118,26 +118,25 @@ def test_the_sign_in_page_and_both_screens_are_served(app_client):
     assert client.get("/app/").status_code == 200
 
 
-def test_admin_signs_in_by_username_and_agent_picks_who_they_are(app_client):
+def test_admin_signs_in_by_username(app_client):
     client, password = app_client
     client.cookies.clear()
     assert client.post("/api/v2/login", json={"username": "admin", "password": password}).json()["home"] == "/app/"
-    client.cookies.clear()
-    assert client.get("/api/v2/login/agents").status_code == 401
-    assert client.post("/api/v2/login/pick", json={"agent": "A01"}).status_code == 401
-    first = client.post("/api/v2/login", json={"username": "agent", "password": password})
-    assert first.json() == {"pick": True} and client.get("/api/v2/me").status_code == 401
-    listed = client.get("/api/v2/login/agents").json()["agents"]
-    assert listed and all(a["status"] != "off" for a in listed)
-    assert client.post("/api/v2/login/pick", json={"agent": "nobody"}).status_code == 400
-    chosen = client.post("/api/v2/login/pick", json={"agent": listed[0]["agent_code"]})
-    assert chosen.json()["home"] == "/app/#agent"
-    assert client.get("/api/v2/me").json()["user"]["agent_code"] == listed[0]["agent_code"]
-    assert client.post("/api/v2/login/pick", json={"agent": "A02"}).status_code == 401
+    assert client.get("/api/v2/me").json()["user"]["role"] == "admin"
 
 
-def test_the_agent_username_still_needs_the_right_password(app_client):
-    client, _ = app_client
+def test_an_agent_signs_in_as_themself_by_name_and_team_and_nobody_else(app_client):
+    client, password = app_client
+    for name in ("Rohit M.", "rohit m", "Rohit", "A01"):
+        client.cookies.clear()
+        r = client.post("/api/v2/login", json={"role": "agent", "name": name, "team": "A", "password": password})
+        assert r.status_code == 200 and r.json()["home"] == "/app/#agent", name
+        assert client.get("/api/v2/me").json()["user"]["agent_code"] == "A01"
     client.cookies.clear()
-    assert client.post("/api/v2/login", json={"username": "agent", "password": "nope"}).status_code == 401
-    assert client.get("/api/v2/login/agents").status_code == 401
+    assert client.post("/api/v2/login", json={"role": "agent", "name": "Rohit", "team": "B", "password": password}).status_code == 401
+    assert client.post("/api/v2/login", json={"role": "agent", "name": "Kavita", "team": "B", "password": "nope"}).status_code == 401
+    assert client.post("/api/v2/login", json={"role": "agent", "name": "Kavita", "password": password}).status_code == 400
+    assert client.post("/api/v2/login", json={"username": "agent", "password": password}).status_code == 401
+    assert client.get("/api/v2/me").status_code == 401
+    assert client.get("/api/v2/login/agents").status_code in (404, 405)
+    assert {t["code"] for t in client.get("/api/v2/login/teams").json()["teams"]} == {"A", "B", "C", "D"}

@@ -36,6 +36,9 @@
     .roles b { display: block; }
     .roles span { font-size: 12px; color: var(--muted); }
     label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    select { height: 44px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(7, 11, 22, .7); padding: 0 12px; outline: none; color: var(--ink); }
+    select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, .18); }
+    select option { background: #121829; }
     input { height: 44px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(7, 11, 22, .7); padding: 0 14px; outline: none; }
     input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, .18); }
     .go { width: 100%; height: 46px; border: 0; border-radius: 12px; font-weight: 700; color: #071018; cursor: pointer; background: linear-gradient(90deg, var(--cyan), var(--violet)); box-shadow: 0 0 22px rgba(34, 211, 238, .3); }
@@ -79,29 +82,25 @@
     <section class="panel">
       <form id="login" autocomplete="on">
         <h2>Sign in</h2>
-        <p class="hint">Use <b>admin</b> or <b>agent</b>, password <b>123</b>.</p>
-        <div class="roles">
-          <button type="button" data-user="admin"><b>Admin</b><span>The whole floor, problems, plan</span></button>
-          <button type="button" data-user="agent"><b>Agent</b><span>Pick who you are from today's shift</span></button>
+        <p class="hint" id="hint">Admins use <b>admin</b>. The password is <b>123</b>.</p>
+        <div class="roles" role="tablist">
+          <button type="button" data-role="admin" class="on" role="tab"><b>Admin</b><span>The whole floor, problems, plan</span></button>
+          <button type="button" data-role="agent" role="tab"><b>Agent</b><span>Your own tickets only</span></button>
         </div>
-        <label>Username<input name="username" required autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="admin or agent"></label>
+        <div data-for="admin">
+          <label>Username<input name="username" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="admin" value="admin"></label>
+        </div>
+        <div data-for="agent" hidden>
+          <label>Your name<input name="name" autocomplete="name" spellcheck="false" placeholder="for example Rohit M., or just Rohit"></label>
+          <label>Your team<select name="team" id="team"><option value="">Choose your team</option></select></label>
+        </div>
         <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
         <div class="err" id="err" role="alert"></div>
         <button class="go" type="submit">Sign in</button>
       </form>
-      <div id="pick" hidden>
-        <div class="pick-head"><div><h2>Who are you?</h2><p class="hint" id="picknote" style="margin-bottom:0">Agents on shift right now.</p></div>
-          <button class="back" id="pickback" type="button">Back</button></div>
-        <input id="pickq" placeholder="Filter by name, code or team" autocomplete="off" style="width:100%;margin-bottom:10px">
-        <div class="list" id="picklist"></div>
-      </div>
     </section>
   </main>
   <script type="module">
-    const CATEGORY = { late_delivery: "Late delivery", missing_item: "Missing item", wrong_item: "Wrong item", refund: "Refund",
-      payment_failure: "Payment failed", app_bug: "App problem", account: "Account", restaurant_partner: "Restaurant partner" };
-    const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    const mins = m => { m = Math.round(Math.abs(m)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`; };
     async function api(path, body) {
       const r = await fetch(path, body === undefined ? { credentials: "same-origin" }
         : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -109,61 +108,37 @@
       if (!r.ok) throw new Error(data.error || data.detail || `Request failed (${r.status})`);
       return data;
     }
-    const form = document.getElementById("login"), err = document.getElementById("err"), pick = document.getElementById("pick");
+    const form = document.getElementById("login"), err = document.getElementById("err");
     api("/api/v2/me").then(({ user }) => { location.href = user.role === "agent" ? "/app/#agent" : "/app/"; }).catch(() => {});
-    const preset = new URLSearchParams(location.search).get("as");
-    const choose = name => {
-      form.username.value = name;
-      form.querySelectorAll("[data-user]").forEach(b => b.classList.toggle("on", b.dataset.user === name));
-      form.password.focus();
+    api("/api/v2/login/teams").then(({ teams }) => {
+      document.getElementById("team").insertAdjacentHTML("beforeend",
+        teams.map(t => `<option value="${t.code}">Team ${t.code} · ${String(t.name).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</option>`).join(""));
+    }).catch(() => {});
+    let role = "admin";
+    const setRole = next => {
+      role = next;
+      form.querySelectorAll("[data-role]").forEach(b => b.classList.toggle("on", b.dataset.role === role));
+      form.querySelectorAll("[data-for]").forEach(box => { box.hidden = box.dataset.for !== role; });
+      document.getElementById("hint").innerHTML = role === "agent"
+        ? "Enter your name and team so only your own dashboard opens. The password is <b>123</b>."
+        : "Admins use <b>admin</b>. The password is <b>123</b>.";
+      err.textContent = "";
+      (role === "agent" ? form.elements.name : form.elements.password).focus();
     };
-    if (preset) choose(preset);
-    form.querySelectorAll("[data-user]").forEach(b => b.onclick = () => choose(b.dataset.user));
-    let agents = [];
-    const status = a => a.working ? `<span class="pill work">Working</span>` : a.status === "idle" ? `<span class="pill free">Free</span>`
-      : a.status === "break" ? `<span class="pill away">On a break</span>` : "";
-    const draw = () => {
-      const q = document.getElementById("pickq").value.trim().toLowerCase();
-      const shown = agents.filter(a => !q || `${a.name} ${a.agent_code} ${a.team_name}`.toLowerCase().includes(q));
-      document.getElementById("picklist").innerHTML = shown.length ? shown.map(a => {
-        const doing = a.current ? `On ${esc(CATEGORY[a.current.category] || a.current.category)} ${esc(a.current.ticket_id)} · ${a.current.minutes_left < 0 ? `${mins(a.current.minutes_left)} late` : `${mins(a.current.minutes_left)} left`}`
-          : a.next ? `Next: ${esc(CATEGORY[a.next.category] || a.next.category)} ${esc(a.next.ticket_id)}` : a.status === "idle" ? "Free for the next ticket" : "";
-        const initials = String(a.name).split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
-        return `<button type="button" class="who" data-agent="${esc(a.agent_code)}"><span class="av">${esc(initials)}<i class="${esc(a.status)}"></i></span>
-          <span style="min-width:0"><b>${esc(a.name)}</b> <span class="meta">${esc(a.agent_code)} · ${esc(a.team_name)}</span><div class="doing">${doing}</div></span>
-          <span class="right">${status(a)}<div class="meta">${a.solved_today} solved today</div></span></button>`;
-      }).join("") : `<p class="hint" style="padding:18px;margin:0">Nobody matches.</p>`;
-      document.querySelectorAll("[data-agent]").forEach(b => b.onclick = async () => {
-        b.disabled = true;
-        try { location.href = (await api("/api/v2/login/pick", { agent: b.dataset.agent })).home; }
-        catch (e) { document.getElementById("picknote").textContent = e.message; b.disabled = false; }
-      });
-    };
-    const showPick = async () => {
-      const data = await api("/api/v2/login/agents");
-      agents = data.agents;
-      document.getElementById("picknote").textContent = data.live ? `${agents.length} on shift right now, working ones first.` : "Today's floor is still starting, so everyone is listed.";
-      form.hidden = true;
-      pick.hidden = false;
-      draw();
-      document.getElementById("pickq").focus();
-    };
-    document.getElementById("pickq").addEventListener("input", draw);
-    document.getElementById("pickq").addEventListener("keydown", e => { if (e.key === "Enter") document.querySelector("[data-agent]")?.click(); });
-    document.getElementById("pickback").onclick = () => { pick.hidden = true; form.hidden = false; form.password.value = ""; form.password.focus(); };
+    form.querySelectorAll("[data-role]").forEach(b => b.onclick = () => setRole(b.dataset.role));
+    if (new URLSearchParams(location.search).get("as") === "agent") setRole("agent");
     form.addEventListener("submit", async event => {
       event.preventDefault();
       err.textContent = "";
+      const body = role === "agent"
+        ? { role: "agent", name: form.elements.name.value, team: form.elements.team.value, password: form.elements.password.value }
+        : { username: form.elements.username.value, password: form.elements.password.value };
+      if (role === "agent" && (!body.name.trim() || !body.team)) { err.textContent = "Enter your name and choose your team."; return; }
       const button = form.querySelector(".go");
       button.disabled = true;
       button.textContent = "Signing in…";
-      try {
-        const out = await api("/api/v2/login", { username: form.username.value, password: form.password.value });
-        if (out.pick) await showPick();
-        else location.href = out.home;
-      } catch (e) { err.textContent = e.message; }
-      button.disabled = false;
-      button.textContent = "Sign in";
+      try { location.href = (await api("/api/v2/login", body)).home; }
+      catch (e) { err.textContent = e.message; button.disabled = false; button.textContent = "Sign in"; }
     });
   </script>
 </body>

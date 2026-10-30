@@ -14,9 +14,6 @@ from fastapi.responses import JSONResponse
 from opslens import store
 
 COOKIE = "opslens_session"
-PICK_COOKIE = "opslens_pick"
-PICK_MINUTES = 10
-AGENT_LOGIN = "agent"
 USERNAMES = {"admin": "admin@opslens.demo"}
 SESSION_HOURS = 12
 MAX_FAILS = 5
@@ -26,8 +23,6 @@ hasher = PasswordHasher()
 NO_USER_HASH = hasher.hash(secrets.token_urlsafe(16))
 _fails: dict[str, list[float]] = {}
 _fails_lock = threading.Lock()
-_picks: dict[str, float] = {}
-_picks_lock = threading.Lock()
 
 
 def token_hash(token: str) -> str:
@@ -80,7 +75,6 @@ def start_session(user: dict) -> JSONResponse:
         conn.execute("delete from sessions where expires_at < now()")
     out = JSONResponse({"user": public(user), "home": "/app/" if user["role"] == "admin" else "/app/#agent"})
     out.set_cookie(COOKIE, token, max_age=SESSION_HOURS * 3600, httponly=True, samesite="lax", path="/")
-    out.delete_cookie(PICK_COOKIE, path="/")
     return out
 
 
@@ -92,77 +86,50 @@ def checked(user: dict | None, password: str) -> bool:
         return False
 
 
+def plain(name: str) -> str:
+    return " ".join(name.replace(".", " ").lower().split())
+
+
+def find_agent(conn, name: str, team: str) -> dict | None:
+    wanted = plain(name)
+    if not wanted or not team:
+        return None
+    people = conn.execute("select u.*, p.name as profile_name from users u join agent_profiles p on p.agent_code = u.agent_code "
+                          "where u.role = 'agent' and p.team = %s", (team.upper(),)).fetchall()
+    exact = [u for u in people if plain(u["profile_name"]) == wanted or u["agent_code"].lower() == wanted]
+    if exact:
+        return exact[0]
+    first = [u for u in people if plain(u["profile_name"]).split()[0] == wanted]
+    return first[0] if len(first) == 1 else None
+
+
+@router.get("/login/teams")
+def teams() -> JSONResponse:
+    with store.connection() as conn:
+        return JSONResponse({"teams": conn.execute("select code, name from teams order by code").fetchall()})
+
+
 @router.post("/login")
 def login(request: dict) -> JSONResponse:
-    name = str(request.get("username") or request.get("email") or "").strip().lower()
     password = str(request.get("password", ""))
-    if not name or not password:
-        return JSONResponse({"error": "username and password are needed"}, status_code=400)
-    if too_many_fails(name):
+    team = str(request.get("team", "")).strip().upper()
+    as_agent = request.get("role") == "agent" or bool(team)
+    name = str(request.get("name") or request.get("username") or request.get("email") or "").strip()
+    key = f"agent:{team}:{plain(name)}" if as_agent else name.lower()
+    if not name or not password or (as_agent and not team):
+        return JSONResponse({"error": "your name, team and password are needed" if as_agent else "username and password are needed"},
+                            status_code=400)
+    if too_many_fails(key):
         return JSONResponse({"error": "too many tries, wait a minute"}, status_code=429)
     with store.connection() as conn:
-        if name == AGENT_LOGIN:
-            user = conn.execute("select * from users where role = 'agent' order by id limit 1").fetchone()
+        if as_agent:
+            user = find_agent(conn, name, team)
         else:
-            email = USERNAMES.get(name, name)
+            email = USERNAMES.get(name.lower(), name.lower())
             user = conn.execute("select * from users where email = %s", (email,)).fetchone()
     if not checked(user, password):
-        note_fail(name)
-        return JSONResponse({"error": "wrong username or password"}, status_code=401)
-    if name != AGENT_LOGIN:
-        return start_session(user)
-    token = secrets.token_urlsafe(32)
-    with _picks_lock:
-        now = time.monotonic()
-        for key in [k for k, until in _picks.items() if until < now]:
-            _picks.pop(key)
-        _picks[token_hash(token)] = now + PICK_MINUTES * 60
-    out = JSONResponse({"pick": True})
-    out.set_cookie(PICK_COOKIE, token, max_age=PICK_MINUTES * 60, httponly=True, samesite="lax", path="/")
-    return out
-
-
-def pick_allowed(opslens_pick: str | None) -> bool:
-    with _picks_lock:
-        return bool(opslens_pick) and _picks.get(token_hash(opslens_pick), 0) > time.monotonic()
-
-
-@router.get("/login/agents")
-def on_shift(opslens_pick: str | None = Cookie(default=None)) -> JSONResponse:
-    from server.v2 import WORKING, floor_rows, jsonable
-
-    if not pick_allowed(opslens_pick):
-        return JSONResponse({"error": "sign in as agent first"}, status_code=401)
-    live = {r["id"]: r for r in floor_rows()}
-    with store.connection() as conn:
-        people = conn.execute("select p.agent_code, p.name, p.team, p.languages, p.shift_start_hour, p.shift_hours, t.name as team_name, "
-                              "(select count(*) from tickets k where k.assignee = p.agent_code and k.status = 'solved' "
-                              "and k.created_at >= current_date) as solved_today "
-                              "from agent_profiles p join teams t on t.code = p.team order by p.agent_code").fetchall()
-    order = {"busy": 0, "cross": 0, "wrong": 0, "idle": 1, "break": 2}
-    out = []
-    for p in people:
-        r = live.get(p["agent_code"])
-        status = r["status"] if r else "unknown"
-        if live and status == "off":
-            continue
-        out.append({**p, "status": status, "working": status in WORKING,
-                    "current": r.get("current") if r else None, "next": r.get("next") if r else None})
-    out.sort(key=lambda a: (order.get(a["status"], 3), a["agent_code"]))
-    return JSONResponse(jsonable({"agents": out, "live": bool(live)}))
-
-
-@router.post("/login/pick")
-def pick(request: dict, opslens_pick: str | None = Cookie(default=None)) -> JSONResponse:
-    if not pick_allowed(opslens_pick):
-        return JSONResponse({"error": "sign in as agent first"}, status_code=401)
-    code = str(request.get("agent", "")).strip().lower()
-    with store.connection() as conn:
-        user = conn.execute("select * from users where role = 'agent' and lower(agent_code) = %s", (code,)).fetchone()
-    if user is None:
-        return JSONResponse({"error": "pick an agent from the list"}, status_code=400)
-    with _picks_lock:
-        _picks.pop(token_hash(opslens_pick), None)
+        note_fail(key)
+        return JSONResponse({"error": "wrong name, team or password" if as_agent else "wrong username or password"}, status_code=401)
     return start_session(user)
 
 

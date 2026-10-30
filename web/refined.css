@@ -568,7 +568,6 @@ button[data-act]:disabled { opacity: 0.55; cursor: progress; }
 .user-name { display: grid; line-height: 1.15; }
 .user-name b { font-size: 13px; }
 .user-name span { font-size: 11px; color: var(--muted, #8a93ad); }
-.sidebar-foot { display: none; }
 #data-source { display: none; }
 body[data-signed="agent"] .world-switch,
 body[data-signed="agent"] #role-switch,

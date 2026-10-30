@@ -39,14 +39,11 @@ export function applySession(user) {
   const initials = String(user.name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   chip.innerHTML = `<span class="user-avatar">${escapeHtml(initials)}</span>
     <span class="user-name"><b>${escapeHtml(user.name)}</b><span>${user.role === "admin" ? "Admin" : `Agent · ${escapeHtml(user.agent_code)}`}</span></span>
-    ${user.role === "agent" ? `<button type="button" class="btn btn-sm" id="switch-agent">Switch agent</button>` : ""}
     <button type="button" class="btn btn-sm" id="sign-out">Sign out</button>`;
   actions.append(chip);
   const out = async (to) => {
     await fetch("/api/v2/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
     location.href = to;
   };
-  chip.querySelector("#sign-out").addEventListener("click", () => out("/"));
-  const sw = chip.querySelector("#switch-agent");
-  if (sw) sw.addEventListener("click", () => out("/?as=agent"));
+  chip.querySelector("#sign-out").addEventListener("click", () => out(user.role === "agent" ? "/?as=agent" : "/"));
 }
