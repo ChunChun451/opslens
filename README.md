@@ -1,6 +1,5 @@
 # OpsLens
 
-
 A decision engine for customer-support operations. It finds why SLA deadlines are missed, predicts
 which open tickets will miss theirs, decides who should take which ticket, and measures the result by
 replaying held-out days in a simulator.
