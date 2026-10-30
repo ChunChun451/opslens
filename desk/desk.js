@@ -141,7 +141,36 @@ export function ticketTable(tickets, { selected, showAssignee = true, emptyText 
     ${showAssignee ? `<th class="hide-sm">Agent</th>` : ""}<th>Promise</th><th class="hide-sm">Chance of missing</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-export function ticketDetail(data, { user, extraActions = "" } = {}) {
+export function wireCopilot(root, ticketId) {
+  const button = root.querySelector("#draft");
+  if (!button) return;
+  const out = root.querySelector("#draftout");
+  button.onclick = async () => {
+    button.disabled = true;
+    button.textContent = "Drafting…";
+    try {
+      const done = await runAgent("/api/v2/copilot", { ticket_id: ticketId }, d => { out.innerHTML = traceList(d.steps); });
+      const o = done.run.output || {};
+      if (done.run.status !== "done" || !o.reply) throw new Error(done.run.summary || "No draft this time.");
+      out.innerHTML = traceList(done.steps) + `
+        <textarea class="draft" style="margin-top:10px">${esc(o.reply)}</textarea>
+        <div style="font-size:12px;margin-top:6px" class="muted">Policy: ${esc(o.policy || "—")} · ${seconds(done.run)} on this laptop's GPU</div>
+        ${o.fixed ? `<div style="font-size:12px;margin-top:4px">${pill("Fixed after checking", "amber")} removed: ${esc(o.problems.join("; "))}</div>` : ""}
+        ${o.check ? `<div style="font-size:12px;margin-top:4px"><b>Check first:</b> ${esc(o.check)}</div>` : ""}
+        <button class="btn small" id="copy" style="margin-top:8px">Copy</button>`;
+      out.querySelector("#copy").onclick = async () => {
+        await navigator.clipboard.writeText(out.querySelector("textarea").value).catch(() => {});
+        toast("Copied. Paste it into your reply.");
+      };
+    } catch (e) {
+      out.innerHTML = `<div class="muted" style="font-size:13px;margin-top:8px">${esc(e.message)}</div>`;
+    }
+    button.disabled = false;
+    button.textContent = "Draft again";
+  };
+}
+
+export function ticketDetail(data, { user, extraActions = "", copilot = false } = {}) {
   const t = data.ticket;
   const events = data.events.map(e => `<li><span class="muted num">${clock(e.at)}</span><span>${esc(eventText(e))}</span></li>`).join("");
   const reasons = Array.isArray(t.risk_reasons) ? t.risk_reasons : [];
@@ -173,7 +202,14 @@ export function ticketDetail(data, { user, extraActions = "" } = {}) {
           : `<div>Chance of missing the promise: ${riskPill(t.risk)}</div>`}
         ${reasons.length ? `<ul class="reasons">${reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}
         ${t.assign_reason ? `<div style="margin-top:10px;font-size:13px"><b>Why this agent:</b> ${esc(t.assign_reason)}</div>` : ""}
+        ${t.ai_summary ? `<div style="margin-top:10px;font-size:13px"><b>AI read:</b> ${esc(t.ai_summary)}
+          <div style="margin-top:4px">${t.ai_category && t.ai_category !== t.category
+            ? pill(`AI thinks: ${CATEGORY[t.ai_category] || t.ai_category}`, "amber") : pill("Category confirmed", "green")}
+          ${t.ai_urgency === "high" ? pill("Urgent", "red") : ""}</div></div>` : ""}
       </div>
+      ${copilot ? `<div class="aside-box ai" id="copilot"><h3>Reply copilot</h3>
+        <div class="muted" style="font-size:13px">Drafts a reply from the company policy on the local model. You edit it before sending.</div>
+        <button class="btn small primary" id="draft" style="margin-top:10px">Draft a reply</button><div id="draftout"></div></div>` : ""}
       <div class="aside-box">
         <h3>History</h3>
         <ul class="timeline">${events || `<li><span></span><span class="muted">No events yet</span></li>`}</ul>
@@ -189,4 +225,48 @@ export function eventText(e) {
   if (e.kind === "solved") return `Solved by ${e.actor || "the agent"}`;
   if (e.kind === "breached") return "Promise time passed";
   return e.kind;
+}
+
+export const AGENT_NAME = { intake: "Intake", copilot: "Reply copilot", analyst: "Floor analyst", ask: "Ask OpsLens" };
+const TOOL_WORDS = {
+  read_ticket: "Read the ticket", search_policies: "Searched the policies", similar_tickets: "Looked for similar solved tickets",
+  review_against_policy: "Checked the draft against the policy", embed: "Stored the message's meaning for search",
+  floor_summary: "Read today's numbers", at_risk: "Listed tickets likely to miss", people_now: "Counted who is working",
+  free_agents: "Found who is free", category_mix: "Compared categories with usual", tickets_per_hour: "Read tickets per hour",
+  check_proposals: "Dropped actions that failed checks",
+};
+
+export function stepText(step) {
+  const tool = TOOL_WORDS[step.tool] || step.tool || "";
+  if (step.kind === "tool_call") return tool;
+  if (step.kind === "tool_result") {
+    const p = step.payload;
+    if (Array.isArray(p)) return `${tool}: ${p.length} found`;
+    if (p && p.unsupported) return `${tool}: ${p.unsupported.length ? `${p.unsupported.length} claim(s) not backed by policy` : "all claims backed"}`;
+    return `${tool}: done`;
+  }
+  if (step.kind === "answer") return "Wrote the answer";
+  if (step.kind === "error") return `${tool || "Step"} was refused: ${JSON.stringify(step.payload).slice(0, 120)}`;
+  return step.kind;
+}
+
+export function seconds(run) {
+  if (!run.finished_at) return "";
+  return `${((new Date(run.finished_at) - new Date(run.started_at)) / 1000).toFixed(1)} s`;
+}
+
+export async function runAgent(path, body, onProgress) {
+  const { run_id } = await api(path, { body });
+  for (let i = 0; i < 300; i++) {
+    const data = await api(`/api/v2/runs/${run_id}`);
+    onProgress(data);
+    if (data.run.status !== "running") return data;
+    await new Promise(r => setTimeout(r, 700));
+  }
+  throw new Error("The local model is taking too long. Is Ollama running?");
+}
+
+export function traceList(steps) {
+  const shown = steps.filter(s => s.kind !== "tool_call");
+  return `<ol class="trace">${shown.map(s => `<li class="${s.kind}">${esc(stepText(s))}</li>`).join("") || `<li>Starting…</li>`}</ol>`;
 }

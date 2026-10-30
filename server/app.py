@@ -546,7 +546,8 @@ def warm_live_now() -> None:
             thread = threading.Thread(target=_build_live, args=(key,), daemon=True)
             _LIVE_BUILDING[key] = thread
             thread.start()
-    from server.v2 import start_mirror
+    from server.v2 import start_agents, start_mirror
+    start_agents()
     start_mirror(_current_live)
 
 

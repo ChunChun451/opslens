@@ -1,6 +1,6 @@
 import {
   $, api, signedIn, logout, initials, esc, agentPill, ticketTable, ticketDetail, toast, onFloorChange,
-  CATEGORY, TEAM, prio,
+  CATEGORY, TEAM, prio, wireCopilot,
 } from "/desk/desk.js";
 
 const VIEWS = [
@@ -102,7 +102,8 @@ async function renderTicket(id) {
   try { data = await api(`/api/v2/tickets/${encodeURIComponent(id)}`); }
   catch (e) { content.innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
   content.innerHTML = `<div style="padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)"><button class="btn small ghost" id="back">← Back to ${esc(VIEWS.find(v => v.key === state.view).label)}</button></div>`
-    + ticketDetail(data, { user: state.user, extraActions: actionsFor(data.ticket) });
+    + ticketDetail(data, { user: state.user, extraActions: actionsFor(data.ticket), copilot: data.ticket.status !== "solved" });
+  wireCopilot(content, id);
   $("#back").onclick = () => go(state.view);
   content.querySelectorAll("[data-act]").forEach(b => b.onclick = () => act(b.dataset.act, {
     ticket_id: id, value: b.dataset.value ? Number(b.dataset.value) : undefined,

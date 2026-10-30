@@ -172,3 +172,16 @@ table.grid td.right, table.grid th.right { text-align: right; }
   .top { padding: 0 16px; }
   .hide-sm { display: none; }
 }
+
+.trace { margin: 8px 0 0; padding-left: 18px; font-size: 12px; color: var(--ink-2); }
+.trace li { padding: 2px 0; }
+.trace li.error { color: var(--amber); }
+.trace li.answer { color: var(--green); font-weight: 600; }
+.draft { width: 100%; min-height: 140px; border: 1px solid var(--line-strong); border-radius: 6px; padding: 10px; resize: vertical; background: #fff; line-height: 1.45; }
+.ask { display: flex; gap: 8px; }
+.ask input { flex: 1; border: 1px solid var(--line-strong); border-radius: 6px; padding: 8px 11px; background: #fff; }
+.answer-box { margin-top: 12px; padding: 12px 14px; background: #fbfaff; border: 1px solid #d9d6ff; border-radius: var(--radius); }
+.proposal { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); align-items: center; }
+.proposal:last-child { border-bottom: 0; }
+.proposal .t { font-weight: 600; }
+.proposal .w { font-size: 13px; color: var(--ink-2); margin-top: 2px; }

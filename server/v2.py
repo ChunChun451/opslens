@@ -229,6 +229,132 @@ def act(request: dict, user: dict = Depends(AGENT_ONLY)) -> JSONResponse:
     return live_action(payload)
 
 
+def floor_rows() -> list[dict]:
+    state, _ = floor_state()
+    return state.get("floor", []) if state else []
+
+
+def start_agents() -> None:
+    from opslens import agents, store
+
+    if os.environ.get("OPSLENS_AGENTS", "1") == "0" or not store.available():
+        return
+    store.migrate()
+    threading.Thread(target=agents.work_forever, args=(floor_rows,), daemon=True, name="opslens-agents").start()
+
+
+def team_of(user: dict) -> str | None:
+    return None if user["role"] == "admin" else user["team"]
+
+
+@router.post("/copilot")
+def copilot(request: dict, user: dict = Depends(ANY_ROLE)) -> JSONResponse:
+    from opslens import agents
+
+    found = rows("select id, team, status, assignee from tickets where id = %s", (str(request.get("ticket_id", "")),))
+    if not found or not can_see(user, found[0]):
+        return JSONResponse({"error": "no such ticket"}, status_code=404)
+    return JSONResponse({"run_id": agents.submit("copilot", "asked by " + user["email"], user["id"], ticket_id=found[0]["id"])})
+
+
+@router.post("/ask")
+def ask(request: dict, user: dict = Depends(MANAGERS)) -> JSONResponse:
+    from opslens import agents
+
+    question = str(request.get("question", "")).strip()[:300]
+    if not question:
+        return JSONResponse({"error": "ask a question"}, status_code=400)
+    return JSONResponse({"run_id": agents.submit("ask", "asked by " + user["email"], user["id"],
+                                                 question=question, team=team_of(user))})
+
+
+@router.post("/analyst")
+def analyst(user: dict = Depends(MANAGERS)) -> JSONResponse:
+    from opslens import agents
+
+    return JSONResponse({"run_id": agents.submit("analyst", "asked by " + user["email"], user["id"], team=team_of(user))})
+
+
+def run_visible(user: dict, run: dict) -> bool:
+    if user["role"] == "admin" or run["requested_by"] == user["id"]:
+        return True
+    if user["role"] != "lead":
+        return False
+    if run["ticket_id"]:
+        found = rows("select team from tickets where id = %s", (run["ticket_id"],))
+        return bool(found) and found[0]["team"] == user["team"]
+    return True
+
+
+@router.get("/runs")
+def runs(limit: int = 30, agent: str = "", user: dict = Depends(MANAGERS)) -> JSONResponse:
+    where, params = ["true"], []
+    if agent:
+        where.append("r.agent = %s")
+        params.append(agent)
+    if user["role"] == "lead":
+        where.append("(r.ticket_id is null or t.team = %s or r.requested_by = %s)")
+        params += [user["team"], user["id"]]
+    found = rows("select r.id, r.agent, r.trigger, r.ticket_id, r.status, r.summary, r.started_at, r.finished_at, "
+                 "(select count(*) from agent_steps s where s.run_id = r.id and s.kind = 'tool_call') as tools_used "
+                 "from agent_runs r left join tickets t on t.id = r.ticket_id "
+                 f"where {' and '.join(where)} order by r.id desc limit %s", (*params, max(1, min(limit, 200))))
+    counts = rows("select agent, count(*) as runs, count(*) filter (where status = 'failed') as failed, "
+                  "round(avg(extract(epoch from finished_at - started_at))::numeric, 1) as avg_seconds "
+                  "from agent_runs where started_at > now() - interval '24 hours' group by agent order by agent")
+    return JSONResponse(jsonable({"runs": found, "last_day": counts}))
+
+
+@router.get("/runs/{run_id}")
+def run(run_id: int, user: dict = Depends(ANY_ROLE)) -> JSONResponse:
+    found = rows("select * from agent_runs where id = %s", (run_id,))
+    if not found or not run_visible(user, found[0]):
+        return JSONResponse({"error": "no such run"}, status_code=404)
+    steps = rows("select n, kind, tool, payload, at from agent_steps where run_id = %s order by n", (run_id,))
+    return JSONResponse(jsonable({"run": found[0], "steps": steps}))
+
+
+@router.get("/proposals")
+def proposals(status: str = "waiting", user: dict = Depends(MANAGERS)) -> JSONResponse:
+    team = team_of(user)
+    found = rows("select p.*, u.name as decided_by_name from proposals p left join users u on u.id = p.decided_by "
+                 f"where p.status = %s {'and (p.team = %s or p.team is null)' if team else ''} "
+                 "order by p.id desc limit 50", (status, team) if team else (status,))
+    return JSONResponse(jsonable({"proposals": found}))
+
+
+@router.post("/proposals/{proposal_id}")
+def decide(proposal_id: int, request: dict, user: dict = Depends(MANAGERS)) -> JSONResponse:
+    from opslens import agents, store
+    from server.app import live_action
+
+    decision = request.get("decision")
+    if decision not in ("approve", "reject"):
+        return JSONResponse({"error": "decision is approve or reject"}, status_code=400)
+    found = rows("select * from proposals where id = %s", (proposal_id,))
+    if not found or (team_of(user) and found[0]["team"] not in (None, user["team"])):
+        return JSONResponse({"error": "no such proposal"}, status_code=404)
+    p = found[0]
+    if p["status"] != "waiting":
+        return JSONResponse({"error": f"this proposal is already {p['status']}"}, status_code=409)
+    status, result = ("rejected", None) if decision == "reject" else ("approved", None)
+    if decision == "approve" and p["kind"] == "reassign":
+        problem = agents.check_reassign(p["ticket_id"], p["agent_code"], floor_rows)
+        if problem:
+            status, result = "expired", {"error": f"Things moved on: {problem}."}
+        else:
+            now = datetime.now()
+            out = live_action({"weekday": now.weekday(), "seed": 1, "minute": now.hour * 60 + now.minute + now.second / 60,
+                               "kind": "take", "agent": p["agent_code"], "ticket_id": p["ticket_id"],
+                               "reason": f"approved by {user['name']}"})
+            body = json.loads(out.body)
+            status, result = ("approved", body) if out.status_code == 200 else ("failed", body)
+    with store.connection() as conn:
+        conn.execute("update proposals set status = %s, result = %s, decided_by = %s, decided_at = now() where id = %s",
+                     (status, json.dumps(result, default=str), user["id"], proposal_id))
+    return JSONResponse(jsonable({"status": status, "result": result}))
+
+
 @router.get("/stream")
 def stream(user: dict = Depends(ANY_ROLE)) -> StreamingResponse:
     from opslens import bus

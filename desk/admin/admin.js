@@ -1,9 +1,10 @@
 import {
   $, api, signedIn, logout, initials, esc, agentPill, ticketTable, ticketDetail, onFloorChange, toast,
-  CATEGORY, TEAM, prio, riskPill,
+  CATEGORY, TEAM, prio, riskPill, runAgent, traceList, stepText, seconds, AGENT_NAME, ago, clock, pill,
 } from "/desk/desk.js";
 
-const PAGES = { overview: "Overview", tickets: "Tickets", team: "Team" };
+const PAGES = { overview: "Overview", tickets: "Tickets", team: "Team", ai: "AI activity" };
+const RUN_STATUS = { running: ["Running", "blue"], done: ["Done", "green"], failed: ["Failed", "red"], needs_approval: ["Needs a decision", "amber"] };
 const TICKET_VIEWS = [
   { key: "open", label: "All open" },
   { key: "unassigned", label: "Waiting for an agent" },
@@ -12,7 +13,7 @@ const TICKET_VIEWS = [
   { key: "solved", label: "Solved today" },
 ];
 const POLICY = { opslens: "OpsLens", baseline_d: "Usual routing" };
-const state = { user: null, page: "overview", view: "open", team: "", ticket: null, chart: null };
+const state = { user: null, page: "overview", view: "open", team: "", ticket: null, run: null, chart: null, asking: false };
 
 function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
@@ -20,6 +21,7 @@ function readHash() {
   state.view = TICKET_VIEWS.some(v => v.key === h.get("view")) ? h.get("view") : "open";
   state.team = h.get("team") || "";
   state.ticket = h.get("t");
+  state.run = h.get("run");
 }
 
 function go(params) {
@@ -40,7 +42,9 @@ async function overview() {
   const compare = floor ? floor.compare : null;
   const ours = compare?.opslens, usual = compare?.baseline_d;
   const peopleByTeam = Object.fromEntries((floor?.teams || []).map(x => [x.team, x]));
+  const keepAsk = $("#askbox");
   main.innerHTML = `<div class="page stack">
+    <div class="card" id="askslot"></div>
     <div class="tiles">
       ${tile("Tickets today", t.arrived, `${t.solved} solved`)}
       ${tile("Waiting for an agent", t.unassigned, "not picked up yet", t.unassigned > 5 ? "bad" : "")}
@@ -63,6 +67,7 @@ async function overview() {
               <div class="bar" style="margin-top:4px"><span style="width:${100 * p.missed / most}%;background:${k === "opslens" ? "var(--accent)" : "var(--ink-3)"}"></span></div></div>`;
           }).join("")}
           <div class="muted" style="font-size:12px">The usual way is replayed on the same tickets and staff, so the gap is what OpsLens's routing changed.</div></div></div>` : ""}
+        <div class="card" id="suggest"></div>
         <div class="card"><div class="head"><h2>Teams</h2></div>
           <table class="grid"><thead><tr><th>Team</th><th class="right">Open</th><th class="right">Likely to miss</th><th class="right">Missed</th><th class="right">Free / working</th></tr></thead><tbody>
           ${sum.teams.map(x => {
@@ -83,6 +88,106 @@ async function overview() {
     </tbody></table>` : `<div class="empty">Nothing is in danger right now.</div>`;
   $("#danger").querySelectorAll("tr.row").forEach(r => r.onclick = () => go({ p: "tickets", t: r.dataset.id }));
   drawHourly(sum.hourly);
+  if (keepAsk) $("#askslot").replaceWith(keepAsk);
+  else { $("#askslot").id = "askbox"; askBox($("#askbox")); }
+  await suggestions();
+}
+
+function askBox(box) {
+  box.innerHTML = `<div class="body"><form class="ask" id="askform"><input name="q" maxlength="300" autocomplete="off"
+      placeholder="Ask OpsLens about the floor, e.g. Which team is most at risk right now?"><button class="btn primary">Ask</button></form>
+      <div id="askout"></div></div>`;
+  $("#askform").onsubmit = async event => {
+    event.preventDefault();
+    const question = new FormData(event.target).get("q").trim();
+    if (!question || state.asking) return;
+    state.asking = true;
+    const out = $("#askout");
+    out.innerHTML = `<div class="answer-box"><div class="muted">Thinking on the local model…</div></div>`;
+    try {
+      const done = await runAgent("/api/v2/ask", { question }, d => {
+        out.innerHTML = `<div class="answer-box"><div class="muted">Thinking on the local model…</div>${traceList(d.steps)}</div>`;
+      });
+      out.innerHTML = `<div class="answer-box"><div>${esc(done.run.output?.text || done.run.summary || "No answer.")}</div>
+        <div class="muted" style="font-size:12px;margin-top:6px">${done.run.output?.unverified?.length ? pill("Some numbers are not in the live data", "amber") : pill("Every number is in the live data", "green")}
+        ${seconds(done.run)} · <a href="#p=ai&run=${done.run.id}">See how OpsLens worked it out</a></div></div>`;
+    } catch (e) {
+      out.innerHTML = `<div class="answer-box">${esc(e.message)}</div>`;
+    }
+    state.asking = false;
+  };
+}
+
+async function suggestions() {
+  const box = $("#suggest");
+  if (!box) return;
+  const { proposals } = await api("/api/v2/proposals").catch(() => ({ proposals: [] }));
+  box.innerHTML = `<div class="head"><h2>OpsLens suggests</h2><button class="btn small" id="checknow">Check the floor now</button></div>
+    ${proposals.length ? proposals.map(p => `<div class="proposal"><div>
+        <div class="t">${esc(p.title)}</div><div class="w">${esc(p.why || "")}</div>
+        <div class="muted" style="font-size:12px;margin-top:2px">${p.kind === "reassign" ? "Approving gives the ticket to this agent now" : "A note for a lead"} · ${ago(p.created_at)}</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small primary" data-approve="${p.id}">${p.kind === "reassign" ? "Approve" : "Got it"}</button>
+        <button class="btn small ghost" data-reject="${p.id}">Dismiss</button></div></div>`).join("")
+      : `<div class="empty" style="padding:24px">No suggestions waiting. The floor analyst checks every 15 minutes.</div>`}`;
+  box.querySelectorAll("[data-approve],[data-reject]").forEach(b => b.onclick = async () => {
+    const id = b.dataset.approve || b.dataset.reject;
+    b.disabled = true;
+    try {
+      const out = await api(`/api/v2/proposals/${id}`, { body: { decision: b.dataset.approve ? "approve" : "reject" } });
+      const said = { approved: "Done.", rejected: "Dismissed.", expired: out.result?.error, failed: `That did not work: ${out.result?.error || ""}` };
+      toast(said[out.status] || out.status, out.status === "failed");
+    } catch (e) { toast(e.message, true); }
+    await suggestions();
+  });
+  $("#checknow").onclick = async () => {
+    const button = $("#checknow");
+    button.disabled = true;
+    button.textContent = "Checking…";
+    try {
+      const done = await runAgent("/api/v2/analyst", {}, () => {});
+      toast(done.run.summary || "Checked.");
+    } catch (e) { toast(e.message, true); }
+    await suggestions();
+  };
+}
+
+async function ai() {
+  const main = $("#main");
+  if (state.run) {
+    let data;
+    try { data = await api(`/api/v2/runs/${encodeURIComponent(state.run)}`); }
+    catch (e) { main.innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
+    const r = data.run;
+    const [label, color] = RUN_STATUS[r.status] || [r.status, "grey"];
+    main.innerHTML = `<div class="page stack">
+      <div><button class="btn small ghost" id="back">← Back to AI activity</button></div>
+      <div class="card"><div class="head"><div><h2>${esc(AGENT_NAME[r.agent] || r.agent)} · run ${r.id}</h2>
+        <div class="muted" style="font-size:12px">${esc(r.trigger)} · ${clock(r.started_at)} · ${seconds(r)}${r.ticket_id ? ` · <a href="#p=tickets&t=${encodeURIComponent(r.ticket_id)}">${esc(r.ticket_id)}</a>` : ""}</div></div>${pill(label, color)}</div>
+        <div class="body"><div style="font-weight:600">${esc(r.summary || "")}</div></div></div>
+      <div class="card"><div class="head"><h2>Every step</h2><span class="muted hide-sm" style="font-size:12px">What the agent asked for, what the tools returned, what it decided</span></div>
+        <table class="grid"><thead><tr><th>#</th><th>Step</th><th>Details</th></tr></thead><tbody>
+        ${data.steps.map(s => `<tr><td class="num">${s.n}</td><td>${esc(stepText(s))}</td>
+          <td><details><summary class="muted" style="cursor:pointer">${esc(s.kind.replace("_", " "))}</summary><pre style="white-space:pre-wrap;font-size:12px;max-height:280px;overflow:auto">${esc(JSON.stringify(s.payload, null, 2))}</pre></details></td></tr>`).join("")}
+        </tbody></table></div></div>`;
+    $("#back").onclick = () => go({ run: "" });
+    return;
+  }
+  const { runs, last_day } = await api("/api/v2/runs?limit=60");
+  const by = Object.fromEntries(last_day.map(d => [d.agent, d]));
+  main.innerHTML = `<div class="page stack">
+    <div class="tiles">${["intake", "copilot", "analyst", "ask"].map(a => {
+      const d = by[a];
+      return tile(AGENT_NAME[a], d ? d.runs : 0, d ? `last 24 h · ${d.avg_seconds ?? "—"} s each · ${d.failed} failed` : "no runs in the last 24 h");
+    }).join("")}</div>
+    <div class="card"><div class="head"><h2>Recent runs</h2><span class="muted hide-sm" style="font-size:12px">All on the local model. The optimiser still decides who gets each ticket.</span></div>
+    ${runs.length ? `<table class="grid"><thead><tr><th>Agent</th><th>What happened</th><th>Status</th><th class="right hide-sm">Tools</th><th class="right">When</th></tr></thead><tbody>
+    ${runs.map(r => {
+      const [label, color] = RUN_STATUS[r.status] || [r.status, "grey"];
+      return `<tr class="row" data-run="${r.id}"><td style="white-space:nowrap">${esc(AGENT_NAME[r.agent] || r.agent)}</td>
+        <td><div class="subject">${esc(r.summary || r.trigger)}</div><div class="muted" style="font-size:12px">${esc(r.trigger)}${r.ticket_id ? ` · ${esc(r.ticket_id)}` : ""}</div></td>
+        <td>${pill(label, color)}</td><td class="right num hide-sm">${r.tools_used}</td><td class="right muted" style="white-space:nowrap">${ago(r.started_at)}</td></tr>`;
+    }).join("")}</tbody></table>` : `<div class="empty">No AI runs yet.</div>`}</div></div>`;
+  main.querySelectorAll("tr[data-run]").forEach(r => r.onclick = () => go({ run: r.dataset.run }));
 }
 
 function drawHourly(hourly) {
@@ -174,7 +279,7 @@ async function render() {
   $("#title").textContent = PAGES[state.page];
   document.querySelectorAll("#rail [data-page]").forEach(b => b.classList.toggle("on", b.dataset.page === state.page));
   try {
-    await ({ overview, tickets, team })[state.page]();
+    await ({ overview, tickets, team, ai })[state.page]();
     $("#updated").textContent = `Updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
   } catch (e) {
     toast(e.message, true);
@@ -186,9 +291,9 @@ $("#avatar").textContent = initials(state.user.name);
 $("#myname").textContent = state.user.name;
 $("#myrole").textContent = state.user.role === "admin" ? "Admin · all teams" : `Team lead · ${TEAM[state.user.team] || state.user.team}`;
 $("#scope").textContent = state.user.role === "admin" ? "All teams" : TEAM[state.user.team] || "";
-document.querySelectorAll("#rail [data-page]").forEach(b => b.onclick = () => { state.page = b.dataset.page; go({ p: b.dataset.page, t: "" }); });
+document.querySelectorAll("#rail [data-page]").forEach(b => b.onclick = () => { state.page = b.dataset.page; go({ p: b.dataset.page, t: "", run: "" }); });
 document.querySelector("#rail [data-href]").onclick = () => { location.href = "/app/"; };
 $("#logout").onclick = logout;
 window.addEventListener("hashchange", render);
 await render();
-onFloorChange(() => { if (!state.ticket) render(); });
+onFloorChange(() => { if (!state.ticket && !state.run && !state.asking && !document.activeElement?.closest?.("#askform")) render(); });

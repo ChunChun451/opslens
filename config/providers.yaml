@@ -9,8 +9,9 @@ providers:
     api_key_env: OLLAMA_API_KEY
     requests_per_minute: 600
     requests_per_day: 1000000
-    timeout_s: 120
-    extra_params: {}
+    timeout_s: 90
+    extra_params:
+      max_tokens: 600
 
   ollama_route:
     kind: ollama
