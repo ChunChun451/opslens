@@ -57,8 +57,8 @@ mingw32-make eval
 mingw32-make serve
 ```
 
-Open http://localhost:8000/ and sign in as `admin` or `agent` (password `123`). Sign-in needs Postgres
-(see below); without it, http://localhost:8000/app/ opens the dashboard directly. The assistant uses
+Open `http://localhost:8000/` and sign in as `admin` or `agent` (password `123`). Sign-in needs Postgres
+(see below); without it, `http://localhost:8000/app/` opens the dashboard directly. The assistant uses
 the local Ollama model, with the `.env` keys (Gemini, Groq free tiers) as an optional fallback.
 `mingw32-make demo` serves cached results with no network.
 
