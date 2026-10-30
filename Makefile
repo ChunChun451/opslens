@@ -4,7 +4,7 @@ else
 PY := .venv/bin/python
 endif
 
-.PHONY: help setup data ping test gen eval serve demo seed load eval-local rag rag-eval eval-rag-classify
+.PHONY: help setup data ping test gen eval serve demo seed load eval-local rag rag-eval rag-faith eval-rag-blend eval-rag-classify
 
 help:
 	@echo setup  - create .venv and install requirements
@@ -20,6 +20,8 @@ help:
 	@echo eval-local - score the local Ollama model on the recorded classification test
 	@echo rag    - build the RAG index: every source as searchable pieces in Postgres
 	@echo rag-eval - measure how often RAG finds the right source
+	@echo rag-faith - check that RAG answers are worded right on 16 fact questions
+	@echo eval-rag-blend - test whether similar past tickets help the classifier read tickets
 	@echo eval-rag-classify - test whether retrieved examples help the AI read tickets
 
 setup:
@@ -64,3 +66,9 @@ rag-eval:
 
 eval-rag-classify:
 	$(PY) scripts/eval_rag_classify.py
+
+rag-faith:
+	$(PY) -m opslens.rag faith after
+
+eval-rag-blend:
+	$(PY) scripts/eval_rag_blend.py

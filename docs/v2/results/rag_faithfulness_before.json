@@ -1,0 +1,142 @@
+{
+ "label": "before",
+ "questions": 16,
+ "right": 14,
+ "wrong": 2,
+ "declined": 0,
+ "right_pct": 0.875,
+ "cases": [
+  {
+   "question": "Why do Hindi refund tickets wait so long and what fixes it?",
+   "verdict": "wrong",
+   "missing": [],
+   "forbidden_found": [
+    "(?i)368\\s*(minutes|min)\\s*longer"
+   ],
+   "flagged": false,
+   "answer": "Hindi refund tickets wait 368 minutes longer than other tickets, which is 13.0 times longer. The fix involves cross-training 2 Hindi-speaking agents on payment failure and refund, which reduces missed promises by 131 over 14 held-out days (likely between 88 and 174 fewer). [1][2]"
+  },
+  {
+   "question": "How long do Hindi refund tickets wait compared with other tickets?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "Hindi \u00d7 Team B wait 13.0\u00d7 longer. Hindi \u00d7 Team B wait 13.0\u00d7 longer. Hindi \u00d7 Team B: 368 min mean wait vs 28 min (Hindi, other team) and 14 min (Team B, other language). [1][2][3]"
+  },
+  {
+   "question": "How many missed promises does cross-training Hindi agents save?",
+   "verdict": "wrong",
+   "missing": [
+    "131"
+   ],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "Cross-training two Hindi-speaking agents on payment failure and refund saves between 88 and 174 fewer missed promises over the 14 held-out days, according to the data from source [1]."
+  },
+  {
+   "question": "If we apply every recommended fix at once how many missed promises do we save?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "All 18 measured fixes together save 574 fewer missed promises over the 14 held-out days, likely between 505 and 643 fewer. [1]"
+  },
+  {
+   "question": "How much better is OpsLens than skills-based routing?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "OpsLens misses 8.79% vs 20.74% for industry-standard skills routing (with our AI triage), 15.20% for an \"SLA due\" sort, 21.94% priority-first and 25.16% FIFO. OpsLens \u2212 industry standard: \u221211.95 points, 95% CI [\u221214.88, \u22129.02]; live orders (P1) 8.08% vs 13.16%. On a new world generated after OpsLens was frozen, run once: 8.16% vs 18.73%. [1][2]"
+  },
+  {
+   "question": "What is the refund rule for a missing item above 300 rupees?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "For orders above Rs 300, a photo of the bag and receipt sticker is required, and the refund is processed only after the authenticity of the missing item is checked. [1]"
+  },
+  {
+   "question": "How long does a refund to a card or UPI take to arrive?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "Refunds to cards and UPI take 5 to 7 working days. If a refund was started more than 7 working days ago, raise it to the payments team with the order ID and give the customer a reference number. [1]"
+  },
+  {
+   "question": "What happens when money was deducted but the order failed?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "When money was deducted but the order failed, it comes back automatically within 48 hours. If 48 hours have passed, raise it to the payments team with the transaction reference. [1]"
+  },
+  {
+   "question": "Which team is short of people at weekday dinner?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "Team C is overloaded on weekday dinner, which means they are short of people relative to their workload. [1][4]"
+  },
+  {
+   "question": "How many tickets are affected by the phone menu problem?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "The phone menu problem affects 16,272 tickets (20.15% of all). [1]"
+  },
+  {
+   "question": "How many of the planted problems did OpsLens find?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "OpsLens found 4/5 of the planted problems in the main data, and 11/60 in the second, better-tuned detector, which is the best available data. [1][2]"
+  },
+  {
+   "question": "What is the risk model's AUC on the test days?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "The risk model's AUC on the test days is 0.973, as mentioned in [1]."
+  },
+  {
+   "question": "How fast is the team queue query with a million tickets?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "The team queue (agent's view) query has a median of 3.65 ms. [1]"
+  },
+  {
+   "question": "Does the local AI beat the cloud AI at reading tickets on its own?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "The local model is almost as good as the cloud one on its own, as it achieves a classification accuracy of 90.75% compared to 91.5% for the cloud model on 400 random test tickets. [1]"
+  },
+  {
+   "question": "What range does the Hindi cross-training fix have?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "The cross-training fix for Hindi-speaking agents resulted in 131 fewer missed promises over the 14 held-out days, with a likely range of 88 to 174 fewer. This is stated in [1]."
+  },
+  {
+   "question": "How many missed promises does the status banner fix save?",
+   "verdict": "right",
+   "missing": [],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "The status banner fix saves between 38 and 83 fewer missed promises over the 14 held-out days, with a likely reduction of 61 fewer missed promises. [2] [3]"
+  }
+ ]
+}

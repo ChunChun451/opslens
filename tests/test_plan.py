@@ -112,7 +112,9 @@ def small_server(small_inputs, tmp_path, monkeypatch):
     monkeypatch.setattr(server, "engine_inputs", lambda: small_inputs)
     monkeypatch.setattr(server, "PLAN_SEEDS", [1])
     monkeypatch.setattr(server, "run_plan_jobs", lambda jobs: [server.plan_job(j) for j in jobs])
-    return TestClient(server.app)
+    from tests.helpers import sign_in_admin
+
+    return sign_in_admin(TestClient(server.app))
 
 
 def test_endpoint_refuses_unknown_ids_and_non_test_days(small_server) -> None:

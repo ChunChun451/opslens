@@ -80,3 +80,19 @@ def test_the_chatbot_uses_rag_first_and_the_prepared_answers_when_rag_has_none()
 def test_numbers_ignore_citations_and_thousands_commas():
     assert rag.numbers("It affects 4,345 tickets [2] and 13.0x [3].") == ["4345", "13.0"]
     assert np.isclose(rag.VECTOR_WEIGHT + (1 - rag.VECTOR_WEIGHT), 1.0)
+
+
+def test_a_number_moved_onto_the_wrong_comparison_word_is_caught_and_sent_back():
+    said = rag.relations("Hindi tickets wait 13.0× longer. Cross-train: 131 fewer missed promises.")
+    wrote = rag.relations("They wait 368 minutes longer, which is 13.0 times longer, and it saves 131 fewer missed promises.")
+    assert sorted(wrote - said) == [(368.0, "longer")]
+    client = scripted({"answer": "They wait 368 minutes longer [1].", "used": [1]},
+                      {"answer": "Card and UPI refunds take 5 to 7 working days [1].", "used": [1]})
+    out = rag.answer("how long do UPI refunds take", client=client, find=finder([1.0, 0.0, 0.0]))
+    assert out["checked"] and out["unsupported"] == []
+    assert "'368 longer'" in client.providers[0].sent[1][1]["content"]
+
+
+def test_problem_pieces_state_the_group_and_normal_values_in_plain_words():
+    card = next(c for c in rag.all_chunks() if c["ref"] == "problem:F1")
+    assert "for normal tickets it is 28" in card["body"] and "(Hindi, other team)" not in card["body"]

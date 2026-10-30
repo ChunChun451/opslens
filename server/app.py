@@ -7,7 +7,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from fastapi import Cookie, Depends, FastAPI, File, Form, Request, UploadFile
+from fastapi import Cookie, Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from psycopg import OperationalError
@@ -34,13 +34,41 @@ def database_down(request: Request, exc: Exception) -> JSONResponse:
                         status_code=503)
 
 
-def floor_user(opslens_session: str | None = Cookie(default=None)) -> dict | None:
+DB_CHECK_EVERY_S = 5.0
+_db = {"at": -DB_CHECK_EVERY_S, "up": False}
+
+
+def database_up() -> bool:
     from opslens import store
+
+    now = time.monotonic()
+    if now - _db["at"] >= DB_CHECK_EVERY_S:
+        _db.update(at=now, up=store.available())
+    return _db["up"]
+
+
+def floor_user(opslens_session: str | None = Cookie(default=None)) -> dict | None:
     from server.auth import current_user
 
-    if not store.available():
+    if not database_up():
         return None
     return current_user(opslens_session)
+
+
+def admin_only(user: dict | None = Depends(floor_user)) -> dict | None:
+    if user is not None and user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="only an admin can open this")
+    return user
+
+
+def agent_view(payload: dict, agent_code: str) -> dict:
+    return {**payload,
+            "agents": [a for a in payload.get("agents", []) if a["id"] == agent_code],
+            "floor": [r for r in payload.get("floor", []) if r["id"] == agent_code],
+            "actions": [a for a in payload.get("actions", []) if a.get("agent") == agent_code],
+            "decisions": [d for d in payload.get("decisions", []) if d.get("agent") == agent_code],
+            "danger": [],
+            "policies": {k: {**v, "status": "", "queues": {}} for k, v in payload.get("policies", {}).items()}}
 
 
 def results_path() -> Path:
@@ -72,7 +100,7 @@ def health() -> dict:
 
 
 @app.get("/api/results")
-def results() -> JSONResponse:
+def results(_user: dict | None = Depends(floor_user)) -> JSONResponse:
     data = json.loads(results_path().read_text(encoding="utf-8"))
     return JSONResponse(data, headers={"Cache-Control": "no-store"})
 
@@ -109,7 +137,7 @@ def engine_inputs() -> dict:
 
 
 @app.post("/api/whatif")
-def whatif(request: dict) -> JSONResponse:
+def whatif(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from opslens.whatif import run_whatif
 
     inputs = engine_inputs()
@@ -152,7 +180,7 @@ def run_plan_jobs(jobs: list[dict]) -> list[dict]:
 
 
 @app.post("/api/plan/impact")
-def plan_impact(request: dict) -> JSONResponse:
+def plan_impact(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     import pandas as pd
 
     from opslens.config import load_config
@@ -181,7 +209,7 @@ def plan_impact(request: dict) -> JSONResponse:
 
 @app.post("/api/upload")
 async def upload(mapping: str = Form("{}"), file: UploadFile | None = File(None),
-                 example: str | None = Form(None)) -> JSONResponse:
+                 example: str | None = Form(None), _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.upload import analyse_csv, analyse_uci
 
     try:
@@ -193,7 +221,7 @@ async def upload(mapping: str = Form("{}"), file: UploadFile | None = File(None)
 
 
 @app.post("/api/anyfile/peek")
-async def anyfile_peek(file: UploadFile | None = File(None), example: str | None = Form(None)) -> JSONResponse:
+async def anyfile_peek(file: UploadFile | None = File(None), example: str | None = Form(None), _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.anyfile_jobs import keep_example, keep_file
 
     try:
@@ -207,7 +235,7 @@ async def anyfile_peek(file: UploadFile | None = File(None), example: str | None
 
 
 @app.post("/api/anyfile/check")
-def anyfile_check(request: dict) -> JSONResponse:
+def anyfile_check(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.anyfile_jobs import check
 
     try:
@@ -219,7 +247,7 @@ def anyfile_check(request: dict) -> JSONResponse:
 
 
 @app.post("/api/anyfile/run")
-def anyfile_run(request: dict) -> JSONResponse:
+def anyfile_run(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.anyfile_jobs import start_job
 
     try:
@@ -232,7 +260,7 @@ def anyfile_run(request: dict) -> JSONResponse:
 
 
 @app.get("/api/anyfile/job/{job_id}")
-def anyfile_job(job_id: str) -> JSONResponse:
+def anyfile_job(job_id: str, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.anyfile_jobs import job_state
 
     try:
@@ -242,7 +270,7 @@ def anyfile_job(job_id: str) -> JSONResponse:
 
 
 @app.post("/api/anyfile/effect")
-def anyfile_effect(request: dict) -> JSONResponse:
+def anyfile_effect(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.anyfile_jobs import effect
 
     try:
@@ -253,7 +281,7 @@ def anyfile_effect(request: dict) -> JSONResponse:
 
 
 @app.post("/api/plant")
-def plant(request: dict) -> JSONResponse:
+def plant(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.plant_demo import run_plant
 
     try:
@@ -292,7 +320,7 @@ def _run_ask(question: str, client) -> dict:
 
 
 @app.post("/api/ask")
-def ask(request: dict) -> JSONResponse:
+def ask(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     question = str(request.get("question", "")).strip()[:300]
     if not question:
         return JSONResponse({"error": "empty question"}, status_code=400)
@@ -303,7 +331,7 @@ def ask(request: dict) -> JSONResponse:
 
 
 @app.get("/api/bot/warm")
-def bot_warm() -> dict:
+def bot_warm(_admin: dict | None = Depends(admin_only)) -> dict:
     from server.bot import warm_up
 
     warm_up()
@@ -322,13 +350,13 @@ def _rag_answer(question: str) -> dict | None:
 
 
 @app.get("/api/rag/status")
-def rag_status() -> JSONResponse:
+def rag_status(_admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from opslens import rag, store
 
     if not store.available():
         return JSONResponse({"error": "The database is not running."}, status_code=503)
     out = {"index": rag.status()}
-    for name in ("rag_retrieval", "rag_classification"):
+    for name in ("rag_retrieval", "rag_classification", "rag_blend", "rag_faithfulness_before", "rag_faithfulness_after"):
         path = ROOT / "docs" / "v2" / "results" / f"{name}.json"
         if path.exists():
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -337,7 +365,7 @@ def rag_status() -> JSONResponse:
 
 
 @app.post("/api/bot")
-def bot(request: dict) -> JSONResponse:
+def bot(request: dict, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     from server.bot import respond
 
     question = str(request.get("question", "")).strip()[:400]
@@ -538,7 +566,7 @@ def _forget_old_actions(day: int, seed: int) -> None:
 
 
 @app.get("/api/live/actions")
-def live_actions(weekday: int, seed: int = 1) -> JSONResponse:
+def live_actions(weekday: int, seed: int = 1, _admin: dict | None = Depends(admin_only)) -> JSONResponse:
     if not (0 <= weekday <= 6 and 1 <= seed <= 99):
         return JSONResponse({"error": "weekday 0-6, seed 1-99"}, status_code=400)
     day, seed = _live_key(weekday, seed)
@@ -574,7 +602,8 @@ def _parse_agents(text: str) -> tuple:
 
 
 @app.get("/api/live")
-def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: float = 1.0) -> JSONResponse:
+def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: float = 1.0,
+         user: dict | None = Depends(floor_user)) -> JSONResponse:
     from opslens.live import state_at
 
     try:
@@ -595,8 +624,10 @@ def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: f
     if key not in _LIVE:
         return JSONResponse({"ready": False, "day": day, "seed": seed, "scenario": scenario})
     live_day = _LIVE[key]
-    return JSONResponse({"ready": True, "scenario": scenario, "complete": live_day.complete, **state_at(live_day, minute)},
-                        headers={"Cache-Control": "no-store"})
+    payload = {"ready": True, "scenario": scenario, "complete": live_day.complete, **state_at(live_day, minute)}
+    if user is not None and user["role"] == "agent":
+        payload = agent_view(payload, user["agent_code"])
+    return JSONResponse(payload, headers={"Cache-Control": "no-store"})
 
 
 @app.on_event("startup")

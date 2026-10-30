@@ -580,6 +580,14 @@ body[data-signed="agent"] .bot-launch,
 body[data-signed="agent"] .bot-panel { display: none !important; }
 body[data-signed="agent"] #tab-nav a[data-tab="agent"] { display: flex !important; }
 body[data-signed="agent"] .topbar { justify-content: flex-end; }
+@media (max-width: 760px) {
+  .topbar .topbar-actions { flex-shrink: 1; flex-wrap: wrap; min-width: 0; max-width: 100%; margin-left: 0; }
+  .user-chip { padding-left: 8px; }
+  .user-name span { display: none; }
+  .page-head, .page-actions { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+  .ledger-stamp { width: 72px; height: 72px; font-size: 0.82rem; }
+  .ledger-stamp span { padding: 1px 4px 2px; }
+}
 .finding-fixes { display: grid; gap: 8px; margin: 12px 0 4px; }
 .finding-fix { border: 1px solid var(--border, rgba(130, 145, 255, 0.14)); border-radius: 12px; padding: 10px 12px; background: rgba(34, 211, 238, 0.04); }
 .finding-fix.is-win { border-color: rgba(52, 211, 153, 0.35); background: rgba(52, 211, 153, 0.06); }

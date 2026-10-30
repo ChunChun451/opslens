@@ -191,7 +191,7 @@ function renderRag(d) {
         `<button type="button" class="bot-chip" data-q="${escapeHtml(r.question)}">${escapeHtml(r.question)}</button>`).join("")}</div></div>` : "";
   return `<div class="bm-qhead"><span class="bm-id is-rag">RAG</span><span class="bm-q">Written from ${used || d.sources.length} of ${d.sources.length} sources found</span></div>
     <div class="bm-answer">${answer}</div>
-    <div class="bm-check ${d.checked ? "is-ok" : "is-warn"}">${d.checked ? "✓ Every number is in the sources" : `Not found in the sources: ${escapeHtml(d.unverified.join(", "))}`}</div>
+    <div class="bm-check ${d.checked ? "is-ok" : "is-warn"}">${d.checked ? "✓ Every number is in the sources, with the words the sources give it" : `Check against the sources: ${escapeHtml([...(d.unverified || []).map((n) => `${n} is not in them`), ...(d.unsupported || []).map((u) => `“${u}” is not said by them`)].join("; "))}`}</div>
     <details class="bm-sources" open><summary>Sources (${d.sources.length})</summary><ol>${sources}</ol></details>
     <div class="bm-src">Retrieved by ${escapeHtml(d.how)}, then written by the local AI (${escapeHtml(d.model)}) in ${d.seconds} s. It may only use the sources above.</div>
     ${related}`;

@@ -22,7 +22,8 @@ async function load(section) {
     body.innerHTML = card({ title: "Not available", body: `<p class="small muted">${escapeHtml(error.message)}. Start Postgres, then run <code>python -m opslens.rag build</code>.</p>` });
     return;
   }
-  body.innerHTML = [howItWorks(d.index), retrieval(d.rag_retrieval), reading(d.rag_classification)].join("");
+  body.innerHTML = [howItWorks(d.index), retrieval(d.rag_retrieval), faithful(d.rag_faithfulness_before, d.rag_faithfulness_after),
+    blend(d.rag_blend), reading(d.rag_classification)].join("");
 }
 
 function howItWorks(index) {
@@ -60,6 +61,39 @@ function retrieval(r) {
   });
 }
 
+function faithful(before, after) {
+  if (!after) return "";
+  return card({
+    title: "Are the answers worded right?",
+    sub: `${after.questions} fact questions, each with words the answer must contain and wrong phrasings it must not (config/rag_faithful.yaml)`,
+    body: `<div class="stat-row">${before ? stat("Before the checks", `${before.right} of ${before.questions}`, pct(before.right_pct, 0)) : ""}
+        ${stat("Now", `${after.right} of ${after.questions}`, pct(after.right_pct, 0))}${stat("Wrong now", after.wrong, `${after.declined} declined`)}</div>
+      <p class="small">Every number in an answer must be in the sources, and a number may only carry a comparison word (longer, fewer, more…)
+        the sources give it. "368 minutes longer" is now caught: the sources say 13.0 times longer, and 368 minutes is the whole wait.
+        A caught answer is sent back once; if it is still wrong the chatbot says what to check.</p>
+      <p class="small muted">With a 3-billion-parameter model and 16 questions, small changes move one or two answers either way; the
+        code check is what reliably stops this kind of mistake. Re-run with <code>python -m opslens.rag faith after</code>.</p>`,
+  });
+}
+
+function blend(b) {
+  if (!b) return card({ title: "Does retrieval help read tickets?", body: `<p class="small muted">Run <code>python scripts/eval_rag_blend.py</code>.</p>` });
+  const t = b.test, v = b.validation, s = b.chosen_on_validation;
+  const wrongBefore = Math.round((1 - t.classifier_alone) * t.tickets), wrongAfter = Math.round((1 - t.with_retrieval) * t.tickets);
+  return card({
+    title: "Does retrieval help read tickets? Yes",
+    sub: `Where the classifier is less than ${Math.round(s.threshold * 100)}% sure, its answer is blended with a vote of the ${s.k} most similar past tickets (${Math.round(s.weight * 100)}% weight), from ${b.pool.tickets.toLocaleString()} tickets of the training days`,
+    body: `<div class="stat-row">${stat("Classifier alone", pct(t.classifier_alone, 2), `${t.tickets.toLocaleString()} held-out tickets`)}
+        ${stat("With similar past tickets", pct(t.with_retrieval, 2), `${t.net_tickets} more routed right`)}
+        ${stat("Wrong team", `${wrongBefore} → ${wrongAfter}`, `${Math.round((1 - wrongAfter / wrongBefore) * 100)}% fewer mistakes`)}</div>
+      <p class="small">On the test days it fixed ${t.fixed} tickets and broke ${t.broke}. The settings were chosen on the validation days
+        (${pct(v.classifier_alone, 2)} → ${pct(v.with_retrieval, 2)}) and the test days were scored once. The vote alone scores
+        ${pct(t.vote_only_same_settings, 2)}: the gain comes from combining it with the classifier.</p>
+      <p class="small muted">The simulated floor still routes with the categories frozen in Round 1, so its 8.79% is unchanged; this is a
+        measured improvement to reading tickets. Re-run with <code>python scripts/eval_rag_blend.py</code> (about 6 minutes, no AI calls).</p>`,
+  });
+}
+
 function reading(c) {
   if (!c) return card({ title: "Does retrieval help the AI read tickets?", body: `<p class="small muted">Run <code>python scripts/eval_rag_classify.py</code>.</p>` });
   const s = c.sample, g = c.routing;
@@ -77,7 +111,7 @@ function reading(c) {
       : "No retrieval variant beats the classifier alone, so routing stays as tested and the AI stays a second opinion.",
   ].join(" ");
   return card({
-    title: "Does retrieval help the AI read tickets?",
+    title: "What did not work: letting the AI read tickets with examples",
     sub: `Before deciding, the AI is shown the ${c.examples_per_ticket} most similar past tickets with their correct category (from ${c.example_pool.tickets.toLocaleString()} tickets of the training days only)`,
     body: `<div class="stat-row">${stat("AI alone", pct(s.llm_alone_recorded, 2), "400 test tickets")}
         ${stat("AI with retrieved examples", pct(s.llm_with_examples, 2), `${better ? "better" : "not better"} on the same 400`)}

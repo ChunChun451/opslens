@@ -95,12 +95,17 @@ def fix_line(item: dict) -> str:
             f"({likely(e['ci_low'], e['ci_high'])})")
 
 
+def plain(v: float) -> str:
+    return f"{v:,.0f}" if abs(v) >= 10 else f"{v:.2f}".rstrip("0").rstrip(".")
+
+
 def problem_chunks(results: dict) -> list[dict]:
     items = results.get("plan", {}).get("items", [])
     out = []
     for c in results["patterns"]["cards"]:
         fixes = [fix_line(i) for i in items if i.get("card_id") == c["id"]]
-        body = (f"{c['title']}. {c.get('comparison_text', '')}. It affects {c['affected_tickets']:,} tickets "
+        body = (f"{c['title']}. For this group the {c['metric']} is {plain(c['value'])}; for normal tickets it is "
+                f"{plain(c['comparison_value'])}. It affects {c['affected_tickets']:,} tickets "
                 f"({c['affected_share_pct']}% of all). Not explained by chance: {c.get('not_explained_by') or 'n/a'}. "
                 f"What to do: {c.get('recommendation') or 'n/a'}."
                 + (" Measured fix: " + "; ".join(fixes) + "." if fixes else ""))
@@ -267,10 +272,21 @@ SYSTEM = (
     "better. Held-out days are test days the system never saw while it was built. "
     "Answer the question using only the numbered sources and add nothing they do not say. After each sentence, cite the sources it comes "
     "from, like [1] or [2][3]. "
-    "Copy every number exactly as the source writes it, with the words around it that say what it measures. If the sources do not "
+    "Copy every number exactly as the source writes it, and keep each number with the words the source puts next to it: if the source "
+    "says '13.0 times longer' or '131 fewer', never move 'longer' or 'fewer' onto a different number. If two sources give different "
+    "numbers for the same thing, use the Measured fix, Results or Recurring problem source, not the Prepared answer. If the sources do not "
     "answer the question, say plainly that OpsLens's data does not cover it. Reply with one JSON object: "
     '{"answer": "2 to 4 sentences with citations", "used": [the source numbers you used]}'
 )
+
+
+RELATION = r"longer|more|fewer|less|higher|lower|shorter|faster|slower|better|worse"
+PAIR = re.compile(r"(\d+(?:\.\d+)?)\s*(?:times|%|percent|points?|minutes?|mins?|hours?|days?|tickets?|missed promises?)?\s*(" + RELATION + r")\b", re.I)
+
+
+def relations(text: str) -> set[tuple[float, str]]:
+    flat = CITE.sub(" ", text.replace(",", "")).replace("×", " times ")
+    return {(float(n), r.lower()) for n, r in PAIR.findall(flat)}
 
 
 def numbers(text: str) -> list[str]:
@@ -289,12 +305,13 @@ def answer(question: str, client=None, find=None) -> dict | None:
         return None
     sources = "\n\n".join(f"[{n}] ({h['label']}: {h['title']}) {h['body'][:SOURCE_CHARS]}" for n, h in enumerate(hits, 1))
     allowed = set(numbers(sources.replace(",", ""))) | set(numbers(question))
+    said = relations(sources)
     try:
         client = client or build_client([load_config("providers")["main"]])
     except Exception:
         return None
     prompt = f"Sources:\n{sources}\n\nQuestion: {question}"
-    text, used, unverified = "", [], []
+    text, used, unverified, unsupported = "", [], [], []
     for attempt in range(2):
         try:
             reply = client.ask_json("rag_answer", SYSTEM, prompt).data
@@ -305,10 +322,15 @@ def answer(question: str, client=None, find=None) -> dict | None:
         used = sorted({int(n) for n in reply.get("used") or [] if str(n).isdigit() and 1 <= int(n) <= len(hits)}
                       | {int(n) for n in CITE.findall(text) if 1 <= int(n) <= len(hits)})
         unverified = [n for n in numbers(text) if n not in allowed]
-        if text and not unverified:
+        unsupported = [f"{n:g} {r}" for n, r in sorted(relations(text) - said)]
+        if text and not unverified and not unsupported:
             break
-        prompt += (f"\n\nYour last answer used numbers that are not in the sources: {', '.join(unverified)}. "
-                   "Answer again and copy numbers only from the sources.") if unverified else ""
+        if unverified:
+            prompt += (f"\n\nYour last answer used numbers that are not in the sources: {', '.join(unverified)}. "
+                       "Answer again and copy numbers only from the sources.")
+        if unsupported:
+            prompt += (f"\n\nYour last answer said {', '.join(repr(u) for u in unsupported)}, but the sources never put that "
+                       "number and that word together. Answer again and use each number with the words the source gives it.")
     if not text or NOT_COVERED.search(text):
         return None
     if used and not CITE.search(text):
@@ -318,8 +340,8 @@ def answer(question: str, client=None, find=None) -> dict | None:
         h["used"] = n in used
         h["body"] = h["body"][:SOURCE_CHARS]
     cfg = client.providers[0].config
-    return {"kind": "rag", "question": question, "answer": text, "sources": hits, "checked": not unverified,
-            "unverified": unverified, "model": cfg.model, "seconds": round(time.perf_counter() - started, 1),
+    return {"kind": "rag", "question": question, "answer": text, "sources": hits, "checked": not unverified and not unsupported,
+            "unverified": unverified, "unsupported": unsupported, "model": cfg.model, "seconds": round(time.perf_counter() - started, 1),
             "how": hits[0]["how"]}
 
 
@@ -347,6 +369,26 @@ def evaluate() -> dict:
     return out
 
 
+def faithfulness(label: str) -> dict:
+    cases = load_config("rag_faithful")["questions"]
+    rows = []
+    for case in cases:
+        out = answer(case["question"])
+        text = out["answer"] if out else ""
+        missing = [m for m in case["must"] if not re.search(m, text)]
+        broke = [n for n in case["never"] if re.search(n, text)]
+        verdict = "declined" if not out else "right" if not missing and not broke else "wrong"
+        rows.append({"question": case["question"], "verdict": verdict, "missing": missing, "forbidden_found": broke,
+                     "flagged": bool(out and not out["checked"]), "answer": text})
+    n = len(rows)
+    count = lambda v: sum(1 for r in rows if r["verdict"] == v)
+    result = {"label": label, "questions": n, "right": count("right"), "wrong": count("wrong"), "declined": count("declined"),
+              "right_pct": round(count("right") / n, 3), "cases": rows}
+    path = EVAL_OUT.with_name(f"rag_faithfulness_{label}.json")
+    path.write_text(json.dumps(result, indent=1), encoding="utf-8")
+    return result
+
+
 def status() -> dict:
     with store.connection() as conn:
         by = conn.execute("select source, count(*) as n, count(embedding) as embedded, max(built_at) as at "
@@ -364,6 +406,13 @@ def main() -> int:
         print(json.dumps({k: v for k, v in out.items() if k != "cases"}, indent=1))
         for c in out["cases"]:
             print(f"{c['rank'] or '-':>3}  {c['question'][:70]:70s}  {c['top3']}")
+    elif command == "faith":
+        out = faithfulness(sys.argv[2] if len(sys.argv) > 2 else "after")
+        print(json.dumps({k: v for k, v in out.items() if k != "cases"}, indent=1))
+        for c in out["cases"]:
+            print(f"{c['verdict']:9s} {c['question'][:62]:62s} missing={c['missing']} forbidden={c['forbidden_found']}")
+            if c["verdict"] != "right":
+                print("          ", c["answer"][:220])
     elif command == "ask":
         print(json.dumps(answer(" ".join(sys.argv[2:])), indent=1, default=str))
     return 0

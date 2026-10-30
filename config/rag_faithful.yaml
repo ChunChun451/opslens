@@ -1,0 +1,49 @@
+questions:
+  - question: Why do Hindi refund tickets wait so long and what fixes it?
+    must: ['368', '(?i)cross-?train']
+    never: ['(?i)368\s*(minutes|min)\s*longer', '(?i)longer\s+than\s+368']
+  - question: How long do Hindi refund tickets wait compared with other tickets?
+    must: ['368', '28']
+    never: ['(?i)368\s*(minutes|min)\s*longer']
+  - question: How many missed promises does cross-training Hindi agents save?
+    must: ['131', '(?i)fewer']
+    never: ['(?i)131\s*(missed promises\s*)?more']
+  - question: If we apply every recommended fix at once how many missed promises do we save?
+    must: ['574', '(?i)fewer']
+    never: ['(?i)574\s*(missed promises\s*)?more']
+  - question: How much better is OpsLens than skills-based routing?
+    must: ['8\.79', '20\.74']
+    never: ['(?i)8\.79%?\s*(of\s+)?(promises\s+)?(kept|met)']
+  - question: What is the refund rule for a missing item above 300 rupees?
+    must: ['(?i)photo', '300']
+    never: ['(?i)no photo']
+  - question: How long does a refund to a card or UPI take to arrive?
+    must: ['5 to 7']
+    never: ['(?i)instant(ly)?\s+to\s+(a\s+)?(card|upi)']
+  - question: What happens when money was deducted but the order failed?
+    must: ['48']
+    never: ['(?i)(?<!not to )(?<!not )pay again']
+  - question: Which team is short of people at weekday dinner?
+    must: ['(?i)team c']
+    never: ['(?i)team d\s+(is\s+)?(overloaded|short)[^.]*weekday']
+  - question: How many tickets are affected by the phone menu problem?
+    must: ['16,?272']
+    never: ['(?i)16,?272\s*(fewer|less)']
+  - question: How many of the planted problems did OpsLens find?
+    must: ['(?i)4 of 5|four of five|4/5']
+    never: ['(?i)5 of 5|all five']
+  - question: What is the risk model's AUC on the test days?
+    must: ['0\.973']
+    never: ['(?i)0\.973\s*(%|percent)']
+  - question: How fast is the team queue query with a million tickets?
+    must: ['3\.65']
+    never: ['(?i)3\.65\s*(seconds|s\b)']
+  - question: Does the local AI beat the cloud AI at reading tickets on its own?
+    must: ['90\.75', '91\.5']
+    never: ['(?i)local[^.]*\b(beats|outperforms|better than)[^.]*cloud']
+  - question: What range does the Hindi cross-training fix have?
+    must: ['88', '174']
+    never: ['(?i)88\s*more']
+  - question: How many missed promises does the status banner fix save?
+    must: ['\b6[01]\b', '(?i)fewer']
+    never: ['(?i)6[01]\s*(missed promises\s*)?more']

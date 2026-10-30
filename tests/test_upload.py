@@ -33,7 +33,9 @@ def test_prepare_uses_the_sla_flag() -> None:
 
 
 def test_upload_endpoint_round_trip() -> None:
-    client = TestClient(app)
+    from tests.helpers import sign_in_admin
+
+    client = sign_in_admin(TestClient(app))
     answer = client.post("/api/upload", data={"mapping": json.dumps(MAPPING)},
                          files={"file": ("t.csv", CSV, "text/csv")}).json()
     assert answer["rows"] == 3 and answer["date_range"] == ["2026-09-01", "2026-09-01"]

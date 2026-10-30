@@ -156,3 +156,32 @@ def test_an_agent_cannot_act_for_another_agent_or_reset_the_day_and_a_stranger_c
     assert client.post("/api/live/reset", json={"weekday": 4, "seed": 1}).status_code == 403
     admin = logged_in(client, "admin@opslens.demo", password)
     assert admin.post("/api/live/reset", json={"weekday": 4, "seed": 1}).json()["ok"] is True
+
+
+def test_nothing_behind_the_dashboard_opens_without_a_sign_in_and_tools_are_admin_only(app_client):
+    client, password = app_client
+    client.cookies.clear()
+    for method, path in [("get", "/api/results"), ("get", "/api/live?weekday=4&minute=600"), ("post", "/api/bot"),
+                         ("post", "/api/ask"), ("post", "/api/whatif"), ("post", "/api/plant"), ("post", "/api/upload"),
+                         ("get", "/api/live/actions?weekday=4"), ("get", "/api/rag/status")]:
+        assert client.request(method, path, json={} if method == "post" and path != "/api/upload" else None).status_code == 401, path
+    assert client.get("/api/health").status_code == 200
+    client.post("/api/v2/login", json={"role": "agent", "name": "Kavita", "team": "B", "password": password})
+    assert client.get("/api/results").status_code == 200
+    for method, path in [("post", "/api/bot"), ("post", "/api/ask"), ("post", "/api/whatif"), ("post", "/api/plant"),
+                         ("get", "/api/live/actions?weekday=4"), ("get", "/api/rag/status")]:
+        assert client.request(method, path, json={} if method == "post" else None).status_code == 403, path
+    logged_in(client, "admin@opslens.demo", password)
+    assert client.get("/api/rag/status").status_code == 200
+
+
+def test_an_agent_gets_only_their_own_floor_data():
+    from server.app import agent_view
+
+    payload = {"ready": True, "agents": [{"id": "A01"}, {"id": "B01"}], "floor": [{"id": "A01"}, {"id": "B01"}],
+               "actions": [{"agent": "A01"}, {"agent": "B01"}], "decisions": [{"agent": "A01"}, {"agent": "B01"}],
+               "danger": [{"ticket_id": "T1"}], "policies": {"opslens": {"missed": 3, "status": "bioi", "queues": {"B": [1, 2]}}}}
+    mine = agent_view(payload, "B01")
+    assert mine["agents"] == [{"id": "B01"}] and mine["floor"] == [{"id": "B01"}]
+    assert mine["actions"] == [{"agent": "B01"}] and mine["decisions"] == [{"agent": "B01"}] and mine["danger"] == []
+    assert mine["policies"]["opslens"] == {"missed": 3, "status": "", "queues": {}}

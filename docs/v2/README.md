@@ -102,9 +102,14 @@ computed in numpy.
   The shared password `123` is for a laptop demo only: anyone who knows another agent's name and team
   could sign in as them. Give each agent their own password, or set `DEMO_PASSWORD`, before putting
   this anywhere shared.
-- **Known limit:** the read-only data behind the dashboard (`/api/live`, `/api/results`, `/api/bot`) is
-  not behind the sign-in, so the agent screen hides other agents but a technical user could still read
-  the simulated floor. Nothing there can be changed.
+- **The data behind the dashboard needs a sign-in too.** `/api/results` and `/api/live` answer 401
+  without one. An agent asking `/api/live` gets only their own row, their own actions and decisions,
+  no tickets at risk, and the other agents' statuses blanked; the admin gets everything. The tools
+  (`/api/bot`, `/api/ask`, `/api/whatif`, `/api/plan/impact`, `/api/plant`, `/api/upload`,
+  `/api/anyfile/*`, `/api/rag/status`, `/api/live/actions`) are admin-only. Only the sign-in page, the
+  page code and `/api/health` are open. A session check is cached for 5 seconds so the live screen's
+  frequent refreshes stay cheap; signing out ends it at once. Without Postgres (the offline demo) the
+  dashboard opens as before.
 
 ## 4. The screens
 
@@ -189,10 +194,18 @@ ones it used. The model reads our facts instead of guessing from memory.
    passed; lower is better) and must cite them. Every number it writes must appear in the pieces or
    the question; if not, it is asked once more.
 
-**Limit.** The number check proves a number is in the sources, not that the sentence around it is
-right. A small model can still mislabel a number: one answer said Hindi tickets wait "368 minutes
-longer" when 368 minutes is the whole wait. That is why every answer shows its sources, so a reader
-can check the sentence against the text it came from.
+6. **Wording check.** A number may only carry a comparison word (longer, fewer, more, higher…) that
+   the sources give it. One answer said Hindi tickets wait "368 minutes longer"; the sources say
+   "13.0 times longer", and 368 minutes is the whole wait. That answer is now caught and sent back
+   once, and if it is still wrong the chatbot says what to check. Problem pieces also state the group
+   and normal values in plain words ("for this group the mean wait is 368; for normal tickets it is
+   28"), and the model is told to prefer measured sources over prepared answers when numbers differ.
+
+Measured on 16 fact questions (`config/rag_faithful.yaml`, `python -m opslens.rag faith after`): 14 of
+16 right before these checks, 15 of 16 after, none wrong in a way the sources contradict. The one
+left gives the range of a fix (88 to 174 fewer) without its headline 131. With a 3-billion-parameter
+model and 16 questions, small prompt changes move one or two answers either way; the code check is
+what reliably stops this kind of mistake, and every answer still shows its sources.
 
 Rebuild with `mingw32-make rag` after changing a policy, a result or the docs.
 
@@ -280,7 +293,26 @@ the piece that should come back. Full output: [results/rag_retrieval.json](resul
 Combining the two beats either alone. The one question still missed in the top 3 is "Could the risk
 model be cheating by seeing the future?", whose prepared answer is worded around "leakage".
 
-### RAG: do retrieved examples help the AI read tickets? (`mingw32-make eval-rag-classify`)
+### RAG: does retrieval help read tickets? Yes (`mingw32-make eval-rag-blend`)
+
+Where the routing classifier is less than 80% sure, its probabilities are blended with a
+similarity-weighted vote of the 10 most similar past tickets (40% weight), from 16,000 tickets of the
+training days (2,000 per category). No AI calls; it runs in about 6 minutes. The three settings were
+chosen on the validation days out of 150 combinations, and the held-out test days were scored once.
+Full output: [results/rag_blend.json](results/rag_blend.json).
+
+| | Classifier alone | With similar past tickets |
+|---|---|---|
+| Validation days, 13,205 tickets (settings chosen here) | 98.24% | 98.51% |
+| Test days, 26,728 tickets (scored once) | 98.20% | 98.55% |
+
+On the test days it changed 1,171 unsure tickets, fixed 112 and broke 18: 94 more tickets reach the
+right team, and the wrong-team count falls from about 482 to 388, roughly 20% fewer routing mistakes.
+The vote alone, at the same settings, scores 97.99%; the gain comes from combining the two. The
+simulated floor still routes with the categories frozen in Round 1, so its 8.79% is unchanged: this
+is a measured improvement to reading tickets, not yet a re-run of the floor.
+
+### RAG: what did not work, the AI reading tickets with examples (`mingw32-make eval-rag-classify`)
 
 Before deciding a ticket's category, the AI is shown the 5 most similar past tickets with their
 correct category, taken from 4,800 tickets of the training days only (600 per category). Same
@@ -297,11 +329,9 @@ Full output: [results/rag_classification.json](results/rag_classification.json).
 On a random 400 test tickets the AI with examples scored 90.31% (382 answered; the rest made the
 small model loop), against 90.75% alone and 80.00% for the plain vote.
 
-What this means: retrieval halves the damage the AI does when it may correct the classifier, but it
-still does worse than the classifier alone. The plain vote of similar past tickets edges past the
-classifier by about 17 tickets out of 26,728, which is too small to justify changing routing that the
-Round 1 results rest on. So routing stays as tested, the AI stays a second opinion, and RAG is used
-where it clearly helps: answering questions from OpsLens's own data.
+What this means: retrieval halves the damage the AI does when it may correct the classifier, but the
+AI still does worse than the classifier alone. That is what led to the blend above: keep the
+classifier, and let similar past tickets move it only where it is unsure.
 
 ### The agents, tried on today's floor
 

@@ -18,11 +18,15 @@ USERNAMES = {"admin": "admin@opslens.demo"}
 SESSION_HOURS = 12
 MAX_FAILS = 5
 FAIL_WINDOW_S = 60.0
+SESSION_CACHE_S = 5.0
+SESSION_CACHE_MAX = 2000
 router = APIRouter(prefix="/api/v2")
 hasher = PasswordHasher()
 NO_USER_HASH = hasher.hash(secrets.token_urlsafe(16))
 _fails: dict[str, list[float]] = {}
 _fails_lock = threading.Lock()
+_sessions: dict[str, tuple[float, dict]] = {}
+_sessions_lock = threading.Lock()
 
 
 def token_hash(token: str) -> str:
@@ -49,13 +53,24 @@ def public(user: dict) -> dict:
 def current_user(opslens_session: str | None = Cookie(default=None)) -> dict:
     if not opslens_session:
         raise HTTPException(status_code=401, detail="log in first")
+    hashed = token_hash(opslens_session)
+    now = time.monotonic()
+    with _sessions_lock:
+        cached = _sessions.get(hashed)
+    if cached and cached[0] > now:
+        return cached[1]
     with store.connection() as conn:
         user = conn.execute(
             "select u.* from sessions s join users u on u.id = s.user_id where s.token_hash = %s and s.expires_at > now()",
-            (token_hash(opslens_session),)).fetchone()
+            (hashed,)).fetchone()
     if user is None:
         raise HTTPException(status_code=401, detail="your session has ended, log in again")
-    return public(user)
+    found = public(user)
+    with _sessions_lock:
+        if len(_sessions) > SESSION_CACHE_MAX:
+            _sessions.clear()
+        _sessions[hashed] = (now + SESSION_CACHE_S, found)
+    return found
 
 
 def require(*roles: str):
@@ -136,6 +151,8 @@ def login(request: dict) -> JSONResponse:
 @router.post("/logout")
 def logout(opslens_session: str | None = Cookie(default=None)) -> JSONResponse:
     if opslens_session:
+        with _sessions_lock:
+            _sessions.pop(token_hash(opslens_session), None)
         with store.connection() as conn:
             conn.execute("delete from sessions where token_hash = %s", (token_hash(opslens_session),))
     out = JSONResponse({"ok": True})

@@ -5,9 +5,10 @@ import time
 from fastapi.testclient import TestClient
 
 from server.app import app
+from tests.helpers import sign_in_admin
 from tests.test_anyfile import delivery_file
 
-client = TestClient(app)
+client = sign_in_admin(TestClient(app))
 
 
 def poll(job: str, seconds: float = 120) -> dict:

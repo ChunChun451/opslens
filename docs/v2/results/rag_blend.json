@@ -1,0 +1,33 @@
+{
+ "how": "classifier probabilities blended with a similarity-weighted vote of the nearest past tickets, only where the classifier is unsure",
+ "embedding_model": "nomic-embed-text",
+ "pool": {
+  "tickets": 16000,
+  "per_category": 2000,
+  "from": "training days only"
+ },
+ "chosen_on_validation": {
+  "threshold": 0.8,
+  "k": 10,
+  "weight": 0.4
+ },
+ "validation": {
+  "tickets": 13205,
+  "classifier_alone": 0.9823551684967815,
+  "with_retrieval": 0.9850814085573646,
+  "fixed": 50,
+  "broke": 14
+ },
+ "test": {
+  "tickets": 26728,
+  "classifier_alone": 0.9819664771026638,
+  "with_retrieval": 0.9854833882071237,
+  "changed_tickets": 1171,
+  "fixed": 112,
+  "broke": 18,
+  "net_tickets": 94,
+  "vote_only_same_settings": 0.9799087099670757
+ },
+ "grid_size": 150,
+ "seconds": 383.4
+}
