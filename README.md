@@ -62,6 +62,12 @@ Open `http://localhost:8000/` and sign in as `admin` or `agent` (password `123`)
 the local Ollama model, with the `.env` keys (Gemini, Groq free tiers) as an optional fallback.
 `mingw32-make demo` serves cached results with no network.
 
+Alternatively, start the server directly using Uvicorn without make:
+```bash
+python -m uvicorn server.app:app --port 8000
+```
+Interactive API documentation is available at `http://localhost:8000/api/docs`.
+
 ## Try
 
 1. Overview, Live now: today's weekday simulated at the real clock, skills routing next to OpsLens.
