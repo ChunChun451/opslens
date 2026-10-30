@@ -219,16 +219,16 @@ def floor_tools(team: str | None, floor: Floor) -> list[Tool]:
     def floor_summary() -> dict:
         today = q("select count(*) as arrived, count(*) filter (where status = 'open') as waiting, "
                   "count(*) filter (where status = 'in_progress') as being_worked, count(*) filter (where breached) as missed "
-                  f"from tickets where created_at::date = current_date {only}", params)[0]
+                  f"from tickets where created_at >= current_date and created_at < current_date + 1 {only}", params)[0]
         teams = q("select team, count(*) filter (where status = 'open') as waiting, count(*) filter (where breached) as missed, "
                   "count(*) filter (where status <> 'solved' and risk >= 0.5) as likely_to_miss from tickets "
-                  f"where created_at::date = current_date {only} group by team order by team", params)
+                  f"where created_at >= current_date and created_at < current_date + 1 {only} group by team order by team", params)
         return {"today": today, "teams": teams}
 
     def at_risk(limit: int = 6) -> list[dict]:
         rows = q("select id as ticket_id, priority, category, language, team, status, assignee, risk, risk_reasons, "
                  "round(extract(epoch from sla_due_at - now()) / 60) as minutes_left from tickets "
-                 f"where created_at::date = current_date and status <> 'solved' {only} "
+                 f"where created_at >= current_date and created_at < current_date + 1 and status <> 'solved' {only} "
                  "order by risk desc nulls last, sla_due_at limit %s", (*params, max(1, min(int(limit), 10))))
         return rows
 
@@ -258,7 +258,7 @@ def floor_tools(team: str | None, floor: Floor) -> list[Tool]:
         return q("select category, team, count(*) filter (where created_at >= now() - make_interval(hours => %s)) as recent, "
                  "round(count(*) filter (where created_at < now() - make_interval(hours => %s))::numeric / "
                  "greatest(1, extract(epoch from (now() - make_interval(hours => %s)) - date_trunc('day', now())) / 3600)::numeric * %s, 1) "
-                 "as usual_for_that_long from tickets where created_at::date = current_date "
+                 "as usual_for_that_long from tickets where created_at >= current_date and created_at < current_date + 1 "
                  f"{only} group by category, team order by recent desc", (h, h, h, h, *params))
 
     def tickets_per_hour() -> list[dict]:

@@ -1,0 +1,25 @@
+{
+ "provider": "ollama",
+ "model": "qwen2.5:3b",
+ "threshold": 0.6,
+ "test_tickets": 26728,
+ "sample": {
+  "tickets": 400,
+  "answered": 400,
+  "accuracy": 0.9075,
+  "recorded_cloud_accuracy": 0.915,
+  "seconds": 130.3
+ },
+ "cascade": {
+  "sent_to_llm": 360,
+  "answered": 337,
+  "accuracy_local_only": 0.9819664771026638,
+  "accuracy_with_local_llm": 0.9750823106854235,
+  "recorded_cloud_accuracy": 0.9821535468422627,
+  "accuracy_with_local_llm_hinglish": 0.9718357651849339,
+  "llm_fixed": 12,
+  "llm_broke": 196,
+  "seconds": 128.3
+ },
+ "seconds_per_ticket": 0.351
+}

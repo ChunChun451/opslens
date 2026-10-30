@@ -4,7 +4,7 @@ else
 PY := .venv/bin/python
 endif
 
-.PHONY: help setup data ping test gen eval serve demo
+.PHONY: help setup data ping test gen eval serve demo seed load eval-local
 
 help:
 	@echo setup  - create .venv and install requirements
@@ -15,6 +15,9 @@ help:
 	@echo eval   - reproduce every number into eval/results.json
 	@echo serve  - run the dashboard server
 	@echo demo   - serve from cached results, no network
+	@echo seed   - create the Postgres tables and demo users
+	@echo load   - load a million tickets into a scratch database and time it
+	@echo eval-local - score the local Ollama model on the recorded classification test
 
 setup:
 	python -m venv .venv
@@ -40,3 +43,12 @@ serve:
 
 demo:
 	$(PY) -m server.demo
+
+seed:
+	$(PY) -m opslens.seed
+
+load:
+	$(PY) scripts/load_test.py
+
+eval-local:
+	$(PY) scripts/eval_local_llm.py

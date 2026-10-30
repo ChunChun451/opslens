@@ -57,7 +57,8 @@ mingw32-make eval
 mingw32-make serve
 ```
 
-Open http://localhost:8000/. The `.env` keys (Gemini, Groq free tiers) are optional; without them the
+Open http://localhost:8000/app/ for the analysis dashboard, or http://localhost:8000/ to sign in to
+version 2 (it needs Postgres; see below). The `.env` keys (Gemini, Groq free tiers) are optional; without them the
 assistant falls back to keyword rules. `mingw32-make demo` serves cached results with no network.
 
 ## Try
@@ -71,6 +72,14 @@ assistant falls back to keyword rules. `mingw32-make demo` serves cached results
 6. Team: who is doing what right now. Click a person, or switch the top bar to Agent, to see
    their own screen: the next ticket OpsLens lines up for them, why, and Take it / Can't take it.
 
+## Version 2
+
+After Round 1, OpsLens became a support desk people sign in to: an agent workspace at `/agent/`, a
+console for team leads and admins at `/admin/`, Postgres underneath, and four AI agents that run on a
+local model through Ollama. The optimiser still decides who gets each ticket; the agents read, draft,
+explain and propose, and a lead approves. Everything about it, including the load test, is in
+[docs/v2/README.md](docs/v2/README.md).
+
 ## Layout
 
 - `opslens/` engine: ingest, classify, patterns, features, forecast, risk, optimize, staffing,
@@ -78,5 +87,7 @@ assistant falls back to keyword rules. `mingw32-make demo` serves cached results
 - `eval/` experiments; `eval/results.json` is the source of every number, summarised in `eval/NUMBERS.md`
 - `server/` FastAPI app and the assistant
 - `web/` dashboard, plain HTML/JS/CSS, works offline
+- `desk/` the v2 sign-in page, agent workspace and console
+- `db/migrations/` the Postgres schema; `opslens/agents.py` the AI agents
 - `tests/` includes a check that every decimal number in this README exists in `eval/results.json`
 - `data/SOURCES.md` datasets and licences

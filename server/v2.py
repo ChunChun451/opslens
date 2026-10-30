@@ -19,6 +19,7 @@ MANAGERS = require("admin", "lead")
 log = logging.getLogger("opslens.v2")
 router = APIRouter(prefix="/api/v2")
 MIRROR_EVERY_S = 5.0
+DAILY_EVERY_S = 600.0
 SUMMARY_TTL_S = 3.0
 AT_RISK = 0.5
 VIEWS = {
@@ -44,6 +45,7 @@ def mirror_forever(current_live: Callable[[int], object]) -> None:
     store.ensure_partitions(date.today().replace(day=1), months=3)
     state = mirror.MirrorState()
     last_view = 0.0
+    last_daily = 0.0
     while True:
         try:
             now = datetime.now()
@@ -54,6 +56,9 @@ def mirror_forever(current_live: Callable[[int], object]) -> None:
                     if time.monotonic() - last_view > 60:
                         conn.execute("refresh materialized view concurrently team_hourly")
                         last_view = time.monotonic()
+                    if time.monotonic() - last_daily > DAILY_EVERY_S:
+                        conn.execute("refresh materialized view concurrently team_daily")
+                        last_daily = time.monotonic()
                 _state["last"], _state["error"] = summary, None
                 if summary["changed"] or summary["events"]:
                     bus.publish("floor", summary)
@@ -109,7 +114,7 @@ def tickets(view: str = "open", team: str = "", assignee: str = "", limit: int =
     if view not in VIEWS:
         return JSONResponse({"error": f"view is one of {', '.join(VIEWS)}"}, status_code=400)
     allowed, params = scope(user)
-    where = [VIEWS[view], "created_at::date = current_date", allowed]
+    where = [VIEWS[view], "created_at >= current_date and created_at < current_date + 1", allowed]
     if view in MINE:
         if user["role"] != "agent":
             return JSONResponse({"error": "only agents have their own queue"}, status_code=400)
@@ -154,11 +159,11 @@ def summary(user: dict = Depends(MANAGERS)) -> JSONResponse:
                  "count(*) filter (where status = 'in_progress') as in_progress, count(*) filter (where status = 'solved') as solved, "
                  "count(*) filter (where breached) as breached, "
                  f"count(*) filter (where status <> 'solved' and risk >= {AT_RISK}) as at_risk "
-                 f"from tickets where created_at::date = current_date {only}", params)[0]
+                 f"from tickets where created_at >= current_date and created_at < current_date + 1 {only}", params)[0]
     teams = rows("select t.code as team, t.name, count(k.*) filter (where k.status <> 'solved') as open, "
                  f"count(k.*) filter (where k.status <> 'solved' and k.risk >= {AT_RISK}) as at_risk, "
                  "count(k.*) filter (where k.breached) as breached, count(k.*) as arrived "
-                 "from teams t left join tickets k on k.team = t.code and k.created_at::date = current_date "
+                 "from teams t left join tickets k on k.team = t.code and k.created_at >= current_date and k.created_at < current_date + 1 "
                  f"where {'t.code = %s' if team else 'true'} group by t.code, t.name order by t.code", params)
     hourly = rows("select team, hour, created, breached from team_hourly where hour::date = current_date "
                   f"{only} order by hour, team", params)

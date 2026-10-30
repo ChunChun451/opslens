@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
 from concurrent.futures import ProcessPoolExecutor
@@ -536,6 +537,8 @@ def live(weekday: int, minute: float, seed: int = 1, agents: str = "", volume: f
 def warm_live_now() -> None:
     import datetime
 
+    if os.environ.get("OPSLENS_WARM", "1") == "0":
+        return
     try:
         day, seed = _live_key(datetime.datetime.now().weekday(), 1)
     except Exception:

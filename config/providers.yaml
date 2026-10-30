@@ -11,7 +11,7 @@ providers:
     requests_per_day: 1000000
     timeout_s: 90
     extra_params:
-      max_tokens: 600
+      max_tokens: 2048
 
   ollama_route:
     kind: ollama
