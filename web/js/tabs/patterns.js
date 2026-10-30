@@ -3,6 +3,7 @@ import { ev, evText } from "../evidence.js";
 import { makeChart, SLOTS } from "../charts.js";
 import { pageHeader, card, missing, backendMissing, postJson, showWaiting, fold, onFirstOpen, proofLine } from "../ui.js";
 import { escapeHtml, prettyKey, CATEGORIES } from "../format.js";
+import { planButtons, measured } from "../plan.js";
 
 export const CAUSE_LABELS = {
   capacity: "Capacity",
@@ -79,6 +80,7 @@ function findingCard(c, i) {
         <div class="finding-metric">${escapeHtml(c.metric)}</div>
       </div>
       ${c.recommendation ? `<p class="finding-do"><span class="do-tag">Do</span>${evText(base + ".recommendation")}</p>` : ""}
+      ${fixesHtml(c)}
       <details class="disclosure">
         <summary>Example tickets</summary>
         <p class="small">${evText(base + ".comparison_text")}</p>
@@ -87,6 +89,33 @@ function findingCard(c, i) {
         ${examples}
       </details>
     </article>`;
+}
+
+function fixesFor(c) {
+  const plan = state.results.plan;
+  if (!plan || !Array.isArray(plan.items)) return [];
+  const all = plan.items.map((it, j) => ({ it, j }));
+  let mine = all.filter(({ it }) => it.card_id === c.id);
+  if (!mine.length && c.cause_type === "capacity" && c.segment && c.segment.team) {
+    mine = all.filter(({ it }) => it.kind === "staffing" && it.title.includes(`Team ${c.segment.team})`));
+  }
+  return mine.sort((a, b) => a.it.effect.breaches.diff - b.it.effect.breaches.diff).slice(0, 2);
+}
+
+function fixesHtml(c) {
+  const fixes = fixesFor(c);
+  if (!fixes.length) return "";
+  return `<div class="finding-fixes">${fixes.map(({ it, j }) => {
+    const e = it.effect.breaches;
+    const win = e.ci_high < 0;
+    return `<div class="finding-fix ${win ? "is-win" : ""}">
+      <div class="ff-tag">${it.kind === "staffing" ? "Staffing move" : "Fix"} · measured</div>
+      <div class="ff-head"><span class="ff-title">${evText(`plan.items[${j}].title`)}</span>
+        <span class="ff-num">${ev(`plan.items[${j}].effect.breaches.diff`, "count", { signed: true, key: true, title: "This fix alone",
+          explain: "Change in customers who miss their promise over the 14 held-out days when only this fix is applied, replayed against the same days without it." })}</span></div>
+      <div class="ff-label">missed promises over 14 held-out days · ${measured(`plan.items[${j}].effect.breaches`, "breaches")}</div>
+      ${planButtons(it.id)}</div>`;
+  }).join("")}</div>`;
 }
 
 function examplesTable(c, base) {

@@ -152,6 +152,11 @@ function openUpload() {
 }
 
 export function showTab(id, viewId, fromLink = false) {
+  if (state.lockedAgent && id !== "agent") {
+    id = "agent";
+    viewId = undefined;
+    if (!location.hash.startsWith("#agent")) history.replaceState(null, "", "#agent");
+  }
   if (id === "upload") {
     openUpload();
     return;

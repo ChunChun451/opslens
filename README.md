@@ -57,9 +57,10 @@ mingw32-make eval
 mingw32-make serve
 ```
 
-Open http://localhost:8000/app/ for the analysis dashboard, or http://localhost:8000/ to sign in to
-version 2 (it needs Postgres; see below). The `.env` keys (Gemini, Groq free tiers) are optional; without them the
-assistant falls back to keyword rules. `mingw32-make demo` serves cached results with no network.
+Open http://localhost:8000/ and sign in as `admin` or `agent` (password `123`). Sign-in needs Postgres
+(see below); without it, http://localhost:8000/app/ opens the dashboard directly. The assistant uses
+the local Ollama model, with the `.env` keys (Gemini, Groq free tiers) as an optional fallback.
+`mingw32-make demo` serves cached results with no network.
 
 ## Try
 
@@ -74,12 +75,11 @@ assistant falls back to keyword rules. `mingw32-make demo` serves cached results
 
 ## Version 2
 
-After Round 1, OpsLens became a support desk people sign in to: an agent workspace at `/agent/`, an
-admin console at `/admin/` with recurring problems, measured fixes and a plan you can replay, Postgres
-underneath, and four AI agents that run on a local model through Ollama. Sign in as `admin` or
-`agent` with the password `123`; as agent you then pick who you are from today's shift. The optimiser
-still decides who gets each ticket; the agents read, draft, explain and propose, and the admin
-approves. Everything about it, including the load test, is in [docs/v2/README.md](docs/v2/README.md).
+After Round 1, the dashboard got a sign-in in front of it. Sign in as `admin` for the whole dashboard,
+or as `agent` with the password `123` and pick who you are from today's shift to see only your own
+work. Problems now show each fix's measured effect. Underneath: Postgres, and four AI agents on a local
+model through Ollama. The optimiser still decides who gets each ticket. Everything about it, including
+the load test, is in [docs/v2/README.md](docs/v2/README.md).
 
 ## Layout
 

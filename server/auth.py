@@ -78,7 +78,7 @@ def start_session(user: dict) -> JSONResponse:
         conn.execute("insert into sessions (token_hash, user_id, expires_at) values (%s, %s, %s)",
                      (token_hash(token), user["id"], expires))
         conn.execute("delete from sessions where expires_at < now()")
-    out = JSONResponse({"user": public(user), "home": "/admin/" if user["role"] == "admin" else "/agent/"})
+    out = JSONResponse({"user": public(user), "home": "/app/" if user["role"] == "admin" else "/app/#agent"})
     out.set_cookie(COOKIE, token, max_age=SESSION_HOURS * 3600, httponly=True, samesite="lax", path="/")
     out.delete_cookie(PICK_COOKIE, path="/")
     return out

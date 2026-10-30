@@ -62,6 +62,7 @@ function draw(section, d) {
     return;
   }
   const ids = d.agents.map((a) => a.id);
+  if (state.lockedAgent) state.agent = state.lockedAgent;
   if (!ids.includes(state.agent)) {
     const working = d.floor.find((r) => r.status !== "off");
     state.agent = (working || d.floor[0]).id;

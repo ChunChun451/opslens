@@ -93,7 +93,7 @@ export function filePlanItems() {
   const source = `upload:${meta.token}`;
   const w = `${U}.warning`;
   const rival = r.warning.vs.rival;
-  const warn = { id: `file-${meta.token}-warn`, world: "real", source, owner: "Team lead", fileIndex: 0,
+  const warn = { id: `file-${meta.token}-warn`, world: "real", source, owner: "Admin", fileIndex: 0,
     title: `Flag the riskiest 1 in ${Math.round(100 / r.flag_share_pct)} new ${itemWord()} as they open, and look at them first`,
     effects: [{ label: `Real misses caught on your later ${itemWord()}, OpsLens`, path: `${w}.caught_pct.opslens`, unit: "pct" },
               { label: `The same, ${r.warning.vs.rival === "priority" ? "your priority field" : "a rule of thumb"}`, path: `${w}.caught_pct.${rival}`, unit: "pct" }],

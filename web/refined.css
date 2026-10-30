@@ -328,7 +328,7 @@ html[data-theme="neon"] .subnav button[aria-current="true"] { background: var(--
 
 #tab-nav [data-tab="agent"] { display: none !important; }
 body[data-role="agent"] :is(#tab-nav, .world-switch:not(.role-switch), #plan-button, #story-button, #live-ticker, #data-source, #bot-launch, #source-bar) { display: none !important; }
-body[data-role="agent"] .sidebar::after { content: "Agent screen: your own work only. Switch to Team lead for the full dashboard."; display: block; margin: 18px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+body[data-role="agent"] .sidebar::after { content: "Agent screen: your own work only. Switch to Admin for the full dashboard."; display: block; margin: 18px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
 
 .tm-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 4px 0 16px; }
 .tm-tile { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); }
@@ -562,3 +562,33 @@ button[data-act]:disabled { opacity: 0.55; cursor: progress; }
   .up-chip-eg { display: none; }
   .up-chip { padding: 6px 9px; }
 }
+
+.user-chip { display: flex; align-items: center; gap: 8px; padding-left: 10px; margin-left: 2px; border-left: 1px solid var(--border, rgba(130, 145, 255, 0.14)); }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #0b1122; background: linear-gradient(135deg, #22d3ee, #a78bfa); flex: none; }
+.user-name { display: grid; line-height: 1.15; }
+.user-name b { font-size: 13px; }
+.user-name span { font-size: 11px; color: var(--muted, #8a93ad); }
+.sidebar-foot { display: none; }
+#data-source { display: none; }
+body[data-signed="agent"] .world-switch,
+body[data-signed="agent"] #role-switch,
+body[data-signed="agent"] #plan-button,
+body[data-signed="agent"] #story-button,
+body[data-signed="agent"] #live-ticker,
+body[data-signed="agent"] .ag-pick,
+body[data-signed="agent"] #tab-nav a:not([data-tab="agent"]),
+body[data-signed="agent"] .bot-launch,
+body[data-signed="agent"] .bot-panel { display: none !important; }
+body[data-signed="agent"] #tab-nav a[data-tab="agent"] { display: flex !important; }
+body[data-signed="agent"] .topbar { justify-content: flex-end; }
+.finding-fixes { display: grid; gap: 8px; margin: 12px 0 4px; }
+.finding-fix { border: 1px solid var(--border, rgba(130, 145, 255, 0.14)); border-radius: 12px; padding: 10px 12px; background: rgba(34, 211, 238, 0.04); }
+.finding-fix.is-win { border-color: rgba(52, 211, 153, 0.35); background: rgba(52, 211, 153, 0.06); }
+.ff-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.ff-title { font-weight: 600; font-size: 14px; }
+.ff-num { font-size: 20px; font-weight: 700; white-space: nowrap; }
+.finding-fix.is-win .ff-num { color: var(--good, #34d399); }
+.ff-label { font-size: 12px; color: var(--muted, #8a93ad); margin: 2px 0 8px; }
+.ff-tag { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted, #8a93ad); margin-bottom: 4px; }
+
+body[data-signed="agent"] .sidebar::after { content: "Your own tickets only. OpsLens hands you the next one that fits your skills and languages."; }

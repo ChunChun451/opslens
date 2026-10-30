@@ -75,7 +75,7 @@ def test_there_are_only_admins_and_agents_and_an_admin_sees_everything(app_clien
     assert client.post("/api/v2/login", json={"email": "lead.a@opslens.demo", "password": password}).status_code == 401
     admin = logged_in(client, "admin@opslens.demo", password)
     assert ids(admin) == {"TEST-A1", "TEST-A2", "TEST-A3", "TEST-B1"}
-    assert admin.post("/api/v2/login", json={"email": "admin@opslens.demo", "password": password}).json()["home"] == "/admin/"
+    assert admin.post("/api/v2/login", json={"email": "admin@opslens.demo", "password": password}).json()["home"] == "/app/"
 
 
 def test_logging_out_ends_the_session(app_client):
@@ -111,16 +111,17 @@ def test_the_sign_in_page_and_both_screens_are_served(app_client):
     client, _ = app_client
     client.cookies.clear()
     assert "Sign in" in client.get("/").text
-    assert client.get("/agent/").status_code == 200
-    assert client.get("/admin/").status_code == 200
-    assert client.get("/desk/desk.js").status_code == 200
+    for old_address, new_address in (("/agent/", "/app/#agent"), ("/admin/", "/app/")):
+        moved = client.get(old_address, follow_redirects=False)
+        assert moved.status_code == 307 and moved.headers["location"] == new_address
+    assert client.get("/app/js/session.js").status_code == 200
     assert client.get("/app/").status_code == 200
 
 
 def test_admin_signs_in_by_username_and_agent_picks_who_they_are(app_client):
     client, password = app_client
     client.cookies.clear()
-    assert client.post("/api/v2/login", json={"username": "admin", "password": password}).json()["home"] == "/admin/"
+    assert client.post("/api/v2/login", json={"username": "admin", "password": password}).json()["home"] == "/app/"
     client.cookies.clear()
     assert client.get("/api/v2/login/agents").status_code == 401
     assert client.post("/api/v2/login/pick", json={"agent": "A01"}).status_code == 401
@@ -130,7 +131,7 @@ def test_admin_signs_in_by_username_and_agent_picks_who_they_are(app_client):
     assert listed and all(a["status"] != "off" for a in listed)
     assert client.post("/api/v2/login/pick", json={"agent": "nobody"}).status_code == 400
     chosen = client.post("/api/v2/login/pick", json={"agent": listed[0]["agent_code"]})
-    assert chosen.json()["home"] == "/agent/"
+    assert chosen.json()["home"] == "/app/#agent"
     assert client.get("/api/v2/me").json()["user"]["agent_code"] == listed[0]["agent_code"]
     assert client.post("/api/v2/login/pick", json={"agent": "A02"}).status_code == 401
 

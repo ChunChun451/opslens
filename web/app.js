@@ -14,9 +14,13 @@ import { initSeason } from "./js/season.js";
 import { initBot } from "./js/bot.js";
 import { initSource, restoreUpload } from "./js/source.js";
 import { initRole } from "./js/role.js";
+import { whoIsIn, applySession } from "./js/session.js";
 import { escapeHtml, fmtDateTime } from "./js/format.js";
 
 async function start() {
+  const session = await whoIsIn();
+  if (session.leaving) return;
+  applySession(session.user);
   let loaded;
   try {
     loaded = await loadResults();

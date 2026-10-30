@@ -98,45 +98,24 @@ computed in numpy.
 
 ## 4. The screens
 
-Plain HTML, CSS and JavaScript in `desk/`, no build step, one shared stylesheet and one shared helper
-module. Laid out like Zendesk's agent workspace: a dark green rail on the left, open tickets as tabs
-across the top, search (`/`), views with counts, sortable ticket tables with status letters (N new, O
-open, S solved), and a three-pane ticket page: properties, the conversation with a reply box, and
-context. Keyboard: `j`/`k` to move, Enter to open, Esc to close, `g h` home, `?` for the list.
+The screen is the Round 1 dashboard at `/app/`, in its own design. Version 2 adds sign-in in front of
+it and splits who sees what:
 
-**Agent workspace** (`/agent/`)
+- **Sign in** (`/`): username `admin` or `agent`, password `123`. As agent you then pick who you are
+  from the agents on shift right now, working ones first, each with the ticket they are on.
+- **Admin** gets the whole dashboard: Overview (live now), Team, Problems, Risks, Actions, Proof, Your
+  plan, Story mode and Ask OpsLens AI. "Agent view" shows any agent's screen, as before.
+- **Agent** gets only their own screen: what is lined up next and why, what they are working on, Take
+  it, Can't take it, Done, +5/+10/+20 min and On a break, and their day. No dropdown to be someone
+  else, no admin tabs, no customer replies. Switch agent and Sign out are in the top bar.
+- **Recurring problems** now show the measured fix on each card: what to do, how many missed promises
+  it saved over the 14 held-out days with its 95% range, and Accept or Override, which feed Your plan.
+  Your plan replays a held-out day with and without the accepted fixes.
+- Less on screen: the results date chip and the sidebar footer are gone; agents see only their work.
 
-- Home: the ticket you are on with a countdown ring, what is lined up next, today's solved count,
-  on-time rate and handle time, and your queue. A toast tells you when a new ticket lands.
-- Views: My open tickets, Team queue, Due in 15 minutes, Solved by me today; sort and export to CSV.
-- Ticket page: the customer's message, then **How to handle this**: the company policy for that
-  kind of ticket as a numbered checklist you can tick off, with the order-value rule worked out in code
-  ("This order is Rs 450, above the Rs 300 limit, so ask for a photo first"). If the intake agent reads
-  the ticket differently, the other policy is one click away. Then OpsLens's assignment note and any
-  internal notes. On the right: the promise, the chance of missing it, what the intake agent read,
-  similar solved tickets and the history.
-- The footer holds the actions: Mark solved (and you land on your next ticket), +10 min, Take this
-  ticket, I can't take this. Take a break and I'm back are in the profile menu (`b`). Each one re-plans
-  the floor. OpsLens does not message customers; Add note leaves an internal note for the team.
-- Every button goes through the same `/api/live/action` path as before, so the floor really changes.
-
-**Console** (`/admin/`)
-
-- Home: today's numbers, Ask OpsLens, what needs attention now, the recurring problems most worth
-  fixing with their measured effect, OpsLens suggests (approve or dismiss), OpsLens against usual
-  routing today, tickets per hour, and the teams.
-- Views: all unsolved, unassigned, due soon, likely to miss, solved; filter by team, sort, export.
-  On a ticket the admin can assign it to anyone on shift; the list shows who has the skill and the
-  language and who is free.
-- Recurring problems: the 9 problems found in 56 days of tickets, the evidence and real examples, how
-  many tickets like it came in today, and each fix with its measured effect on missed promises over
-  14 held-out days (with the 95% range). Add to plan.
-- Plan and impact: the chosen fixes, and a button that replays a real held-out day with and without
-  them (3 seeds, about 30 seconds), with every past replay kept.
-- Team: who is free, working, on a break, and on what; send someone on a break or bring them back.
-- Analysis: the Round 1 result (OpsLens against skills routing and the best published rule), the models
-  and the load test, inside the console. The research dashboard opens in a new tab.
-- AI: every agent run, and every step inside it.
+`/admin` and `/agent` from the earlier version redirect here. The APIs built for them
+(`/api/v2/problems`, `/plan/simulate`, `/analysis`, assigning, breaks, notes, the policy guide and the
+AI agents) are still there and tested.
 
 Screens update by themselves: the server pushes a message over SSE whenever the floor changes, with a
 15-second poll as a fallback.

@@ -187,7 +187,7 @@ function movePlanId(m, i) {
 function moveHtml(m, i) {
   const base = `recommendations.staffing_moves[${i}]`;
   const id = movePlanId(m, i);
-  if (id) registerItem({ id, world: "food", title: m.text, owner: "Team lead", simulable: true });
+  if (id) registerItem({ id, world: "food", title: m.text, owner: "Admin", simulable: true });
   const j = id ? planIndex(id) : -1;
   const effects = Object.keys(m.expected_effect).map((kpi) => {
     const unit = spreadUnit(kpiInfo(kpi).unit);

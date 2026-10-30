@@ -5,107 +5,163 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sign in · OpsLens</title>
   <link rel="icon" href="/app/favicon.svg">
-  <link rel="stylesheet" href="/desk/desk.css">
+  <style>
+    @font-face { font-family: "Inter"; src: url("/app/vendor/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+    :root { --bg: #070b16; --card: rgba(18, 24, 41, .82); --line: rgba(130, 145, 255, .16); --line-2: rgba(130, 145, 255, .3);
+            --ink: #e9ecf7; --muted: #8a93ad; --cyan: #22d3ee; --violet: #a78bfa; --good: #34d399; --bad: #ff4d8d; --warn: #fbbf24; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { font: 15px/1.5 "Inter", system-ui, sans-serif; color: var(--ink); background: radial-gradient(1100px 600px at 12% -10%, rgba(167, 139, 250, .16), transparent 60%),
+           radial-gradient(900px 600px at 100% 110%, rgba(34, 211, 238, .12), transparent 60%), var(--bg); -webkit-font-smoothing: antialiased; }
+    button, input { font: inherit; color: inherit; }
+    .wrap { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; padding: 48px clamp(20px, 6vw, 96px); }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand b { font-size: 26px; letter-spacing: -.01em; }
+    .brand span { display: block; color: var(--muted); font-size: 13px; }
+    h1 { font-size: clamp(30px, 3.6vw, 46px); line-height: 1.1; letter-spacing: -.02em; margin: 34px 0 14px; max-width: 560px; }
+    h1 em { font-style: normal; background: linear-gradient(90deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { color: var(--muted); max-width: 520px; margin: 0; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 34px; max-width: 560px; }
+    .stat { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: rgba(18, 24, 41, .5); }
+    .stat b { display: block; font-size: 26px; }
+    .stat span { font-size: 12px; color: var(--muted); }
+    .stat .ops { color: var(--cyan); } .stat .ind { color: var(--bad); } .stat .fix { color: var(--good); }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px; box-shadow: 0 30px 80px -24px rgba(0, 0, 0, .85); backdrop-filter: blur(12px); max-width: 460px; width: 100%; justify-self: center; }
+    .panel h2 { margin: 0; font-size: 22px; }
+    .hint { color: var(--muted); font-size: 14px; margin: 4px 0 18px; }
+    .hint b { color: var(--ink); }
+    .roles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .roles button { text-align: left; border: 1px solid var(--line); background: rgba(10, 14, 26, .6); border-radius: 14px; padding: 12px 14px; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+    .roles button:hover, .roles button.on { border-color: var(--violet); box-shadow: 0 0 0 1px rgba(167, 139, 250, .35), 0 0 22px rgba(167, 139, 250, .2); }
+    .roles b { display: block; }
+    .roles span { font-size: 12px; color: var(--muted); }
+    label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    input { height: 44px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(7, 11, 22, .7); padding: 0 14px; outline: none; }
+    input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34, 211, 238, .18); }
+    .go { width: 100%; height: 46px; border: 0; border-radius: 12px; font-weight: 700; color: #071018; cursor: pointer; background: linear-gradient(90deg, var(--cyan), var(--violet)); box-shadow: 0 0 22px rgba(34, 211, 238, .3); }
+    .go:disabled { opacity: .6; cursor: default; }
+    .err { color: var(--bad); font-size: 13px; min-height: 20px; margin: 2px 0 8px; }
+    .pick-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+    .back { border: 1px solid var(--line); background: none; border-radius: 10px; padding: 6px 12px; cursor: pointer; color: var(--muted); }
+    .back:hover { color: var(--ink); border-color: var(--line-2); }
+    .list { max-height: 56vh; overflow: auto; border: 1px solid var(--line); border-radius: 14px; }
+    .who { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; padding: 12px 14px; text-align: left; cursor: pointer; }
+    .who:last-child { border-bottom: 0; }
+    .who:hover, .who:focus-visible { background: rgba(167, 139, 250, .1); outline: none; }
+    .av { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; color: #0b1122; background: linear-gradient(135deg, var(--cyan), var(--violet)); position: relative; }
+    .av i { position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid #121829; background: var(--muted); }
+    .av i.busy, .av i.cross, .av i.wrong, .av i.idle { background: var(--good); } .av i.break { background: var(--warn); }
+    .who .doing { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .who .meta { font-size: 12px; color: var(--muted); }
+    .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+    .pill.work { background: rgba(34, 211, 238, .14); color: var(--cyan); } .pill.free { background: rgba(52, 211, 153, .14); color: var(--good); }
+    .pill.away { background: rgba(251, 191, 36, .14); color: var(--warn); }
+    .right { text-align: right; } .right .meta { margin-top: 3px; }
+    @media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); padding: 28px 18px; } h1 { margin-top: 22px; } .stats { grid-template-columns: 1fr 1fr 1fr; } .stat b { font-size: 20px; } }
+  </style>
 </head>
 <body>
-  <main class="login">
-    <section class="hero">
-      <div style="display:flex;align-items:center;gap:10px"><img src="/app/favicon.svg" alt="" width="36" height="36"><b style="font-size:18px;color:#fff">OpsLens</b></div>
-      <div>
-        <h1>Every ticket to the right person, before its promise runs out.</h1>
-        <p>A support desk that routes with an optimiser, finds the problems that keep coming back, and measures every fix before you make it. The AI runs on this laptop.</p>
+  <main class="wrap">
+    <section>
+      <div class="brand">
+        <svg viewBox="0 0 40 40" width="52" height="52" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+          <circle cx="18" cy="18" r="13" fill="none" stroke="url(#g)" stroke-width="3.2"/><path d="M8 19h5l2.5-5 4 9 3-6h5" fill="none" stroke="url(#g)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 28l7 7" stroke="url(#g)" stroke-width="3.6" stroke-linecap="round"/></svg>
+        <div><b>OpsLens</b><span>Every ticket is a promise</span></div>
       </div>
+      <h1>Every ticket to the <em>right person</em>, before its promise runs out.</h1>
+      <p class="lede">Routes with an optimiser, finds the problems that keep coming back, and measures every fix before you make it. The AI runs on this laptop.</p>
       <div class="stats">
-        <div><b>8.79%</b><span>promises missed with OpsLens on 14 held-out days</span></div>
-        <div><b>20.74%</b><span>with industry-standard skills routing, same days</span></div>
-        <div><b>−574</b><span>missed promises from the 18 measured fixes together</span></div>
+        <div class="stat"><b class="ops">8.79%</b><span>promises missed with OpsLens, 14 held-out days</span></div>
+        <div class="stat"><b class="ind">20.74%</b><span>with industry-standard skills routing</span></div>
+        <div class="stat"><b class="fix">−574</b><span>missed promises from the 18 measured fixes</span></div>
       </div>
     </section>
-    <section class="side">
+    <section class="panel">
       <form id="login" autocomplete="on">
-        <div><h1>Sign in</h1><div class="muted" style="margin-top:4px">Use <b>admin</b> or <b>agent</b>, password <b>123</b>.</div></div>
-        <div class="who">
-          <button type="button" data-user="admin"><b>Admin</b><span>The console: floor, problems, plan</span></button>
+        <h2>Sign in</h2>
+        <p class="hint">Use <b>admin</b> or <b>agent</b>, password <b>123</b>.</p>
+        <div class="roles">
+          <button type="button" data-user="admin"><b>Admin</b><span>The whole floor, problems, plan</span></button>
           <button type="button" data-user="agent"><b>Agent</b><span>Pick who you are from today's shift</span></button>
         </div>
-        <label>Username<input class="field" name="username" required autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="admin or agent"></label>
-        <label>Password<input class="field" name="password" type="password" required autocomplete="current-password"></label>
+        <label>Username<input name="username" required autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="admin or agent"></label>
+        <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
         <div class="err" id="err" role="alert"></div>
-        <button class="btn primary" type="submit" style="height:40px">Sign in</button>
+        <button class="go" type="submit">Sign in</button>
       </form>
-      <div id="pick" hidden style="width:100%;max-width:520px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:12px">
-          <div><h1>Who are you?</h1><div class="muted" style="margin-top:4px" id="picknote">Agents on shift right now. Working ones first.</div></div>
-          <button class="btn quiet small" id="pickback" type="button">Back</button>
-        </div>
-        <input class="field" id="pickq" placeholder="Filter by name, code or team" style="width:100%;margin-bottom:10px" autocomplete="off">
-        <div id="picklist" class="card" style="max-height:62vh;overflow:auto"></div>
+      <div id="pick" hidden>
+        <div class="pick-head"><div><h2>Who are you?</h2><p class="hint" id="picknote" style="margin-bottom:0">Agents on shift right now.</p></div>
+          <button class="back" id="pickback" type="button">Back</button></div>
+        <input id="pickq" placeholder="Filter by name, code or team" autocomplete="off" style="width:100%;margin-bottom:10px">
+        <div class="list" id="picklist"></div>
       </div>
     </section>
   </main>
   <script type="module">
-    import { api, esc, tag, agentTag, initials, CATEGORY, LANGUAGE, fmtMin } from "/desk/desk.js";
-    const form = document.getElementById("login");
-    const err = document.getElementById("err");
-    const pickBox = document.getElementById("pick");
-    api("/api/v2/me").then(({ user }) => { location.href = user.role === "agent" ? "/agent/" : "/admin/"; }).catch(() => {});
+    const CATEGORY = { late_delivery: "Late delivery", missing_item: "Missing item", wrong_item: "Wrong item", refund: "Refund",
+      payment_failure: "Payment failed", app_bug: "App problem", account: "Account", restaurant_partner: "Restaurant partner" };
+    const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const mins = m => { m = Math.round(Math.abs(m)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`; };
+    async function api(path, body) {
+      const r = await fetch(path, body === undefined ? { credentials: "same-origin" }
+        : { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || data.detail || `Request failed (${r.status})`);
+      return data;
+    }
+    const form = document.getElementById("login"), err = document.getElementById("err"), pick = document.getElementById("pick");
+    api("/api/v2/me").then(({ user }) => { location.href = user.role === "agent" ? "/app/#agent" : "/app/"; }).catch(() => {});
     const preset = new URLSearchParams(location.search).get("as");
-    if (preset) { form.username.value = preset; form.password.focus(); }
-    form.querySelectorAll("[data-user]").forEach(b => b.onclick = () => { form.username.value = b.dataset.user; form.password.focus(); });
-
-    let agents = [];
-    const row = a => {
-      const job = a.current || a.next;
-      const doing = a.current ? `on <b>${esc(CATEGORY[a.current.category] || a.current.category)}</b> #${esc(a.current.ticket_id)} · ${a.current.minutes_left < 0 ? `${fmtMin(-a.current.minutes_left)} late` : `${fmtMin(a.current.minutes_left)} left`}`
-        : a.next ? `next: ${esc(CATEGORY[a.next.category] || a.next.category)} #${esc(a.next.ticket_id)}` : a.status === "idle" ? "free for the next ticket" : "";
-      return `<button type="button" data-agent="${esc(a.agent_code)}" style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line-soft);background:#fff;padding:11px 14px;text-align:left;cursor:pointer">
-        <span class="avatar">${esc(initials(a.name))}<span class="pres ${esc(a.status)}"></span></span>
-        <span style="min-width:0"><b>${esc(a.name)}</b> <span class="muted small">${esc(a.agent_code)} · ${esc(a.team_name)}</span>
-          <div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${doing || esc((a.languages || []).map(l => LANGUAGE[l] || l).join(", "))}</div></span>
-        <span style="text-align:right">${a.status === "unknown" ? "" : agentTag(a.status)}<div class="small faint" style="margin-top:3px">${a.solved_today} solved today</div></span></button>`;
+    const choose = name => {
+      form.username.value = name;
+      form.querySelectorAll("[data-user]").forEach(b => b.classList.toggle("on", b.dataset.user === name));
+      form.password.focus();
     };
+    if (preset) choose(preset);
+    form.querySelectorAll("[data-user]").forEach(b => b.onclick = () => choose(b.dataset.user));
+    let agents = [];
+    const status = a => a.working ? `<span class="pill work">Working</span>` : a.status === "idle" ? `<span class="pill free">Free</span>`
+      : a.status === "break" ? `<span class="pill away">On a break</span>` : "";
     const draw = () => {
       const q = document.getElementById("pickq").value.trim().toLowerCase();
       const shown = agents.filter(a => !q || `${a.name} ${a.agent_code} ${a.team_name}`.toLowerCase().includes(q));
-      document.getElementById("picklist").innerHTML = shown.length ? shown.map(row).join("") : `<div class="empty">Nobody matches.</div>`;
-      document.querySelectorAll("[data-agent]").forEach(b => {
-        b.onmouseenter = () => { b.style.background = "var(--blue-soft)"; };
-        b.onmouseleave = () => { b.style.background = "#fff"; };
-        b.onclick = async () => {
-          b.disabled = true;
-          try { location.href = (await api("/api/v2/login/pick", { body: { agent: b.dataset.agent } })).home; }
-          catch (e) { document.getElementById("picknote").textContent = e.message; b.disabled = false; }
-        };
+      document.getElementById("picklist").innerHTML = shown.length ? shown.map(a => {
+        const doing = a.current ? `On ${esc(CATEGORY[a.current.category] || a.current.category)} ${esc(a.current.ticket_id)} · ${a.current.minutes_left < 0 ? `${mins(a.current.minutes_left)} late` : `${mins(a.current.minutes_left)} left`}`
+          : a.next ? `Next: ${esc(CATEGORY[a.next.category] || a.next.category)} ${esc(a.next.ticket_id)}` : a.status === "idle" ? "Free for the next ticket" : "";
+        const initials = String(a.name).split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+        return `<button type="button" class="who" data-agent="${esc(a.agent_code)}"><span class="av">${esc(initials)}<i class="${esc(a.status)}"></i></span>
+          <span style="min-width:0"><b>${esc(a.name)}</b> <span class="meta">${esc(a.agent_code)} · ${esc(a.team_name)}</span><div class="doing">${doing}</div></span>
+          <span class="right">${status(a)}<div class="meta">${a.solved_today} solved today</div></span></button>`;
+      }).join("") : `<p class="hint" style="padding:18px;margin:0">Nobody matches.</p>`;
+      document.querySelectorAll("[data-agent]").forEach(b => b.onclick = async () => {
+        b.disabled = true;
+        try { location.href = (await api("/api/v2/login/pick", { agent: b.dataset.agent })).home; }
+        catch (e) { document.getElementById("picknote").textContent = e.message; b.disabled = false; }
       });
     };
     const showPick = async () => {
       const data = await api("/api/v2/login/agents");
       agents = data.agents;
-      document.getElementById("picknote").textContent = data.live
-        ? `${agents.length} agents on shift right now. Working ones first.` : "Today's floor is still starting, so everyone is listed.";
+      document.getElementById("picknote").textContent = data.live ? `${agents.length} on shift right now, working ones first.` : "Today's floor is still starting, so everyone is listed.";
       form.hidden = true;
-      pickBox.hidden = false;
+      pick.hidden = false;
       draw();
       document.getElementById("pickq").focus();
     };
     document.getElementById("pickq").addEventListener("input", draw);
-    document.getElementById("pickq").addEventListener("keydown", e => {
-      if (e.key === "Enter") { const first = document.querySelector("[data-agent]"); if (first) first.click(); }
-    });
-    document.getElementById("pickback").onclick = () => { pickBox.hidden = true; form.hidden = false; form.password.value = ""; form.password.focus(); };
+    document.getElementById("pickq").addEventListener("keydown", e => { if (e.key === "Enter") document.querySelector("[data-agent]")?.click(); });
+    document.getElementById("pickback").onclick = () => { pick.hidden = true; form.hidden = false; form.password.value = ""; form.password.focus(); };
     form.addEventListener("submit", async event => {
       event.preventDefault();
       err.textContent = "";
-      const button = form.querySelector("button[type=submit]");
+      const button = form.querySelector(".go");
       button.disabled = true;
       button.textContent = "Signing in…";
       try {
-        const out = await api("/api/v2/login", { body: { username: form.username.value, password: form.password.value } });
+        const out = await api("/api/v2/login", { username: form.username.value, password: form.password.value });
         if (out.pick) await showPick();
         else location.href = out.home;
-      } catch (e) {
-        err.textContent = e.message;
-      }
+      } catch (e) { err.textContent = e.message; }
       button.disabled = false;
       button.textContent = "Sign in";
     });

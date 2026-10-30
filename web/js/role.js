@@ -10,6 +10,10 @@ export function initRole() {
 }
 
 export function setRole(role, agentId = null, first = false) {
+  if (state.lockedAgent) {
+    role = "agent";
+    agentId = state.lockedAgent;
+  }
   if (agentId) {
     state.agent = agentId;
     store("opslens-agent", agentId);
