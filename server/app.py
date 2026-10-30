@@ -15,6 +15,7 @@ from psycopg_pool import PoolTimeout
 
 from server.auth import router as auth_router
 from server.desk_api import router as desk_router
+from server.feedback_api import router as feedback_router
 from server.v2 import router as v2_router
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -25,6 +26,7 @@ app = FastAPI(title="OpsLens", docs_url="/api/docs")
 app.include_router(auth_router)
 app.include_router(v2_router)
 app.include_router(desk_router)
+app.include_router(feedback_router)
 
 
 @app.exception_handler(PoolTimeout)

@@ -34,7 +34,9 @@ MIN_WORDS = 0.15
 NOT_COVERED = re.compile(r"(does not|doesn't|do not|don't) (cover|answer|say|mention)|not covered|no information|cannot answer|can't answer", re.I)
 SOURCE_CHARS = 900
 LABELS = {"policy": "Policy", "problem": "Recurring problem", "fix": "Measured fix", "results": "Results", "readme": "Overview",
-          "docs": "How it works", "faq": "Prepared answer", "ticket": "Past ticket"}
+          "docs": "How it works", "faq": "Prepared answer", "ticket": "Past ticket", "feedback": "Customer feedback"}
+MAX_FEEDBACK_SHOWN = 2
+CAPPED = {"ticket": MAX_TICKETS_SHOWN, "feedback": MAX_FEEDBACK_SHOWN}
 CITE = re.compile(r"\[(\d+)\]")
 
 _index: dict = {}
@@ -157,12 +159,39 @@ def ticket_chunks() -> list[dict]:
     return out
 
 
+def feedback_chunks() -> list[dict]:
+    from opslens.feedback import chunks
+
+    if not store.available():
+        return []
+    with store.connection() as conn:
+        return chunks(conn)
+
+
 def all_chunks() -> list[dict]:
     results = json.loads(RESULTS.read_text(encoding="utf-8"))
     return (policy_chunks() + problem_chunks(results) + fix_chunks(results)
             + sections(NUMBERS.read_text(encoding="utf-8"), "results", "#proof/results")
             + sections(README.read_text(encoding="utf-8"), "readme", "#proof/results")
-            + sections(DOCS.read_text(encoding="utf-8"), "docs", None) + faq_chunks() + ticket_chunks())
+            + sections(DOCS.read_text(encoding="utf-8"), "docs", None) + faq_chunks() + ticket_chunks() + feedback_chunks())
+
+
+def refresh_feedback() -> int:
+    from opslens.agents import embed
+
+    chunks = feedback_chunks()
+    try:
+        vectors = embed([f"search_document: {text_of(c)}" for c in chunks]) if chunks else []
+    except Exception:
+        vectors = [None] * len(chunks)
+    with store.connection() as conn:
+        with conn.transaction():
+            conn.execute("delete from rag_chunks where source = 'feedback'")
+            with conn.cursor() as cur:
+                cur.executemany("insert into rag_chunks (source, ref, title, body, link, card, embedding) values "
+                                "(%s, %s, %s, %s, %s, %s, %s)",
+                                [(c["source"], c["ref"], c["title"], c["body"], c["link"], c["card"], v) for c, v in zip(chunks, vectors)])
+    return len(chunks)
 
 
 def text_of(c: dict) -> str:
@@ -218,7 +247,8 @@ def make_index(rows: list[dict]) -> dict:
     if all(r.get("embedding") for r in rows):
         matrix = np.asarray([r["embedding"] for r in rows], dtype=np.float32)
         matrix /= np.linalg.norm(matrix, axis=1, keepdims=True) + 1e-9
-    weights = np.asarray([TICKET_WEIGHT if r["source"] == "ticket" else 1.0 for r in rows], dtype=np.float32)
+    weights = np.asarray([TICKET_WEIGHT if r["source"] == "ticket" or (r["source"] == "feedback" and r["ref"] != "feedback:summary")
+                          else 1.0 for r in rows], dtype=np.float32)
     return {"rows": rows, "words": words, "word_matrix": words.transform(texts), "matrix": matrix, "weights": weights}
 
 
@@ -245,13 +275,13 @@ def search_in(idx: dict, question: str, k: int, mode: str, embed) -> list[dict]:
             pass
     score = (vector if mode == "meaning" else VECTOR_WEIGHT * vector + (1 - VECTOR_WEIGHT) * keyword) if used_vectors else keyword
     score = score * idx["weights"]
-    hits, tickets = [], 0
+    hits, shown = [], {}
     for i in np.argsort(-score):
         r = idx["rows"][int(i)]
-        if r["source"] == "ticket":
-            if tickets >= MAX_TICKETS_SHOWN:
+        if r["source"] in CAPPED and r["ref"] != "feedback:summary":
+            if shown.get(r["source"], 0) >= CAPPED[r["source"]]:
                 continue
-            tickets += 1
+            shown[r["source"]] = shown.get(r["source"], 0) + 1
         hits.append({**{key: r[key] for key in ("source", "ref", "title", "body", "link", "card")},
                      "label": LABELS.get(r["source"], r["source"]), "score": round(float(score[i]), 3),
                      "meaning": round(float(vector[i]), 3), "words": round(float(keyword[i]), 3), "how": "meaning and words" if used_vectors else "words only"})

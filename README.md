@@ -72,14 +72,27 @@ the local Ollama model, with the `.env` keys (Gemini, Groq free tiers) as an opt
 5. Real data, Upload a CSV: any export of tickets, incidents or orders, or the UCI example.
 6. Team: who is doing what right now. Click a person, or switch the top bar to Agent, to see
    their own screen: the next ticket OpsLens lines up for them, why, and Take it / Can't take it.
+7. Feedback: what customers say by team, agent and kind of complaint. Add a review or a note to an
+   agent, then sign in as that agent to see it arrive under New feedback.
 
 ## Version 2
 
-After Round 1, the dashboard got a sign-in in front of it. Sign in as `admin` for the whole dashboard,
-or as `agent` with the password `123` and pick who you are from today's shift to see only your own
-work. Problems now show each fix's measured effect. Underneath: Postgres, and four AI agents on a local
-model through Ollama. The optimiser still decides who gets each ticket. Everything about it, including
-the load test, is in [docs/v2/README.md](docs/v2/README.md).
+After Round 1:
+
+- **Sign-in with two roles.** `admin` sees the whole dashboard. An agent signs in with their name, team
+  and password and sees only their own work; the server checks this on every request.
+- **Postgres** holds tickets, history, the AI's steps and the job queue, tested with a million tickets.
+- **A local model through Ollama** (qwen2.5:3b) runs four AI agents; nothing leaves the laptop.
+- **Problems show each fix's measured effect**, with Accept or Override feeding Your plan.
+- **RAG.** Ask OpsLens AI answers from OpsLens's own policies, results, docs, past tickets and customer
+  feedback, with sources and a check that every number and comparison is in them. Similar past
+  tickets also help read tickets: 94 more reach the right team on the held-out days.
+- **Customer feedback**, entered by hand for now because the floor's customers are simulated. The
+  admin sees ratings by team, agent and kind of complaint and can add feedback or their own marked
+  note; each agent sees their own with a New badge.
+
+The optimiser still decides who gets each ticket, so the Round 1 result above is unchanged. Everything
+about version 2, with its measurements, is in [docs/v2/README.md](docs/v2/README.md).
 
 ## Layout
 
@@ -89,6 +102,7 @@ the load test, is in [docs/v2/README.md](docs/v2/README.md).
 - `server/` FastAPI app and the assistant
 - `web/` dashboard, plain HTML/JS/CSS, works offline
 - `desk/` the v2 sign-in page, agent workspace and console
-- `db/migrations/` the Postgres schema; `opslens/agents.py` the AI agents
+- `db/migrations/` the Postgres schema; `opslens/agents.py` the AI agents; `opslens/rag.py` retrieval
+- `opslens/feedback.py` and `config/feedback.yaml` customer feedback, entered by hand
 - `tests/` includes a check that every decimal number in this README exists in `eval/results.json`
 - `data/SOURCES.md` datasets and licences

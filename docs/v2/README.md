@@ -8,6 +8,9 @@ What changed after Round 1, why, and how every part works. The feedback was:
 4. Make the screens much simpler, like Zendesk.
 5. Build real agents on top of Postgres (and maybe Redis).
 
+Added afterwards: RAG, so the AI answers from OpsLens's own data (section 6), and customer feedback,
+entered by hand for now (section 7).
+
 The principle we kept: **the optimiser and the risk model still decide who gets each ticket.** The LLM
 agents read, write, explain and propose; they never replace the maths that produced the Round 1 result.
 
@@ -15,20 +18,21 @@ agents read, write, explain and propose; they never replace the maths that produ
 
 ```
 Browser ── /            sign-in page
-         ├─ /agent/     agent workspace  (role: agent)
-         ├─ /admin/     console          (role: admin)
-         └─ /app/       classic analysis dashboard, unchanged
+         └─ /app/       the Round 1 dashboard: everything for the admin, only their own screen for an agent
+                        (/admin/ and /agent/ from the earlier version redirect here)
 
-FastAPI (server/app.py + server/v2.py + server/auth.py)
+FastAPI (server/app.py + server/v2.py + server/auth.py + server/feedback_api.py)
   ├─ live floor: the simulator runs today's weekday at the real clock      (opslens/live.py, unchanged)
   ├─ mirror thread: every 5 s writes what changed on the floor to Postgres  (opslens/mirror.py)
   ├─ agent worker thread: takes jobs from the queue, runs one agent at a time (opslens/agents.py)
-  └─ /api/v2/*: tickets, summary, floor, actions, agents, proposals, stream
+  └─ /api/v2/*: tickets, summary, floor, actions, agents, proposals, feedback, stream
 
 Postgres 16 ── tickets, users, sessions, teams, agent_profiles
             ├─ ticket_events, decisions, risk_scores   (partitioned by month)
             ├─ agent_runs, agent_steps, proposals       (every AI step)
             ├─ kb_articles, ticket_embeddings           (768-number vectors)
+            ├─ rag_chunks                               (the RAG library, with meaning vectors)
+            ├─ feedback                                 (customer reviews and admin notes)
             ├─ job_queue                                (FOR UPDATE SKIP LOCKED)
             └─ team_hourly                              (materialised view, refreshed every 60 s)
 
@@ -106,7 +110,8 @@ computed in numpy.
   without one. An agent asking `/api/live` gets only their own row, their own actions and decisions,
   no tickets at risk, and the other agents' statuses blanked; the admin gets everything. The tools
   (`/api/bot`, `/api/ask`, `/api/whatif`, `/api/plan/impact`, `/api/plant`, `/api/upload`,
-  `/api/anyfile/*`, `/api/rag/status`, `/api/live/actions`) are admin-only. Only the sign-in page, the
+  `/api/anyfile/*`, `/api/rag/status`, `/api/live/actions`, `/api/v2/feedback*`) are admin-only; an
+  agent reads only their own feedback at `/api/v2/me/feedback`. Only the sign-in page, the
   page code and `/api/health` are open. A session check is cached for 5 seconds so the live screen's
   frequent refreshes stay cheap; signing out ends it at once. Without Postgres (the offline demo) the
   dashboard opens as before.
@@ -116,13 +121,13 @@ computed in numpy.
 The screen is the Round 1 dashboard at `/app/`, in its own design. Version 2 adds sign-in in front of
 it and splits who sees what:
 
-- **Sign in** (`/`): username `admin` or `agent`, password `123`. As agent you then pick who you are
-  from the agents on shift right now, working ones first, each with the ticket they are on.
-- **Admin** gets the whole dashboard: Overview (live now), Team, Problems, Risks, Actions, Proof, Your
-  plan, Story mode and Ask OpsLens AI. "Agent view" shows any agent's screen, as before.
+- **Sign in** (`/`): username `admin` for the admin; an agent chooses Agent and gives their name, team
+  and password (section 3).
+- **Admin** gets the whole dashboard: Overview (live now), Team, Problems, Risks, Actions, Feedback,
+  Proof, Your plan, Story mode and Ask OpsLens AI. "Agent view" shows any agent's screen, as before.
 - **Agent** gets only their own screen: what is lined up next and why, what they are working on, Take
-  it, Can't take it, Done, +5/+10/+20 min and On a break, and their day. No dropdown to be someone
-  else, no admin tabs, no customer replies. Switch agent and Sign out are in the top bar.
+  it, Can't take it, Done, +5/+10/+20 min and On a break, their day and their feedback. No dropdown to
+  be someone else, no admin tabs, no customer replies. Sign out is in the top bar.
 - **Recurring problems** now show the measured fix on each card: what to do, how many missed promises
   it saved over the 14 held-out days with its 95% range, and Accept or Override, which feed Your plan.
   Your plan replays a held-out day with and without the accepted fixes.
@@ -172,22 +177,23 @@ ones it used. The model reads our facts instead of guessing from memory.
   it matched, an excerpt, and an Open link to the right page), and a line saying whether every number
   in the answer was found in the sources. If RAG has nothing good, the prepared answers are used as
   before, and then the "did you mean" list.
-- **Proof, AI with retrieval.** What is indexed, how often the right source is found, and whether
-  retrieved examples help the AI read tickets.
+- **Proof, AI with retrieval.** What is indexed, how often the right source is found, whether the
+  answers are worded right, and whether retrieval helps read tickets.
 
 **How it works** (`opslens/rag.py`, table `rag_chunks`, migration `008`):
 
-1. **Pieces.** 519 of them: the 8 company policies, the 9 recurring problems (with their measured fix),
-   the 18 measured fixes and "all together", the sections of `eval/NUMBERS.md`, the README and these
-   docs, the 106 prepared answers, and 320 past tickets (40 per category, training days only, masked).
+1. **Pieces.** The 8 company policies, the 9 recurring problems (with their measured fix), the 18
+   measured fixes and "all together", the sections of `eval/NUMBERS.md`, the README and these docs, the
+   106 prepared answers, 320 past tickets (40 per category, training days only, masked), and every
+   customer review with one summary of them all (section 7). The Proof page lists the current count.
    Fix effects are written in plain words ("131 fewer missed promises, likely between 88 and 174
    fewer") because the small model misreads minus signs and "95% range".
 2. **Meaning.** Each piece is embedded with `nomic-embed-text` on the laptop GPU (about 14 ms a piece;
    the whole index builds in about 9 seconds) and stored in Postgres. With pgvector this becomes a
    vector index; without it, similarity is one matrix product in numpy.
 3. **Search.** Meaning (65%) and exact words (35%, TF-IDF) together, because "Rs 300", "P1" or a
-   ticket ID must match exactly. Past tickets count 0.9 and at most one is shown, so rules and
-   results come first.
+   ticket ID must match exactly. Past tickets and single reviews count 0.9; at most one past ticket and
+   two reviews are shown, so rules and results come first. The feedback summary counts in full.
 4. **Gate.** If nothing is close in meaning (below 0.58), or the model says the sources do not cover
    it, there is no RAG answer: off-topic questions such as "capital of France" get the fallback.
 5. **Answer.** `qwen2.5:3b` gets the 5 pieces and a one-line glossary (missed means the promise time
@@ -201,15 +207,49 @@ ones it used. The model reads our facts instead of guessing from memory.
    and normal values in plain words ("for this group the mean wait is 368; for normal tickets it is
    28"), and the model is told to prefer measured sources over prepared answers when numbers differ.
 
-Measured on 16 fact questions (`config/rag_faithful.yaml`, `python -m opslens.rag faith after`): 14 of
-16 right before these checks, 15 of 16 after, none wrong in a way the sources contradict. The one
-left gives the range of a fix (88 to 174 fewer) without its headline 131. With a 3-billion-parameter
-model and 16 questions, small prompt changes move one or two answers either way; the code check is
-what reliably stops this kind of mistake, and every answer still shows its sources.
+Measured on 16 fact questions (`config/rag_faithful.yaml`, `python -m opslens.rag faith after`), each
+with words the answer must contain: 14 of 16 before these checks, 15 of 16 in the first run after,
+and 13 of 16 in the saved run, made after customer feedback was added and these docs were rewritten.
+None of the saved answers contradicts its sources. The three it counts as wrong are right but
+incomplete: two say Hindi refund tickets wait "13.0 times longer" without the 368 and 28 minutes,
+and one says all fixes "save 574" instead of "574 fewer". Customer feedback was not among their
+sources; these docs are, and their text changes from run to run. One real conflict was fixed on the
+way: a prepared answer gave "3,810 fewer out of 5,864" without saying that compares with the
+priority-first floor, and the model used it for "every fix at once"; it now says so and gives the 574.
+With a 3-billion-parameter model and 16 questions, runs move a few answers either way; the code check
+is what reliably stops a wrong number, and every answer still shows its sources.
 
 Rebuild with `mingw32-make rag` after changing a policy, a result or the docs.
 
-## 7. What did not change
+## 7. Customer feedback
+
+**Entered by hand for now.** The food-delivery floor's customers are simulated, so they cannot write
+feedback. The team wrote 44 customer reviews and 6 admin notes (`config/feedback.yaml`) to match the
+patterns OpsLens found: Hindi refunds waiting too long, wrong items from one restaurant group, the
+payment outage, the weekend dinner rush, phone transfers. Every screen labels a review "Customer ·
+entered by hand". `python -m opslens.seed` loads them once (table `feedback`, migration `009`).
+
+- **Admin, Feedback tab.** The customer rating (average, happy rated 4 or 5, unhappy rated 1 or 2,
+  the spread of stars), what customers bring up by kind of complaint with the lowest-rated comment,
+  the rating by team and by agent, and the latest feedback with filters. A form adds a customer's
+  feedback (rating required) or the admin's own note to an agent (rating optional).
+- **Admin notes are kept apart.** They show "From the admin" everywhere and never count in the
+  customer rating, so the rating keeps meaning "how happy are customers".
+- **Agents see their own.** The agent's screen shows "New feedback (n)" and a Your feedback card: their
+  customer rating, the reviews and the admin's notes, newest first, with New on the unread ones and
+  Mark as read. The server returns an agent only their own feedback; the full list, other agents'
+  feedback and adding feedback are admin-only. When the admin opens an agent's screen they see the
+  same card but cannot mark it read.
+- **Private details are hidden** in a customer's text before it is saved, with the same masking as
+  tickets.
+- **Ask OpsLens AI can quote it.** Each review and a summary (rating overall, by kind of complaint and
+  by team, computed in code) are RAG pieces with the label Customer feedback. Adding a review
+  refreshes them in the background. Admin notes are coaching, not customer data, and stay out.
+
+Adding the reviews to the library changes how much each word counts in search; the retrieval scores
+in Measured were taken with them in.
+
+## 8. What did not change
 
 - The simulator, the optimiser, the risk model and every number in `eval/`.
 - The classic dashboard at `/app/` with Proof, Replay and the real UCI desk.
@@ -225,7 +265,8 @@ mingw32-make rag
 mingw32-make serve
 ```
 
-Postgres must be running with the `DATABASE_URL` from `.env.example`. Open http://localhost:8000/ and
+Postgres must be running with the `DATABASE_URL` from `.env.example`. `mingw32-make seed` also loads the
+hand-written feedback, and `mingw32-make rag` adds it to the RAG library. Open http://localhost:8000/ and
 sign in with a demo account. `OPSLENS_MIRROR=0` and `OPSLENS_AGENTS=0` turn the background threads off.
 
 ## Measured
@@ -286,12 +327,15 @@ the piece that should come back. Full output: [results/rag_retrieval.json](resul
 
 | Search by | Right source first | Right source in the top 3 | Mean reciprocal rank |
 |---|---|---|---|
-| Meaning and words (used) | 85% | 96% | 0.90 |
+| Meaning and words (used) | 81% | 96% | 0.88 |
 | Meaning only | 81% | 92% | 0.87 |
-| Words only | 54% | 73% | 0.67 |
+| Words only | 50% | 65% | 0.62 |
 
-Combining the two beats either alone. The one question still missed in the top 3 is "Could the risk
-model be cheating by seeing the future?", whose prepared answer is worded around "leakage".
+Combining the two beats either alone. Before customer feedback was added it was 85%, 96% and 0.90
+with meaning and words: the 45 feedback pieces change how much each word counts, and one question's
+right source now comes second. These docs are part of the library, so they quote none of the test
+questions; an earlier version quoted two, which helped one of them. The one question still missed in
+the top 3 asks about leakage without using the word, and its prepared answer is written around it.
 
 ### RAG: does retrieval help read tickets? Yes (`mingw32-make eval-rag-blend`)
 

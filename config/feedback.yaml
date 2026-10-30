@@ -1,0 +1,56 @@
+note: >
+  Hand-written feedback. The food-delivery floor's customers are simulated, so they cannot write feedback; these entries
+  were written by the team to match the patterns OpsLens found, and every screen labels them as entered by hand.
+  days_ago and hour place each entry in time; entries from today and yesterday start unread for the agent.
+customer:
+  - {key: c01, agent: A01, category: late_delivery, rating: 5, days_ago: 0, hour: 13, text: "My biryani was 25 minutes late and Rohit tracked the rider down and gave me a clear time. Food arrived exactly when he said."}
+  - {key: c02, agent: A01, category: late_delivery, rating: 4, days_ago: 3, hour: 20, text: "Quick reply and polite. The order was still late but at least I knew why."}
+  - {key: c03, agent: A02, category: late_delivery, rating: 5, days_ago: 1, hour: 9, text: "Sana sorted my breakfast order in two minutes. Very kind."}
+  - {key: c04, agent: A03, category: late_delivery, rating: 2, days_ago: 2, hour: 21, text: "Waited over half an hour for a reply while my order sat at the restaurant. The agent was fine once he replied."}
+  - {key: c05, agent: A05, category: late_delivery, rating: 4, days_ago: 5, hour: 19, text: "Imran kept me updated every few minutes. Good service."}
+  - {key: c06, agent: A06, category: late_delivery, rating: 3, days_ago: 6, hour: 20, text: "Got an answer but it felt copy-pasted. The order did come in the end."}
+  - {key: c07, agent: A07, category: late_delivery, rating: 5, days_ago: 0, hour: 12, text: "Karan offered a voucher before I even asked. Great experience."}
+  - {key: c08, agent: A08, category: late_delivery, rating: 1, days_ago: 4, hour: 21, text: "I was transferred three times on the phone before anyone helped. By then the food was cold."}
+  - {key: c09, agent: A09, category: late_delivery, rating: 5, days_ago: 2, hour: 22, text: "Nisha spoke to me in Hindi and fixed it fast. Thank you."}
+  - {key: c10, agent: C04, category: late_delivery, rating: 4, days_ago: 7, hour: 13, text: "Helpful and quick. Would be nice to get the refund automatically."}
+  - {key: c11, agent: C05, category: late_delivery, rating: 2, days_ago: 9, hour: 20, text: "Dinner rush, long wait for a reply, and no compensation offered."}
+  - {key: c12, agent: B01, category: refund, rating: 5, days_ago: 0, hour: 15, text: "Kavita explained the refund steps clearly and the money was back in my account the same day."}
+  - {key: c13, agent: B01, category: payment_failure, rating: 4, days_ago: 1, hour: 18, text: "Payment failed twice, agent confirmed I would not be charged. Calm and clear."}
+  - {key: c14, agent: B02, category: refund, rating: 1, days_ago: 2, hour: 11, text: "I asked for someone who speaks Hindi and waited almost an hour for my refund to even be looked at."}
+  - {key: c15, agent: B02, category: refund, rating: 2, days_ago: 8, hour: 12, text: "Hindi support took forever. Once someone replied it was sorted, but the wait was too long."}
+  - {key: c16, agent: B03, category: payment_failure, rating: 3, days_ago: 3, hour: 14, text: "Money was deducted but the order failed. Took a while but it was refunded."}
+  - {key: c17, agent: B04, category: refund, rating: 5, days_ago: 4, hour: 16, text: "Manish was very patient with me. Refund done in five minutes."}
+  - {key: c18, agent: B05, category: refund, rating: 2, days_ago: 1, hour: 10, text: "Hindi mein baat karne wala koi nahi mila for a long time. Refund came only next day."}
+  - {key: c19, agent: B06, category: payment_failure, rating: 1, days_ago: 13, hour: 19, text: "Charged twice during the payment outage and nobody replied for ages."}
+  - {key: c20, agent: B07, category: payment_failure, rating: 2, days_ago: 13, hour: 20, text: "UPI payment failed, amount deducted. Very slow response that evening."}
+  - {key: c21, agent: B08, category: refund, rating: 4, days_ago: 5, hour: 17, text: "Got the refund, the agent was polite."}
+  - {key: c22, agent: B09, category: refund, rating: 5, days_ago: 6, hour: 21, text: "Tanvi went the extra mile and checked my older order too. Excellent."}
+  - {key: c23, agent: B10, category: payment_failure, rating: 3, days_ago: 10, hour: 22, text: "Issue resolved but I had to explain it twice."}
+  - {key: c24, agent: B11, category: refund, rating: 4, days_ago: 11, hour: 23, text: "Late night support was there and helped. Good."}
+  - {key: c25, agent: A04, category: refund, rating: 3, days_ago: 7, hour: 15, text: "Took a while, but the refund came."}
+  - {key: c26, agent: C02, category: wrong_item, rating: 2, days_ago: 1, hour: 9, text: "Got someone else's order at breakfast and waited a long time for a reply."}
+  - {key: c27, agent: C03, category: missing_item, rating: 4, days_ago: 3, hour: 14, text: "Missing drink refunded quickly. Sneh was friendly."}
+  - {key: c28, agent: C06, category: wrong_item, rating: 1, days_ago: 2, hour: 10, text: "Third wrong order from the same restaurant this month. The agent apologised but nothing changes."}
+  - {key: c29, agent: C06, category: wrong_item, rating: 2, days_ago: 9, hour: 9, text: "Wrong dish again in the morning, slow reply."}
+  - {key: c30, agent: C07, category: missing_item, rating: 5, days_ago: 4, hour: 13, text: "Isha asked for a photo and refunded the missing item straight away. Smooth."}
+  - {key: c31, agent: C08, category: wrong_item, rating: 3, days_ago: 0, hour: 20, text: "Weekday dinner, the wait was long, but the replacement was offered."}
+  - {key: c32, agent: C09, category: missing_item, rating: 4, days_ago: 12, hour: 19, text: "Helpful agent, sorted in one message."}
+  - {key: c33, agent: C02, category: wrong_item, rating: 1, days_ago: 6, hour: 8, text: "Same restaurant sent the wrong food twice in a week. Please do something about that restaurant."}
+  - {key: c34, agent: D01, category: app_bug, rating: 2, days_ago: 1, hour: 21, text: "Saturday dinner, the app kept crashing at checkout and the reply took forever."}
+  - {key: c35, agent: D02, category: account, rating: 5, days_ago: 2, hour: 11, text: "Swati got me back into my account in minutes. Thank you."}
+  - {key: c36, agent: D03, category: restaurant_partner, rating: 3, days_ago: 3, hour: 20, text: "Restaurant cancelled on me. The agent helped me reorder but it took time."}
+  - {key: c37, agent: D04, category: app_bug, rating: 4, days_ago: 5, hour: 16, text: "Explained a workaround for the app bug. Useful."}
+  - {key: c38, agent: D05, category: account, rating: 5, days_ago: 0, hour: 10, text: "Bhavna was quick and clear. Changed my number without any hassle."}
+  - {key: c39, agent: D06, category: restaurant_partner, rating: 1, days_ago: 8, hour: 21, text: "Weekend night, restaurant closed early and I waited ages for anyone to reply."}
+  - {key: c40, agent: D07, category: app_bug, rating: 3, days_ago: 9, hour: 14, text: "The answer was correct but slow."}
+  - {key: c41, agent: D08, category: account, rating: 4, days_ago: 10, hour: 12, text: "Good help with my login problem."}
+  - {key: c42, agent: D09, category: restaurant_partner, rating: 2, days_ago: 1, hour: 20, text: "Weekend dinner, the restaurant marked my order as delivered when it was not. Long wait for help."}
+  - {key: c43, agent: D10, category: app_bug, rating: 5, days_ago: 4, hour: 18, text: "Hemant fixed my coupon problem in one go."}
+  - {key: c44, agent: D11, category: account, rating: 4, days_ago: 11, hour: 22, text: "Support in Hindi at night, very helpful."}
+admin:
+  - {key: a01, agent: A01, rating: 5, days_ago: 0, hour: 14, text: "Great save on the late biryani order today: you gave the customer a clear time and kept it. Keep doing that."}
+  - {key: a02, agent: B02, days_ago: 1, hour: 12, text: "Hindi refund tickets are waiting too long on your shift. Please take them first when you see them, and ask me for help if the queue builds."}
+  - {key: a03, agent: C06, days_ago: 2, hour: 11, text: "Wrong-item complaints from restaurant cluster 17 keep coming. Log the restaurant on every one so we can raise it with the partner team."}
+  - {key: a04, agent: B09, rating: 5, days_ago: 6, hour: 22, text: "Checking the customer's older order too was exactly right. Thank you."}
+  - {key: a05, agent: D01, days_ago: 1, hour: 22, text: "Saturday dinner was overloaded. If checkout crashes come in again, flag them to me so I can move someone over from Team A."}
+  - {key: a06, agent: A08, rating: 3, days_ago: 4, hour: 22, text: "The phone transfers were not your fault, but please own the ticket when it reaches you instead of passing it on again."}

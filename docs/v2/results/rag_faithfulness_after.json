@@ -1,44 +1,49 @@
 {
  "label": "after",
  "questions": 16,
- "right": 15,
- "wrong": 1,
+ "right": 13,
+ "wrong": 3,
  "declined": 0,
- "right_pct": 0.938,
+ "right_pct": 0.812,
  "cases": [
   {
    "question": "Why do Hindi refund tickets wait so long and what fixes it?",
-   "verdict": "right",
-   "missing": [],
-   "forbidden_found": [],
-   "flagged": false,
-   "answer": "Hindi refund tickets wait 13.0 times longer compared to other tickets, with a mean wait time of 368 minutes versus 28 minutes. The issue is attributed to the lack of Hindi-speaking agents who are capable of handling refund and payment failure tickets. To address this, cross-training 2 Hindi-speaking agents on payment failure and refund is proposed, which is expected to reduce missed promises by 131 over the 14 held-out days (likely between 88 and 174 fewer). [1][2][3]"
-  },
-  {
-   "question": "How long do Hindi refund tickets wait compared with other tickets?",
-   "verdict": "right",
-   "missing": [],
-   "forbidden_found": [],
-   "flagged": false,
-   "answer": "Hindi \u00d7 Team B wait 13.0\u00d7 longer. For this group the mean wait (min) is 368; for normal tickets it is 28. It affects 4,345 tickets (5.38% of all). [1][3]"
-  },
-  {
-   "question": "How many missed promises does cross-training Hindi agents save?",
    "verdict": "wrong",
    "missing": [
-    "131"
+    "368"
    ],
    "forbidden_found": [],
    "flagged": false,
-   "answer": "Cross-training two Hindi-speaking agents on payment failure and refund saves between 88 and 174 fewer missed promises over the 14 held-out days, according to the data from Source [1]."
+   "answer": "Hindi refund tickets wait 13.0 times longer compared to normal tickets. The issue is addressed by cross-training 2 Hindi-speaking agents on payment failure and refund, which results in 131 fewer missed promises over the 14 held-out days (likely between 88 and 174 fewer). [1][3]"
   },
   {
-   "question": "If we apply every recommended fix at once how many missed promises do we save?",
+   "question": "How long do Hindi refund tickets wait compared with other tickets?",
+   "verdict": "wrong",
+   "missing": [
+    "368",
+    "28"
+   ],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "Hindi refund tickets wait 13.0 times longer compared with other tickets. [1][2][3][4][5]"
+  },
+  {
+   "question": "How many missed promises does cross-training Hindi agents save?",
    "verdict": "right",
    "missing": [],
    "forbidden_found": [],
    "flagged": false,
-   "answer": "All 18 measured fixes together save 574 fewer missed promises over the 14 held-out days (likely between 505 and 643 fewer). [1]"
+   "answer": "Cross-training two Hindi-speaking agents on payment failure and refund saves between 88 and 174 fewer missed promises over the 14 held-out days, with a likely reduction of 131 fewer missed promises. [1][3]"
+  },
+  {
+   "question": "If we apply every recommended fix at once how many missed promises do we save?",
+   "verdict": "wrong",
+   "missing": [
+    "(?i)fewer"
+   ],
+   "forbidden_found": [],
+   "flagged": false,
+   "answer": "All 18 fixes together save 574 missed promises over the 14 held-out days. [1]"
   },
   {
    "question": "How much better is OpsLens than skills-based routing?",
@@ -70,7 +75,7 @@
    "missing": [],
    "forbidden_found": [],
    "flagged": false,
-   "answer": "If money left the customer's account but the order did not go through, it comes back automatically within 48 hours. Ask the customer not to pay again for the same order unless they want to. If 48 hours have passed, raise it to the payments team with the transaction reference. [1]"
+   "answer": "When money was deducted but the order failed, it was refunded within 48 hours. If 48 hours have passed, the transaction reference is raised to the payments team. [1][2][3][5]"
   },
   {
    "question": "Which team is short of people at weekday dinner?",
@@ -118,7 +123,7 @@
    "missing": [],
    "forbidden_found": [],
    "flagged": false,
-   "answer": "On its own, the local model is almost as good as the cloud one, scoring 90.75% for classification accuracy, compared to 91.5% for the cloud model. However, the local model performs better when it is used in conjunction with routing, achieving 97.51% accuracy, which is higher than the cloud model's 98.22% accuracy. [1][2]"
+   "answer": "The local qwen2.5:3b model does not beat the cloud AI on its own. On its own, the local model is almost as good as the cloud one, scoring 90.75% compared to 91.5% for the cloud model. [1][2]"
   },
   {
    "question": "What range does the Hindi cross-training fix have?",
@@ -126,7 +131,7 @@
    "missing": [],
    "forbidden_found": [],
    "flagged": false,
-   "answer": "The cross-training fix for Hindi-speaking agents resulted in 131 fewer missed promises over the 14 held-out days, with a likely range of 88 to 174 fewer. [1][2][3]"
+   "answer": "The cross-training of two Hindi-speaking agents on payment failure and refund resulted in 131 fewer missed promises over the 14 held-out days, with a likely range of 88 to 174 fewer. [1][2][3]"
   },
   {
    "question": "How many missed promises does the status banner fix save?",
@@ -134,7 +139,7 @@
    "missing": [],
    "forbidden_found": [],
    "flagged": false,
-   "answer": "The status banner fix saves between 38 and 83 fewer missed promises over the 14 held-out days, with a likely reduction of 61 fewer missed promises. [1][2]"
+   "answer": "The status banner fix saves 61 fewer missed promises over the 14 held-out days, with a likely range of 38 to 83 fewer. [1][2]"
   }
  ]
 }

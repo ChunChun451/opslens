@@ -33,7 +33,7 @@ def test_every_source_becomes_pieces_with_unique_refs_and_plain_numbers():
     chunks = rag.all_chunks()
     refs = [c["ref"] for c in chunks]
     assert len(refs) == len(set(refs))
-    assert {c["source"] for c in chunks} == {"policy", "problem", "fix", "results", "readme", "docs", "faq", "ticket"}
+    assert {c["source"] for c in chunks} - {"feedback"} == {"policy", "problem", "fix", "results", "readme", "docs", "faq", "ticket"}
     f1 = next(c for c in chunks if c["ref"] == "fix:pb_F1")
     assert "fewer missed promises" in f1["body"] and "−" not in f1["body"]
 
@@ -58,6 +58,19 @@ def test_a_number_not_in_the_sources_is_sent_back_once():
     out = rag.answer("how long do UPI refunds take", client=client, find=finder([1.0, 0.0, 0.0]))
     assert out["answer"].endswith("[1]") and out["checked"]
     assert "not in the sources: 12" in client.providers[0].sent[1][1]["content"]
+
+
+def test_single_reviews_are_capped_but_the_feedback_summary_always_counts():
+    reviews = [{"source": "feedback", "ref": f"feedback:{i}", "title": f"Customer feedback {i}", "link": "#feedback", "card": None,
+                "body": "A customer rated the refund 1 out of 5.", "embedding": [1.0, 0.0, 0.0]} for i in range(4)]
+    summary = {"source": "feedback", "ref": "feedback:summary", "title": "What customers say: feedback summary", "link": "#feedback",
+               "card": None, "body": "Refund 3.4 out of 5 from 9 reviews.", "embedding": [0.99, 0.01, 0.0]}
+    idx = rag.make_index(ROWS + reviews + [summary])
+    hits = rag.search_in(idx, "customer feedback refund rating", 8, "both", lambda texts: [[1.0, 0.0, 0.0]])
+    refs = [h["ref"] for h in hits]
+    assert "feedback:summary" in refs
+    assert sum(1 for r in refs if r.startswith("feedback:") and r != "feedback:summary") == rag.MAX_FEEDBACK_SHOWN
+    assert all(h["label"] == "Customer feedback" for h in hits if h["source"] == "feedback")
 
 
 def test_off_topic_or_uncovered_questions_fall_back_instead_of_guessing():

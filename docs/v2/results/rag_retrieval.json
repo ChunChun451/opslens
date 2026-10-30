@@ -1,27 +1,27 @@
 {
  "questions": 26,
- "hit_at_1": 0.846,
+ "hit_at_1": 0.808,
  "hit_at_3": 0.962,
  "hit_at_5": 0.962,
- "mrr": 0.897,
+ "mrr": 0.883,
  "modes": {
   "both": {
-   "hit_at_1": 0.846,
+   "hit_at_1": 0.808,
    "hit_at_3": 0.962,
    "hit_at_5": 0.962,
-   "mrr": 0.897
+   "mrr": 0.883
   },
   "meaning": {
    "hit_at_1": 0.808,
    "hit_at_3": 0.923,
    "hit_at_5": 0.962,
-   "mrr": 0.867
+   "mrr": 0.869
   },
   "words": {
-   "hit_at_1": 0.538,
-   "hit_at_3": 0.731,
-   "hit_at_5": 0.846,
-   "mrr": 0.668
+   "hit_at_1": 0.5,
+   "hit_at_3": 0.654,
+   "hit_at_5": 0.808,
+   "mrr": 0.623
   }
  },
  "cases": [
@@ -130,10 +130,10 @@
     "problem:F4",
     "fix:pb_F4"
    ],
-   "rank": 1,
+   "rank": 2,
    "top3": [
-    "problem:F4",
     "faq:Q24",
+    "problem:F4",
     "faq:Q18"
    ]
   },
@@ -221,10 +221,10 @@
    "expect": [
     "faq:Q19"
    ],
-   "rank": null,
+   "rank": 8,
    "top3": [
-    "docs:rag-does-it-find-the-right-source-mingw32-make-rag-eval",
     "faq:Q21",
+    "docs:8-what-did-not-change",
     "results:risk-model-test-days"
    ]
   },
@@ -263,8 +263,8 @@
    "rank": 1,
    "top3": [
     "faq:Q38",
-    "docs:rag-do-retrieved-examples-help-the-ai-read-tickets-mingw32-m",
-    "docs:6-rag-the-ai-looks-things-up-before-it-answers-1"
+    "docs:rag-what-did-not-work-the-ai-reading-tickets-with-examples-m",
+    "docs:6-rag-the-ai-looks-things-up-before-it-answers-4"
    ]
   },
   {
@@ -288,8 +288,8 @@
    "rank": 1,
    "top3": [
     "docs:4-the-screens-1",
-    "readme:version-2",
-    "docs:3-separate-screens-and-roles-1"
+    "docs:3-separate-screens-and-roles-1",
+    "readme:version-2"
    ]
   },
   {

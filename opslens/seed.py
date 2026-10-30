@@ -7,6 +7,7 @@ from argon2 import PasswordHasher
 
 from opslens import store
 from opslens.config import load_config, load_env_file, project_path
+from opslens.feedback import seed_feedback
 
 AGENTS_CSV = project_path("data/generated/agents.csv")
 DEMO_DOMAIN = "opslens.demo"
@@ -48,7 +49,8 @@ def seed(conn) -> dict[str, int]:
                 "on conflict (email) do update set name = excluded.name, role = excluded.role, team = excluded.team, "
                 "agent_code = excluded.agent_code, password_hash = excluded.password_hash",
                 (email, name, role, team, agent_code, password))
-    return {"teams": len(teams), "agents": len(agents), "users": len(users)}
+        feedback = seed_feedback(conn)
+    return {"teams": len(teams), "agents": len(agents), "users": len(users), "feedback": feedback}
 
 
 def main() -> int:

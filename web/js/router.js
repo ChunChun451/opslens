@@ -14,6 +14,7 @@ import * as shadow from "./tabs/shadow.js";
 import * as team from "./tabs/team.js";
 import * as agent from "./tabs/agent.js";
 import * as rag from "./tabs/rag.js";
+import * as feedback from "./tabs/feedback.js";
 import { state, store, storeSession } from "./data.js";
 
 const ICONS = {
@@ -24,6 +25,7 @@ const ICONS = {
   risks: '<path d="M12 3.8L21 19.5H3z"/><path d="M12 10v4.5M12 17.2v.1"/>',
   actions: '<path d="M4 7l1.8 1.8L9 5.5M4 14l1.8 1.8L9 12.5"/><path d="M12.5 7.5H20M12.5 14.5H20M4.5 19.5H20"/>',
   proof: '<path d="M12 3.5l7 2.8v5.2c0 4.3-3 7.7-7 9-4-1.3-7-4.7-7-9V6.3z"/><path d="M9 12l2.2 2.2L15.2 10"/>',
+  feedback: '<path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5h-2.5z"/><path d="M12 8.2l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z"/>',
 };
 
 export const TABS = [
@@ -50,6 +52,10 @@ export const TABS = [
     food: [{ id: "recommendations", label: "What to do", module: recommendations }],
     real: [{ id: "rd-actions", label: "What to do", module: realdata.actions }],
     upload: [{ id: "up-actions", label: "What to do", module: realdata.actions }] } },
+  { id: "feedback", label: "Feedback", views: {
+    food: [{ id: "feedback", label: "Feedback", module: feedback }],
+    real: [{ id: "feedback", label: "Feedback", module: feedback }],
+    upload: [{ id: "feedback", label: "Feedback", module: feedback }] } },
   { id: "proof", label: "Proof", views: {
     food: [{ id: "results", label: "Results", module: overview },
            { id: "compare", label: "Side by side", module: compare },

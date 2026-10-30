@@ -71,8 +71,10 @@ function faithful(before, after) {
       <p class="small">Every number in an answer must be in the sources, and a number may only carry a comparison word (longer, fewer, more…)
         the sources give it. "368 minutes longer" is now caught: the sources say 13.0 times longer, and 368 minutes is the whole wait.
         A caught answer is sent back once; if it is still wrong the chatbot says what to check.</p>
-      <p class="small muted">With a 3-billion-parameter model and 16 questions, small changes move one or two answers either way; the
-        code check is what reliably stops this kind of mistake. Re-run with <code>python -m opslens.rag faith after</code>.</p>`,
+      <p class="small muted">With a 3-billion-parameter model and 16 questions, runs move a few answers either way: the first run after
+        the checks scored 15 of 16, the saved run after customer feedback was added ${after.right} of ${after.questions}. None of the saved
+        answers contradicts its sources; the ones counted wrong leave out a number or word the test asks for. The code check is what
+        reliably stops a wrong number. Re-run with <code>python -m opslens.rag faith after</code>.</p>`,
   });
 }
 

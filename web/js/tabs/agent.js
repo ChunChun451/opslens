@@ -3,9 +3,12 @@ import { escapeHtml, prettyKey } from "../format.js";
 import {
   TEAM_NAMES, LANGUAGE, STATUS_TEXT, clockNow, keepFresh, notReady, minutesLeft, duration, postAction, effectLines, floorEffect,
 } from "../floornow.js";
+import { avg, itemHtml } from "./feedback.js";
 
 const CANT = ["Not my skill", "Language", "Needs a callback first", "Other"];
 const EXTRA = [5, 10, 20];
+const FEEDBACK_EVERY_MS = 60000;
+const FEEDBACK_SHOWN = 6;
 const PLAIN = [
   [/^already past its SLA - served so no customer is left behind$/, () => "Already late: served so no customer is left behind"],
   [/^breach risk ([\d.]+) -> ([\d.]+) if served now$/, (m) => `Chance of missing the promise: ${pct(m[1])} if it waits, ${pct(m[2])} if you take it now`],
@@ -44,9 +47,61 @@ export function render(section) {
     section.querySelector("#ag-body").dataset.agent = "";
     if (last) draw(section, last);
   });
-  section.addEventListener("click", (event) => onClick(section, event));
+  section.addEventListener("click", (event) => {
+    if (event.target.closest("#ag-fb-read")) {
+      markRead(section);
+      return;
+    }
+    if (event.target.closest("#ag-fb-badge")) {
+      section.querySelector("#ag-fb")?.scrollIntoView({ block: "start", behavior: "smooth" });
+      return;
+    }
+    onClick(section, event);
+  });
   document.addEventListener("role-changed", () => { if (last) draw(section, last); });
   keepFresh(section, "agent", (data) => { last = data; draw(section, data); });
+  setInterval(() => {
+    const body = section.querySelector("#ag-body");
+    if (body && body.dataset.agent && !section.closest("[hidden]")) loadFeedback(body, body.dataset.agent);
+  }, FEEDBACK_EVERY_MS);
+}
+
+function feedbackUrl(code) {
+  return state.lockedAgent ? "/api/v2/me/feedback" : `/api/v2/feedback/agent/${encodeURIComponent(code)}`;
+}
+
+async function loadFeedback(body, code) {
+  const box = body.querySelector("#ag-fb");
+  const badge = body.querySelector("#ag-fb-badge");
+  if (!box) return;
+  let d;
+  try {
+    const r = await fetch(feedbackUrl(code), { credentials: "same-origin", cache: "no-store" });
+    if (!r.ok) throw new Error(`server answered ${r.status}`);
+    d = await r.json();
+  } catch (error) {
+    box.innerHTML = `<div class="card-head"><h3 class="card-title">Feedback</h3></div>
+      <p class="ag-empty">Feedback could not be loaded (${escapeHtml(error.message)}). It needs the database to be running.</p>`;
+    return;
+  }
+  if (body.dataset.agent !== code) return;
+  const own = Boolean(state.lockedAgent);
+  badge.hidden = !d.unseen;
+  badge.textContent = `New feedback (${d.unseen})`;
+  const c = d.customer;
+  box.innerHTML = `<div class="card-head"><div><h3 class="card-title">${own ? "Your feedback" : `${escapeHtml(nameOf(code))}'s feedback`}</h3>
+        <div class="card-sub">${c.count ? `Customers rate ${own ? "you" : "them"} <b>${avg(c.average)} / 5</b> from ${c.count} review${c.count === 1 ? "" : "s"}`
+          : "No customer reviews yet"} · admin notes are not in the rating · entered by hand for now</div></div>
+      ${d.unseen && own ? `<button type="button" class="btn btn-sm" id="ag-fb-read">Mark ${d.unseen} as read</button>` : ""}</div>
+    ${d.items.length ? `<ul class="fb-list">${d.items.slice(0, FEEDBACK_SHOWN).map((f) => itemHtml(f, { showAgent: false, markNew: true })).join("")}</ul>`
+      : `<p class="ag-empty">No feedback yet.</p>`}
+    ${!own && d.unseen ? `<p class="small muted">${d.unseen} not read yet. Only ${escapeHtml(nameOf(code))} can mark them as read.</p>` : ""}`;
+}
+
+async function markRead(section) {
+  const body = section.querySelector("#ag-body");
+  await fetch("/api/v2/me/feedback/seen", { method: "POST", credentials: "same-origin" }).catch(() => null);
+  loadFeedback(body, body.dataset.agent);
 }
 
 function nameOf(id) {
@@ -72,6 +127,7 @@ function draw(section, d) {
   if (body.dataset.agent !== agent.id) {
     body.dataset.agent = agent.id;
     body.innerHTML = frame(d, agent);
+    loadFeedback(body, agent.id);
   }
   const mine = (d.actions || []).filter((e) => e.agent === agent.id);
   const taken = new Set(mine.filter((e) => e.kind === "take").map((e) => e.ticket_id));
@@ -110,6 +166,7 @@ function frame(d, agent) {
           ${agent.languages.map((l) => escapeHtml(LANGUAGE[l] || l)).join(", ")}</p>
         <div class="chips ag-skills">${skills}</div>
       </div>
+      <button type="button" class="fb-badge" id="ag-fb-badge" hidden></button>
       <label class="ag-pick"><span>You are</span><select id="ag-pick">${options}</select></label>
     </header>
     <div id="ag-status" class="ag-status"></div>
@@ -119,7 +176,8 @@ function frame(d, agent) {
       <section class="card ag-card ag-nowcard" id="ag-now"></section>
     </div>
     <div class="ag-day-title">Your day</div>
-    <div class="ag-day" id="ag-day"></div>`;
+    <div class="ag-day" id="ag-day"></div>
+    <section class="card ag-card ag-fb" id="ag-fb"></section>`;
 }
 
 function statusHtml(row, agent, away) {

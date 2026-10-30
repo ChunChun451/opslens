@@ -248,8 +248,9 @@ two named agents to cross-train. Each one was replayed on the 14 held-out days.
 
 **Q41. What do those actions actually save?**
 On today's priority-first floor, all six together: 1,127 fewer missed promises in two weeks (95% CI
-991 to 1,264). OpsLens with every fix and the staffing changes: 3,810 fewer than priority-first today,
-out of 5,864. The biggest single one: cross-training two Hindi speakers, −167.4 under priority-first
+991 to 1,264). Compared with today's priority-first floor, not with OpsLens alone, OpsLens with every
+fix and the staffing changes misses 3,810 fewer, out of 5,864. Compared with OpsLens alone, all 18 fixes
+together save 574. The biggest single one: cross-training two Hindi speakers, −167.4 under priority-first
 and −91.8 under OpsLens (alone, CI −150.3 to −33.3).
 
 **Q42. (Attack) "Saves 30% of tickets" — you made that number up.**
