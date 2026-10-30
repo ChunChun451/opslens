@@ -171,6 +171,8 @@ def build_provider(name: str) -> ChatProvider | None:
     pc = provider_config(name, cfg["providers"][name])
     if pc.kind == "mock":
         return MockProvider(pc)
+    if pc.kind == "ollama":
+        return OpenAICompatProvider(pc, os.environ.get(pc.api_key_env, "") or "ollama")
     api_key = os.environ.get(pc.api_key_env, "")
     if not api_key:
         log.warning("No %s in environment or .env - provider %s skipped", pc.api_key_env, name)

@@ -1,0 +1,60 @@
+articles:
+  - title: Late delivery
+    category: late_delivery
+    body: >
+      Check the live rider location and the restaurant's ready time before replying. If the order is more than
+      15 minutes past its promised time, apologise, give the new arrival estimate and offer a delivery-fee refund
+      as a coupon. If it is more than 45 minutes late or the rider is not moving, offer to cancel with a full refund.
+      Never promise an exact minute you cannot see on the tracker.
+
+  - title: Missing item
+    category: missing_item
+    body: >
+      Ask which item is missing only if the customer has not said it. For orders up to Rs 300 refund the missing
+      item straight away to the original payment method. Above Rs 300, ask for a photo of the bag and receipt
+      sticker, then refund once it is checked. Tell the customer a refund takes 5 to 7 working days to reach the bank.
+    limit_inr: 300
+    up_to_limit: refund the missing item straight away, no photo needed
+    above_limit: ask for a photo of the bag and receipt sticker first; refund once it is checked
+
+  - title: Wrong item
+    category: wrong_item
+    body: >
+      Ask for a photo of what arrived. Offer a full refund for the wrong item or a free re-delivery if the
+      restaurant is still open. Flag the restaurant to the partner team when the same restaurant has three wrong-item
+      complaints in a day.
+
+  - title: Refunds
+    category: refund
+    body: >
+      Look up whether a refund was already started before promising one. Refunds to cards and UPI take 5 to 7
+      working days; wallet refunds are instant. If a refund was started more than 7 working days ago, raise it to the
+      payments team with the order ID and give the customer a reference number.
+
+  - title: Payment failed
+    category: payment_failure
+    body: >
+      If money left the customer's account but the order did not go through, it comes back automatically within
+      48 hours. Ask the customer not to pay again for the same order unless they want to. If 48 hours have passed,
+      raise it to the payments team with the transaction reference.
+
+  - title: App problems
+    category: app_bug
+    body: >
+      Ask the customer to update the app and log out and back in. Collect the phone model, app version and a
+      screenshot. If the app stops them from placing or tracking an order, take the order details by chat instead and
+      raise a bug with the steps they followed.
+
+  - title: Account and login
+    category: account
+    body: >
+      Never ask for a password or OTP. To change a phone number or email, send a verification link to the address
+      already on the account. If the customer cannot reach the old number, ask for the last three order IDs to
+      confirm who they are.
+
+  - title: Restaurant partner issues
+    category: restaurant_partner
+    body: >
+      For food quality complaints, apologise, refund the affected items and log the complaint against the restaurant
+      with the order ID. Hygiene or safety complaints go straight to the partner team as urgent, even if the customer
+      only wants a refund.

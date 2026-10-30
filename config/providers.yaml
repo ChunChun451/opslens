@@ -1,7 +1,29 @@
-main: gemini
-fallback: groq
+main: ollama
+fallback: gemini
 
 providers:
+  ollama:
+    kind: ollama
+    base_url: http://127.0.0.1:11434/v1
+    model: qwen2.5:3b
+    api_key_env: OLLAMA_API_KEY
+    requests_per_minute: 600
+    requests_per_day: 1000000
+    timeout_s: 90
+    extra_params:
+      max_tokens: 2048
+
+  ollama_route:
+    kind: ollama
+    base_url: http://127.0.0.1:11434/v1
+    model: qwen2.5:3b
+    api_key_env: OLLAMA_API_KEY
+    requests_per_minute: 600
+    requests_per_day: 1000000
+    timeout_s: 30
+    extra_params:
+      max_tokens: 200
+
   gemini:
     kind: openai_compat
     base_url: https://generativelanguage.googleapis.com/v1beta/openai/

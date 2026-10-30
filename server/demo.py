@@ -27,7 +27,7 @@ def main() -> int:
         return 1
     meta = json.loads(RESULTS.read_text(encoding="utf-8"))["meta"]
     print(f"OpsLens demo: real results from {meta['generated_at']} (commit {meta['git_commit']}). "
-          "Open http://localhost:8000/  (Ctrl+C to stop)")
+          "Open http://localhost:8000/app/  (Ctrl+C to stop)")
     import uvicorn
 
     sys.path.insert(0, str(ROOT))
