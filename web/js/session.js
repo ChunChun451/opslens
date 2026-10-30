@@ -25,14 +25,7 @@ export function applySession(user) {
     store("opslens-agent", user.agent_code);
     store("opslens-role", "agent");
     if (!location.hash.startsWith("#agent")) history.replaceState(null, "", "#agent");
-  } else if (!location.hash.startsWith("#agent")) {
-    state.role = "lead";
-    store("opslens-role", "lead");
   }
-  const roleButton = document.querySelector('#role-switch [data-role="lead"]');
-  if (roleButton) roleButton.textContent = "Admin";
-  const agentButton = document.querySelector('#role-switch [data-role="agent"]');
-  if (agentButton) agentButton.textContent = "Agent view";
   const actions = document.querySelector(".topbar-actions");
   const chip = document.createElement("div");
   chip.className = "user-chip";

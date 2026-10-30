@@ -95,13 +95,15 @@ computed in numpy.
   - an **admin** sees everything and decides: assignments, breaks, AI suggestions, the plan.
   Every `/api/v2` route checks the role, and a ticket outside your scope answers 404, not 403, so its
   existence is not revealed. The floor buttons (`/api/live/action`: take, decline, done, extra time,
-  break, back) need a sign-in: an agent is refused (403) if they name anyone but themself, a stranger
-  gets 401, and resetting the day is admin-only. This was found by trying it: the dashboard hid other
+  break, back) need a sign-in: an agent is refused (403) if they name anyone but themself, an admin is
+  refused (403) because the admin only watches agent screens, a stranger gets 401, and resetting the day is admin-only. This was found by trying it: the dashboard hid other
   agents but the endpoint behind it did not check, so one agent could send another on a break.
-- **Signing in:** `admin` with password `123` for the admin. An **agent** chooses Agent, types their
-  name (full, without the dot, first name only, or code such as `B01`), chooses their team and enters
-  the password. Names are unique within a team, so this opens exactly one agent's dashboard; there is
-  no list to pick from, and a right name with the wrong team or password gets nobody in. Each agent
+- **Signing in:** `admin` with password `123` for the admin. An **agent** chooses Agent, picks their
+  name from a list grouped by team (choosing a team first narrows the list) and enters the password.
+  The list shows only each agent's name and team, from `/api/v2/login/agents`; shifts, skills and
+  work stay behind sign-in. The API still takes a typed name (full, without the dot, first name
+  only, or code such as `B01`) with a team, and a right name with the wrong team or password gets
+  nobody in. Each agent
   also has an email login (`a01@opslens.demo` …), seeded by `python -m opslens.seed`.
   The shared password `123` is for a laptop demo only: anyone who knows another agent's name and team
   could sign in as them. Give each agent their own password, or set `DEMO_PASSWORD`, before putting
@@ -111,7 +113,7 @@ computed in numpy.
   no tickets at risk, and the other agents' statuses blanked; the admin gets everything. The tools
   (`/api/bot`, `/api/ask`, `/api/whatif`, `/api/plan/impact`, `/api/plant`, `/api/upload`,
   `/api/anyfile/*`, `/api/rag/status`, `/api/live/actions`, `/api/v2/feedback*`) are admin-only; an
-  agent reads only their own feedback at `/api/v2/me/feedback`. Only the sign-in page, the
+  agent reads only their own feedback at `/api/v2/me/feedback`. Only the sign-in page (with its team and name lists), the
   page code and `/api/health` are open. A session check is cached for 5 seconds so the live screen's
   frequent refreshes stay cheap; signing out ends it at once. Without Postgres (the offline demo) the
   dashboard opens as before.
@@ -121,10 +123,12 @@ computed in numpy.
 The screen is the Round 1 dashboard at `/app/`, in its own design. Version 2 adds sign-in in front of
 it and splits who sees what:
 
-- **Sign in** (`/`): username `admin` for the admin; an agent chooses Agent and gives their name, team
-  and password (section 3).
+- **Sign in** (`/`): username `admin` for the admin; an agent chooses Agent, picks their name from the
+  list and enters the password (section 3).
 - **Admin** gets the whole dashboard: Overview (live now), Team, Problems, Risks, Actions, Feedback,
-  Proof, Your plan, Story mode and Ask OpsLens AI. "Agent view" shows any agent's screen, as before.
+  Proof, Your plan, Story mode and Ask OpsLens AI. The Agent screen in the side menu (or a click on
+  someone in Team) shows any agent's screen, with a picker to switch between them.
+  It is view only: no Take it, Done or break buttons, and the server refuses them from an admin.
 - **Agent** gets only their own screen: what is lined up next and why, what they are working on, Take
   it, Can't take it, Done, +5/+10/+20 min and On a break, their day and their feedback. No dropdown to
   be someone else, no admin tabs, no customer replies. Sign out is in the top bar.

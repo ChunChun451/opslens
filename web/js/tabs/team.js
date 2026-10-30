@@ -1,6 +1,6 @@
 import { pageHeader, card, fold } from "../ui.js";
 import { escapeHtml } from "../format.js";
-import { setRole } from "../role.js";
+import { openAgent } from "../role.js";
 import {
   TEAM_NAMES, LANGUAGE, STATUS_TEXT, clockNow, keepFresh, notReady, minutesLeft, ticketLine, initialsOf,
   resetDay, effectLines, floorEffect, clockOf,
@@ -18,7 +18,7 @@ export function render(section) {
     <div id="tm-body"></div>`;
   section.addEventListener("click", async (event) => {
     const row = event.target.closest("[data-agent]");
-    if (row) setRole("agent", row.dataset.agent);
+    if (row) openAgent(row.dataset.agent);
     const reset = event.target.closest("#tm-reset");
     if (reset) {
       reset.disabled = true;

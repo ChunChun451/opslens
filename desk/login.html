@@ -91,8 +91,8 @@
           <label>Username<input name="username" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="admin" value="admin"></label>
         </div>
         <div data-for="agent" hidden>
-          <label>Your name<input name="name" autocomplete="name" spellcheck="false" placeholder="for example Rohit M., or just Rohit"></label>
-          <label>Your team<select name="team" id="team"><option value="">Choose your team</option></select></label>
+          <label>Your team<select name="team" id="team"><option value="">All teams</option></select></label>
+          <label>Your name<select name="name" id="name"><option value="">Choose your name</option></select></label>
         </div>
         <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
         <div class="err" id="err" role="alert"></div>
@@ -110,20 +110,35 @@
     }
     const form = document.getElementById("login"), err = document.getElementById("err");
     api("/api/v2/me").then(({ user }) => { location.href = user.role === "agent" ? "/app/#agent" : "/app/"; }).catch(() => {});
-    api("/api/v2/login/teams").then(({ teams }) => {
-      document.getElementById("team").insertAdjacentHTML("beforeend",
-        teams.map(t => `<option value="${t.code}">Team ${t.code} · ${String(t.name).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</option>`).join(""));
+    const safe = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const teamBox = document.getElementById("team"), nameBox = document.getElementById("name");
+    let teamNames = {}, people = [];
+    const fillNames = () => {
+      const picked = nameBox.value, only = teamBox.value;
+      const shown = Object.keys(teamNames).filter(code => !only || code === only);
+      nameBox.innerHTML = `<option value="">Choose your name</option>` + shown.map(code =>
+        `<optgroup label="Team ${code} · ${safe(teamNames[code])}">${people.filter(p => p.team === code).map(p =>
+          `<option value="${p.code}" data-team="${p.team}">${safe(p.name)}</option>`).join("")}</optgroup>`).join("");
+      if (people.some(p => p.code === picked && (!only || p.team === only))) nameBox.value = picked;
+    };
+    Promise.all([api("/api/v2/login/teams"), api("/api/v2/login/agents")]).then(([{ teams }, { agents }]) => {
+      teams.forEach(t => { teamNames[t.code] = t.name; });
+      people = agents;
+      teamBox.insertAdjacentHTML("beforeend", teams.map(t => `<option value="${t.code}">Team ${t.code} · ${safe(t.name)}</option>`).join(""));
+      fillNames();
     }).catch(() => {});
+    teamBox.onchange = fillNames;
+    nameBox.onchange = () => { const p = people.find(x => x.code === nameBox.value); if (p) teamBox.value = p.team; };
     let role = "admin";
     const setRole = next => {
       role = next;
       form.querySelectorAll("[data-role]").forEach(b => b.classList.toggle("on", b.dataset.role === role));
       form.querySelectorAll("[data-for]").forEach(box => { box.hidden = box.dataset.for !== role; });
       document.getElementById("hint").innerHTML = role === "agent"
-        ? "Enter your name and team so only your own dashboard opens. The password is <b>123</b>."
+        ? "Pick your name so only your own dashboard opens. The password is <b>123</b>."
         : "Admins use <b>admin</b>. The password is <b>123</b>.";
       err.textContent = "";
-      (role === "agent" ? form.elements.name : form.elements.password).focus();
+      (role === "agent" ? nameBox : form.elements.password).focus();
     };
     form.querySelectorAll("[data-role]").forEach(b => b.onclick = () => setRole(b.dataset.role));
     if (new URLSearchParams(location.search).get("as") === "agent") setRole("agent");
@@ -131,9 +146,9 @@
       event.preventDefault();
       err.textContent = "";
       const body = role === "agent"
-        ? { role: "agent", name: form.elements.name.value, team: form.elements.team.value, password: form.elements.password.value }
+        ? { role: "agent", name: nameBox.value, team: (people.find(p => p.code === nameBox.value) || {}).team || teamBox.value, password: form.elements.password.value }
         : { username: form.elements.username.value, password: form.elements.password.value };
-      if (role === "agent" && (!body.name.trim() || !body.team)) { err.textContent = "Enter your name and choose your team."; return; }
+      if (role === "agent" && (!body.name || !body.team)) { err.textContent = "Choose your name from the list."; return; }
       const button = form.querySelector(".go");
       button.disabled = true;
       button.textContent = "Signing in…";

@@ -555,7 +555,9 @@ def live_action(request: dict) -> JSONResponse:
 
 @app.post("/api/live/action")
 def live_action_signed_in(request: dict, user: dict | None = Depends(floor_user)) -> JSONResponse:
-    if user is not None and user["role"] == "agent" and str(request.get("agent", "")).upper() != user["agent_code"]:
+    if user is not None and user["role"] != "agent":
+        return JSONResponse({"error": "Admins can watch an agent's screen but only the agent can act on it."}, status_code=403)
+    if user is not None and str(request.get("agent", "")).upper() != user["agent_code"]:
         return JSONResponse({"error": "You can only act as yourself."}, status_code=403)
     return live_action(request)
 

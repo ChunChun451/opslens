@@ -129,16 +129,17 @@ function draw(section, d) {
     body.innerHTML = frame(d, agent);
     loadFeedback(body, agent.id);
   }
+  const own = Boolean(state.lockedAgent);
   const mine = (d.actions || []).filter((e) => e.agent === agent.id);
   const taken = new Set(mine.filter((e) => e.kind === "take").map((e) => e.ticket_id));
   const moves = mine.filter((e) => e.kind === "break" || e.kind === "back");
   const away = moves.length > 0 && moves[moves.length - 1].kind === "break";
-  body.querySelector("#ag-status").innerHTML = statusHtml(row, agent, away);
+  body.querySelector("#ag-status").innerHTML = statusHtml(row, agent, away, own);
   body.querySelector("#ag-news").innerHTML = newsHtml(mine[mine.length - 1]);
   const openFold = body.querySelector("#ag-next details[open]");
   if (!openFold || !row.next || openFold.dataset.ticket !== row.next.ticket_id) {
     body.querySelector("#ag-next").innerHTML = row.next
-      ? ticketHtml("Next for you", row.next, taken.has(row.next.ticket_id) ? `<p class="ag-done">Yours. OpsLens hands it over the moment you finish.</p>` : nextActions(row.next))
+      ? ticketHtml("Next for you", row.next, taken.has(row.next.ticket_id) ? `<p class="ag-done">Yours. OpsLens hands it over the moment you finish.</p>` : own ? nextActions(row.next) : "")
       : `<div class="card-head"><h3 class="card-title">Next for you</h3></div>
         <p class="ag-empty">Nothing lined up for you right now. OpsLens hands you a ticket the moment one fits.</p>`;
   } else {
@@ -146,7 +147,7 @@ function draw(section, d) {
     if (left) left.firstChild.textContent = minutesLeft(row.next.minutes_left);
   }
   body.querySelector("#ag-now").innerHTML = row.current
-    ? ticketHtml("Now working on", row.current, nowActions(), true)
+    ? ticketHtml("Now working on", row.current, own ? nowActions() : "", true)
     : `<div class="card-head"><h3 class="card-title">Now working on</h3></div>
       <p class="ag-empty">${row.status === "off" ? "You are off shift." : row.status === "break" ? "You are on a break." : "Nothing right now."}</p>`;
   body.querySelector("#ag-day").innerHTML = dayTiles(row);
@@ -167,8 +168,9 @@ function frame(d, agent) {
         <div class="chips ag-skills">${skills}</div>
       </div>
       <button type="button" class="fb-badge" id="ag-fb-badge" hidden></button>
-      <label class="ag-pick"><span>You are</span><select id="ag-pick">${options}</select></label>
+      <label class="ag-pick"><span>Viewing</span><select id="ag-pick">${options}</select></label>
     </header>
+    ${state.lockedAgent ? "" : `<p class="ag-viewonly">View only. Only ${escapeHtml(agent.name)} can take tickets, finish them or go on a break.</p>`}
     <div id="ag-status" class="ag-status"></div>
     <div id="ag-news" class="ag-news" aria-live="polite"></div>
     <div class="ag-cards">
@@ -180,13 +182,13 @@ function frame(d, agent) {
     <section class="card ag-card ag-fb" id="ag-fb"></section>`;
 }
 
-function statusHtml(row, agent, away) {
+function statusHtml(row, agent, away, own) {
   const text = row.status === "off" ? `Your shift: ${agent.shift}.`
     : row.status === "idle" ? "Free. The next ticket comes to you the moment it fits."
     : row.status === "break" ? "No new tickets come to you until you are back."
     : away ? "Your break starts when you finish this ticket. No new tickets come to you."
     : `Live at ${clockNow()}`;
-  const button = row.status === "break" || away
+  const button = !own ? "" : row.status === "break" || away
     ? `<button type="button" class="btn btn-primary" data-act="back">I'm back</button>`
     : row.status === "off" ? "" : `<button type="button" class="btn" data-act="break">On a break</button>`;
   return `<span class="tm-status is-${row.status}">${escapeHtml(STATUS_TEXT[row.status])}</span>
@@ -254,7 +256,7 @@ function setBusy(body, on) {
 
 async function onClick(section, event) {
   const button = event.target.closest("[data-act]");
-  if (!button || busy || !last) return;
+  if (!button || busy || !last || !state.lockedAgent) return;
   const body = section.querySelector("#ag-body");
   const act = button.dataset.act;
   const request = { kind: act, agent: state.agent };

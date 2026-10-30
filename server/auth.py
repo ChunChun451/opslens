@@ -124,6 +124,14 @@ def teams() -> JSONResponse:
         return JSONResponse({"teams": conn.execute("select code, name from teams order by code").fetchall()})
 
 
+@router.get("/login/agents")
+def agents() -> JSONResponse:
+    with store.connection() as conn:
+        return JSONResponse({"agents": conn.execute(
+            "select p.agent_code as code, p.name, p.team from agent_profiles p join users u on u.agent_code = p.agent_code "
+            "where u.role = 'agent' order by p.team, p.agent_code").fetchall()})
+
+
 @router.post("/login")
 def login(request: dict) -> JSONResponse:
     password = str(request.get("password", ""))

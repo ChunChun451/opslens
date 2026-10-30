@@ -326,9 +326,8 @@ html[data-theme="neon"] .subnav button[aria-current="true"] { background: var(--
 .brief-sub { margin-top: 6px; font-size: 0.8rem; color: var(--ink-2); line-height: 1.4; }
 .finding-bars .cbar-track, html[data-theme="neon"] .finding-bars .cbar-track { background: transparent !important; }
 
-#tab-nav [data-tab="agent"] { display: none !important; }
-body[data-role="agent"] :is(#tab-nav, .world-switch:not(.role-switch), #plan-button, #story-button, #live-ticker, #data-source, #bot-launch, #source-bar) { display: none !important; }
-body[data-role="agent"] .sidebar::after { content: "Agent screen: your own work only. Switch to Admin for the full dashboard."; display: block; margin: 18px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
+body[data-role="agent"] :is(#tab-nav, .world-switch, #plan-button, #story-button, #live-ticker, #data-source, #bot-launch, #source-bar) { display: none !important; }
+body[data-role="agent"] .sidebar::after { content: "Agent screen: your own work only."; display: block; margin: 18px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
 
 .tm-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 4px 0 16px; }
 .tm-tile { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); }
@@ -381,6 +380,7 @@ html[data-theme="neon"] .tm-status.is-idle { color: #34d399; }
 
 .ag-head { align-items: flex-start; }
 .ag-skills { margin-top: 10px; }
+.ag-viewonly { margin: 0 0 12px; padding: 8px 12px; border: 1px dashed var(--border-strong); border-radius: 8px; font-size: 0.85rem; color: var(--muted); }
 .ag-pick { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--muted); }
 .ag-pick select { font: inherit; font-size: 0.95rem; color: var(--ink); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 10px; min-width: 220px; }
 .ag-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 14px; font-size: 0.9rem; color: var(--ink-2); }
@@ -570,7 +570,6 @@ button[data-act]:disabled { opacity: 0.55; cursor: progress; }
 .user-name span { font-size: 11px; color: var(--muted, #8a93ad); }
 #data-source { display: none; }
 body[data-signed="agent"] .world-switch,
-body[data-signed="agent"] #role-switch,
 body[data-signed="agent"] #plan-button,
 body[data-signed="agent"] #story-button,
 body[data-signed="agent"] #live-ticker,
