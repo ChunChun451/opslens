@@ -7,9 +7,11 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from psycopg import OperationalError
+from psycopg_pool import PoolTimeout
 
 from server.auth import router as auth_router
 from server.v2 import router as v2_router
@@ -21,6 +23,13 @@ FIXTURE = ROOT / "eval" / "fixture_results.json"
 app = FastAPI(title="OpsLens", docs_url="/api/docs")
 app.include_router(auth_router)
 app.include_router(v2_router)
+
+
+@app.exception_handler(PoolTimeout)
+@app.exception_handler(OperationalError)
+def database_down(request: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse({"error": "The database is not running. Start Postgres, then run: python -m opslens.seed"},
+                        status_code=503)
 
 
 def results_path() -> Path:

@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 from typing import Iterator
 
+import psycopg
 from psycopg import Connection
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
@@ -15,6 +16,8 @@ from opslens.config import load_env_file, project_path
 MIGRATIONS = project_path("db/migrations")
 PARTITIONED = ("ticket_events", "decisions", "risk_scores")
 DEFAULT_URL = "postgresql://opslens:opslens-local@127.0.0.1:5432/opslens"
+CHECK_TIMEOUT_S = 2
+WAIT_FOR_CONNECTION_S = 5.0
 
 _pool: ConnectionPool | None = None
 
@@ -27,7 +30,8 @@ def database_url() -> str:
 def pool() -> ConnectionPool:
     global _pool
     if _pool is None:
-        _pool = ConnectionPool(database_url(), min_size=1, max_size=10, kwargs={"row_factory": dict_row}, open=True)
+        _pool = ConnectionPool(database_url(), min_size=1, max_size=10, kwargs={"row_factory": dict_row},
+                               timeout=WAIT_FOR_CONNECTION_S, open=True)
     return _pool
 
 
@@ -39,10 +43,10 @@ def connection() -> Iterator[Connection]:
 
 def available() -> bool:
     try:
-        with connection() as conn:
+        with psycopg.connect(database_url(), connect_timeout=CHECK_TIMEOUT_S) as conn:
             conn.execute("select 1")
         return True
-    except Exception:
+    except psycopg.Error:
         return False
 
 
