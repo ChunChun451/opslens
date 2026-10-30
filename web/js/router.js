@@ -4,12 +4,9 @@ import * as forecast from "./tabs/forecast.js";
 import * as atrisk from "./tabs/atrisk.js";
 import * as recommendations from "./tabs/recommendations.js";
 import * as compare from "./tabs/compare.js";
-import * as whatif from "./tabs/whatif.js";
 import * as tested from "./tabs/tested.js";
-import * as ledger from "./tabs/ledger.js";
 import * as live from "./tabs/live.js";
 import * as realdata from "./tabs/realdata.js";
-import * as worlds from "./tabs/worlds.js";
 import * as shadow from "./tabs/shadow.js";
 import * as team from "./tabs/team.js";
 import * as agent from "./tabs/agent.js";
@@ -59,15 +56,10 @@ export const TABS = [
   { id: "proof", label: "Proof", views: {
     food: [{ id: "results", label: "Results", module: overview },
            { id: "compare", label: "Side by side", module: compare },
-           { id: "worlds", label: "Beyond our world", module: worlds },
-           { id: "whatif", label: "Try a what-if", module: whatif },
-           { id: "ledger", label: "Rules we wrote first", module: ledger },
            { id: "tested", label: "How we tested", module: tested },
            { id: "rag", label: "AI with retrieval", module: rag }],
-    real: [{ id: "rd-proof", label: "Does it work here?", module: realdata.proof },
-           { id: "ledger", label: "Rules we wrote first", module: ledger }],
-    upload: [{ id: "up-proof", label: "Does it work here?", module: realdata.proof },
-             { id: "ledger", label: "Rules we wrote first", module: ledger }] } },
+    real: [{ id: "rd-proof", label: "Does it work here?", module: realdata.proof }],
+    upload: [{ id: "up-proof", label: "Does it work here?", module: realdata.proof }] } },
   { id: "agent", label: "Agent", views: {
     food: [{ id: "agent", label: "Agent", module: agent }],
     real: [{ id: "agent", label: "Agent", module: agent }],
@@ -79,11 +71,10 @@ const OTHER_SOURCE_VIEW = { "rd-overview": "up-overview", "rd-shadow": "up-shado
 Object.entries({ ...OTHER_SOURCE_VIEW }).forEach(([uci, file]) => { OTHER_SOURCE_VIEW[file] = uci; });
 
 const ALIAS = { rag: "proof", patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
-                results: "proof", compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview",
-                worlds: "proof", "rd-shadow": "overview", "up-shadow": "overview", shadow: "overview", next48: "risks" };
+                results: "proof", compare: "proof", tested: "proof", live: "overview",
+                "rd-shadow": "overview", "up-shadow": "overview", shadow: "overview", next48: "risks" };
 
-const VIEW_ALIAS = { next48: "forecast", "next-48-hours": "forecast", "at-risk": "atrisk", shadow: "rd-shadow",
-                     "beyond-our-world": "worlds", rules: "ledger" };
+const VIEW_ALIAS = { next48: "forecast", "next-48-hours": "forecast", "at-risk": "atrisk", shadow: "rd-shadow" };
 
 const framed = new Set();
 const drawn = new Set();

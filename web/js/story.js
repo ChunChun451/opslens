@@ -5,7 +5,6 @@ import { showTab, setWorld, setSource } from "./router.js";
 import { pauseReplay } from "./replay.js";
 import { escapeHtml, prettyKey } from "./format.js";
 import { CAUSE_LABELS } from "./tabs/patterns.js";
-import { ledgerSummary } from "./tabs/ledger.js";
 
 const BREACH = "turnaround.breach_pct";
 
@@ -15,10 +14,8 @@ const STEPS = [
   { tab: "patterns", target: storyCardId, title: "A pattern, with its evidence", body: patternText },
   { tab: "atrisk", target: storyTicketId, title: "One ticket, before it is late", body: ticketText },
   { tab: "compare", target: () => "kpi-table-panel", title: "What it is worth, with confidence intervals", body: impactText },
-  { tab: "worlds", target: () => "wd-chart-card", title: "Beyond the world we built", body: worldsText },
   { tab: "overview", view: "rd-shadow", world: "real", target: () => firstOf(".sh-stage"), title: "A real day at a real desk", body: shadowText },
-  { tab: "ledger", target: () => "ledger-tally", title: "What we bet on, and what we lost", body: ledgerText },
-  { tab: "whatif", target: () => "whatif-form", title: "Your turn", body: yourTurnText },
+  { tab: "overview", view: "live", target: () => "bot-launch", title: "Your turn", body: yourTurnText },
 ];
 
 function firstOf(selector) {
@@ -145,17 +142,6 @@ function thousandText() {
     OpsLens step by step.`;
 }
 
-function worldsText() {
-  const w = state.results.worlds;
-  if (!w) return "The random-world test is not in the results file yet.";
-  return `Everything so far ran on the one floor we built. So we drew ${ev("worlds.n_worlds", "int")} random floors.
-    We had promised OpsLens would be the lowest in ${ev("worlds.wins_needed", "int")}; it was lowest in
-    ${ev("worlds.wins", "int")}, so that rule is <strong>missed</strong>. It still beats the industry standard in
-    ${ev("worlds.breakdown.beats_industry_standard", "int")} of ${ev("worlds.breakdown.of", "int")}, wins every world up to
-    ${ev("worlds.breakdown.normal_load.max_load", "ratio")}× today's load, and loses only under heavy overload.${w.floor_note
-      ? ` <em>${escapeHtml(w.floor_note)}</em>` : ""}`;
-}
-
 function shadowText() {
   const sh = state.results.realdesk && state.results.realdesk.shadow;
   if (!sh || !sh.shown_days.length) return "Shadow mode is not in the results file yet.";
@@ -250,19 +236,9 @@ function impactText() {
     Every row of this table is a paired comparison over the same seeds.`;
 }
 
-function ledgerText() {
-  const n = ledgerSummary();
-  if (!n.total) return "The pre-registered rules are not in the results file yet.";
-  return `Before every experiment we wrote down the rule that decides it, and git keeps the time. Of
-    ${n.total} rules, ${n.kept} were kept and ${n.missed} were missed, and the misses stay on screen: an exact roster
-    optimiser lost to our simple one, and OpsLens is not the best policy in every random world. A team that only
-    shows wins is not testing hard enough.`;
-}
-
 function yourTurnText() {
   return `Your turn. Open <strong>Ask OpsLens AI</strong> in the side menu and ask it anything, in English or
     Hinglish: a tough question about our method, a what-if ("What if Team C loses 2 agents on Saturday?") or a
-    customer's complaint to triage. It answers from tested results and never makes up a number. Or change the
-    staffing here, or open Problems and press <strong>Plant a problem</strong>: we hide a problem in fresh data
+    customer's complaint to triage. It answers from tested results and never makes up a number. Or open Problems and press <strong>Plant a problem</strong>: we hide a problem in fresh data
     and OpsLens has to find it without being told where it is.`;
 }

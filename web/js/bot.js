@@ -9,15 +9,12 @@ const STARTERS = [
     "Can it scale to millions of tickets?", "How is this better than our helpdesk tools?"]],
   ["Run the engine", ["What if Team C loses 2 agents on Saturday?", "Why is T060582 at risk?", "What should we fix first?"]],
   ["A customer says", ["dosa ke jagah biryani de diya", "paisa kat gaya but order nahi aaya", "my food is 40 minutes late"]],
-  ["Show me", ["Show me Shadow mode", "Show me the 30 random worlds", "Show me the rules we wrote first"]],
+  ["Show me", ["Show me Shadow mode", "Show me side by side", "Show me how we tested"]],
 ];
 
 const PLACES = [
   [/shadow/i, "#overview/rd-shadow", "real"],
   [/real (it )?desk|it desk|service desk|servicenow/i, "#overview/rd-overview", "real", "uci"],
-  [/30|random world|beyond/i, "#proof/worlds", "food"],
-  [/rule|ledger|pre-?regist/i, "#proof/ledger", "food"],
-  [/what-?if|simulat/i, "#proof/whatif", "food"],
   [/how we tested|tests?\b|banking|earn its place/i, "#proof/tested", "food"],
   [/side by side|compare|baseline/i, "#proof/compare", "food"],
   [/live/i, "#overview/live", "food"],
