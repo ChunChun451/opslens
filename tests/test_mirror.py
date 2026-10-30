@@ -92,3 +92,21 @@ def test_a_ticket_counts_as_being_worked_only_while_its_agent_is_on_it():
     live.floors["opslens"] = [{"minute": START, "status": "ii", "queues": {}}]
     bounced = by_id(mirror.ticket_rows(live, START + 15, TODAY)[0])["TEST-M1"]
     assert bounced["status"] == "open" and bounced["assignee"] is None and bounced["_job"]["agent"] == "B01"
+
+
+def test_a_replan_that_reopens_a_ticket_takes_back_its_solved_event():
+    live = small_day()
+    state = mirror.MirrorState()
+    with store.connection() as conn:
+        try:
+            store.ensure_partitions(TODAY.replace(day=1), months=2)
+            mirror.sync(conn, live, 45, TODAY, state)
+            live.work["B01"][0]["resolved"] = None
+            mirror.sync(conn, live, 46, TODAY, state)
+            kinds = [r["kind"] for r in conn.execute("select kind from ticket_events where ticket_id = 'TEST-M1' order by at, kind")]
+            status = conn.execute("select status from tickets where id = 'TEST-M1'").fetchone()["status"]
+        finally:
+            for table in ("ticket_events", "decisions", "risk_scores", "tickets"):
+                column = "id" if table == "tickets" else "ticket_id"
+                conn.execute(f"delete from {table} where {column} like 'TEST-%'")
+    assert status == "in_progress" and "solved" not in kinds

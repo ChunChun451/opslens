@@ -1,5 +1,5 @@
 import {
-  $, $$, api, signedIn, createShell, route, ticketTable, ticketPage, onFloorChange, tickDue, toast, store, esc, icon, tag,
+  $, $$, api, signedIn, createShell, route, ticketTable, compactList, ticketPage, onFloorChange, tickDue, toast, store, esc, icon, tag,
   prio, agentTag, riskTag, dueText, fmtMin, signed, ago, clock, initials, runAgent, traceList, stepText, seconds, dialog,
   CATEGORY, TEAM, LANGUAGE, AGENT_NAME,
 } from "/desk/desk.js";
@@ -113,8 +113,12 @@ async function home() {
     ${danger.map(d => `<tr class="row" data-id="${esc(d.ticket_id)}"><td>${prio(d.priority)}</td>
       <td><div class="subject">${esc(CATEGORY[d.category] || d.category)} · #${esc(d.ticket_id)}</div><div class="sub">${esc((d.reasons || [])[0] || "")}${d.nobody_capable ? " · nobody on shift has this skill" : ""}</div></td>
       <td class="num nowrap">${Math.round(d.minutes_left)} min</td><td>${riskTag(d.probability)}<div class="sub">${Math.round(d.if_served_now * 100)}% if served now</div></td></tr>`).join("")}
-    </tbody></table>` : `<div class="empty">${icon("inbox", 40)}Nothing is in danger right now.</div>`;
+    </tbody></table>` : `<div class="empty">${icon("inbox", 40)}Nothing is waiting or in danger right now.</div>`;
   $$("#danger tr.row").forEach(r => r.onclick = () => go(`#/t/${r.dataset.id}`));
+  if (!danger.length && t.unassigned) {
+    const waiting = await api("/api/v2/tickets?view=unassigned&sort=due&limit=6").catch(() => ({ tickets: [] }));
+    if ($("#danger") && waiting.tickets.length) $("#danger").innerHTML = `<div class="small muted" style="padding:10px 16px 0">Waiting for an agent, closest promise first</div>${compactList(waiting.tickets)}`;
+  }
   drawHourly(sum.hourly);
   suggestions();
 }
@@ -245,7 +249,8 @@ function ticketContext(t) {
     assignee: solved ? `<div class="val">${esc(t.assignee || "—")}</div>`
       : `<select class="field" id="assignee"><option value="">${t.assignee ? `${esc(t.assignee)} (current)` : "Unassigned"}</option></select>
          <button class="btn primary small" id="assign" style="margin-top:6px;width:100%" disabled>Assign</button><div class="small faint" id="assignnote" style="margin-top:4px">Loading who is on shift…</div>`,
-    actions: "", canReply: !solved, canNote: true, canSolve: false,
+    actions: solved ? "" : `<span class="small muted">${t.assignee ? `${esc(t.assignee)} is on it.` : "Nobody has this yet."} Use Assign on the left to hand it to someone on shift; OpsLens re-plans around it.</span>`,
+    canNote: true,
     async wire() {
       if (solved) return;
       const sel = $("#assignee"), btn = $("#assign"), note = $("#assignnote");
@@ -534,8 +539,8 @@ async function ai(id) {
   const { runs, last_day } = await api("/api/v2/runs?limit=80");
   const by = Object.fromEntries(last_day.map(d => [d.agent, d]));
   shell.main.innerHTML = `<div class="page stack">
-    <div class="page-head"><div><h1>AI activity</h1><p>Four agents on the local model (qwen2.5:3b on Ollama). They read, draft, explain and propose; the optimiser still decides who gets each ticket, and you approve what they suggest.</p></div></div>
-    <div class="tiles">${["intake", "copilot", "analyst", "ask"].map(k => { const d = by[k];
+    <div class="page-head"><div><h1>AI activity</h1><p>AI agents on the local model (qwen2.5:3b on Ollama). They read every ticket, watch the floor and answer questions; the optimiser still decides who gets each ticket, and you approve what they suggest.</p></div></div>
+    <div class="tiles">${["intake", "analyst", "ask"].map(k => { const d = by[k];
       return tile(AGENT_NAME[k], d ? d.runs : 0, d ? `last 24 h · ${d.avg_seconds ?? "—"} s each · ${d.failed} failed` : "no runs in the last 24 h"); }).join("")}</div>
     <div class="card">${runs.length ? `<table class="grid"><thead><tr><th>Agent</th><th>What happened</th><th>Status</th><th class="right hide-sm">Tools</th><th class="right">When</th></tr></thead><tbody>
     ${runs.map(r => { const [label, color] = RUN_STATUS[r.status] || [r.status, ""];
@@ -553,7 +558,7 @@ async function render() {
   if (r.page !== "team") $(".drawer")?.remove();
   shell.setNav(r.page === "t" ? "views" : r.page);
   try {
-    if (r.page === "t") await ticketPage(shell, r.arg, { context: ticketContext, after: loadCounts });
+    if (r.page === "t") await ticketPage(shell, r.arg, { context: ticketContext });
     else if (r.page === "views") await views(r.arg);
     else if (r.page === "problems") await problems(r.arg);
     else if (r.page === "plan") await plan();

@@ -163,10 +163,15 @@ def sync(conn, live: LiveDay, minute_of_day: float, today: date, state: MirrorSt
             tid = world.ticket_ids[idx]
             if tid in open_ids and risk is not None and not math.isnan(risk):
                 risk_rows.append({"ticket_id": tid, "at": stamp(today, live, minute), "risk": round(float(risk), 3)})
+    replanned = [(r["id"], stamp(today, live, r["_resolved"]) if r["_resolved"] is not None else None) for r in changed]
+    gone = {tid for tid, at in replanned if at is None}
+    state.events = {e for e in state.events if not (e[1] == "solved" and e[0] in gone)}
     with conn.transaction():
         with conn.cursor() as cur:
             if changed:
                 cur.executemany(UPSERT, [{k: v for k, v in r.items() if not k.startswith("_")} for r in changed])
+                cur.executemany("delete from ticket_events where ticket_id = %s and kind = 'solved' and at is distinct from %s",
+                                replanned)
             if events:
                 cur.executemany("insert into ticket_events (ticket_id, at, kind, actor, detail) values "
                                 "(%(ticket_id)s, %(at)s, %(kind)s, %(actor)s, %(detail)s) on conflict do nothing", events)

@@ -17,7 +17,6 @@ ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "eval" / "results.json"
 V2_RESULTS = ROOT / "docs" / "v2" / "results"
 router = APIRouter(prefix="/api/v2")
-MESSAGE_KINDS = ("public", "internal")
 MAX_MESSAGE = 4000
 SEARCH_LIMIT = 12
 TODAY_KEYS = ("language", "team", "channel", "category")
@@ -41,23 +40,31 @@ def post_message(ticket_id: str, request: dict, user: dict = Depends(ANY_ROLE)) 
     t = ticket_or_404(user, ticket_id)
     if t is None:
         return JSONResponse({"error": "no such ticket"}, status_code=404)
-    kind = request.get("kind", "public")
+    if request.get("kind", "internal") != "internal":
+        return JSONResponse({"error": "OpsLens does not message customers; add an internal note instead"}, status_code=400)
     body = str(request.get("body", "")).strip()[:MAX_MESSAGE]
-    if kind not in MESSAGE_KINDS or not body:
-        return JSONResponse({"error": "write a reply or a note first"}, status_code=400)
-    solve = bool(request.get("solve"))
-    if solve and (user["role"] != "agent" or t["assignee"] != user["agent_code"]):
-        return JSONResponse({"error": "only the agent working on this ticket can mark it solved"}, status_code=403)
-    effect = None
-    if solve:
-        mine = next((r for r in floor_rows() if r["id"] == user["agent_code"]), None)
-        if not mine or not mine.get("current") or mine["current"]["ticket_id"] != ticket_id:
-            return JSONResponse({"error": "This ticket is not the one you are working on right now."}, status_code=409)
-        code, effect = floor_action("done", user["agent_code"])
-        if code != 200:
-            return JSONResponse(effect, status_code=code)
-    saved = note(ticket_id, user, kind, body)
-    return JSONResponse(jsonable({"message": saved, "solved": solve, "effect": effect}))
+    if not body:
+        return JSONResponse({"error": "write a note first"}, status_code=400)
+    return JSONResponse(jsonable({"message": note(ticket_id, user, "internal", body)}))
+
+
+def sentences(text: str) -> list[str]:
+    return [x.strip() for x in re.split(r"(?<=[.!?])\s+", " ".join(text.split())) if x.strip()]
+
+
+@router.get("/tickets/{ticket_id}/guide")
+def guide(ticket_id: str, user: dict = Depends(ANY_ROLE)) -> JSONResponse:
+    from opslens.agents import policy_note
+    from opslens.config import load_config
+
+    t = ticket_or_404(user, ticket_id)
+    if t is None:
+        return JSONResponse({"error": "no such ticket"}, status_code=404)
+    articles = {a["category"]: a for a in load_config("kb")["articles"]}
+    main = articles.get(t["category"])
+    other = articles.get(t["ai_category"]) if t.get("ai_category") and t["ai_category"] != t["category"] else None
+    pack = lambda a: {"title": a["title"], "steps": sentences(a["body"])} if a else None
+    return JSONResponse({"policy": pack(main), "rule": policy_note(t), "also": pack(other)})
 
 
 def fit(ticket: dict, person: dict) -> dict:

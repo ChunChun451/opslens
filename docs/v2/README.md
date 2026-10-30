@@ -109,11 +109,15 @@ context. Keyboard: `j`/`k` to move, Enter to open, Esc to close, `g h` home, `?`
 - Home: the ticket you are on with a countdown ring, what is lined up next, today's solved count,
   on-time rate and handle time, and your queue. A toast tells you when a new ticket lands.
 - Views: My open tickets, Team queue, Due in 15 minutes, Solved by me today; sort and export to CSV.
-- Ticket page: the customer's message, OpsLens's assignment note, replies and internal notes, the
-  promise, the chance of missing it, what the intake agent read, and similar solved tickets. Draft
-  with AI fills the reply box; Submit as Solved saves the reply and closes the ticket on the floor.
-  Take this ticket, I can't take this, +10 min, Take a break and I'm back all re-plan the floor.
-  Drafts are kept if you leave the ticket.
+- Ticket page: the customer's message, then **How to handle this**: the company policy for that
+  kind of ticket as a numbered checklist you can tick off, with the order-value rule worked out in code
+  ("This order is Rs 450, above the Rs 300 limit, so ask for a photo first"). If the intake agent reads
+  the ticket differently, the other policy is one click away. Then OpsLens's assignment note and any
+  internal notes. On the right: the promise, the chance of missing it, what the intake agent read,
+  similar solved tickets and the history.
+- The footer holds the actions: Mark solved (and you land on your next ticket), +10 min, Take this
+  ticket, I can't take this. Take a break and I'm back are in the profile menu (`b`). Each one re-plans
+  the floor. OpsLens does not message customers; Add note leaves an internal note for the team.
 - Every button goes through the same `/api/live/action` path as before, so the floor really changes.
 
 **Console** (`/admin/`)
@@ -155,7 +159,7 @@ All four use the same small runtime in `opslens/agents.py`:
 | Agent | When | What it does | Guardrail |
 |---|---|---|---|
 | Intake | every new ticket, in the background | reads the message; stores its search vector; writes category, urgency and a 12-word summary | if its category differs from the router's, the ticket page says so; it never re-routes on its own |
-| Reply copilot | an agent presses Draft a reply | reads the ticket, finds the two closest policies by meaning, drafts a reply, then checks every claim against the policy and removes unsupported ones | order-value limits ("above Rs 300, ask for a photo") are computed in code and given to it as a fact; the agent edits and sends, the copilot never sends |
+| Reply copilot | API only (`POST /api/v2/copilot`); the screens no longer offer it, because OpsLens does not message customers | reads the ticket, finds the two closest policies by meaning, drafts a reply, then checks every claim against the policy and removes unsupported ones | order-value limits are computed in code and given to it as a fact; it never sends anything |
 | Floor analyst | every 15 minutes, or Check the floor now | reads today's numbers, tickets at risk, who is free; code lists the actions that are possible (a free agent with the right skill and language, or a ticket nobody can take); the model picks the urgent ones and says why | it can only pick from the checked list; a reassignment is checked again at approval and then goes through the optimiser's own take path; stale suggestions expire |
 | Ask OpsLens | the admin types a question | answers from the live numbers, written as plain facts | every number in the answer must appear in the facts; if not, it is asked again, and the screen says whether every number was found |
 

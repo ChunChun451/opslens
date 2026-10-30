@@ -28,6 +28,7 @@ export const ICONS = {
   sparkle: '<path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"/>',
   keyboard: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/>',
   external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
 };
 
 export function icon(name, size = 20) {
@@ -389,6 +390,13 @@ export function ticketTable(tickets, { showAssignee = true, emptyText = "Nothing
     ${th("priority", "Priority")}${showAssignee ? `<th class="hide-sm">Assignee</th>` : ""}${th("due", "Promise")}${th("risk", "Chance of missing", "hide-sm")}</tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+export function compactList(tickets, emptyText = "Nothing here right now.") {
+  if (!tickets.length) return `<div class="empty" style="padding:32px 16px">${icon("inbox", 36)}${esc(emptyText)}</div>`;
+  return `<div class="clist">${tickets.map(t => `<a class="crow" href="#/t/${esc(t.id)}" data-id="${esc(t.id)}">${statusBadge(t.status)}
+    <span class="cmain"><span class="csub">${esc(subject(t))}</span><span class="small muted">#${esc(t.id)} · ${esc(CATEGORY[t.category] || t.category || "")} · ${esc(LANGUAGE[t.language] || t.language || "")}</span></span>
+    <span class="cright">${prio(t.priority)}<span class="small">${dueText(t)}</span></span></a>`).join("")}</div>`;
+}
+
 export function stepText(step) {
   const words = {
     read_ticket: "Read the ticket", search_policies: "Searched the policies", similar_tickets: "Looked for similar solved tickets",
@@ -436,6 +444,20 @@ export function eventText(e) {
   return e.kind;
 }
 
+export function promisePill(t) {
+  if (t.status === "solved") return `<span class="promise ${t.breached ? "late" : "kept"}">${t.breached ? "Promise missed" : "Promise kept"}</span>`;
+  const m = minutesUntil(t.sla_due_at);
+  return `<span class="promise ${m < 0 ? "late" : m <= 10 ? "soon" : ""}"><span class="small">Promise</span> <b data-due="${esc(t.sla_due_at)}" class="num">${m < 0 ? `${fmtMin(-m)} late` : `${m < 1 ? "<1 min" : fmtMin(m)} left`}</b></span>`;
+}
+
+function guideHtml(g, checked) {
+  if (!g || !g.policy) return `<div class="small muted">No written policy for this kind of ticket yet.</div>`;
+  return `<div class="guide-title">${icon("problems", 16)} ${esc(g.policy.title)} policy</div>
+    ${g.rule ? `<div class="rule">${esc(g.rule)}</div>` : ""}
+    <ol class="steps">${g.policy.steps.map((s, i) => `<li class="${checked.includes(i) ? "done" : ""}"><label><input type="checkbox" data-step="${i}" ${checked.includes(i) ? "checked" : ""}><span>${esc(s)}</span></label></li>`).join("")}</ol>
+    ${g.also ? `<details class="also"><summary>The AI reads this as <b>${esc(g.also.title)}</b>. See that policy</summary><ol class="steps plain">${g.also.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol></details>` : ""}`;
+}
+
 export async function ticketPage(shell, id, opts) {
   const main = shell.main;
   main.innerHTML = `<div class="page"><div class="skeleton" style="width:40%;height:22px"></div><div class="skeleton" style="width:70%;margin-top:14px"></div></div>`;
@@ -453,17 +475,17 @@ export async function ticketPage(shell, id, opts) {
   const reasons = Array.isArray(t.risk_reasons) ? t.risk_reasons : [];
   const decided = data.decisions.at(-1);
   const ctx = await opts.context(t);
-  const messages = [
-    { kind: "customer", name: `Customer${t.customer_tier && t.customer_tier !== "normal" ? ` · ${t.customer_tier}` : ""}`, at: t.created_at, body: t.body },
-    ...(decided ? [{ kind: "system", name: "OpsLens", at: decided.at, body: `Assigned to ${decided.agent_code}. ${decided.reason}` }] : []),
-    ...data.messages.map(m => ({ kind: m.kind === "internal" ? "internal" : "reply", name: m.author_name, role: m.author_role, at: m.at, body: m.body })),
+  const notes = [
+    ...(decided ? [{ kind: "system", name: "OpsLens", at: decided.at, body: `Gave this to ${decided.agent_code}. ${decided.reason}` }] : []),
+    ...data.messages.map(m => ({ kind: "internal", name: m.author_name, at: m.at, body: m.body })),
   ].sort((a, b) => new Date(a.at) - new Date(b.at));
-  const draftKey = `opslens.draft.${shell.user.id}.${id}`;
-  const saved = store(draftKey) || { kind: "public", body: "" };
+  const checkKey = `opslens.steps.${shell.user.id}.${id}`;
+  const checked = store(checkKey) || [];
+  const tier = t.customer_tier && t.customer_tier !== "normal" ? t.customer_tier : "";
 
   main.innerHTML = `<div class="ticket">
     <aside class="props">
-      <label>Requester</label><div class="val"><span class="avatar cust" style="width:24px;height:24px;font-size:10px">C</span> Customer${t.customer_tier && t.customer_tier !== "normal" ? ` ${tag(t.customer_tier, "blue")}` : ""}</div>
+      <label>Customer</label><div class="val"><span class="avatar cust" style="width:24px;height:24px;font-size:10px">C</span> Customer ${tier ? tag(tier, "blue") : ""}</div>
       <label>Assignee</label>${ctx.assignee}
       <label>Team</label><div class="val">${esc(TEAM[t.team] || t.team || "—")}</div>
       <label>Type</label><div class="val">${esc(CATEGORY[t.category] || t.category)}${t.ai_category ? (t.ai_category === t.category ? ` ${tag("AI agrees", "green")}` : ` ${tag(`AI: ${CATEGORY[t.ai_category] || t.ai_category}`, "ai")}`) : ""}</div>
@@ -475,27 +497,28 @@ export async function ticketPage(shell, id, opts) {
       <label>Tags</label><div class="tags">${[t.ai_urgency === "high" ? tag("urgent", "red") : "", t.breached ? tag("missed promise", "red") : "", t.risk >= 0.5 && t.status !== "solved" ? tag("likely to miss", "amber") : "", tag(t.category), tag(t.channel || "")].join("")}</div>
     </aside>
     <section class="conv">
-      <div class="conv-head"><h1 style="font-size:19px">${esc(subject(t))}</h1>
-        <div class="meta">${statusWord(t.status)}<span>#${esc(t.id)}</span><span>·</span><span>${ago(t.created_at)} via ${esc(t.channel || "chat")}</span>${t.solved_at ? `<span>·</span><span>solved ${clock(t.solved_at)}</span>` : ""}</div></div>
-      <div class="thread" id="thread">${messages.map(m => `
-        <div class="msg ${m.kind === "internal" ? "internal" : m.kind === "system" ? "system" : ""}">
-          <span class="avatar ${m.kind === "customer" ? "cust" : m.kind === "system" ? "ops" : ""}">${m.kind === "system" ? icon("sparkle", 16) : esc(initials(m.name))}</span>
-          <div><div class="who"><b>${esc(m.name)}</b>${m.kind === "internal" ? tag("Internal note", "amber") : m.kind === "system" ? tag("OpsLens", "ai") : ""}<span class="small faint">${clock(m.at)}</span></div>
-          <div class="${m.kind === "internal" || m.kind === "system" ? "bubble" : ""}"><div class="text">${esc(m.body)}</div></div></div>
-        </div>`).join("")}</div>
-      ${ctx.actions ? `<div class="act-bar">${ctx.actions}</div>` : ""}
-      ${t.status === "solved" && !ctx.canNote ? "" : `
-      <div class="composer ${saved.kind === "internal" ? "internal" : ""}" id="composer">
-        <div class="modes">${ctx.canReply ? `<button data-mode="public" class="${saved.kind !== "internal" ? "on" : ""}">Public reply</button>` : ""}
-          <button data-mode="internal" class="internal ${saved.kind === "internal" || !ctx.canReply ? "on" : ""}">Internal note</button></div>
-        <textarea id="reply" placeholder="${ctx.canReply && saved.kind !== "internal" ? "Write your reply to the customer…" : "Write a note only your team can see…"}">${esc(saved.body)}</textarea>
-        <div class="row">
-          ${ctx.canReply ? `<button class="btn ai small" id="draft">${icon("sparkle", 14)} Draft with AI</button>` : ""}
-          <span class="small faint" id="draftinfo"></span><span class="grow"></span>
-          ${ctx.canSolve ? `<div class="btn-group"><button class="btn quiet" id="send">Submit</button><button class="btn primary" id="solve">Submit as Solved</button></div>`
-            : `<button class="btn primary" id="send">Submit</button>`}
-        </div><div id="draftsteps"></div>
-      </div>`}
+      <div class="conv-head"><div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
+        <div style="min-width:0"><h1 class="subject-h">${esc(subject(t))}</h1>
+          <div class="meta">${statusWord(t.status)}${prio(t.priority)}<span>#${esc(t.id)}</span><span>·</span><span>${esc(CATEGORY[t.category] || t.category)}</span><span>·</span><span>${ago(t.created_at)} via ${esc(t.channel || "chat")}</span></div></div>
+        ${promisePill(t)}</div></div>
+      <div class="thread" id="thread">
+        <div class="customer-msg"><div class="who"><span class="avatar cust">C</span><div><b>Customer</b>${tier ? ` ${tag(tier, "blue")}` : ""}<div class="small faint">${clock(t.created_at)} · ${esc(t.channel || "chat")} · ${esc(LANGUAGE[t.language] || t.language)}</div></div></div>
+          <div class="text">${esc(t.body)}</div></div>
+        ${t.status === "solved" ? "" : `<div class="guide card"><div class="head"><h2>How to handle this</h2><span class="small muted" id="stepcount"></span></div><div class="body" id="guide"><div class="skeleton"></div></div></div>`}
+        ${notes.length ? `<h3 style="margin:22px 0 10px">Activity</h3>` : ""}
+        ${notes.map(m => `
+          <div class="msg ${m.kind}">
+            <span class="avatar ${m.kind === "system" ? "ops" : ""}">${m.kind === "system" ? icon("sparkle", 16) : esc(initials(m.name))}</span>
+            <div><div class="who"><b>${esc(m.name)}</b>${m.kind === "system" ? tag("OpsLens", "ai") : tag("Note", "amber")}<span class="small faint">${clock(m.at)}</span></div>
+            <div class="bubble"><div class="text">${esc(m.body)}</div></div></div>
+          </div>`).join("")}
+      </div>
+      <div class="action-bar">
+        <div class="acts">${ctx.actions || `<span class="small muted">${t.status === "solved" ? `Solved ${t.solved_at ? clock(t.solved_at) : ""}${t.assignee ? ` by ${esc(t.assignee)}` : ""}.` : "Nothing for you to do on this ticket."}</span>`}</div>
+        ${ctx.canNote ? `<button class="btn quiet small" id="addnote">Add note</button>` : ""}
+      </div>
+      ${ctx.canNote ? `<div class="note-box" id="notebox" hidden><textarea id="note" placeholder="A note for the team, for example what you checked or who should pick this up. Customers never see notes."></textarea>
+        <div class="row"><span class="small faint">Ctrl+Enter to save</span><span class="grow"></span><button class="btn quiet small" id="notecancel">Cancel</button><button class="btn primary small" id="notesave">Save note</button></div></div>` : ""}
     </section>
     <aside class="context">
       <div class="box ai"><h3>${icon("sparkle", 14)} OpsLens<span></span></h3>
@@ -505,75 +528,50 @@ export async function ticketPage(shell, id, opts) {
         ${t.assign_reason ? `<div class="small" style="margin-top:10px"><b>Why ${esc(t.assignee || decided?.agent_code || "this agent")}:</b> ${esc(t.assign_reason)}</div>` : ""}
       </div>
       ${t.ai_summary ? `<div class="box"><h3>AI read</h3><div class="small">${esc(t.ai_summary)}</div>
-        <div style="margin-top:6px">${t.ai_category && t.ai_category !== t.category ? tag(`Reads as ${CATEGORY[t.ai_category] || t.ai_category}, routed as ${CATEGORY[t.category] || t.category}`, "ai") : tag("Category confirmed", "green")} ${t.ai_urgency ? tag(`${t.ai_urgency} urgency`, t.ai_urgency === "high" ? "red" : "") : ""}</div></div>` : ""}
+        <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">${t.ai_category && t.ai_category !== t.category ? tag(`Reads as ${CATEGORY[t.ai_category] || t.ai_category}`, "ai") : tag("Category confirmed", "green")} ${t.ai_urgency ? tag(`${t.ai_urgency} urgency`, t.ai_urgency === "high" ? "red" : "") : ""}</div></div>` : ""}
       <div class="box"><h3>Similar solved tickets</h3><div id="similar"><div class="skeleton"></div></div></div>
       <div class="box"><h3>History</h3><ul class="timeline">${data.events.map(e => `<li><span class="faint num">${clock(e.at)}</span><span>${esc(eventText(e))}</span></li>`).join("") || `<li><span></span><span class="muted">No events yet</span></li>`}</ul></div>
     </aside>
   </div>`;
 
-  const thread = $("#thread");
-  thread.scrollTop = thread.scrollHeight;
-  const composer = $("#composer");
-  if (composer) {
-    const box = $("#reply");
-    let mode = ctx.canReply ? saved.kind : "internal";
-    const persist = () => store(draftKey, { kind: mode, body: box.value });
-    box.addEventListener("input", persist);
-    $$("[data-mode]", composer).forEach(b => b.onclick = () => {
-      mode = b.dataset.mode;
-      $$("[data-mode]", composer).forEach(x => x.classList.toggle("on", x === b));
-      composer.classList.toggle("internal", mode === "internal");
-      box.placeholder = mode === "internal" ? "Write a note only your team can see…" : "Write your reply to the customer…";
-      persist();
-      box.focus();
+  if ($("#guide")) api(`/api/v2/tickets/${encodeURIComponent(id)}/guide`).then(g => {
+    if (!$("#guide")) return;
+    $("#guide").innerHTML = guideHtml(g, checked);
+    const count = () => {
+      const all = $$("[data-step]").length, done = $$("[data-step]:checked").length;
+      $("#stepcount").textContent = all ? `${done} of ${all} done` : "";
+    };
+    count();
+    $$("[data-step]").forEach(c => c.onchange = () => {
+      c.closest("li").classList.toggle("done", c.checked);
+      store(checkKey, $$("[data-step]:checked").map(x => Number(x.dataset.step)));
+      count();
     });
-    const submit = async solve => {
-      const body = box.value.trim();
-      if (!body) { toast("Write something first.", true); box.focus(); return; }
-      $$("button", composer).forEach(b => { b.disabled = true; });
+  }).catch(() => { if ($("#guide")) $("#guide").innerHTML = `<div class="small muted">Not available.</div>`; });
+
+  if (ctx.canNote) {
+    const box = $("#notebox"), area = $("#note");
+    $("#addnote").onclick = () => { box.hidden = !box.hidden; if (!box.hidden) area.focus(); };
+    $("#notecancel").onclick = () => { box.hidden = true; area.value = ""; };
+    const save = async () => {
+      const body = area.value.trim();
+      if (!body) { area.focus(); return; }
+      $("#notesave").disabled = true;
       try {
-        await api(`/api/v2/tickets/${encodeURIComponent(id)}/messages`, { body: { kind: mode, body, solve } });
-        store(draftKey, null);
-        toast(solve ? "Sent and marked solved. OpsLens is lining up your next ticket." : mode === "internal" ? "Note added." : "Reply sent.", "good");
-        if (opts.after) opts.after(solve);
+        await api(`/api/v2/tickets/${encodeURIComponent(id)}/messages`, { body: { kind: "internal", body } });
+        toast("Note saved.", "good");
         await ticketPage(shell, id, opts);
-      } catch (e) {
-        toast(e.message, true);
-        $$("button", composer).forEach(b => { b.disabled = false; });
-      }
+      } catch (e) { toast(e.message, true); $("#notesave").disabled = false; }
     };
-    $("#send").onclick = () => submit(false);
-    if ($("#solve")) $("#solve").onclick = () => submit(true);
-    box.addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); submit(false); } });
-    const draft = $("#draft");
-    if (draft) draft.onclick = async () => {
-      draft.disabled = true;
-      draft.innerHTML = `${icon("sparkle", 14)} Drafting…`;
-      const steps = $("#draftsteps");
-      try {
-        const done = await runAgent("/api/v2/copilot", { ticket_id: id }, d => { steps.innerHTML = traceList(d.steps); });
-        const o = done.run.output || {};
-        if (done.run.status !== "done" || !o.reply) throw new Error(done.run.summary || "No draft this time.");
-        mode = "public";
-        $$("[data-mode]", composer).forEach(x => x.classList.toggle("on", x.dataset.mode === "public"));
-        composer.classList.remove("internal");
-        box.value = o.reply;
-        persist();
-        $("#draftinfo").innerHTML = `Drafted from <b>${esc(o.policy || "policy")}</b> in ${seconds(done.run)}${o.fixed ? ` · ${o.problems.length} unsupported claim(s) removed` : ""}${o.check ? ` · Check: ${esc(o.check)}` : ""}`;
-        steps.innerHTML = "";
-        box.focus();
-      } catch (e) {
-        steps.innerHTML = `<div class="small muted" style="margin-top:6px">${esc(e.message)}</div>`;
-      }
-      draft.disabled = false;
-      draft.innerHTML = `${icon("sparkle", 14)} Draft again`;
-    };
+    $("#notesave").onclick = save;
+    area.addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); save(); } });
   }
   if (ctx.wire) ctx.wire(t);
   api(`/api/v2/tickets/${encodeURIComponent(id)}/similar`).then(s => {
-    $("#similar").innerHTML = s.similar.length ? s.similar.map(x => `<a href="#/t/${esc(x.ticket_id)}" style="display:block;padding:6px 0;border-bottom:1px solid var(--line-soft);color:inherit;text-decoration:none">
+    if (!$("#similar")) return;
+    $("#similar").innerHTML = s.similar.length ? s.similar.map(x => `<div style="padding:6px 0;border-bottom:1px solid var(--line-soft)">
       <div class="small"><b>#${esc(x.ticket_id)}</b> · ${esc(CATEGORY[x.category] || x.category)} ${x.kept_promise ? tag("kept", "green") : tag("missed", "red")}</div>
-      <div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.message)}</div></a>`).join("") + `<div class="small faint" style="margin-top:6px">Matched ${esc(s.how)}</div>`
+      <div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.message)}</div></div>`).join("") + `<div class="small faint" style="margin-top:6px">Matched ${esc(s.how)}</div>`
       : `<div class="small muted">None yet.</div>`;
-  }).catch(() => { $("#similar").innerHTML = `<div class="small muted">Not available.</div>`; });
+  }).catch(() => { if ($("#similar")) $("#similar").innerHTML = `<div class="small muted">Not available.</div>`; });
 }

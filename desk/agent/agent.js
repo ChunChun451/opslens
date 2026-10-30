@@ -1,5 +1,5 @@
 import {
-  $, $$, api, signedIn, createShell, route, ticketTable, ticketPage, onFloorChange, tickDue, toast, store, esc, icon,
+  $, $$, api, signedIn, createShell, route, ticketTable, compactList, ticketPage, onFloorChange, tickDue, toast, store, esc, icon,
   tag, prio, agentTag, dueText, fmtMin, CATEGORY, TEAM, LANGUAGE,
 } from "/desk/desk.js";
 
@@ -31,7 +31,7 @@ async function act(kind, extra = {}, message) {
   for (const [k, v] of Object.entries(extra)) if (v !== undefined && v !== null && v !== "") body[k] = v;
   try {
     await api("/api/v2/actions", { body });
-    toast(message, "good");
+    if (message) toast(message, "good");
     setTimeout(refresh, 1500);
     setTimeout(refresh, 6000);
     await refresh();
@@ -53,7 +53,7 @@ async function loadMe() {
   try { state.me = (await api("/api/v2/floor/me")).me; } catch { state.me = null; }
   shell.setPresence(state.me?.status);
   const cur = state.me?.current?.ticket_id || null;
-  if (state.lastCurrent !== undefined && cur && cur !== state.lastCurrent) {
+  if (state.lastCurrent !== undefined && cur && cur !== state.lastCurrent && route().arg !== cur) {
     toast(`New ticket for you: ${CATEGORY[state.me.current.category] || ""} · ${cur}`, "", { label: "Open", run: () => { location.hash = `#/t/${cur}`; } });
     document.title = `(1) ${document.title.replace(/^\(\d+\) /, "")}`;
   }
@@ -92,7 +92,7 @@ function nowCard() {
     : me.status === "break" ? `<div class="big">You are on a break</div><div class="muted">Press “I'm back” when you are ready for tickets again.</div>`
     : `<div class="big">You are free</div><div class="muted">OpsLens gives you the next ticket that fits your skills and languages.</div>`;
   const upNext = next ? `<div class="small" style="margin-top:8px">Up next: ${jobLine(next)} <a href="#/t/${esc(next.ticket_id)}">Open</a></div>` : "";
-  const buttons = cur ? `<a class="btn quiet" href="#/t/${esc(cur.ticket_id)}">Open ticket</a><button class="btn quiet" data-act="extra_time">+10 min</button><a class="btn primary" href="#/t/${esc(cur.ticket_id)}">Reply and solve</a>`
+  const buttons = cur ? `<button class="btn quiet" data-act="extra_time">+10 min</button><button class="btn quiet" data-act="done">${icon("check", 16)} Mark solved</button><a class="btn primary" href="#/t/${esc(cur.ticket_id)}">Open ticket</a>`
     : me.status === "break" ? `<button class="btn primary" data-act="back">I'm back</button>` : `<button class="btn quiet" data-act="break">Take a break</button>`;
   return `<div class="card now">${ring(cur) || `<div class="avatar big">${esc(user.name.split(" ").map(w => w[0]).join("").slice(0, 2))}</div>`}<div>${body}${upNext}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${buttons}</div></div>`;
 }
@@ -101,6 +101,7 @@ function wireNow(root) {
   $$("[data-act]", root).forEach(b => b.onclick = () => {
     const k = b.dataset.act;
     if (k === "extra_time") act("extra_time", { value: 10 }, "10 more minutes added. OpsLens re-planned around it.");
+    else if (k === "done") act("done", {}, "Solved. Nice work.");
     else if (k === "break" || k === "back") toggleBreak();
   });
 }
@@ -124,12 +125,11 @@ async function home() {
       <a class="card tile link" href="#/views/unassigned" style="color:inherit;text-decoration:none"><div class="label">Team queue</div><div class="value">${state.counts.unassigned ?? 0}</div><div class="note">waiting for an agent</div></a>
     </div>
     <div class="cols even">
-      <div class="card"><div class="head"><h2>My open tickets</h2><a href="#/views/mine" class="small">See all</a></div>${ticketTable(mine.tickets, { showAssignee: false, emptyText: VIEWS[0].empty })}</div>
-      <div class="card"><div class="head"><h2>Team queue</h2><a href="#/views/unassigned" class="small">See all</a></div>${ticketTable(queue.tickets, { emptyText: VIEWS[1].empty })}</div>
+      <div class="card"><div class="head"><h2>My open tickets</h2><a href="#/views/mine" class="small">See all</a></div>${compactList(mine.tickets, VIEWS[0].empty)}</div>
+      <div class="card"><div class="head"><h2>Team queue</h2><a href="#/views/unassigned" class="small">See all</a></div>${compactList(queue.tickets, VIEWS[1].empty)}</div>
     </div></div>`;
   wireNow(shell.main);
-  $$("tr.row", shell.main).forEach(r => r.onclick = () => { location.hash = `#/t/${r.dataset.id}`; });
-  shell.listKeys(".main tr.row", r => { location.hash = `#/t/${r.dataset.id}`; });
+  shell.listKeys(".main .crow", r => { location.hash = `#/t/${r.dataset.id}`; });
 }
 
 async function views(key) {
@@ -160,23 +160,34 @@ function ticketContext(t) {
   const mineNow = me?.current?.ticket_id === t.id;
   const lined = me?.next?.ticket_id === t.id;
   const canTake = t.status === "open" && t.team === user.team && me && !["off", "break"].includes(me.status);
-  const actions = [
-    mineNow ? `<span class="small muted">You are working on this.</span><button class="btn quiet small" data-a="extra">+10 min</button>` : "",
-    lined ? `<span class="small muted">Lined up for you next.</span><select class="field" id="why" style="height:28px">${DECLINE.map(r => `<option>${esc(r)}</option>`).join("")}</select><button class="btn danger small" data-a="decline">I can't take this</button>` : "",
-    canTake && !lined ? `<span class="small muted">Waiting in your team's queue.</span><button class="btn primary small" data-a="take">Take this ticket</button>` : "",
-  ].join("");
+  const actions = mineNow
+    ? `<button class="btn primary big" data-a="done">${icon("check", 16)} Mark solved</button><button class="btn quiet" data-a="extra">+10 min</button><span class="small muted">You are working on this. Solving it frees you for the next one.</span>`
+    : lined
+    ? `<span class="small muted">OpsLens lined this up for you next.</span><select class="field" id="why">${DECLINE.map(r => `<option>${esc(r)}</option>`).join("")}</select><button class="btn danger" data-a="decline">I can't take this</button>`
+    : canTake
+    ? `<button class="btn primary big" data-a="take">Take this ticket</button><span class="small muted">Waiting in your team's queue for ${t.assigned_at ? "" : esc(ago(t.created_at).replace(" ago", ""))}.</span>`
+    : t.status !== "solved" && t.assignee && t.assignee !== user.agent_code ? `<span class="small muted">${esc(t.assignee)} is handling this.</span>` : "";
   return {
-    assignee: `<div class="val">${t.assignee ? `<span class="avatar" style="width:22px;height:22px;font-size:9px">${esc(t.assignee)}</span> ${t.assignee === user.agent_code ? "You" : esc(t.assignee)}` : `<span class="muted">Unassigned</span>`}</div>`,
-    actions, canReply: t.assignee === user.agent_code && t.status !== "solved", canNote: true, canSolve: mineNow,
+    assignee: (who => `<div class="val">${who ? `<span class="avatar" style="width:22px;height:22px;font-size:9px">${esc(who)}</span> ${who === user.agent_code ? "You" : esc(who)}` : `<span class="muted">Unassigned</span>`}</div>`)(mineNow ? user.agent_code : t.assignee),
+    actions, canNote: t.status !== "solved",
     wire() {
       $$("[data-a]").forEach(b => b.onclick = async () => {
-        b.disabled = true;
+        $$("[data-a]").forEach(x => { x.disabled = true; });
         const a = b.dataset.a;
-        const ok = a === "take" ? await act("take", { ticket_id: t.id }, "The ticket is yours. OpsLens re-planned the floor.")
+        const ok = a === "done" ? await act("done", {}, "")
+          : a === "take" ? await act("take", { ticket_id: t.id }, "The ticket is yours. OpsLens re-planned the floor.")
           : a === "decline" ? await act("decline", { ticket_id: t.id, reason: $("#why")?.value }, "Passed back. OpsLens is finding someone else.")
-          : await act("extra_time", { value: 10 }, "10 more minutes added.");
-        if (ok) setTimeout(() => render(), 1800);
-        else b.disabled = false;
+          : await act("extra_time", { value: 10 }, "10 more minutes added. OpsLens re-planned around it.");
+        if (!ok) { $$("[data-a]").forEach(x => { x.disabled = false; }); return; }
+        if (a === "done") {
+          shell.closeTab(t.id);
+          const next = state.me?.current || state.me?.next;
+          state.lastCurrent = state.me?.current?.ticket_id || null;
+          toast(next ? `Solved. Next up: ${CATEGORY[next.category] || next.category} #${next.ticket_id}` : "Solved. You're free for the next ticket.", "good");
+          location.hash = next ? `#/t/${next.ticket_id}` : "#/home";
+          return;
+        }
+        setTimeout(() => render(), 1800);
       });
     },
   };
@@ -189,7 +200,7 @@ async function render() {
   shell.state.listKeys = null;
   shell.setNav(r.page === "t" ? "views" : r.page);
   if (r.page === "t") {
-    await ticketPage(shell, r.arg, { context: ticketContext, after: () => setTimeout(refresh, 1500) });
+    await ticketPage(shell, r.arg, { context: ticketContext });
   } else if (r.page === "views") {
     await views(r.arg);
   } else {
@@ -199,9 +210,13 @@ async function render() {
   if (!document.hidden) document.title = document.title.replace(/^\(\d+\) /, "");
 }
 
+const involvement = id => `${state.me?.status}|${state.me?.current?.ticket_id === id}|${state.me?.next?.ticket_id === id}`;
+
 async function refresh() {
-  await Promise.all([loadMe(), loadCounts()]);
   const r = route();
+  const before = r.page === "t" ? involvement(r.arg) : "";
+  await Promise.all([loadMe(), loadCounts()]);
+  if (r.page === "t" && involvement(r.arg) !== before && !document.activeElement?.closest?.(".note-box, .action-bar")) { await render(); return; }
   if (r.page === "home") { const n = $("#now"); if (n) { n.innerHTML = nowCard(); wireNow(n); } }
   if (r.page === "views" && !document.activeElement?.closest?.(".listing")) await views(r.arg);
 }

@@ -42,21 +42,27 @@ def as_user(c: TestClient, email: str) -> TestClient:
     return c
 
 
-def test_notes_and_replies_are_kept_on_the_ticket_and_only_visible_tickets_take_them(client):
+def test_notes_are_kept_on_the_ticket_and_nobody_messages_customers(client):
     agent = as_user(client, "a01@opslens.demo")
     r = agent.post("/api/v2/tickets/TEST-W1/messages", json={"kind": "internal", "body": "checked the rider"})
     assert r.status_code == 200 and r.json()["message"]["kind"] == "internal"
-    thread = agent.get("/api/v2/tickets/TEST-W1").json()["messages"]
-    assert [m["body"] for m in thread] == ["checked the rider"]
+    assert [m["body"] for m in agent.get("/api/v2/tickets/TEST-W1").json()["messages"]] == ["checked the rider"]
+    assert agent.post("/api/v2/tickets/TEST-W1/messages", json={"kind": "public", "body": "hello customer"}).status_code == 400
     assert agent.post("/api/v2/tickets/TEST-W3/messages", json={"body": "hi"}).status_code == 404
     assert agent.post("/api/v2/tickets/TEST-W1/messages", json={"body": "  "}).status_code == 400
-    assert agent.post("/api/v2/tickets/TEST-W2/messages", json={"body": "done", "solve": True}).status_code == 403
 
 
-def test_marking_solved_needs_the_ticket_to_be_the_one_in_hand(client):
-    agent = as_user(client, "a01@opslens.demo")
-    r = agent.post("/api/v2/tickets/TEST-W1/messages", json={"body": "sorted", "solve": True})
-    assert r.status_code == 409
+def test_the_guide_turns_the_policy_into_steps_and_states_the_limit(client):
+    from opslens.agents import policy_note
+
+    with store.connection() as conn:
+        conn.execute("update tickets set category = 'missing_item', order_value_inr = 450, ai_category = 'refund' "
+                     "where id = 'TEST-W1'")
+    g = as_user(client, "a01@opslens.demo").get("/api/v2/tickets/TEST-W1/guide").json()
+    assert g["policy"]["title"] == "Missing item" and len(g["policy"]["steps"]) >= 3
+    assert g["rule"] == policy_note({"category": "missing_item", "order_value_inr": 450}) and "above" in g["rule"]
+    assert g["also"]["title"] == "Refunds"
+    assert as_user(client, "a01@opslens.demo").get("/api/v2/tickets/TEST-W3/guide").status_code == 404
 
 
 def test_search_and_export_stay_inside_what_you_may_see(client):
