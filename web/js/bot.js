@@ -55,6 +55,17 @@ export function initBot() {
   document.getElementById("bot-log").addEventListener("click", (event) => {
     const chip = event.target.closest("[data-q]");
     if (chip) { ask(chip.dataset.q); return; }
+    const cite = event.target.closest("[data-cite]");
+    if (cite) {
+      const item = cite.closest(".bm-bubble")?.querySelector(`[data-source="${cite.dataset.cite}"]`);
+      if (item) {
+        item.closest("details").open = true;
+        item.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        item.classList.add("is-flash");
+        setTimeout(() => item.classList.remove("is-flash"), 1200);
+      }
+      return;
+    }
     const go = event.target.closest("[data-go]");
     if (go) goTo(go.dataset.go, go.dataset.world || "food", go.dataset.card);
   });
@@ -69,7 +80,7 @@ function panelHtml() {
   return `<aside class="bot-panel" id="bot-panel" role="dialog" aria-label="OpsLens AI assistant" hidden>
       <header class="bp-head">
         <div class="bp-avatar" id="bp-avatar">${characterHtml("bot-big", "robot", "happy")}</div>
-        <div class="bp-title"><b>OpsLens AI</b><span><i class="bp-dot"></i>Answers from tested results. It never makes up a number.</span></div>
+        <div class="bp-title"><b>OpsLens AI</b><span><i class="bp-dot"></i>Answers from OpsLens's own data, with sources.</span></div>
         <button type="button" class="bp-close" id="bot-close" aria-label="Close the assistant">✕</button>
       </header>
       <div class="bp-log" id="bot-log" aria-live="polite">
@@ -149,6 +160,7 @@ async function ask(question) {
 }
 
 function render(d) {
+  if (d.kind === "rag") return renderRag(d);
   if (d.kind === "qa") return renderQa(d);
   if (d.kind === "triage") return renderTriage(d);
   if (d.kind === "engine") return renderEngine(d);
@@ -162,6 +174,27 @@ function formatAnswer(text) {
     html = html.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
     return `<p>${html}</p>`;
   }).join("");
+}
+
+function renderRag(d) {
+  const cite = (html) => html.replace(/\[(\d+)\]/g, (m, n) => `<button type="button" class="bm-cite" data-cite="${n}" title="Source ${n}">${n}</button>`);
+  const answer = d.answer.split(/\n\s*\n/).map((para) => `<p>${cite(escapeHtml(para.replace(/\n/g, " ")))}</p>`).join("");
+  const sources = d.sources.map((s) => `<li class="bm-source ${s.used ? "is-used" : ""}" data-source="${s.n}">
+      <div class="bms-head"><span class="bms-n">${s.n}</span><span class="bms-tag">${escapeHtml(s.label)}</span>
+        <span class="bms-title">${escapeHtml(s.title)}</span><span class="bms-score" title="How closely it matched your question">${Math.round(s.score * 100)}% match</span></div>
+      <div class="bms-body">${escapeHtml(s.body.length > 220 ? s.body.slice(0, 218) + "…" : s.body)}</div>
+      ${s.link ? `<button type="button" class="bm-go" data-go="${escapeHtml(s.link)}" data-world="food" ${s.card ? `data-card="${escapeHtml(s.card)}"` : ""}>Open</button>` : ""}
+    </li>`).join("");
+  const used = d.sources.filter((s) => s.used).length;
+  const related = (d.related || []).length
+    ? `<div class="bm-related"><span>Related</span><div class="bs-chips">${d.related.map((r) =>
+        `<button type="button" class="bot-chip" data-q="${escapeHtml(r.question)}">${escapeHtml(r.question)}</button>`).join("")}</div></div>` : "";
+  return `<div class="bm-qhead"><span class="bm-id is-rag">RAG</span><span class="bm-q">Written from ${used || d.sources.length} of ${d.sources.length} sources found</span></div>
+    <div class="bm-answer">${answer}</div>
+    <div class="bm-check ${d.checked ? "is-ok" : "is-warn"}">${d.checked ? "✓ Every number is in the sources" : `Not found in the sources: ${escapeHtml(d.unverified.join(", "))}`}</div>
+    <details class="bm-sources" open><summary>Sources (${d.sources.length})</summary><ol>${sources}</ol></details>
+    <div class="bm-src">Retrieved by ${escapeHtml(d.how)}, then written by the local AI (${escapeHtml(d.model)}) in ${d.seconds} s. It may only use the sources above.</div>
+    ${related}`;
 }
 
 function renderQa(d) {

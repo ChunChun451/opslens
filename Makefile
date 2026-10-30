@@ -4,7 +4,7 @@ else
 PY := .venv/bin/python
 endif
 
-.PHONY: help setup data ping test gen eval serve demo seed load eval-local
+.PHONY: help setup data ping test gen eval serve demo seed load eval-local rag rag-eval eval-rag-classify
 
 help:
 	@echo setup  - create .venv and install requirements
@@ -18,6 +18,9 @@ help:
 	@echo seed   - create the Postgres tables and demo users
 	@echo load   - load a million tickets into a scratch database and time it
 	@echo eval-local - score the local Ollama model on the recorded classification test
+	@echo rag    - build the RAG index: every source as searchable pieces in Postgres
+	@echo rag-eval - measure how often RAG finds the right source
+	@echo eval-rag-classify - test whether retrieved examples help the AI read tickets
 
 setup:
 	python -m venv .venv
@@ -52,3 +55,12 @@ load:
 
 eval-local:
 	$(PY) scripts/eval_local_llm.py
+
+rag:
+	$(PY) -m opslens.rag build
+
+rag-eval:
+	$(PY) -m opslens.rag eval
+
+eval-rag-classify:
+	$(PY) scripts/eval_rag_classify.py

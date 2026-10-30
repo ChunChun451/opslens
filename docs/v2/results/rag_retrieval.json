@@ -1,0 +1,361 @@
+{
+ "questions": 26,
+ "hit_at_1": 0.846,
+ "hit_at_3": 0.962,
+ "hit_at_5": 0.962,
+ "mrr": 0.902,
+ "modes": {
+  "both": {
+   "hit_at_1": 0.846,
+   "hit_at_3": 0.962,
+   "hit_at_5": 0.962,
+   "mrr": 0.902
+  },
+  "meaning": {
+   "hit_at_1": 0.808,
+   "hit_at_3": 0.923,
+   "hit_at_5": 0.962,
+   "mrr": 0.869
+  },
+  "words": {
+   "hit_at_1": 0.538,
+   "hit_at_3": 0.731,
+   "hit_at_5": 0.885,
+   "mrr": 0.665
+  }
+ },
+ "cases": [
+  {
+   "question": "Customer says money got cut from the bank but the order never happened, what do we tell them?",
+   "expect": [
+    "policy:payment_failure"
+   ],
+   "rank": 1,
+   "top3": [
+    "policy:payment_failure",
+    "ticket:T044674",
+    "policy:missing_item"
+   ]
+  },
+  {
+   "question": "What is the rule for refunding a missing dish on an order above 300 rupees?",
+   "expect": [
+    "policy:missing_item"
+   ],
+   "rank": 1,
+   "top3": [
+    "policy:missing_item",
+    "fix:pb_F4",
+    "faq:B6"
+   ]
+  },
+  {
+   "question": "The rider is stuck and the food is an hour late, can we cancel?",
+   "expect": [
+    "policy:late_delivery"
+   ],
+   "rank": 1,
+   "top3": [
+    "policy:late_delivery",
+    "ticket:T052072",
+    "faq:Q60"
+   ]
+  },
+  {
+   "question": "Someone wants to change their phone number but lost the old SIM",
+   "expect": [
+    "policy:account"
+   ],
+   "rank": 1,
+   "top3": [
+    "policy:account",
+    "faq:Q48",
+    "ticket:T043349"
+   ]
+  },
+  {
+   "question": "How long does money take to come back to a card or UPI?",
+   "expect": [
+    "policy:refund",
+    "policy:missing_item"
+   ],
+   "rank": 1,
+   "top3": [
+    "policy:refund",
+    "policy:payment_failure",
+    "ticket:T032398"
+   ]
+  },
+  {
+   "question": "A customer found something unsafe or unhygienic in the food",
+   "expect": [
+    "policy:restaurant_partner"
+   ],
+   "rank": 1,
+   "top3": [
+    "policy:restaurant_partner",
+    "ticket:T004935",
+    "policy:wrong_item"
+   ]
+  },
+  {
+   "question": "Why do Hindi speakers wait so long for refunds and payment help?",
+   "expect": [
+    "problem:F1",
+    "fix:pb_F1"
+   ],
+   "rank": 1,
+   "top3": [
+    "fix:pb_F1",
+    "problem:F1",
+    "faq:Q71"
+   ]
+  },
+  {
+   "question": "Which problem is caused by the phone menu sending calls to the wrong team?",
+   "expect": [
+    "problem:F2",
+    "fix:pb_F2"
+   ],
+   "rank": 1,
+   "top3": [
+    "fix:pb_F2",
+    "faq:Q12",
+    "faq:Q40"
+   ]
+  },
+  {
+   "question": "Which team is short of people at dinner on weekdays?",
+   "expect": [
+    "problem:F4",
+    "fix:pb_F4"
+   ],
+   "rank": 1,
+   "top3": [
+    "problem:F4",
+    "faq:Q24",
+    "problem:F3"
+   ]
+  },
+  {
+   "question": "Is one group of restaurants sending the wrong items more often?",
+   "expect": [
+    "problem:F8",
+    "fix:pb_F8",
+    "faq:Q40"
+   ],
+   "rank": 1,
+   "top3": [
+    "problem:F8",
+    "policy:wrong_item",
+    "faq:Q40"
+   ]
+  },
+  {
+   "question": "What fix helps the Hindi refund queue the most and by how much?",
+   "expect": [
+    "fix:pb_F1",
+    "problem:F1"
+   ],
+   "rank": 3,
+   "top3": [
+    "faq:Q71",
+    "faq:Q28",
+    "fix:pb_F1"
+   ]
+  },
+  {
+   "question": "If we apply every recommended fix at once how many missed promises do we save?",
+   "expect": [
+    "fix:all",
+    "faq:Q57"
+   ],
+   "rank": 1,
+   "top3": [
+    "fix:all",
+    "faq:Q41",
+    "fix:pb_F2"
+   ]
+  },
+  {
+   "question": "What does the status banner during a spike actually achieve?",
+   "expect": [
+    "fix:pb_F6",
+    "fix:pb_F9"
+   ],
+   "rank": 1,
+   "top3": [
+    "fix:pb_F9",
+    "fix:pb_F6",
+    "problem:F9"
+   ]
+  },
+  {
+   "question": "How much better is OpsLens than normal skills-based routing?",
+   "expect": [
+    "readme:result",
+    "faq:Q26",
+    "results:the-floor-and-the-policy"
+   ],
+   "rank": 2,
+   "top3": [
+    "faq:Q45",
+    "faq:Q26",
+    "faq:Q43"
+   ]
+  },
+  {
+   "question": "Is the comparison against the industry baseline fair or a strawman?",
+   "expect": [
+    "faq:Q9"
+   ],
+   "rank": 1,
+   "top3": [
+    "faq:Q9",
+    "faq:Q60",
+    "results:baseline-vs-opslens-test-days-mean-std-over-seeds-1"
+   ]
+  },
+  {
+   "question": "Could the risk model be cheating by seeing the future?",
+   "expect": [
+    "faq:Q19"
+   ],
+   "rank": 8,
+   "top3": [
+    "faq:Q21",
+    "docs:6-what-did-not-change",
+    "results:risk-model-test-days"
+   ]
+  },
+  {
+   "question": "Which part of the system produces most of the improvement?",
+   "expect": [
+    "faq:Q32",
+    "results:which-part-creates-the-gain-ablations-test-days"
+   ],
+   "rank": 1,
+   "top3": [
+    "faq:Q32",
+    "faq:Q66",
+    "results:how-close-to-perfect-test-days"
+   ]
+  },
+  {
+   "question": "Does it still work in worlds you did not design yourselves?",
+   "expect": [
+    "faq:Q64",
+    "results:30-random-worlds-we-did-not-design-test-days-3-seeds-each"
+   ],
+   "rank": 1,
+   "top3": [
+    "results:30-random-worlds-we-did-not-design-test-days-3-seeds-each-3",
+    "faq:Q84",
+    "faq:Q48"
+   ]
+  },
+  {
+   "question": "Where does the AI model run and does any data leave the laptop?",
+   "expect": [
+    "docs:1-the-llm-runs-on-the-laptop",
+    "faq:Q38"
+   ],
+   "rank": 1,
+   "top3": [
+    "faq:Q38",
+    "docs:5-the-agents-1",
+    "docs:the-local-model-against-the-cloud-model-mingw32-make-eval-lo"
+   ]
+  },
+  {
+   "question": "How fast are the database queries with a million tickets?",
+   "expect": [
+    "docs:scale-a-million-tickets-mingw32-make-load"
+   ],
+   "rank": 1,
+   "top3": [
+    "docs:scale-a-million-tickets-mingw32-make-load-1",
+    "docs:scale-a-million-tickets-mingw32-make-load-2",
+    "faq:Q77"
+   ]
+  },
+  {
+   "question": "How do agents and admins sign in and what can each one see?",
+   "expect": [
+    "docs:3-separate-screens-and-roles",
+    "docs:4-the-screens"
+   ],
+   "rank": 1,
+   "top3": [
+    "docs:4-the-screens-1",
+    "readme:version-2",
+    "docs:3-separate-screens-and-roles"
+   ]
+  },
+  {
+   "question": "Is the local qwen model as good as the cloud one at reading tickets?",
+   "expect": [
+    "docs:the-local-model-against-the-cloud-model-mingw32-make-eval-lo",
+    "docs:measured"
+   ],
+   "rank": 1,
+   "top3": [
+    "docs:the-local-model-against-the-cloud-model-mingw32-make-eval-lo",
+    "faq:Q11",
+    "faq:B3"
+   ]
+  },
+  {
+   "question": "What is OpsLens in one line?",
+   "expect": [
+    "faq:B1"
+   ],
+   "rank": 1,
+   "top3": [
+    "faq:B1",
+    "faq:Q45",
+    "faq:Q85"
+   ]
+  },
+  {
+   "question": "Can this handle millions of tickets every day?",
+   "expect": [
+    "faq:B3",
+    "docs:scale-a-million-tickets-mingw32-make-load"
+   ],
+   "rank": 1,
+   "top3": [
+    "faq:B3",
+    "docs:scale-a-million-tickets-mingw32-make-load-1",
+    "docs:scale-a-million-tickets-mingw32-make-load-2"
+   ]
+  },
+  {
+   "question": "What does OpsLens do worse than other approaches?",
+   "expect": [
+    "faq:Q30",
+    "faq:B9"
+   ],
+   "rank": 1,
+   "top3": [
+    "faq:Q30",
+    "faq:Q52",
+    "faq:B9"
+   ]
+  },
+  {
+   "question": "Why should anyone trust results from a simulator?",
+   "expect": [
+    "faq:Q7",
+    "faq:Q6",
+    "faq:Q46"
+   ],
+   "rank": 2,
+   "top3": [
+    "faq:Q20",
+    "faq:Q7",
+    "faq:Q62"
+   ]
+  }
+ ]
+}

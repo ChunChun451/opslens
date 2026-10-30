@@ -1,0 +1,53 @@
+questions:
+  - question: Customer says money got cut from the bank but the order never happened, what do we tell them?
+    expect: policy:payment_failure
+  - question: What is the rule for refunding a missing dish on an order above 300 rupees?
+    expect: policy:missing_item
+  - question: The rider is stuck and the food is an hour late, can we cancel?
+    expect: policy:late_delivery
+  - question: Someone wants to change their phone number but lost the old SIM
+    expect: policy:account
+  - question: How long does money take to come back to a card or UPI?
+    expect: [policy:refund, policy:missing_item]
+  - question: A customer found something unsafe or unhygienic in the food
+    expect: policy:restaurant_partner
+  - question: Why do Hindi speakers wait so long for refunds and payment help?
+    expect: [problem:F1, fix:pb_F1]
+  - question: Which problem is caused by the phone menu sending calls to the wrong team?
+    expect: [problem:F2, fix:pb_F2]
+  - question: Which team is short of people at dinner on weekdays?
+    expect: [problem:F4, fix:pb_F4]
+  - question: Is one group of restaurants sending the wrong items more often?
+    expect: [problem:F8, fix:pb_F8, faq:Q40]
+  - question: What fix helps the Hindi refund queue the most and by how much?
+    expect: [fix:pb_F1, problem:F1]
+  - question: If we apply every recommended fix at once how many missed promises do we save?
+    expect: [fix:all, faq:Q57]
+  - question: What does the status banner during a spike actually achieve?
+    expect: [fix:pb_F6, fix:pb_F9]
+  - question: How much better is OpsLens than normal skills-based routing?
+    expect: [readme:result, faq:Q26, results:the-floor-and-the-policy]
+  - question: Is the comparison against the industry baseline fair or a strawman?
+    expect: faq:Q9
+  - question: Could the risk model be cheating by seeing the future?
+    expect: faq:Q19
+  - question: Which part of the system produces most of the improvement?
+    expect: [faq:Q32, results:which-part-creates-the-gain-ablations-test-days]
+  - question: Does it still work in worlds you did not design yourselves?
+    expect: [faq:Q64, results:30-random-worlds-we-did-not-design-test-days-3-seeds-each]
+  - question: Where does the AI model run and does any data leave the laptop?
+    expect: [docs:1-the-llm-runs-on-the-laptop, faq:Q38]
+  - question: How fast are the database queries with a million tickets?
+    expect: docs:scale-a-million-tickets-mingw32-make-load
+  - question: How do agents and admins sign in and what can each one see?
+    expect: [docs:3-separate-screens-and-roles, docs:4-the-screens]
+  - question: Is the local qwen model as good as the cloud one at reading tickets?
+    expect: [docs:the-local-model-against-the-cloud-model-mingw32-make-eval-lo, docs:measured]
+  - question: What is OpsLens in one line?
+    expect: faq:B1
+  - question: Can this handle millions of tickets every day?
+    expect: [faq:B3, docs:scale-a-million-tickets-mingw32-make-load]
+  - question: What does OpsLens do worse than other approaches?
+    expect: [faq:Q30, faq:B9]
+  - question: Why should anyone trust results from a simulator?
+    expect: [faq:Q7, faq:Q6, faq:Q46]

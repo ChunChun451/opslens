@@ -248,7 +248,8 @@ def rerank(question: str, hits: list[tuple[float, dict]], client) -> tuple[dict 
     return (top if top_score >= QA_MIN_SCORE else None), "word matching (LLM unavailable)"
 
 
-def respond(question: str, ask: Callable[[str], dict], results: dict, client=None) -> dict:
+def respond(question: str, ask: Callable[[str], dict], results: dict, client=None,
+            rag: Callable[[str], dict | None] | None = None) -> dict:
     q = question.strip()
     if looks_like_customer(q):
         message = re.sub(r"^\s*(customer|complaint|ticket)\s*[:\-]\s*", "", q, flags=re.I)
@@ -256,6 +257,10 @@ def respond(question: str, ask: Callable[[str], dict], results: dict, client=Non
     if ENGINE.search(q):
         return {"kind": "engine", **ask(q)}
     hits = qa_index().search(q, RERANK_K)
+    written = rag(q) if rag else None
+    if written:
+        written["related"] = [{"id": e["id"], "question": e["question"]} for s, e in hits if s >= QA_MIN_SCORE][:3]
+        return written
     chosen, matched_by = rerank(q, hits, client)
     if chosen:
         related = [{"id": e["id"], "question": e["question"]} for s, e in hits if e is not chosen and s >= QA_MIN_SCORE * 0.7][:3]

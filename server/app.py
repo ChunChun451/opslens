@@ -258,7 +258,7 @@ def _route_client():
     from opslens.llm.client import build_client
 
     try:
-        return build_client(["groq_route", "gemini"])
+        return build_client(["ollama_route", "groq_route", "gemini"])
     except LLMUnavailable:
         return None
 
@@ -301,6 +301,32 @@ def bot_warm() -> dict:
     return {"ok": True}
 
 
+def _rag_answer(question: str) -> dict | None:
+    from opslens import rag, store
+
+    if os.environ.get("OPSLENS_RAG", "1") == "0" or not store.available():
+        return None
+    try:
+        return rag.answer(question)
+    except Exception:
+        return None
+
+
+@app.get("/api/rag/status")
+def rag_status() -> JSONResponse:
+    from opslens import rag, store
+
+    if not store.available():
+        return JSONResponse({"error": "The database is not running."}, status_code=503)
+    out = {"index": rag.status()}
+    for name in ("rag_retrieval", "rag_classification"):
+        path = ROOT / "docs" / "v2" / "results" / f"{name}.json"
+        if path.exists():
+            data = json.loads(path.read_text(encoding="utf-8"))
+            out[name] = {k: v for k, v in data.items() if k not in ("cases", "tickets")}
+    return JSONResponse(out)
+
+
 @app.post("/api/bot")
 def bot(request: dict) -> JSONResponse:
     from server.bot import respond
@@ -311,7 +337,7 @@ def bot(request: dict) -> JSONResponse:
     client = _route_client()
     results = json.loads(results_path().read_text(encoding="utf-8"))
     try:
-        return JSONResponse(respond(question, lambda q: _run_ask(q, client), results, client))
+        return JSONResponse(respond(question, lambda q: _run_ask(q, client), results, client, rag=_rag_answer))
     except ValueError as exc:
         return JSONResponse({"error": str(exc)}, status_code=400)
 

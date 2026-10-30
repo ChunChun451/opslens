@@ -142,7 +142,46 @@ All four use the same small runtime in `opslens/agents.py`:
 | Floor analyst | every 15 minutes, or Check the floor now | reads today's numbers, tickets at risk, who is free; code lists the actions that are possible (a free agent with the right skill and language, or a ticket nobody can take); the model picks the urgent ones and says why | it can only pick from the checked list; a reassignment is checked again at approval and then goes through the optimiser's own take path; stale suggestions expire |
 | Ask OpsLens | the admin types a question | answers from the live numbers, written as plain facts | every number in the answer must appear in the facts; if not, it is asked again, and the screen says whether every number was found |
 
-## 6. What did not change
+## 6. RAG: the AI looks things up before it answers
+
+**What RAG is.** Retrieval-Augmented Generation: the data is split into small pieces and each piece is
+stored with its meaning (a list of numbers from an embedding model). When a question comes in, the few
+pieces closest to it are found and given to the language model, which answers from them and says which
+ones it used. The model reads our facts instead of guessing from memory.
+
+**Where it is in OpsLens.**
+
+- **Ask OpsLens AI** (sidebar, every admin page). A question goes, in order: a customer-style message
+  to triage, a what-if to the engine, then RAG. The answer is written by the local model from the
+  retrieved pieces, with [1] [2] citations you can click, a "Sources" list (type, title, how closely
+  it matched, an excerpt, and an Open link to the right page), and a line saying whether every number
+  in the answer was found in the sources. If RAG has nothing good, the prepared answers are used as
+  before, and then the "did you mean" list.
+- **Proof, AI with retrieval.** What is indexed, how often the right source is found, and whether
+  retrieved examples help the AI read tickets.
+
+**How it works** (`opslens/rag.py`, table `rag_chunks`, migration `008`):
+
+1. **Pieces.** 519 of them: the 8 company policies, the 9 recurring problems (with their measured fix),
+   the 18 measured fixes and "all together", the sections of `eval/NUMBERS.md`, the README and these
+   docs, the 106 prepared answers, and 320 past tickets (40 per category, training days only, masked).
+   Fix effects are written in plain words ("131 fewer missed promises, likely between 88 and 174
+   fewer") because the small model misreads minus signs and "95% range".
+2. **Meaning.** Each piece is embedded with `nomic-embed-text` on the laptop GPU (about 14 ms a piece;
+   the whole index builds in about 9 seconds) and stored in Postgres. With pgvector this becomes a
+   vector index; without it, similarity is one matrix product in numpy.
+3. **Search.** Meaning (65%) and exact words (35%, TF-IDF) together, because "Rs 300", "P1" or a
+   ticket ID must match exactly. Past tickets count 0.9 and at most one is shown, so rules and
+   results come first.
+4. **Gate.** If nothing is close in meaning (below 0.58), or the model says the sources do not cover
+   it, there is no RAG answer: off-topic questions such as "capital of France" get the fallback.
+5. **Answer.** `qwen2.5:3b` gets the 5 pieces and a one-line glossary (missed means the promise time
+   passed; lower is better) and must cite them. Every number it writes must appear in the pieces or
+   the question; if not, it is asked once more.
+
+Rebuild with `mingw32-make rag` after changing a policy, a result or the docs.
+
+## 7. What did not change
 
 - The simulator, the optimiser, the risk model and every number in `eval/`.
 - The classic dashboard at `/app/` with Proof, Replay and the real UCI desk.
@@ -154,6 +193,7 @@ All four use the same small runtime in `opslens/agents.py`:
 ollama pull qwen2.5:3b
 ollama pull nomic-embed-text
 mingw32-make seed
+mingw32-make rag
 mingw32-make serve
 ```
 
@@ -210,6 +250,43 @@ flags a disagreement on the ticket page for a person to look at. The simulated f
 categories recorded in Round 1 (the local classifier plus the cloud model's answers on that 1.35%), so
 every Round 1 number stands; for new tickets the honest choice is the local classifier alone, at 98.20%.
 23 of the 360 got no usable reply and kept the local answer.
+
+### RAG: does it find the right source? (`mingw32-make rag-eval`)
+
+26 test questions in `config/rag_eval.yaml`, written in different words from the sources, each with
+the piece that should come back. Full output: [results/rag_retrieval.json](results/rag_retrieval.json).
+
+| Search by | Right source first | Right source in the top 3 | Mean reciprocal rank |
+|---|---|---|---|
+| Meaning and words (used) | 85% | 96% | 0.90 |
+| Meaning only | 81% | 92% | 0.87 |
+| Words only | 54% | 73% | 0.67 |
+
+Combining the two beats either alone. The one question still missed in the top 3 is "Could the risk
+model be cheating by seeing the future?", whose prepared answer is worded around "leakage".
+
+### RAG: do retrieved examples help the AI read tickets? (`mingw32-make eval-rag-classify`)
+
+Before deciding a ticket's category, the AI is shown the 5 most similar past tickets with their
+correct category, taken from 4,800 tickets of the training days only (600 per category). Same
+held-out tickets as the earlier test. It took about 2 hours on the laptop, one AI call per ticket.
+Full output: [results/rag_classification.json](results/rag_classification.json).
+
+| On the 360 tickets the classifier is least sure of | Routing accuracy | Fixed | Broke |
+|---|---|---|---|
+| Classifier alone (what OpsLens uses) | 98.20% | | |
+| The AI alone (measured before) | 97.51% | 12 | 196 |
+| The AI shown 5 retrieved examples | 97.99% | 45 | 101 |
+| A vote of the 5 nearest past tickets, no AI | 98.26% | 68 | 51 |
+
+On a random 400 test tickets the AI with examples scored 90.31% (382 answered; the rest made the
+small model loop), against 90.75% alone and 80.00% for the plain vote.
+
+What this means: retrieval halves the damage the AI does when it may correct the classifier, but it
+still does worse than the classifier alone. The plain vote of similar past tickets edges past the
+classifier by about 17 tickets out of 26,728, which is too small to justify changing routing that the
+Round 1 results rest on. So routing stays as tested, the AI stays a second opinion, and RAG is used
+where it clearly helps: answering questions from OpsLens's own data.
 
 ### The agents, tried on today's floor
 

@@ -13,6 +13,7 @@ import * as worlds from "./tabs/worlds.js";
 import * as shadow from "./tabs/shadow.js";
 import * as team from "./tabs/team.js";
 import * as agent from "./tabs/agent.js";
+import * as rag from "./tabs/rag.js";
 import { state, store, storeSession } from "./data.js";
 
 const ICONS = {
@@ -55,7 +56,8 @@ export const TABS = [
            { id: "worlds", label: "Beyond our world", module: worlds },
            { id: "whatif", label: "Try a what-if", module: whatif },
            { id: "ledger", label: "Rules we wrote first", module: ledger },
-           { id: "tested", label: "How we tested", module: tested }],
+           { id: "tested", label: "How we tested", module: tested },
+           { id: "rag", label: "AI with retrieval", module: rag }],
     real: [{ id: "rd-proof", label: "Does it work here?", module: realdata.proof },
            { id: "ledger", label: "Rules we wrote first", module: ledger }],
     upload: [{ id: "up-proof", label: "Does it work here?", module: realdata.proof },
@@ -70,7 +72,7 @@ const OTHER_SOURCE_VIEW = { "rd-overview": "up-overview", "rd-shadow": "up-shado
                             "rd-risks": "up-risks", "rd-actions": "up-actions", "rd-proof": "up-proof" };
 Object.entries({ ...OTHER_SOURCE_VIEW }).forEach(([uci, file]) => { OTHER_SOURCE_VIEW[file] = uci; });
 
-const ALIAS = { patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
+const ALIAS = { rag: "proof", patterns: "problems", atrisk: "risks", forecast: "risks", recommendations: "actions",
                 results: "proof", compare: "proof", whatif: "proof", ledger: "proof", tested: "proof", live: "overview",
                 worlds: "proof", "rd-shadow": "overview", "up-shadow": "overview", shadow: "overview", next48: "risks" };
 

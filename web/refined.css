@@ -591,3 +591,29 @@ body[data-signed="agent"] .topbar { justify-content: flex-end; }
 .ff-tag { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted, #8a93ad); margin-bottom: 4px; }
 
 body[data-signed="agent"] .sidebar::after { content: "Your own tickets only. OpsLens hands you the next one that fits your skills and languages."; }
+
+.bm-id.is-rag { background: rgba(52, 211, 153, 0.18); color: #6ee7b7; }
+.bm-cite { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; margin: 0 1px; border: 0; border-radius: 5px; font-size: 0.68rem; font-weight: 800; vertical-align: super; line-height: 1; cursor: pointer; background: rgba(34, 211, 238, 0.18); color: #67e8f9; }
+.bm-cite:hover { background: rgba(34, 211, 238, 0.35); }
+.bm-check { margin-top: 8px; font-size: 0.72rem; font-weight: 700; }
+.bm-check.is-ok { color: #6ee7b7; }
+.bm-check.is-warn { color: #fbbf24; }
+.bm-sources { margin-top: 10px; border: 1px solid rgba(130, 145, 255, 0.18); border-radius: 10px; padding: 6px 10px; }
+.bm-sources summary { cursor: pointer; font-size: 0.76rem; font-weight: 700; color: #cbd5e1; }
+.bm-sources ol { list-style: none; margin: 6px 0 2px; padding: 0; display: grid; gap: 6px; }
+.bm-source { border-radius: 8px; padding: 7px 8px; background: rgba(255, 255, 255, 0.03); opacity: .7; transition: background .3s, opacity .3s; }
+.bm-source.is-used { opacity: 1; background: rgba(34, 211, 238, 0.06); }
+.bm-source.is-flash { background: rgba(34, 211, 238, 0.22); }
+.bms-head { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.bms-n { font-size: 0.68rem; font-weight: 800; color: #67e8f9; }
+.bms-tag { font-size: 0.64rem; text-transform: uppercase; letter-spacing: .05em; padding: 0 5px; border-radius: 4px; background: rgba(167, 139, 250, 0.18); color: #c4b5fd; }
+.bms-title { font-size: 0.78rem; font-weight: 700; flex: 1; min-width: 0; }
+.bms-score { font-size: 0.68rem; color: #94a3b8; }
+.bms-body { font-size: 0.74rem; color: #94a3b8; margin-top: 3px; line-height: 1.4; }
+.bm-source .bm-go { margin-top: 5px; }
+html[data-theme="light"] .bm-sources summary, html[data-theme="light"] .bms-title { color: inherit; }
+html[data-theme="light"] .bm-source { background: rgba(15, 23, 42, 0.03); }
+html[data-theme="light"] .bm-source.is-used { background: rgba(14, 116, 144, 0.07); }
+html[data-theme="light"] .bm-cite { background: rgba(14, 116, 144, 0.14); color: #0e7490; }
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.stat-row .stat { border: 1px solid var(--border, rgba(130, 145, 255, 0.14)); border-radius: 12px; padding: 12px 14px; }

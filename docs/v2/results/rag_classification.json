@@ -1,0 +1,40 @@
+{
+ "model": "qwen2.5:3b",
+ "embedding_model": "nomic-embed-text",
+ "examples_per_ticket": 5,
+ "example_pool": {
+  "tickets": 4800,
+  "per_category": 600,
+  "from": "training days only"
+ },
+ "threshold": 0.6,
+ "test_tickets": 26728,
+ "sample": {
+  "tickets": 400,
+  "llm_alone_recorded": 0.9075,
+  "cloud_llm_recorded": 0.915,
+  "nearest_tickets_vote": 0.8,
+  "llm_with_examples": 0.9031413612565445,
+  "llm_with_examples_answered": 382
+ },
+ "routing": {
+  "hard_tickets": 360,
+  "classifier_alone": 0.9819664771026638,
+  "llm_alone_recorded": 0.9750823106854235,
+  "llm_alone_fixed_recorded": 12,
+  "llm_alone_broke_recorded": 196,
+  "nearest_tickets_vote": {
+   "accuracy": 0.9826025142173002,
+   "fixed": 68,
+   "broke": 51,
+   "answered": 360
+  },
+  "llm_with_examples": {
+   "accuracy": 0.9798712960191559,
+   "fixed": 45,
+   "broke": 101,
+   "answered": 337
+  }
+ },
+ "seconds": 7276.9
+}
